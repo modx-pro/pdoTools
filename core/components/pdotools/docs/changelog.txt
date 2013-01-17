@@ -1,0 +1,5 @@
+Changelog for pdoTools.
+
+pdoTools 1.0.0
+==============
+- Initial release.
