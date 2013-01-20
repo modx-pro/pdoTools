@@ -53,6 +53,8 @@ class pdoFetch extends pdoTools {
 			if ($this->query->stmt->execute()) {
 				$this->addTime('SQL executed');
 
+				$this->setTotal();
+
 				$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
 				$this->addTime('Rows fetched');
 
@@ -82,7 +84,6 @@ class pdoFetch extends pdoTools {
 				$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Error '.$errors[0].': '.$errors[2]);
 			}
 		}
-		$this->setTotal();
 		$this->modx->setPlaceholder('pdoFetchLog', $this->getTime());
 		return $output;
 	}
@@ -95,7 +96,13 @@ class pdoFetch extends pdoTools {
 		if (!empty($this->config['where'])) {
 			$where = $this->modx->fromJson($this->config['where']);
 			$q->where($where);
-			$this->addTime('Added where condition: <b>' . http_build_query($where,'',', ').'</b>');
+
+			$condition = array();
+			foreach ($where as $k => $v) {
+				if (is_array($v)) {$condition[] = $k.'('.implode(',',$v).')';}
+				else {$condition[] = $k.'='.$v;}
+			}
+			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>');
 		}
 
 		$this->query = $q;

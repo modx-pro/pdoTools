@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
-pdoTools 1.0.0
+1.0.1
+==============
+- Fixed setting total in "chunks" mode.
+- Improved displaying "where" condition in log.
+
+1.0.0
 ==============
 - Initial release.
