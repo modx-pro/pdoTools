@@ -26,6 +26,8 @@ class pdoFetch extends pdoTools {
 				,'leftJoin' => ''
 				,'rightJoin' => ''
 				,'innerJoin' => ''
+
+				,'nestedChunkPrefix' => 'pdotools_'
 			),$config
 		);
 

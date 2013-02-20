@@ -6,7 +6,7 @@ class pdoTools {
 	var $timings = array();
 	var $config = array();
 	private $time;
-	private $elements = array();
+	public $elements = array();
 
 
 	function __construct(modX & $modx) {
@@ -52,6 +52,15 @@ class pdoTools {
 	}
 
 
+	/**
+	 * Process and return the output from a Chunk by name.
+	 *
+	 * @param string $chunkName The name of the chunk.
+	 * @param array $properties An associative array of properties to process
+	 * the Chunk with, treated as placeholders within the scope of the Element.
+	 * @param boolean $fastMode If true, all MODX tags in chunk will be processed.
+	 * @return string The processed output of the Chunk.
+	 */
 	public function getChunk($name, array $properties = array(), $fastMode = false) {
 		$output = null;
 
@@ -59,10 +68,36 @@ class pdoTools {
 			/* @var modChunk $element */
 			if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
 				$element->setCacheable(false);
+				$content = $element->getContent();
+
+				// processing lexicon placeholders
+				preg_match_all('/\[\[%(.*?)\]\]/',$content, $matches);
+				$src = $dst = array();
+				foreach ($matches[1] as $k => $v) {
+					$tmp = $this->modx->lexicon($v);
+					if ($tmp != $v) {
+						$src[] = $matches[0][$k];
+						$dst[] = $tmp;
+					}
+				}
+				$content = str_replace($src,$dst,$content);
+
+				// processing special tags
+				preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
+				$src = $dst = $placeholders = array();
+				foreach ($matches[1] as $k => $v) {
+					$src[] = $matches[0][$k];
+					$dst[] = '';
+					$placeholders[$v] = $matches[2][$k];
+				}
+				$content = str_replace($src,$dst,$content);
+
 				$chunk = array(
 					'object' => $element
-					,'content' => $element->getContent()
+					,'content' => $content
+					,'placeholders' => $placeholders
 				);
+
 				$this->elements[$name] = $chunk;
 			}
 			else {
@@ -71,12 +106,15 @@ class pdoTools {
 		}
 		else {
 			$chunk = $this->elements[$name];
-			$chunk['object']->_processed = false;
 		}
+
+		$chunk['object']->_processed = false;
+		$chunk['object']->_content = '';
 
 		if (!empty($properties) && $chunk['object'] instanceof modChunk) {
 			$pl = $this->makePlaceholders($properties);
 			$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
+			$content = str_replace($pl['pl'], $pl['vl'], $content);
 			if ($fastMode) {
 				$matches = $tags = array();
 				$this->modx->parser->collectElementTags($content, $matches);

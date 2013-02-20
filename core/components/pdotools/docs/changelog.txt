@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.1.0
+==============
+- Improved getChunk function.
+
 1.0.1
 ==============
 - Fixed setting total in "chunks" mode.
