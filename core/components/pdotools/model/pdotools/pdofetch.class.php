@@ -2,50 +2,72 @@
 require_once 'pdotools.class.php';
 
 class pdoFetch extends pdoTools {
-
 	/* @var xPDOQuery_mysql $query */
-	private $query;
+	protected $query;
+
 
 	public function __construct(modX $modx, array $config = array()) {
 		parent::__construct($modx);
 
+		$this->setConfig($config);
+	}
+
+
+	/**
+	 * Set default query options and merge it with given config.
+	 * Need for multiple instances of pdoFetch snippets at the one page.
+	 *
+	 */
+	public function setConfig(array $config = array()) {
 		$this->config = array_merge(array(
-				'class' => 'modResource'
-				,'limit' => 10
-				,'offset' => 0
-				,'sortby' => ''
-				,'sortdir' => 'DESC'
-				,'groupby' => ''
-				,'totalVar' => 'total'
-				,'outputSeparator' => "\n"
-				,'tpl' => ''
-				,'fastMode' => false
-				,'return' => 'chunks'	 // chunks, data or sql
+			'class' => 'modResource'
+			,'limit' => 10
+			,'offset' => 0
+			,'sortby' => ''
+			,'sortdir' => 'DESC'
+			,'groupby' => ''
+			,'totalVar' => 'total'
+			,'outputSeparator' => "\n"
+			,'tpl' => ''
+			,'fastMode' => false
+			,'return' => 'chunks'	 // chunks, data or sql
 
-				,'select' => ''
-				,'leftJoin' => ''
-				,'rightJoin' => ''
-				,'innerJoin' => ''
+			,'select' => ''
+			,'leftJoin' => ''
+			,'rightJoin' => ''
+			,'innerJoin' => ''
 
-				,'nestedChunkPrefix' => 'pdotools_'
-			),$config
-		);
+			,'includeTVs' => ''
+			,'tvPrefix' => ''
+			,'tvsJoin' => array()
+			,'tvsSelect' => array()
+
+			,'nestedChunkPrefix' => 'pdotools_'
+		), $config);
 
 		if (empty($this->config['sortby'])) {
 			$this->config['sortby'] = $this->modx->getPK($this->config['class']);
 		}
+
+		$this->timings = array();
 	}
 
 
+	/**
+	 * Main method for query processing
+	 *
+	 * @return array|bool|string
+	 */
 	public function run() {
 		$this->makeQuery();
+		$this->addTVs();
 		$this->addJoins();
 		$this->addGrouping();
 		$this->addSelects();
 
 		if (!$this->prepareQuery()) {return false;}
 
-		$output = null;
+		$output = '';
 		if (strtolower($this->config['return']) == 'sql') {
 			$this->addTime('Returning raw sql query');
 			$output = $this->query->toSql();
@@ -65,7 +87,7 @@ class pdoFetch extends pdoTools {
 					$output = & $rows;
 				}
 				else {
-					foreach ($rows as $k => $v) {
+					foreach ($rows as $v) {
 						if (empty($this->config['tpl'])) {
 							$output[] = '<pre>'.str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($v, true), ENT_QUOTES, 'UTF-8')).'</pre>';
 						}
@@ -86,11 +108,14 @@ class pdoFetch extends pdoTools {
 				$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Error '.$errors[0].': '.$errors[2]);
 			}
 		}
-		$this->modx->setPlaceholder('pdoFetchLog', $this->getTime());
 		return $output;
 	}
 
 
+	/**
+	 * Create object with xPDOQuery
+	 *
+	 */
 	public function makeQuery() {
 		$q = $this->modx->newQuery($this->config['class']);
 		$this->addTime('xPDO query object created');
@@ -111,6 +136,10 @@ class pdoFetch extends pdoTools {
 	}
 
 
+	/**
+	 * Set "total" placeholder for pagination
+	 *
+	 */
 	public function setTotal() {
 		if ($this->config['return'] != 'sql') {
 			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
@@ -122,10 +151,24 @@ class pdoFetch extends pdoTools {
 	}
 
 
+	/**
+	 * Add tables join to query
+	 *
+	 */
 	public function addJoins() {
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
 			if (!empty($this->config[$join])) {
-				$tmp = $this->modx->fromJson($this->config[$join]);
+				$tmp = $this->modx->fromJSON($this->config[$join]);
+				if ($join == 'leftJoin') {
+					// For backward compatibility with old snippets
+					foreach ($tmp as $k => $v) {
+						if (!empty($v['alias'])) {
+							$tmp[$v['alias']] = $v;
+							unset($tmp[$k]);
+						}
+					}
+					$tmp = array_merge($tmp, $this->config['tvsJoin']);
+				}
 				foreach ($tmp as $k => $v) {
 					$class = !empty($v['class']) ? $v['class'] : $k;
 					$this->query->$join($class, $v['alias'], $v['on']);
@@ -136,9 +179,13 @@ class pdoFetch extends pdoTools {
 	}
 
 
+	/**
+	 * Add select of fields
+	 *
+	 */
 	public function addSelects() {
 		if (!empty($this->config['select'])) {
-			$tmp = $this->modx->fromJSON($this->config['select']);
+			$tmp = array_merge($this->modx->fromJSON($this->config['select']), $this->config['tvsSelect']);
 			$i = 0;
 			foreach ($tmp as $k => $v) {
 				if ($v == 'all' || $v == '*') {
@@ -153,12 +200,19 @@ class pdoFetch extends pdoTools {
 		else {
 			$class = $this->config['class'];
 			$select = 'SQL_CALC_FOUND_ROWS ' . $this->modx->getSelectColumns($class,$class);
+			if (!empty($this->config['tvsSelect'])) {
+				$select .= ', '.implode(',', $this->config['tvsSelect']);
+			}
 			$this->query->select($select);
 			$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . $select . '</small>');
 		}
 	}
 
 
+	/**
+	 * Group query by give field
+	 *
+	 */
 	public function addGrouping() {
 		if (!empty($this->config['groupby'])) {
 			$groupby = $this->config['groupby'];
@@ -167,6 +221,12 @@ class pdoFetch extends pdoTools {
 		}
 	}
 
+
+	/**
+	 * Set parameters and prepare query
+	 *
+	 * @return PDOStatement
+	 */
 	public function prepareQuery() {
 		$limit = $this->config['limit'];
 		$offset = $this->config['offset'];
@@ -179,4 +239,49 @@ class pdoFetch extends pdoTools {
 		$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>. Limited to <b>'.$limit.'</b>, offset <b>'.$offset.'</b>');
 		return $this->query->prepare();
 	}
+
+
+	/**
+	 * Add selection of template variables to query
+	 *
+	 */
+	public function addTVs() {
+		$includeTVs = $this->config['includeTVs'];
+		$tvPrefix = $this->config['tvPrefix'];
+
+		if (!empty($this->config['includeTVList']) && (empty($includeTVs) || is_numeric($includeTVs))) {
+			$includeTVs = $this->config['includeTVList'];
+		}
+
+		if (!empty($includeTVs)) {
+			$subclass = preg_grep('/^'.$this->config['class'].'/i' , $this->modx->classMap['modResource']);
+			if (!preg_match('/^modResource$/i', $this->config['class']) && !count($subclass)) {
+				$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Instantiated a derived class "'.$this->config['class'].'" that is not a subclass of the "modResource", so tvs not joining.');
+			}
+			else {
+				$tvs = array_map('trim',explode(',',$includeTVs));
+
+				if(!empty($tvs[0])){
+					$q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $tvs));
+					$q->select('id,name');
+					if ($q->prepare() && $q->stmt->execute()) {
+						$tv_ids = $q->stmt->fetchAll(PDO::FETCH_ASSOC);
+						if (!empty($tv_ids)) {
+							foreach ($tv_ids as $tv) {
+								$alias = 'TV'.$tv['name'];
+								$this->config['tvsJoin'][$alias] = array(
+									'class' => 'modTemplateVarResource'
+									,'alias' => $alias
+									,'on' => 'TV'.$tv['name'].'.contentid='.$this->config['class'].'.id AND TV'.$tv['name'].'.tmplvarid='.$tv['id']
+								);
+								$this->config['tvsSelect'][$alias] = '`'.$alias.'`.`value` as `'.$tvPrefix.$tv['name'].'`';
+							}
+						}
+					}
+					$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>.');
+				}
+			}
+		}
+	}
+
 }

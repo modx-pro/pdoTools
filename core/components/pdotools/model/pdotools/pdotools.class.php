@@ -2,11 +2,11 @@
 
 class pdoTools {
 	/* @var modX $modx */
-	var $modx;
-	var $timings = array();
-	var $config = array();
-	private $time;
+	public $modx;
+	public $timings = array();
+	public $config = array();
 	public $elements = array();
+	protected $time;
 
 
 	function __construct(modX & $modx) {
@@ -15,6 +15,11 @@ class pdoTools {
 	}
 
 
+	/**
+	 * Add new record to timings log
+	 *
+	 * @param $message
+	 */
 	public function addTime($message) {
 		$time = microtime(true);
 		$this->timings[] = array(
@@ -25,6 +30,13 @@ class pdoTools {
 	}
 
 
+	/**
+	 * Return timings log
+	 *
+	 * @param bool $string Return array or formatted string
+	 *
+	 * @return array|string
+	 */
 	public function getTime($string = true) {
 		if (!$string) {
 			return $this->timings;
@@ -42,13 +54,71 @@ class pdoTools {
 	}
 
 
-	public function makePlaceholders(array $array) {
-		$placeholders = array('pl' => array(),'vl' => array());
+	/**
+	 * Add element to cache
+	 *
+	 * @return boolean
+	 * */
+	public function addElement($name, $object) {
+		$this->elements[$name] = $object;
+
+		return $this->inCache($name);
+	}
+
+
+	/**
+	 * Return element from cache
+	 *
+	 * @return array|boolean
+	 * */
+	public function getElement($name) {
+		return $this->inCache($name) ? $this->elements[$name] : false;
+	}
+
+
+	/**
+	 * Check for existing element
+	 *
+	 * @return boolean
+	 * */
+	public function inCache($name) {
+		return isset($this->elements[$name]);
+	}
+
+
+	/**
+	 * Return quick placeholders from cached element
+	 *
+	 * @return array
+	 */
+	public function getPlaceholders($name) {
+		return $this->inCache($name) ? $this->elements[$name]['placeholders'] : array();
+	}
+
+
+	/**
+	 * Transform array to placeholdres
+	 *
+	 * @param array $array
+	 * @param string $prefix
+	 *
+	 * @return array
+	 */public function makePlaceholders(array $array = array(), $prefix = '') {
+		$result = array(
+			'pl' => array()
+			,'vl' => array()
+		);
 		foreach ($array as $k => $v) {
-			$placeholders['pl'][] = "[[+$k]]";
-			$placeholders['vl'][] = $v;
+			if (is_array($v)) {
+				$result = array_merge_recursive($result, $this->makePlaceholders($v, $k.'.'));
+			}
+			else {
+				$result['pl'][$prefix.$k] = '[[+'.$prefix.$k.']]';
+				$result['vl'][$prefix.$k] = $v;
+			}
 		}
-		return $placeholders;
+
+		return $result;
 	}
 
 
@@ -56,15 +126,15 @@ class pdoTools {
 	 * Process and return the output from a Chunk by name.
 	 *
 	 * @param string $chunkName The name of the chunk.
-	 * @param array $properties An associative array of properties to process
-	 * the Chunk with, treated as placeholders within the scope of the Element.
+	 * @param array $properties An associative array of properties to process the Chunk with, treated as placeholders within the scope of the Element.
 	 * @param boolean $fastMode If true, all MODX tags in chunk will be processed.
-	 * @return string The processed output of the Chunk.
+	 *
+	 * @return string|boolean The processed output of the Chunk.
 	 */
 	public function getChunk($name, array $properties = array(), $fastMode = false) {
 		$output = null;
 
-		if (!array_key_exists($name, $this->elements)) {
+		if (!$this->inCache($name)) {
 			/* @var modChunk $element */
 			if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
 				$element->setCacheable(false);
@@ -80,9 +150,11 @@ class pdoTools {
 						$dst[] = $tmp;
 					}
 				}
-				$content = str_replace($src,$dst,$content);
+				if (!empty($src) && !empty($dst)) {
+					$content = str_replace($src,$dst,$content);
+				}
 
-				// processing special tags
+				// Preparing special tags
 				preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
 				$src = $dst = $placeholders = array();
 				foreach ($matches[1] as $k => $v) {
@@ -90,7 +162,9 @@ class pdoTools {
 					$dst[] = '';
 					$placeholders[$v] = $matches[2][$k];
 				}
-				$content = str_replace($src,$dst,$content);
+				if (!empty($src) && !empty($dst)) {
+					$content = str_replace($src,$dst,$content);
+				}
 
 				$chunk = array(
 					'object' => $element
@@ -98,23 +172,34 @@ class pdoTools {
 					,'placeholders' => $placeholders
 				);
 
-				$this->elements[$name] = $chunk;
+				$this->addElement($name, $chunk);
 			}
 			else {
 				return false;
 			}
 		}
 		else {
-			$chunk = $this->elements[$name];
+			$chunk = $this->getElement($name);
 		}
 
-		$chunk['object']->_processed = false;
-		$chunk['object']->_content = '';
-
 		if (!empty($properties) && $chunk['object'] instanceof modChunk) {
+			$chunk['object']->_processed = false;
+			$chunk['object']->_content = '';
 			$pl = $this->makePlaceholders($properties);
+
+			// Processing quick placeholders
+			$element_pls = $this->getPlaceholders($name);
+			if (!empty($element_pls)) {
+				$tmp = array_keys($element_pls);
+				foreach ($tmp as $v) {
+					$properties[$v] = !empty($properties[$v]) ? str_replace($pl['pl'], $pl['vl'], $element_pls[$v]) : '';
+				}
+				$pl = $this->makePlaceholders($properties);
+			}
+
 			$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
 			$content = str_replace($pl['pl'], $pl['vl'], $content);
+
 			if ($fastMode) {
 				$matches = $tags = array();
 				$this->modx->parser->collectElementTags($content, $matches);
@@ -133,4 +218,5 @@ class pdoTools {
 
 		return $output;
 	}
+
 }

@@ -98,7 +98,7 @@ $properties = array(
 		'name' => 'fastMode'
 		,'desc' => 'pdotools_fastMode'
 		,'type' => 'combo-boolean'
-		,'value' => 'false'
+		,'value' => false
 		,'lexicon' => 'pdotools:properties'
 	)
 	,array(

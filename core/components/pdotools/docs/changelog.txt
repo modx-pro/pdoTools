@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+1.2.0
+==============
+- Native render of quick placeholders, such as "<!--pdotools_introtext <blockquote>[[+introtext]]</blockquote>-->".
+- Added joining of TVs in pdoFetch. Use parameter "includeTVs" with comma-separated list of template variables.
+- Added method pdoFetch::setConfig() for proper setting options when you run multiple pdoTools snippets at the one page.
+- Method pdoTools::makeArray is now recursive, for processing a multidimensional arrays of values.
+
 1.1.0
 ==============
 - Improved getChunk function.
