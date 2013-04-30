@@ -156,6 +156,11 @@ class pdoFetch extends pdoTools {
 	 *
 	 */
 	public function addJoins() {
+		// left join is always need because of TVs
+		if (empty($this->config['leftJoin'])) {
+			$this->config['leftJoin'] = '[]';
+		}
+
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
 			if (!empty($this->config[$join])) {
 				$tmp = $this->modx->fromJSON($this->config[$join]);

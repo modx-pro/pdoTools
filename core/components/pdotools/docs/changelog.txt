@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.2.1
+==============
+- Fixed not working "includeTVs" when "leftJoin" is empty.
+
 1.2.0
 ==============
 - Native render of quick placeholders, such as "<!--pdotools_introtext <blockquote>[[+introtext]]</blockquote>-->".
