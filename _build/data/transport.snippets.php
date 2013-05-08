@@ -1,7 +1,7 @@
 <?php
 /**
  * Add snippets to build
- * 
+ *
  * @package pdotools
  * @subpackage build
  */
@@ -13,9 +13,9 @@ $snippets[0]->fromArray(array(
 	,'name' => 'example.pdoFetch'
 	,'description' => 'Example of pdoTools based snippet that returns all published resources. You can rename it and rewrite as you need.'
 	,'snippet' => getSnippetContent($sources['source_core'].'/elements/snippets/snippet.pdofetch.php')
-	,'source' => 1
+	,'source' => 0
 	,'static' => 1
-	,'static_file' => 'core/components/pdotools/elements/snippets/snippet.pdofetch.php'
+	,'static_file' => '[[++core_path]]/components/pdotools/elements/snippets/snippet.pdofetch.php'
 ),'',true,true);
 
 $properties = include $sources['build'].'properties/properties.pdofetch.php';
