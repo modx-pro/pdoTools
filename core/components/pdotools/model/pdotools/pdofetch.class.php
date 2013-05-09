@@ -131,6 +131,17 @@ class pdoFetch extends pdoTools {
 			}
 			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>');
 		}
+		if (!empty($this->config['having'])) {
+			$having = $this->modx->fromJson($this->config['having']);
+			$q->having($having);
+
+			$condition = array();
+			foreach ($having as $k => $v) {
+				if (is_array($v)) {$condition[] = $k.'('.implode(',',$v).')';}
+				else {$condition[] = $k.'='.$v;}
+			}
+			$this->addTime('Added having condition: <b>' .implode(', ',$condition).'</b>');
+		}
 
 		$this->query = $q;
 	}
