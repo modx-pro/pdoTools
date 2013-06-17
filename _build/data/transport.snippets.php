@@ -7,19 +7,28 @@
  */
 $snippets = array();
 
-$snippets[0]= $modx->newObject('modSnippet');
-$snippets[0]->fromArray(array(
-	'id' => 0
-	,'name' => 'example.pdoFetch'
-	,'description' => 'Example of pdoTools based snippet that returns all published resources. You can rename it and rewrite as you need.'
-	,'snippet' => getSnippetContent($sources['source_core'].'/elements/snippets/snippet.pdofetch.php')
-	,'source' => 0
-	,'static' => 1
-	,'static_file' => '[[++core_path]]/components/pdotools/elements/snippets/snippet.pdofetch.php'
-),'',true,true);
+$tmp = array(
+	'example.pdoFetch' => 'pdofetch'
+);
 
-$properties = include $sources['build'].'properties/properties.pdofetch.php';
-$snippets[0]->setProperties($properties);
+foreach ($tmp as $k => $v) {
+	/* @avr modSnippet $snippet */
+	$snippet = $modx->newObject('modSnippet');
+	$snippet->fromArray(array(
+		'id' => 0
+		,'name' => $k
+		,'description' => ''
+		,'snippet' => getSnippetContent($sources['source_core'].'/elements/snippets/snippet.'.$v.'.php')
+		,'static' => BUILD_SNIPPET_STATIC
+		,'source' => 1
+		,'static_file' => 'core/components/'.PKG_NAME_LOWER.'/elements/snippets/snippet.'.$v.'.php'
+		),'',true,true);
+
+	$properties = include $sources['build'].'properties/properties.'.$v.'.php';
+	$snippet->setProperties($properties);
+
+	$snippets[] = $snippet;
+}
 
 unset($properties);
 return $snippets;

@@ -11,11 +11,7 @@ $mtime = $mtime[1] + $mtime[0];
 $tstart = $mtime;
 set_time_limit(0);
 
-/* define package */
-define('PKG_NAME','pdoTools');
-define('PKG_NAME_LOWER',strtolower(PKG_NAME));
-define('PKG_VERSION','1.2.1');
-define('PKG_RELEASE','pl');
+require_once 'build.config.php';
 
 /* define sources */
 $root = dirname(dirname(__FILE__)).'/';
@@ -31,7 +27,6 @@ $sources = array(
 unset($root);
 
 /* override with your own defines here (see build.config.sample.php) */
-require_once $sources['build'] . '/build.config.php';
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 require_once $sources['build'] . '/includes/functions.php';
 
@@ -71,7 +66,7 @@ $attr = array(
 	xPDOTransport::RELATED_OBJECT_ATTRIBUTES => array (
 		'Snippets' => array(
 			xPDOTransport::PRESERVE_KEYS => false,
-			xPDOTransport::UPDATE_OBJECT => true,
+			xPDOTransport::UPDATE_OBJECT => BUILD_SNIPPET_UPDATE,
 			xPDOTransport::UNIQUE_KEY => 'name',
 		),
 	),
@@ -84,11 +79,7 @@ $vehicle->resolve('file',array(
 	'source' => $sources['source_core'],
 	'target' => "return MODX_CORE_PATH . 'components/';",
 ));
-/*
-$vehicle->resolve('php',array(
-	'source' => $sources['resolvers'] . 'resolve.setup.php',
-));
-*/
+
 $modx->log(modX::LOG_LEVEL_INFO,'Packaged in resolvers.'); flush();
 $builder->putVehicle($vehicle);
 
@@ -96,11 +87,6 @@ $builder->setPackageAttributes(array(
 	'changelog' => file_get_contents($sources['docs'] . 'changelog.txt')
 	,'license' => file_get_contents($sources['docs'] . 'license.txt')
 	,'readme' => file_get_contents($sources['docs'] . 'readme.txt')
-	/*
-	,'setup-options' => array(
-		'source' => $sources['build'].'setup.options.php',
-	),
-	*/
 ));
 $modx->log(modX::LOG_LEVEL_INFO,'Added package attributes and setup options.');
 
