@@ -114,7 +114,9 @@ class pdoTools {
 			}
 			else {
 				$result['pl'][$prefix.$k] = '[[+'.$prefix.$k.']]';
+				$result['pl']['!'.$prefix.$k] = '[[!+'.$prefix.$k.']]';
 				$result['vl'][$prefix.$k] = $v;
+				$result['vl']['!'.$prefix.$k] = $v;
 			}
 		}
 
@@ -139,20 +141,6 @@ class pdoTools {
 			if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
 				$element->setCacheable(false);
 				$content = $element->getContent();
-
-				// processing lexicon placeholders
-				preg_match_all('/\[\[%(.*?)\]\]/',$content, $matches);
-				$src = $dst = array();
-				foreach ($matches[1] as $k => $v) {
-					$tmp = $this->modx->lexicon($v);
-					if ($tmp != $v) {
-						$src[] = $matches[0][$k];
-						$dst[] = $tmp;
-					}
-				}
-				if (!empty($src) && !empty($dst)) {
-					$content = str_replace($src,$dst,$content);
-				}
 
 				// Preparing special tags
 				preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
@@ -197,26 +185,60 @@ class pdoTools {
 				$pl = $this->makePlaceholders($properties);
 			}
 
+			// Processing standard placeholders
 			$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
 			$content = str_replace($pl['pl'], $pl['vl'], $content);
 
-			if ($fastMode) {
-				$matches = $tags = array();
-				$this->modx->parser->collectElementTags($content, $matches);
-				foreach ($matches as $v) {
-					$tags[] = $v[0];
+			// Processing lexicon placeholders
+			preg_match_all('/\[\[%(.*?)\]\]/', $content, $matches);
+			$src = $dst = array();
+			foreach ($matches[1] as $k => $v) {
+				$tmp = $this->modx->lexicon($v);
+				if ($tmp != $v) {
+					$src[] = $matches[0][$k];
+					$dst[] = $tmp;
 				}
-				$output = str_replace($tags, '', $content);
 			}
-			else {
-				$output = $chunk['object']->process($properties, $content);
+			if (!empty($src) && !empty($dst)) {
+				$content = str_replace($src,$dst,$content);
 			}
+
+			$output = $fastMode ? $this->fastProcess($content) : $chunk['object']->process($properties, $content);
 		}
 		else {
 			$output = $chunk['content'];
 		}
 
 		return $output;
+	}
+
+
+	/**
+	 * Fast processing of MODX tags. All unprocessed tags will be cut.
+	 *
+	 * @param $content
+	 *
+	 * @return mixed
+	 */
+	public function fastProcess($content) {
+		if (!$this->modx->parser) {$this->modx->getParser();}
+		$matches = array();
+		$this->modx->parser->collectElementTags($content, $matches);
+
+		$tags = array('pl' => array(), 'vl' => array());
+		foreach ($matches as $v) {
+			$tags['pl'][] = $v[0];
+			if (strpos($v[1], '+') === 0) {
+				$v[1] = substr($v[1], 1);
+			}
+			else if (strpos($v[1], '!+') === 0) {
+				$v[1] = substr($v[1], 2);
+			}
+			$tags['vl'][] = !empty($v[1]) && isset($this->modx->placeholders[$v[1]]) ? $this->modx->placeholders[$v[1]] : '';
+		}
+		$content = str_replace($tags['pl'], $tags['vl'], $content);
+
+		return $content;
 	}
 
 }
