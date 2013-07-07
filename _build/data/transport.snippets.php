@@ -8,7 +8,7 @@
 $snippets = array();
 
 $tmp = array(
-	'example.pdoFetch' => 'pdofetch'
+	'pdoResources' => 'pdoresources'
 );
 
 foreach ($tmp as $k => $v) {

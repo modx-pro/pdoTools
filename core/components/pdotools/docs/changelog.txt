@@ -1,5 +1,14 @@
 Changelog for pdoTools.
 
+1.4.0
+==============
+- Ability to specify JSON string in "sortby", for example "&sortby=`{"pagetitle":"asc","createdon":"desc"}`"
+- Added automatic replacement of tvs in where and having conditions.
+- Removed example snippet
+- Added snippet "pdoResources", that could replace "getResources".
+- Added method pdoTools::defineChunk() for chunk of given idx.
+- Added "memory usage" in log.
+
 1.3.0
 ==============
 - Improved placeholders processing when fastMode is enabled.

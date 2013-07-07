@@ -48,7 +48,8 @@ class pdoTools {
 				$sum += $v['time'];
 			}
 
-			$res .= number_format(round($sum, 7), 7) . ': <b>Total time</b>';
+			$res .= number_format(round($sum, 7), 7) . ": <b>Total time</b>\n";
+			$res .= number_format(round((memory_get_usage(true)), 2), 0, ',', ' ').': <b>Memory usage</b>';
 			return $res;
 		}
 	}
@@ -133,10 +134,13 @@ class pdoTools {
 	 *
 	 * @return string|boolean The processed output of the Chunk.
 	 */
-	public function getChunk($name, array $properties = array(), $fastMode = false) {
+	public function getChunk($name = '', array $properties = array(), $fastMode = false) {
 		$output = null;
 
-		if (!$this->inCache($name)) {
+		if (empty($name)) {
+			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
+		}
+		else if (!$this->inCache($name)) {
 			/* @var modChunk $element */
 			if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
 				$element->setCacheable(false);
@@ -239,6 +243,57 @@ class pdoTools {
 		$content = str_replace($tags['pl'], $tags['vl'], $content);
 
 		return $content;
+	}
+
+
+	/**
+	 * Method for define name of a chunk serving as resource template for given idx
+	 * This algorithm taken from snippet getResources by opengeek
+	 *
+	 * @param int $idx
+	 * @param int $first
+	 * @param int $last
+	 *
+	 * @return mixed
+	 */
+	public function defineChunk($idx = 1, $first = 0, $last = 0) {
+		$odd = ($idx & 1);
+
+		$resourceTpl = '';
+		if ($idx == $first && !empty($this->config['tplFirst'])) {
+			$resourceTpl = $this->config['tplFirst'];
+		}
+		else if ($idx == $last && !empty($this->config['tplLast'])) {
+			$resourceTpl = $this->config['tplLast'];
+		}
+		else if (!empty($this->config['tpl_' . $idx])) {
+			$resourceTpl = $this->config['tpl_' . $idx];
+		}
+		else if ($idx > 1) {
+			$divisors = array();
+			for ($i = $idx; $i > 1; $i--) {
+				if (($idx % $i) === 0) {
+					$divisors[] = $i;
+				}
+			}
+			if (!empty($divisors)) {
+				foreach ($divisors as $divisor) {
+					if (!empty($this->config['tpl_n' . $divisor])) {
+						$resourceTpl = $this->config['tpl_n' . $divisor];
+						break;
+					}
+				}
+			}
+		}
+
+		if (empty($resourceTpl) && $odd && !empty($this->config['tplOdd'])) {
+			$resourceTpl = $this->config['tplOdd'];
+		}
+		else if (empty($resourceTpl) && !empty($this->config['tpl'])) {
+			$resourceTpl = $this->config['tpl'];
+		}
+
+		return $resourceTpl;
 	}
 
 }

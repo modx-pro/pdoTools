@@ -64,6 +64,7 @@ class pdoFetch extends pdoTools {
 		$this->addJoins();
 		$this->addGrouping();
 		$this->addSelects();
+		$this->addWhere();
 
 		if (!$this->prepareQuery()) {return false;}
 
@@ -117,12 +118,20 @@ class pdoFetch extends pdoTools {
 	 *
 	 */
 	public function makeQuery() {
-		$q = $this->modx->newQuery($this->config['class']);
+		$this->query = $this->modx->newQuery($this->config['class']);
 		$this->addTime('xPDO query object created');
+	}
 
+
+	/**
+	 * Adds where and having conditions
+	 *
+	 */
+	public function addWhere() {
 		if (!empty($this->config['where'])) {
 			$where = $this->modx->fromJson($this->config['where']);
-			$q->where($where);
+			$where = $this->replaceTVCondition($where);
+			$this->query->where($where);
 
 			$condition = array();
 			foreach ($where as $k => $v) {
@@ -133,7 +142,8 @@ class pdoFetch extends pdoTools {
 		}
 		if (!empty($this->config['having'])) {
 			$having = $this->modx->fromJson($this->config['having']);
-			$q->having($having);
+			$having = $this->replaceTVCondition($having);
+			$this->query->having($having);
 
 			$condition = array();
 			foreach ($having as $k => $v) {
@@ -142,8 +152,6 @@ class pdoFetch extends pdoTools {
 			}
 			$this->addTime('Added having condition: <b>' .implode(', ',$condition).'</b>');
 		}
-
-		$this->query = $q;
 	}
 
 
@@ -175,14 +183,7 @@ class pdoFetch extends pdoTools {
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
 			if (!empty($this->config[$join])) {
 				$tmp = $this->modx->fromJSON($this->config[$join]);
-				if ($join == 'leftJoin') {
-					// For backward compatibility with old snippets
-					foreach ($tmp as $k => $v) {
-						if (!empty($v['alias'])) {
-							$tmp[$v['alias']] = $v;
-							unset($tmp[$k]);
-						}
-					}
+				if ($join == 'leftJoin' && !empty($this->config['tvsJoin'])) {
 					$tmp = array_merge($tmp, $this->config['tvsJoin']);
 				}
 				foreach ($tmp as $k => $v) {
@@ -244,15 +245,17 @@ class pdoFetch extends pdoTools {
 	 * @return PDOStatement
 	 */
 	public function prepareQuery() {
-		$limit = $this->config['limit'];
-		$offset = $this->config['offset'];
-		$sortby = $this->config['sortby'];
-		$sortdir = $this->config['sortdir'];
+		$tmp = (strpos($this->config['sortby'], '{') === 0) ? $this->modx->fromJSON($this->config['sortby']) : array($this->config['sortby'] => $this->config['sortdir']);
+		if (is_array($tmp)) {
+			while (list($sortby, $sortdir) = each($tmp)) {
+				$this->query->sortby($sortby, $sortdir);
+				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>.');
+			}
+		}
 
-		$this->query->limit($limit, $offset);
-		$this->query->sortby($sortby, $sortdir);
+		$this->query->limit($this->config['limit'], $this->config['offset']);
+		$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>.');
 
-		$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>. Limited to <b>'.$limit.'</b>, offset <b>'.$offset.'</b>');
 		return $this->query->prepare();
 	}
 
@@ -285,10 +288,10 @@ class pdoFetch extends pdoTools {
 						if (!empty($tv_ids)) {
 							foreach ($tv_ids as $tv) {
 								$alias = 'TV'.$tv['name'];
-								$this->config['tvsJoin'][$alias] = array(
+								$this->config['tvsJoin'][$tv['name']] = array(
 									'class' => 'modTemplateVarResource'
 									,'alias' => $alias
-									,'on' => 'TV'.$tv['name'].'.contentid='.$this->config['class'].'.id AND TV'.$tv['name'].'.tmplvarid='.$tv['id']
+									,'on' => '`TV'.$tv['name'].'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$tv['name'].'`.`tmplvarid` = '.$tv['id']
 								);
 								$this->config['tvsSelect'][$alias] = '`'.$alias.'`.`value` as `'.$tvPrefix.$tv['name'].'`';
 							}
@@ -298,6 +301,28 @@ class pdoFetch extends pdoTools {
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * Replaces tv fields to full name format.
+	 * For example, field "test" will be replaced with "TVtest.value", if template variable "test" was joined in query.
+	 *
+	 */
+	public function replaceTVCondition(array $array) {
+		$tvs = implode('|', array_keys($this->config['tvsJoin']));
+
+		if (!empty($tvs)) {
+			foreach ($array as $k => $v) {
+				$tmp = preg_replace('/\b('.$tvs.')\b/i', 'TV$1.value', $k);
+				if ($tmp != $k) {
+					$array[$tmp] = $v;
+					unset($array[$k]);
+				}
+			}
+		}
+
+		return $array;
 	}
 
 }

@@ -4,8 +4,8 @@
 define('PKG_NAME','pdoTools');
 define('PKG_NAME_LOWER',strtolower(PKG_NAME));
 
-define('PKG_VERSION','1.3.0');
-define('PKG_RELEASE','pl');
+define('PKG_VERSION','1.4.0');
+define('PKG_RELEASE','beta');
 
 
 /* define paths */
@@ -36,5 +36,5 @@ define('BUILD_SNIPPET_UPDATE', true);
 //define('BUILD_PERMISSION_UPDATE', true);
 
 //define('BUILD_CHUNK_STATIC', false);
-define('BUILD_SNIPPET_STATIC', false);
+define('BUILD_SNIPPET_STATIC', true);
 //define('BUILD_PLUGIN_STATIC', false);
