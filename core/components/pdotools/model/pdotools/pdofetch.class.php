@@ -246,8 +246,9 @@ class pdoFetch extends pdoTools {
 	 */
 	public function prepareQuery() {
 		$tmp = (strpos($this->config['sortby'], '{') === 0) ? $this->modx->fromJSON($this->config['sortby']) : array($this->config['sortby'] => $this->config['sortdir']);
-		if (is_array($tmp)) {
-			while (list($sortby, $sortdir) = each($tmp)) {
+		$sorts = $this->replaceTVCondition($tmp);
+		if (is_array($sorts)) {
+			while (list($sortby, $sortdir) = each($sorts)) {
 				$this->query->sortby($sortby, $sortdir);
 				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>.');
 			}
@@ -314,7 +315,7 @@ class pdoFetch extends pdoTools {
 
 		if (!empty($tvs)) {
 			foreach ($array as $k => $v) {
-				$tmp = preg_replace('/\b('.$tvs.')\b/i', 'TV$1.value', $k);
+				$tmp = preg_replace('/\b('.$tvs.')\b/i', '`TV$1`.`value`', $k);
 				if ($tmp != $k) {
 					$array[$tmp] = $v;
 					unset($array[$k]);
