@@ -256,7 +256,7 @@ class pdoTools {
 	 *
 	 * @return mixed
 	 */
-	public function defineChunk($idx = 1, $first = 0, $last = 0) {
+	public function defineChunk($idx = 1, $first = 0, $last = 0, $properties = array()) {
 		$odd = ($idx & 1);
 
 		$resourceTpl = '';
@@ -289,7 +289,59 @@ class pdoTools {
 		if (empty($resourceTpl) && $odd && !empty($this->config['tplOdd'])) {
 			$resourceTpl = $this->config['tplOdd'];
 		}
-		else if (empty($resourceTpl) && !empty($this->config['tpl'])) {
+		else if (!empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
+			$conTpls = $this->modx->fromJSON($this->config['conditionalTpls']);
+			if (isset($properties[$this->config['tplCondition']])) {
+				$subject = $properties[$this->config['tplCondition']];
+				$tplOperator = !empty($this->config['tplOperator']) ? strtolower($this->config['tplOperator']) : '=';
+				$tplCon = '';
+				foreach ($conTpls as $operand => $conditionalTpl) {
+					switch ($tplOperator) {
+						case '!=': case 'neq': case 'not': case 'isnot': case 'isnt': case 'unequal': case 'notequal':
+							$tplCon = (($subject != $operand) ? $conditionalTpl : $tplCon);
+							break;
+						case '<': case 'lt': case 'less': case 'lessthan':
+							$tplCon = (($subject < $operand) ? $conditionalTpl : $tplCon);
+							break;
+						case '>': case 'gt': case 'greater': case 'greaterthan':
+							$tplCon = (($subject > $operand) ? $conditionalTpl : $tplCon);
+							break;
+						case '<=': case 'lte': case 'lessthanequals': case 'lessthanorequalto':
+							$tplCon = (($subject <= $operand) ? $conditionalTpl : $tplCon);
+							break;
+						case '>=': case 'gte': case 'greaterthanequals': case 'greaterthanequalto':
+							$tplCon = (($subject >= $operand) ? $conditionalTpl : $tplCon);
+							break;
+						case 'isempty': case 'empty':
+							$tplCon = empty($subject) ? $conditionalTpl : $tplCon;
+							break;
+						case '!empty': case 'notempty': case 'isnotempty':
+							$tplCon = !empty($subject) && $subject != '' ? $conditionalTpl : $tplCon;
+							break;
+						case 'isnull': case 'null':
+							$tplCon = $subject == null || strtolower($subject) == 'null' ? $conditionalTpl : $tplCon;
+							break;
+						case 'inarray': case 'in_array': case 'ia':
+							$operand = explode(',', $operand);
+							$tplCon = in_array($subject, $operand) ? $conditionalTpl : $tplCon;
+							break;
+						case 'between': case 'range': case '>=<': case '><':
+							$operand = explode(',', $operand);
+							$tplCon = ($subject >= min($operand) && $subject <= max($operand)) ? $conditionalTpl : $tplCon;
+							break;
+						case '==': case '=': case 'eq': case 'is': case 'equal': case 'equals': case 'equalto':
+						default:
+							$tplCon = (($subject == $operand) ? $conditionalTpl : $tplCon);
+							break;
+					}
+				}
+			}
+			if (!empty($tplCon)) {
+				$resourceTpl = $tplCon;
+			}
+		}
+
+		if (empty($resourceTpl) && !empty($this->config['tpl'])) {
 			$resourceTpl = $this->config['tpl'];
 		}
 

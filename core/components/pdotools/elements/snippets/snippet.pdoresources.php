@@ -106,7 +106,7 @@ else if (!empty($rows) && is_array($rows)) {
 	foreach ($rows as $k => $row) {
 		$row['idx'] = $idx + $offset;
 		// Processing chunk
-		$tpl = $pdoFetch->defineChunk($idx, $first, $last);
+		$tpl = $pdoFetch->defineChunk($idx, $first, $last, $row);
 		$output[] = empty($tpl)
 			? '<pre>'.$pdoFetch->getChunk('', $row).'</pre>'
 			: $pdoFetch->getChunk($tpl, $row, $pdoFetch->config['fastMode']);

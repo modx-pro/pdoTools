@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.4.0 pl
+==============
+- Added properties &tplCondition &tplOperator and &conditionalTpls.
+
 1.4.0 beta1
 ==============
 - Ability to specify JSON string in "sortby", for example "&sortby=`{"pagetitle":"asc","createdon":"desc"}`"
