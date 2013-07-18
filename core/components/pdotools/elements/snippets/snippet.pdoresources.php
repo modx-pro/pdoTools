@@ -5,8 +5,6 @@ $pdoFetch = $modx->getService('pdofetch','pdoFetch', MODX_CORE_PATH.'components/
 $pdoFetch->addTime('pdoTools loaded.');
 
 $class = 'modResource';
-$returnIds = !empty($scriptProperties['returnIds']);
-
 // Start building "Where" expression
 $where = array();
 if (empty($showUnpublished)) {$where['published'] = 1;}
@@ -54,30 +52,32 @@ $pdoFetch->addTime('"Where" expression built.');
 // End of building "Where" expression
 
 // Fields to select
-if ($returnIds) {
-	$resourceColumns = "`$class`.`id`";
+$resourceColumns = array_keys($modx->getFieldMeta($class));
+if (empty($includeContent)) {
+	$key = array_search('content', $resourceColumns);
+	unset($resourceColumns[$key]);
 }
-else {
-	$resourceColumns = !empty($includeContent) ?  $modx->getSelectColumns($class, $class) : $modx->getSelectColumns($class, $class, '', array('content'), true);
+$select = array($class => implode(',',$resourceColumns));
+if (!empty($scriptProperties['select'])) {
+	$tmp = $modx->fromJSON($scriptProperties['select']);
+	if (is_array($tmp)) {
+		$select = array_merge($select, $tmp);
+	}
+	else {$select = array($scriptProperties['select']);}
 }
-$select = array('"'.$class.'":"'.$resourceColumns.'"');
+unset($scriptProperties['select']);
 
 // Default parameters
 $default = array(
 	'class' => $class
 	,'where' => $modx->toJSON($where)
-	,'select' => '{'.implode(',',$select).'}'
+	,'select' => $modx->toJSON($select)
 	,'sortby' => $class.'.id'
 	,'sortdir' => 'DESC'
 	,'groupby' => $class.'.id'
-	,'fastMode' => false
-	,'return' => 'data'
-	,'nestedChunkPrefix' => 'pdotools_'
+	,'return' => 'chunks'
 );
 
-if ($returnIds) {
-	unset($scriptProperties['includeTVs'], $default['groupby']);
-}
 if (!empty($in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == 'id')) {
 	$scriptProperties['sortby'] = "find_in_set(`$class`.`id`,'".implode(',', $in)."')";
 	$scriptProperties['sortdir'] = '';
@@ -86,46 +86,17 @@ if (!empty($in) && (empty($scriptProperties['sortby']) || $scriptProperties['sor
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters are prepared.');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties));
-$rows = $pdoFetch->run();
 
-// Processing rows
-$output = null;
-if ($returnIds) {
-	$ids = array();
-	foreach ($rows as $row) {
-		$ids[] = $row['id'];
-	}
-	$output = implode(',', $ids);
-}
-else if (!empty($rows) && is_array($rows)) {
-	$offset = !empty($offset) ? (integer) $offset : 0;
-	$idx = !empty($idx) && $idx !== '0' ? (integer) $idx : 1;
-	$first = empty($first) && $first !== '0' ? 1 : (integer) $first;
-	$last = empty($last) ? (count($rows) + $idx - 1) : (integer) $last;
-
-	foreach ($rows as $k => $row) {
-		$row['idx'] = $idx + $offset;
-		// Processing chunk
-		$tpl = $pdoFetch->defineChunk($idx, $first, $last, $row);
-		$output[] = empty($tpl)
-			? '<pre>'.$pdoFetch->getChunk('', $row).'</pre>'
-			: $pdoFetch->getChunk($tpl, $row, $pdoFetch->config['fastMode']);
-		$idx++;
-	}
-
-	$pdoFetch->addTime('Returning processed chunks');
-	if (empty($outputSeparator)) {$outputSeparator = "\n";}
-	if (!empty($output)) {
-		$output = implode($outputSeparator, $output);
-	}
-}
-
+$output = $pdoFetch->run();
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 	$output .= '<pre class="pdoResourcesLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 
 // Return output
-if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
+if (!empty($toSeparatePlaceholders)) {
+	$modx->setPlaceholders($output, $toSeparatePlaceholders);
+}
+else if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
 	$output = $pdoFetch->getChunk($tplWrapper, array('output' => $output), $pdoFetch->config['fastMode']);
 }
 

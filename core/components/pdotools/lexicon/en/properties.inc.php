@@ -32,7 +32,12 @@ $_lang['pdotools_prop_tpl'] = 'Name of a chunk serving as a resource template. I
 $_lang['pdotools_prop_tplFirst'] = 'Name of a chunk serving as resource template for the first resource.';
 $_lang['pdotools_prop_tplLast'] = 'Name of a chunk serving as resource template for the last resource.';
 $_lang['pdotools_prop_tplOdd'] = 'Name of a chunk serving as resource template for resources with an odd idx value (see idx property).';
-$_lang['pdotools_prop_tplWrapper'] = 'Name of a chunk serving as a wrapper template for the output.';
+$_lang['pdotools_prop_tplWrapper'] = 'Name of a chunk serving as a wrapper template for the output. This does not work with toSeparatePlaceholders.';
 $_lang['pdotools_prop_tvPrefix'] = 'The prefix for TemplateVar properties.';
 $_lang['pdotools_prop_where'] = 'A JSON-style expression of criteria to build any additional where clauses from.';
 $_lang['pdotools_prop_wrapIfEmpty'] = 'If true, will output the wrapper specified in &tplWrapper even if the output is empty.';
+$_lang['pdotools_prop_tplOperator'] = 'An optional operator to use for the tplCondition when comparing against the conditionalTpls operands. Default is == (equals).';
+$_lang['pdotools_prop_tplCondition'] = 'A condition to compare against the conditionalTpls property to map Resources to different tpls based on custom conditional logic.';
+$_lang['pdotools_prop_conditionalTpls'] = 'A JSON map of conditional operands and tpls to compare against the tplCondition property using the specified tplOperator.';
+$_lang['pdotools_prop_select'] = 'Comma separated list of resource columns for select from database. You can specify JSON string with array, for example {"modResource":"id,pagetitle,content"}.';
+$_lang['pdotools_prop_toSeparatePlaceholders'] = 'If set, will assign EACH result to a separate placeholder named by this param suffixed with a sequential number (starting from 0).';

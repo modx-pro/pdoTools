@@ -30,7 +30,7 @@ class pdoFetch extends pdoTools {
 			,'outputSeparator' => "\n"
 			,'tpl' => ''
 			,'fastMode' => false
-			,'return' => 'chunks'	 // chunks, data or sql
+			,'return' => 'chunks'	 // chunks, data, sql or ids
 
 			,'select' => ''
 			,'leftJoin' => ''
@@ -47,6 +47,12 @@ class pdoFetch extends pdoTools {
 
 		if (empty($this->config['sortby'])) {
 			$this->config['sortby'] = $this->modx->getPK($this->config['class']);
+		}
+		if (!empty($this->config['offset'])) {
+			$this->idx = (integer) $this->config['offset'] + 1;
+		}
+		if (!empty($this->config['returnIds'])) {
+			$this->config['return'] = 'ids';
 		}
 
 		$this->timings = array();
@@ -82,18 +88,28 @@ class pdoFetch extends pdoTools {
 
 				$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
 				$this->addTime('Rows fetched');
+				$this->count = count($rows);
 
-				if ($this->config['return'] == 'data') {
+				if (strtolower($this->config['return']) == 'ids') {
+					$ids = array();
+					foreach ($rows as $row) {
+						$ids[] = $row['id'];
+					}
+					$output = implode(',', $ids);
+				}
+				else if (strtolower($this->config['return']) == 'data') {
 					$this->addTime('Returning raw data');
 					$output = & $rows;
 				}
 				else {
 					foreach ($rows as $v) {
-						if (empty($this->config['tpl'])) {
-							$output[] = '<pre>'.str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($v, true), ENT_QUOTES, 'UTF-8')).'</pre>';
+						$v['idx'] = $this->idx++;
+						$tpl = $this->defineChunk($v);
+						if (empty($tpl)) {
+							$output[] = '<pre>'.$this->getChunk('', $v).'</pre>';
 						}
 						else {
-							$output[] = $this->getChunk($this->config['tpl'], $v, $this->config['fastMode']);
+							$output[] = $this->getChunk($tpl, $v, $this->config['fastMode']);
 						}
 					}
 					$this->addTime('Returning processed chunks');
@@ -201,12 +217,24 @@ class pdoFetch extends pdoTools {
 	 *
 	 */
 	public function addSelects() {
-		if (!empty($this->config['select'])) {
+		if ($this->config['return'] == 'ids') {
+			$this->query->select('
+				SQL_CALC_FOUND_ROWS `'.$this->config['class'].'`.`id`
+			');
+			$this->addTime('Parameter "return" set to "ids", so we select only resource id');
+		}
+		else if (!empty($this->config['select'])) {
 			$tmp = array_merge($this->modx->fromJSON($this->config['select']), $this->config['tvsSelect']);
 			$i = 0;
 			foreach ($tmp as $k => $v) {
-				if ($v == 'all' || $v == '*') {
-					$v = $this->modx->getSelectColumns($k, $k);
+				if (is_numeric($k)) {$k = $this->config['class'];}
+				if (strpos($k, 'TV') !== 0 && strpos($v, $k) === false) {
+					if ($v == 'all' || $v == '*') {
+						$v = $this->modx->getSelectColumns($k, $k);
+					}
+					else {
+						$v = $this->modx->getSelectColumns($k, $k, '', array_map('trim', explode(',', $v)));
+					}
 				}
 				if ($i == 0) {$v = 'SQL_CALC_FOUND_ROWS '.$v;}
 				$this->query->select($v);

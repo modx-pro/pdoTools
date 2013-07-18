@@ -7,6 +7,8 @@ class pdoTools {
 	public $config = array();
 	public $elements = array();
 	protected $time;
+	public $idx = 1;
+	protected $count = 0;
 
 
 	function __construct(modX & $modx) {
@@ -247,18 +249,19 @@ class pdoTools {
 
 
 	/**
-	 * Method for define name of a chunk serving as resource template for given idx
+	 * Method for define name of a chunk serving as resource template
 	 * This algorithm taken from snippet getResources by opengeek
 	 *
-	 * @param int $idx
-	 * @param int $first
-	 * @param int $last
+	 * @param array $properties Resource fields
 	 *
 	 * @return mixed
 	 */
-	public function defineChunk($idx = 1, $first = 0, $last = 0, $properties = array()) {
-		$odd = ($idx & 1);
+	public function defineChunk($properties = array()) {
+		$idx = isset($properties['idx']) ? (integer) $properties['idx'] : $this->idx++;
+		$first = empty($this->config['first']) ? ($this->config['offset'] + 1) : (integer) $this->config['first'];
+		$last = empty($this->config['last']) ? ($this->count + $this->config['offset']) : (integer) $this->config['last'];
 
+		$odd = !($idx & 1);
 		$resourceTpl = '';
 		if ($idx == $first && !empty($this->config['tplFirst'])) {
 			$resourceTpl = $this->config['tplFirst'];
@@ -289,7 +292,7 @@ class pdoTools {
 		if (empty($resourceTpl) && $odd && !empty($this->config['tplOdd'])) {
 			$resourceTpl = $this->config['tplOdd'];
 		}
-		else if (!empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
+		else if (empty($resourceTpl) && !empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
 			$conTpls = $this->modx->fromJSON($this->config['conditionalTpls']);
 			if (isset($properties[$this->config['tplCondition']])) {
 				$subject = $properties[$this->config['tplCondition']];
@@ -321,6 +324,7 @@ class pdoTools {
 						case 'isnull': case 'null':
 							$tplCon = $subject == null || strtolower($subject) == 'null' ? $conditionalTpl : $tplCon;
 							break;
+						/*
 						case 'inarray': case 'in_array': case 'ia':
 							$operand = explode(',', $operand);
 							$tplCon = in_array($subject, $operand) ? $conditionalTpl : $tplCon;
@@ -329,6 +333,7 @@ class pdoTools {
 							$operand = explode(',', $operand);
 							$tplCon = ($subject >= min($operand) && $subject <= max($operand)) ? $conditionalTpl : $tplCon;
 							break;
+						*/
 						case '==': case '=': case 'eq': case 'is': case 'equal': case 'equals': case 'equalto':
 						default:
 							$tplCon = (($subject == $operand) ? $conditionalTpl : $tplCon);

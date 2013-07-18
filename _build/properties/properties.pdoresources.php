@@ -132,6 +132,38 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
+	,'tplCondition' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'tplOperator' => array(
+		'type' => 'list'
+		,'options' => array(
+			array('text' => 'is equal to','value' => '=='),
+			array('text' => 'is not equal to','value' => '!='),
+			array('text' => 'less than','value' => '<'),
+			array('text' => 'less than or equal to','value' => '<='),
+			array('text' => 'greater than or equal to','value' => '>='),
+			array('text' => 'is empty','value' => 'empty'),
+			array('text' => 'is not empty','value' => '!empty'),
+			array('text' => 'is null','value' => 'null'),
+			array('text' => 'is in array','value' => 'inarray'),
+			array('text' => 'is between','value' => 'between'),
+		)
+		,'value' => '=='
+	)
+	,'conditionalTpls' => array(
+		'type' => 'textarea'
+		,'value' => ''
+	)
+	,'select' => array(
+		'type' => 'textarea'
+		,'value' => ''
+	)
+	,'toSeparatePlaceholders' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
 
 );
 

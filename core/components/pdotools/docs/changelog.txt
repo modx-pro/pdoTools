@@ -1,8 +1,11 @@
 Changelog for pdoTools.
 
-1.4.0 pl
+1.4.1 beta
 ==============
-- Added properties &tplCondition &tplOperator and &conditionalTpls.
+- Added parameters "tplCondition", "tplOperator" and "conditionalTpls".
+- Added parameter "select" for specifying needed columns of selected tables. Can be a JSON string with array.
+- Added parameter "toSeparatePlaceholders".
+- Improved "pdoResources" snippet.
 
 1.4.0 beta1
 ==============
