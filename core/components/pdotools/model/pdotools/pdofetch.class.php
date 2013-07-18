@@ -228,7 +228,8 @@ class pdoFetch extends pdoTools {
 			$i = 0;
 			foreach ($tmp as $k => $v) {
 				if (is_numeric($k)) {$k = $this->config['class'];}
-				if (strpos($k, 'TV') !== 0 && strpos($v, $k) === false) {
+
+				if (strpos($k, 'TV') !== 0 && strpos($v, $k) === false && $this->modx->loadClass($k)) {
 					if ($v == 'all' || $v == '*') {
 						$v = $this->modx->getSelectColumns($k, $k);
 					}

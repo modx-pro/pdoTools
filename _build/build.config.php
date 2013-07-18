@@ -5,7 +5,7 @@ define('PKG_NAME','pdoTools');
 define('PKG_NAME_LOWER',strtolower(PKG_NAME));
 
 define('PKG_VERSION','1.4.1');
-define('PKG_RELEASE','beta');
+define('PKG_RELEASE','beta1');
 
 
 /* define paths */

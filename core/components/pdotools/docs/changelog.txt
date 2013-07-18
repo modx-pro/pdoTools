@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.4.1 beta
+1.4.1 beta1
 ==============
 - Added parameters "tplCondition", "tplOperator" and "conditionalTpls".
 - Added parameter "select" for specifying needed columns of selected tables. Can be a JSON string with array.
