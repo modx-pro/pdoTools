@@ -75,7 +75,7 @@ $default = array(
 	,'sortby' => $class.'.id'
 	,'sortdir' => 'DESC'
 	,'groupby' => $class.'.id'
-	,'return' => 'chunks'
+	,'return' => !empty($returnIds) ? 'ids' : 'chunks'
 );
 
 if (!empty($in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == 'id')) {

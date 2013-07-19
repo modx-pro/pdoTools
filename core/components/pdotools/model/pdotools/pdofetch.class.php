@@ -51,9 +51,6 @@ class pdoFetch extends pdoTools {
 		if (!empty($this->config['offset'])) {
 			$this->idx = (integer) $this->config['offset'] + 1;
 		}
-		if (!empty($this->config['returnIds'])) {
-			$this->config['return'] = 'ids';
-		}
 
 		$this->timings = array();
 	}
