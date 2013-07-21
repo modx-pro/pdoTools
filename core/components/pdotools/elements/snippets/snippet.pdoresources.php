@@ -11,7 +11,7 @@ if (empty($showUnpublished)) {$where['published'] = 1;}
 if (empty($showHidden)) {$where['hidemenu'] = 0;}
 if (empty($showDeleted)) {$where['deleted'] = 0;}
 if (!empty($hideContainers)) {$where['isfolder'] = 0;}
-if (!empty($context)) {$where['context_key'] = trim($context);}
+$context = !empty($context) ? array_map('trim', explode(',',$context)) : array($modx->context->key);
 
 // Filter by ids
 if (!empty($resources)){
@@ -26,18 +26,28 @@ if (!empty($resources)){
 	if (!empty($out)) {$where['id:NOT IN'] = $out;}
 }
 // Filter by parents
-if (empty($parents) && $parents != '0') {$parents = $modx->resource->id;}
-if (!empty($parents) && $parents > 0) {
-	$pids = array_map('trim', explode(',', $parents));
-	$parents = $pids;
+if (!isset($parents) || $parents == '') {$parents = $modx->resource->id;}
+if (!empty($parents)) {
+	$pids = array();
+	$parents = array_map('trim', explode(',', $parents));
 	if (!empty($depth) && $depth > 0) {
-		foreach ($pids as $v) {
-			if (!is_numeric($v)) {continue;}
-			$parents = array_merge($parents, $modx->getChildIds($v, $depth));
+		$q = $modx->newQuery('modResource', array('id:IN' => $parents));
+		$q->select('id,context_key');
+		if ($q->prepare() && $q->stmt->execute()) {
+			while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
+				$pids[$row['id']] = $row['context_key'];
+			}
+		}
+		foreach ($pids as $k => $v) {
+			if (!is_numeric($k)) {continue;}
+			$parents = array_merge($parents, $modx->getChildIds($k, $depth, array('context' => $v)));
 		}
 	}
-
 	$where['parent:IN'] = $parents;
+}
+// Limit query by context, if no resources or parents set
+if (empty($resources) && empty($parents)) {
+	$where['context_key:IN'] = $context;
 }
 
 // Adding custom where parameters
@@ -74,7 +84,7 @@ $default = array(
 	,'select' => $modx->toJSON($select)
 	,'sortby' => $class.'.id'
 	,'sortdir' => 'DESC'
-	,'groupby' => $class.'.id'
+	//,'groupby' => $class.'.id'
 	,'return' => !empty($returnIds) ? 'ids' : 'chunks'
 );
 

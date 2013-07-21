@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.4.1 rc
+==============
+- Improved "context" processing.
+
 1.4.1 beta3
 ==============
 - Added parameters "tplCondition", "tplOperator" and "conditionalTpls".
