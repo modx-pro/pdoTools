@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.4.1 rc
+1.4.1 pl
 ==============
 - Improved "context" processing.
 
