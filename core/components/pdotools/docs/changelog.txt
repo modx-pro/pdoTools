@@ -1,8 +1,10 @@
 Changelog for pdoTools.
 
-1.4.1 pl
+1.4.1 pl1
 ==============
 - Improved "context" processing.
+- Fixed "idx" when multiple snippets called at one page.
+- Fixed default sortby when joined tables exists.
 
 1.4.1 beta3
 ==============

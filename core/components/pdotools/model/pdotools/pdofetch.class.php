@@ -46,12 +46,9 @@ class pdoFetch extends pdoTools {
 		), $config);
 
 		if (empty($this->config['sortby'])) {
-			$this->config['sortby'] = $this->modx->getPK($this->config['class']);
+			$this->config['sortby'] = $this->config['class'].'.'.$this->modx->getPK($this->config['class']);
 		}
-		if (!empty($this->config['offset'])) {
-			$this->idx = (integer) $this->config['offset'] + 1;
-		}
-
+		$this->idx = !empty($this->config['offset']) ? (integer) $this->config['offset'] + 1 : 1;
 		$this->timings = array();
 	}
 
