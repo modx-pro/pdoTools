@@ -108,7 +108,11 @@ class pdoFetch extends pdoTools {
 					}
 					$this->addTime('Returning processed chunks');
 
-					if (!empty($output)) {
+					if (!empty($this->config['toSeparatePlaceholders'])) {
+						$this->modx->setPlaceholders($output, $this->config['toSeparatePlaceholders']);
+						$output = '';
+					}
+					elseif (!empty($output)) {
 						$output = implode($this->config['outputSeparator'], $output);
 					}
 				}

@@ -31,7 +31,7 @@ if (!empty($parents)) {
 	$pids = array();
 	$parents = array_map('trim', explode(',', $parents));
 	if (!empty($depth) && $depth > 0) {
-		$q = $modx->newQuery('modResource', array('id:IN' => $parents));
+		$q = $modx->newQuery($class, array('id:IN' => $parents));
 		$q->select('id,context_key');
 		if ($q->prepare() && $q->stmt->execute()) {
 			while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -79,13 +79,13 @@ unset($scriptProperties['select']);
 
 // Default parameters
 $default = array(
-	'class' => $class
-	,'where' => $modx->toJSON($where)
-	,'select' => $modx->toJSON($select)
-	,'sortby' => $class.'.id'
-	,'sortdir' => 'DESC'
-	//,'groupby' => $class.'.id'
-	,'return' => !empty($returnIds) ? 'ids' : 'chunks'
+	'class' => $class,
+	'where' => $modx->toJSON($where),
+	'select' => $modx->toJSON($select),
+	'groupby' => $class.'.id',
+	'sortby' => $class.'.id',
+	'sortdir' => 'DESC',
+	'return' => !empty($returnIds) ? 'ids' : 'chunks',
 );
 
 if (!empty($in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == 'id')) {
@@ -96,23 +96,27 @@ if (!empty($in) && (empty($scriptProperties['sortby']) || $scriptProperties['sor
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters are prepared.');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties));
-
 $output = $pdoFetch->run();
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-	$output .= '<pre class="pdoResourcesLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
-}
 
+$log = '';
+if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+	$log .= '<pre class="pdoResourcesLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+}
 // Return output
 if (!empty($toSeparatePlaceholders)) {
-	$modx->setPlaceholders($output, $toSeparatePlaceholders);
-}
-else if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-	$output = $pdoFetch->getChunk($tplWrapper, array('output' => $output), $pdoFetch->config['fastMode']);
-}
-
-if (!empty($toPlaceholder)) {
-	$modx->setPlaceholder($toPlaceholder, $output);
+	$modx->setPlaceholder($toSeparatePlaceholders.'log', $log);
 }
 else {
-	return $output;
+	$output .= $log;
+
+	if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
+		$output = $pdoFetch->getChunk($tplWrapper, array('output' => $output), $pdoFetch->config['fastMode']);
+	}
+
+	if (!empty($toPlaceholder)) {
+		$modx->setPlaceholder($toPlaceholder, $output);
+	}
+	else {
+		return $output;
+	}
 }
