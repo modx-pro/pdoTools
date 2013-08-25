@@ -8,7 +8,8 @@
 $snippets = array();
 
 $tmp = array(
-	'pdoResources' => 'pdoresources'
+	'pdoResources' => 'pdoresources',
+	'pdoUsers' => 'pdousers',
 );
 
 foreach ($tmp as $k => $v) {
