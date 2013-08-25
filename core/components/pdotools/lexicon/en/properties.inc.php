@@ -28,6 +28,7 @@ $_lang['pdotools_prop_sortby'] = 'Any Resource Field (including Template Variabl
 $_lang['pdotools_prop_sortdir'] = 'Order which to sort by.';
 $_lang['pdotools_prop_toPlaceholder'] = 'If set, will assign the result to this placeholder instead of outputting it directly.';
 $_lang['pdotools_prop_totalVar'] = 'Define the key of a placeholder set by getResources indicating the total number of Resources that would be selected not considering the limit value.';
+
 $_lang['pdotools_prop_tpl'] = 'Name of a chunk serving as a resource template. If not provided, properties are dumped to output for each resource.';
 $_lang['pdotools_prop_tplFirst'] = 'Name of a chunk serving as resource template for the first resource.';
 $_lang['pdotools_prop_tplLast'] = 'Name of a chunk serving as resource template for the last resource.';
@@ -39,5 +40,5 @@ $_lang['pdotools_prop_wrapIfEmpty'] = 'If true, will output the wrapper specifie
 $_lang['pdotools_prop_tplOperator'] = 'An optional operator to use for the tplCondition when comparing against the conditionalTpls operands. Default is == (equals).';
 $_lang['pdotools_prop_tplCondition'] = 'A condition to compare against the conditionalTpls property to map Resources to different tpls based on custom conditional logic.';
 $_lang['pdotools_prop_conditionalTpls'] = 'A JSON map of conditional operands and tpls to compare against the tplCondition property using the specified tplOperator.';
-$_lang['pdotools_prop_select'] = 'Comma separated list of resource columns for select from database. You can specify JSON string with array, for example {"modResource":"id,pagetitle,content"}.';
+$_lang['pdotools_prop_select'] = 'Comma separated list of columns for select from database. You can specify JSON string with array, for example {"modResource":"id,pagetitle,content"}.';
 $_lang['pdotools_prop_toSeparatePlaceholders'] = 'If set, will assign EACH result to a separate placeholder named by this param suffixed with a sequential number (starting from 0).';

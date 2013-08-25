@@ -16,22 +16,28 @@ $context = !empty($context) ? array_map('trim', explode(',',$context)) : array($
 // Filter by ids
 if (!empty($resources)){
 	$resources = array_map('trim', explode(',', $resources));
-	$in = $out = array();
+	$resources_in = $resources_out = array();
 	foreach ($resources as $v) {
 		if (!is_numeric($v)) {continue;}
-		if ($v < 0) {$out[] = abs($v);}
-		else {$in[] = $v;}
+		if ($v < 0) {$resources_out[] = abs($v);}
+		else {$resources_in[] = $v;}
 	}
-	if (!empty($in)) {$where['id:IN'] = $in;}
-	if (!empty($out)) {$where['id:NOT IN'] = $out;}
+	if (!empty($resources_in)) {$where[$class.'.id:IN'] = $resources_in;}
+	if (!empty($resources_out)) {$where[$class.'.id:NOT IN'] = $resources_out;}
 }
 // Filter by parents
 if (!isset($parents) || $parents == '') {$parents = $modx->resource->id;}
 if (!empty($parents)) {
 	$pids = array();
 	$parents = array_map('trim', explode(',', $parents));
+	$parents_in = $parents_out = array();
+	foreach ($parents as $v) {
+		if (!is_numeric($v)) {continue;}
+		if ($v < 0) {$parents_out[] = abs($v);}
+		else {$parents_in[] = $v;}
+	}
 	if (!empty($depth) && $depth > 0) {
-		$q = $modx->newQuery($class, array('id:IN' => $parents));
+		$q = $modx->newQuery($class, array('id:IN' => array_merge($parents_in, $parents_out)));
 		$q->select('id,context_key');
 		if ($q->prepare() && $q->stmt->execute()) {
 			while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -40,10 +46,16 @@ if (!empty($parents)) {
 		}
 		foreach ($pids as $k => $v) {
 			if (!is_numeric($k)) {continue;}
-			$parents = array_merge($parents, $modx->getChildIds($k, $depth, array('context' => $v)));
+			elseif (in_array($k, $parents_in)) {
+				$parents_in = array_merge($parents_in, $modx->getChildIds($k, $depth, array('context' => $v)));
+			}
+			else {
+				$parents_out = array_merge($parents_out, $modx->getChildIds($k, $depth, array('context' => $v)));
+			}
 		}
 	}
-	$where['parent:IN'] = $parents;
+	if (!empty($parents_in)) {$where[$class.'.parent:IN'] = $parents_in;}
+	if (!empty($parents_out)) {$where[$class.'.parent:NOT IN'] = $parents_out;}
 }
 // Limit query by context, if no resources or parents set
 if (empty($resources) && empty($parents)) {
@@ -88,8 +100,8 @@ $default = array(
 	'return' => !empty($returnIds) ? 'ids' : 'chunks',
 );
 
-if (!empty($in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == 'id')) {
-	$scriptProperties['sortby'] = "find_in_set(`$class`.`id`,'".implode(',', $in)."')";
+if (!empty($resources_in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == 'id')) {
+	$scriptProperties['sortby'] = "find_in_set(`$class`.`id`,'".implode(',', $resources_in)."')";
 	$scriptProperties['sortdir'] = '';
 }
 
@@ -102,8 +114,13 @@ $log = '';
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 	$log .= '<pre class="pdoResourcesLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
+
 // Return output
-if (!empty($toSeparatePlaceholders)) {
+if (!empty($returnIds)) {
+	$modx->setPlaceholder('pdoResources.log', $log);
+	return $output;
+}
+elseif (!empty($toSeparatePlaceholders)) {
 	$modx->setPlaceholder($toSeparatePlaceholders.'log', $log);
 }
 else {
