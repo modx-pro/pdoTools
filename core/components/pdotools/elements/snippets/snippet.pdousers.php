@@ -1,8 +1,9 @@
 <?php
 /* @var array $scriptProperties */
 /* @var pdoFetch $pdoFetch */
-$pdoFetch = $modx->getService('pdofetch','pdoFetch', MODX_CORE_PATH.'components/pdotools/model/pdotools/',$scriptProperties);
-$pdoFetch->addTime('pdoTools loaded.');
+if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
+$pdoFetch = new pdoFetch($modx, $scriptProperties);
+$pdoFetch->addTime('pdoTools loaded');
 
 $class = 'modUser';
 $profile = 'modUserProfile';
@@ -95,6 +96,7 @@ foreach (array('where','innerJoin','select') as $v) {
 	}
 	unset($scriptProperties[$v]);
 }
+$pdoFetch->addTime('Conditions prepared');
 
 $default = array(
 	'class' => $class,
@@ -114,8 +116,8 @@ if (!empty($users_in) && (empty($scriptProperties['sortby']) || $scriptPropertie
 }
 
 // Merge all properties and run!
-$pdoFetch->addTime('Query parameters are prepared.');
-$pdoFetch->setConfig(array_merge($default, $scriptProperties));
+$pdoFetch->addTime('Query parameters ready');
+$pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $output = $pdoFetch->run();
 
 $log = '';

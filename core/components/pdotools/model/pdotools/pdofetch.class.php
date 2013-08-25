@@ -18,7 +18,7 @@ class pdoFetch extends pdoTools {
 	 * Need for multiple instances of pdoFetch snippets at the one page.
 	 *
 	 */
-	public function setConfig(array $config = array()) {
+	public function setConfig(array $config = array(), $clean_timings = true) {
 		$this->config = array_merge(array(
 			'class' => 'modResource'
 			,'limit' => 10
@@ -49,7 +49,9 @@ class pdoFetch extends pdoTools {
 			$this->config['sortby'] = $this->config['class'].'.'.$this->modx->getPK($this->config['class']);
 		}
 		$this->idx = !empty($this->config['offset']) ? (integer) $this->config['offset'] + 1 : 1;
-		$this->timings = array();
+		if ($clean_timings) {
+			$this->timings = array();
+		}
 	}
 
 
@@ -276,12 +278,12 @@ class pdoFetch extends pdoTools {
 		if (is_array($sorts)) {
 			while (list($sortby, $sortdir) = each($sorts)) {
 				$this->query->sortby($sortby, $sortdir);
-				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>.');
+				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>');
 			}
 		}
 
 		$this->query->limit($this->config['limit'], $this->config['offset']);
-		$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>.');
+		$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>');
 
 		return $this->query->prepare();
 	}
@@ -324,7 +326,7 @@ class pdoFetch extends pdoTools {
 							}
 						}
 					}
-					$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>.');
+					$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>');
 				}
 			}
 		}

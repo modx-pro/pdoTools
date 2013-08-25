@@ -1,10 +1,11 @@
 Changelog for pdoTools.
 
-1.5.0 beta
+1.5.0 rc
 ==============
 - [pdoUsers] Added new snippet "pdoUsers".
 - [pdoResources] Fixed "toSeparatePlaceholders".
 - [pdoResources] Parameter "parents" now supports dash prefix for excluding resources from query by parent.
+- [pdoResources] Fixed issue when snippet runs multiple times at one page.
 
 1.4.1 pl1
 ==============

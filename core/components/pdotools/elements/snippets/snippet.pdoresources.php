@@ -1,8 +1,9 @@
 <?php
 /* @var array $scriptProperties */
 /* @var pdoFetch $pdoFetch */
-$pdoFetch = $modx->getService('pdofetch','pdoFetch', MODX_CORE_PATH.'components/pdotools/model/pdotools/',$scriptProperties);
-$pdoFetch->addTime('pdoTools loaded.');
+if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
+$pdoFetch = new pdoFetch($modx, $scriptProperties);
+$pdoFetch->addTime('pdoTools loaded');
 
 $class = 'modResource';
 // Start building "Where" expression
@@ -14,7 +15,7 @@ if (!empty($hideContainers)) {$where['isfolder'] = 0;}
 $context = !empty($context) ? array_map('trim', explode(',',$context)) : array($modx->context->key);
 
 // Filter by ids
-if (!empty($resources)){
+if (!empty($resources)) {
 	$resources = array_map('trim', explode(',', $resources));
 	$resources_in = $resources_out = array();
 	foreach ($resources as $v) {
@@ -62,17 +63,6 @@ if (empty($resources) && empty($parents)) {
 	$where['context_key:IN'] = $context;
 }
 
-// Adding custom where parameters
-if (!empty($scriptProperties['where'])) {
-	$tmp = $modx->fromJSON($scriptProperties['where']);
-	if (is_array($tmp)) {
-		$where = array_merge($where, $tmp);
-	}
-}
-unset($scriptProperties['where']);
-$pdoFetch->addTime('"Where" expression built.');
-// End of building "Where" expression
-
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
 if (empty($includeContent)) {
@@ -80,14 +70,18 @@ if (empty($includeContent)) {
 	unset($resourceColumns[$key]);
 }
 $select = array($class => implode(',',$resourceColumns));
-if (!empty($scriptProperties['select'])) {
-	$tmp = $modx->fromJSON($scriptProperties['select']);
-	if (is_array($tmp)) {
-		$select = array_merge($select, $tmp);
+
+// Add custom parameters
+foreach (array('where','select') as $v) {
+	if (!empty($scriptProperties[$v])) {
+		$tmp = $modx->fromJSON($scriptProperties[$v]);
+		if (is_array($tmp)) {
+			$$v = array_merge($$v, $tmp);
+		}
 	}
-	else {$select = array($scriptProperties['select']);}
+	unset($scriptProperties[$v]);
 }
-unset($scriptProperties['select']);
+$pdoFetch->addTime('Conditions prepared');
 
 // Default parameters
 $default = array(
@@ -106,8 +100,8 @@ if (!empty($resources_in) && (empty($scriptProperties['sortby']) || $scriptPrope
 }
 
 // Merge all properties and run!
-$pdoFetch->addTime('Query parameters are prepared.');
-$pdoFetch->setConfig(array_merge($default, $scriptProperties));
+$pdoFetch->addTime('Query parameters ready');
+$pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $output = $pdoFetch->run();
 
 $log = '';
