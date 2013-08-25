@@ -4,7 +4,7 @@ Changelog for pdoTools.
 ==============
 - [pdoUsers] Added new snippet "pdoUsers".
 - [pdoResources] Fixed "toSeparatePlaceholders".
-- [pdoResources] Parameter "parents" now supports dash prefix for excluding resources from query by groups.
+- [pdoResources] Parameter "parents" now supports dash prefix for excluding resources from query by parent.
 
 1.4.1 pl1
 ==============
