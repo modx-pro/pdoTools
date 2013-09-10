@@ -179,37 +179,47 @@ class pdoTools {
 		if (!empty($properties) && $chunk['object'] instanceof modChunk) {
 			$chunk['object']->_processed = false;
 			$chunk['object']->_content = '';
-			$pl = $this->makePlaceholders($properties);
 
 			// Processing quick placeholders
-			$element_pls = $this->getPlaceholders($name);
-			if (!empty($element_pls)) {
-				$tmp = array_keys($element_pls);
-				foreach ($tmp as $v) {
-					$properties[$v] = !empty($properties[$v]) ? str_replace($pl['pl'], $pl['vl'], $element_pls[$v]) : '';
+			if ($pl = $this->getPlaceholders($name)) {
+				foreach ($pl as $k => $v) {
+					if (empty($properties[$k])) {
+						$pl[$k] = '';
+					}
 				}
-				$pl = $this->makePlaceholders($properties);
+				$pl = $this->makePlaceholders($pl);
+				$chunk['content'] = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
 			}
 
 			// Processing standard placeholders
+			$pl = $this->makePlaceholders($properties);
 			$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
-			$content = str_replace($pl['pl'], $pl['vl'], $content);
 
 			// Processing lexicon placeholders
-			preg_match_all('/\[\[%(.*?)\]\]/', $content, $matches);
+			preg_match_all('/\[\[(%|~)(.*?)\]\]/', $content, $matches);
 			$src = $dst = array();
-			foreach ($matches[1] as $k => $v) {
-				$tmp = $this->modx->lexicon($v);
-				if ($tmp != $v) {
-					$src[] = $matches[0][$k];
-					$dst[] = $tmp;
+			foreach ($matches[2] as $k => $v) {
+				if ($matches[1][$k] == '%') {
+					$tmp = $this->modx->lexicon($v);
+					if ($tmp != $v) {
+						$src[] = $matches[0][$k];
+						$dst[] = $tmp;
+					}
+				}
+				elseif ($matches[1][$k] == '~' && is_numeric($v)) {
+					if ($tmp = $this->modx->makeUrl($v)) {
+						$src[] = $matches[0][$k];
+						$dst[] = $tmp;
+					}
 				}
 			}
 			if (!empty($src) && !empty($dst)) {
-				$content = str_replace($src,$dst,$content);
+				$content = str_replace($src, $dst, $content);
 			}
 
-			$output = $fastMode ? $this->fastProcess($content) : $chunk['object']->process($properties, $content);
+			$output = $fastMode
+				? $this->fastProcess($content, $properties)
+				: $chunk['object']->process($properties, $content);
 		}
 		else {
 			$output = $chunk['content'];
@@ -240,12 +250,81 @@ class pdoTools {
 			else if (strpos($v[1], '!+') === 0) {
 				$v[1] = substr($v[1], 2);
 			}
-			$tags['vl'][] = !empty($v[1]) && isset($this->modx->placeholders[$v[1]]) ? $this->modx->placeholders[$v[1]] : '';
+			$tags['vl'][] = !empty($v[1]) && isset($this->modx->placeholders[$v[1]])
+				? $this->modx->placeholders[$v[1]]
+				: '';
 		}
 		$content = str_replace($tags['pl'], $tags['vl'], $content);
 
 		return $content;
 	}
+
+
+	/**
+	 * Fast processing of some MODX elements: snippets and simple output filters
+	 * @param $tag
+	 * @param array $properties
+	 * @param string $token
+	 *
+	 * @disabled
+	 *
+	 * @return mixed|string
+	 */
+	/*
+	public function fastElement($tag, $properties = array(), $token = '+') {
+		$scriptProperties = array();
+
+		// Snippet with parameters
+		if ($pos = strpos($tag, '?')) {
+			$name = substr($tag, 0, $pos);
+			$scriptProperties = $this->modx->parser->parseProperties(substr($tag, $pos + 1));
+		}
+		// Filter without options
+		elseif (strpos($tag, ':') !== false) {
+			$tmp = explode(':', $tag);
+			$scriptProperties['input'] = $tmp[0];
+			$scriptProperties['name'] = $name = $tmp[1];
+			$scriptProperties['options'] = null;
+		}
+		// Filter with options
+		elseif (preg_match('/^(.*?):(.*)(?:=`(.*?)`)$/', $tag, $matches)) {
+			$scriptProperties['input'] = $matches[1];
+			$scriptProperties['name'] = $name = $matches[2];
+			$scriptProperties['options'] = $matches[3];
+		}
+		// Snippet without parameters
+		else {
+			$name = $tag;
+		}
+
+		if (!$element = $this->getElement($name)) {
+			if ($element = $this->modx->getObject('modSnippet', array('name' => $name))) {
+				$this->addElement($name, $element);
+			}
+		}
+		if (!is_object($element) || !($element instanceof modSnippet)) {
+			return '';
+		}
+		$element->_cacheable = false;
+		$element->_processed = false;
+
+		if ($token == '+') {
+			$scriptProperties['tag'] = '[[+'.$tag.']]';
+
+			if (array_key_exists($scriptProperties['input'], $properties)) {
+				$scriptProperties['input'] = $properties[$scriptProperties['input']];
+			}
+			elseif (array_key_exists($scriptProperties['input'], $this->modx->placeholders)) {
+				$scriptProperties['input'] = $this->modx->placeholders[$scriptProperties['input']];
+			}
+			else {
+				return '';
+			}
+		}
+
+		return $element->process($scriptProperties);
+	}
+	*/
 
 
 	/**
