@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Added processing of simple [[~id]] placeholders in fastMode.
 - Added support of default value for TVs.
+- Improved sort by TVs of types "number" and "date".
 
 1.5.0 rc
 ==============

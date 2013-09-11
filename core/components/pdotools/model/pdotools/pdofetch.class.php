@@ -255,7 +255,7 @@ class pdoFetch extends pdoTools {
 
 
 	/**
-	 * Group query by give field
+	 * Group query by given field
 	 *
 	 */
 	public function addGrouping() {
@@ -268,20 +268,45 @@ class pdoFetch extends pdoTools {
 
 
 	/**
+	 * Add sort to query
+	 */
+	public function addSort() {
+		$tmp = (strpos($this->config['sortby'], '{') === 0)
+			? $this->modx->fromJSON($this->config['sortby'])
+			: array($this->config['sortby'] => $this->config['sortdir']);
+		$sorts = $this->replaceTVCondition($tmp);
+
+		if (is_array($sorts)) {
+			while (list($sortby, $sortdir) = each($sorts)) {
+				if (preg_match_all('/TV(.*?)[`|.]/', $sortby, $matches)) {
+					foreach ($matches[1] as $tv) {
+						if (array_key_exists($tv,$this->config['tvsJoin'])) {
+							$params = $this->config['tvsJoin'][$tv]['tv'];
+							switch ($params['type']) {
+								case 'number':
+									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DECIMAL)', $sortby);
+									break;
+								case 'date':
+									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DATETIME)', $sortby);
+									break;
+							}
+						}
+					}
+				}
+				$this->query->sortby($sortby, $sortdir);
+				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>');
+			}
+		}
+	}
+
+
+	/**
 	 * Set parameters and prepare query
 	 *
 	 * @return PDOStatement
 	 */
 	public function prepareQuery() {
-		$tmp = (strpos($this->config['sortby'], '{') === 0) ? $this->modx->fromJSON($this->config['sortby']) : array($this->config['sortby'] => $this->config['sortdir']);
-		$sorts = $this->replaceTVCondition($tmp);
-		if (is_array($sorts)) {
-			while (list($sortby, $sortdir) = each($sorts)) {
-				$this->query->sortby($sortby, $sortdir);
-				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>');
-			}
-		}
-
+		$this->addSort();
 		$this->query->limit($this->config['limit'], $this->config['offset']);
 		$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>');
 
@@ -316,10 +341,11 @@ class pdoFetch extends pdoTools {
 						$tvs = array();
 						while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 							$alias = 'TV'.$tv['name'];
-							$this->config['tvsJoin'][$tv['name']] = array(
+							$name = strtolower($tv['name']);
+							$this->config['tvsJoin'][$name] = array(
 								'class' => 'modTemplateVarResource'
 								,'alias' => $alias
-								,'on' => '`TV'.$tv['name'].'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$tv['name'].'`.`tmplvarid` = '.$tv['id']
+								,'on' => '`TV'.$name.'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$name.'`.`tmplvarid` = '.$tv['id']
 								,'tv' => $tv
 							);
 							$this->config['tvsSelect'][$alias] = 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'") as `'.$tvPrefix.$tv['name'].'`';
