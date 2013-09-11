@@ -309,24 +309,24 @@ class pdoFetch extends pdoTools {
 			else {
 				$tvs = array_map('trim',explode(',',$includeTVs));
 
-				if(!empty($tvs[0])){
+				if(!empty($tvs[0])) {
 					$q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $tvs));
-					$q->select('id,name');
+					$q->select('id,name,type,default_text');
 					if ($q->prepare() && $q->stmt->execute()) {
-						$tv_ids = $q->stmt->fetchAll(PDO::FETCH_ASSOC);
-						if (!empty($tv_ids)) {
-							foreach ($tv_ids as $tv) {
-								$alias = 'TV'.$tv['name'];
-								$this->config['tvsJoin'][$tv['name']] = array(
-									'class' => 'modTemplateVarResource'
-									,'alias' => $alias
-									,'on' => '`TV'.$tv['name'].'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$tv['name'].'`.`tmplvarid` = '.$tv['id']
-								);
-								$this->config['tvsSelect'][$alias] = '`'.$alias.'`.`value` as `'.$tvPrefix.$tv['name'].'`';
-							}
+						$tvs = array();
+						while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
+							$alias = 'TV'.$tv['name'];
+							$this->config['tvsJoin'][$tv['name']] = array(
+								'class' => 'modTemplateVarResource'
+								,'alias' => $alias
+								,'on' => '`TV'.$tv['name'].'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$tv['name'].'`.`tmplvarid` = '.$tv['id']
+								,'tv' => $tv
+							);
+							$this->config['tvsSelect'][$alias] = 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'") as `'.$tvPrefix.$tv['name'].'`';
+							$tvs[] = $tv['name'];
 						}
+						$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>');
 					}
-					$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>');
 				}
 			}
 		}

@@ -3,6 +3,7 @@ Changelog for pdoTools.
 1.5.0 pl
 ==============
 - Added processing of simple [[~id]] placeholders in fastMode.
+- Added support of default value for TVs.
 
 1.5.0 rc
 ==============
