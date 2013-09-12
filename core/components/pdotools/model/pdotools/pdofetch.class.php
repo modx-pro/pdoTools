@@ -369,7 +369,9 @@ class pdoFetch extends pdoTools {
 
 		if (!empty($tvs)) {
 			foreach ($array as $k => $v) {
-				$tmp = preg_replace('/\b('.$tvs.')\b/i', '`TV$1`.`value`', $k);
+				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', function($matches) {
+					return '`TV'.strtolower($matches[1]).'`.`value`';
+				}, $k);
 				if ($tmp != $k) {
 					$array[$tmp] = $v;
 					unset($array[$k]);
