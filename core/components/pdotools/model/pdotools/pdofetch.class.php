@@ -284,7 +284,7 @@ class pdoFetch extends pdoTools {
 							$params = $this->config['tvsJoin'][$tv]['tv'];
 							switch ($params['type']) {
 								case 'number':
-									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DECIMAL)', $sortby);
+									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DECIMAL(10,3))', $sortby);
 									break;
 								case 'date':
 									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DATETIME)', $sortby);

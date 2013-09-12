@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.5.0 pl2
+==============
+- Fixed sort of decimals in TVs.
+
 1.5.0 pl1
 ==============
 - Added processing of simple [[~id]] placeholders in fastMode.
