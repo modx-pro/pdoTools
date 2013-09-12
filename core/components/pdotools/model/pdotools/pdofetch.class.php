@@ -340,8 +340,8 @@ class pdoFetch extends pdoTools {
 					if ($q->prepare() && $q->stmt->execute()) {
 						$tvs = array();
 						while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
-							$alias = 'TV'.$tv['name'];
 							$name = strtolower($tv['name']);
+							$alias = 'TV'.$name;
 							$this->config['tvsJoin'][$name] = array(
 								'class' => 'modTemplateVarResource'
 								,'alias' => $alias
