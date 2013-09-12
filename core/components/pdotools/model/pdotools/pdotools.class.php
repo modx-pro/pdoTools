@@ -198,6 +198,7 @@ class pdoTools {
 			// Processing lexicon placeholders
 			preg_match_all('/\[\[(%|~)(.*?)\]\]/', $content, $matches);
 			$src = $dst = array();
+			$scheme = $this->modx->getOption('link_tag_scheme', -1, true);
 			foreach ($matches[2] as $k => $v) {
 				if ($matches[1][$k] == '%') {
 					$tmp = $this->modx->lexicon($v);
@@ -207,7 +208,7 @@ class pdoTools {
 					}
 				}
 				elseif ($matches[1][$k] == '~' && is_numeric($v)) {
-					if ($tmp = $this->modx->makeUrl($v)) {
+					if ($tmp = $this->modx->makeUrl($v, '', '', $scheme)) {
 						$src[] = $matches[0][$k];
 						$dst[] = $tmp;
 					}
@@ -240,7 +241,6 @@ class pdoTools {
 		if (!$this->modx->parser) {$this->modx->getParser();}
 		$matches = array();
 		$this->modx->parser->collectElementTags($content, $matches);
-
 		$tags = array('pl' => array(), 'vl' => array());
 		foreach ($matches as $v) {
 			$tags['pl'][] = $v[0];
