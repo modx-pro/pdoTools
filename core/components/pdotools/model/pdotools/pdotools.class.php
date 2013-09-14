@@ -446,7 +446,12 @@ class pdoTools {
 					? MODX_BASE_PATH . ltrim($path, '/') . $content
 					: $content;
 				$path = preg_replace('#/+#', '/', $path);
-				if ($content = file_get_contents($path)) {
+
+				if (!preg_match('/(.html|.tpl)$/i', $path)) {
+					$this->addTime('Allowed extensions for @FILE chunks is "html" and "tpl"');
+					$content = '';
+				}
+				elseif ($content = file_get_contents($path)) {
 					$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
 					$element->setContent($content);
 					$this->addTime('Loaded chunk from "'.str_replace(MODX_BASE_PATH, '', $path).'"');
