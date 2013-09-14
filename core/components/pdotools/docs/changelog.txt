@@ -2,10 +2,10 @@ Changelog for pdoTools.
 
 1.6.0 pl
 ==============
-- Added parameter "&loadModels=`" for comma-separated list of 3rd party components that needed for query.
-- Added parameters "&prepareTVs=``" and "&processTVs=``".
-- Added parameters "&tvFilters=``", "&tvFiltersAndDelimiter=``" and "&tvFiltersAndDelimiter=``".
-- Added support of parameters "&sortbyTV=``" and "&sortdirTV=``" for compatibility with getResources.
+- Added parameter "&loadModels" for comma-separated list of 3rd party components that needed for query.
+- Added parameters "&prepareTVs" and "&processTVs".
+- Added parameters "&tvFilters", "&tvFiltersAndDelimiter" and "&tvFiltersAndDelimiter".
+- Added support of parameters "&sortbyTV" and "&sortdirTV" for compatibility with getResources.
 - Added ability to use @INLINE and @FILE bindings in all template parameters.
 - Removed method pdoTools::getPlaceholders.
 
