@@ -96,16 +96,6 @@ class pdoTools {
 
 
 	/**
-	 * Return quick placeholders from cached element
-	 *
-	 * @return array
-	 */
-	public function getPlaceholders($name) {
-		return $this->inCache($name) ? $this->elements[$name]['placeholders'] : array();
-	}
-
-
-	/**
 	 * Transform array to placeholdres
 	 *
 	 * @param array $array
@@ -140,54 +130,41 @@ class pdoTools {
 	 * @param array $properties An associative array of properties to process the Chunk with, treated as placeholders within the scope of the Element.
 	 * @param boolean $fastMode If true, all MODX tags in chunk will be processed.
 	 *
-	 * @return string|boolean The processed output of the Chunk.
+	 * @return string The processed output of the Chunk.
 	 */
 	public function getChunk($name = '', array $properties = array(), $fastMode = false) {
 		$output = null;
 
+		$name = trim($name);
 		if (empty($name)) {
 			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
 		}
-		else if (!$this->inCache($name)) {
-			/* @var modChunk $element */
-			if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
-				$element->setCacheable(false);
-				$content = $element->getContent();
 
-				// Preparing special tags
-				preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
-				$src = $dst = $placeholders = array();
-				foreach ($matches[1] as $k => $v) {
-					$src[] = $matches[0][$k];
-					$dst[] = '';
-					$placeholders[$v] = $matches[2][$k];
-				}
-				if (!empty($src) && !empty($dst)) {
-					$content = str_replace($src,$dst,$content);
-				}
+		$cache_name = (strpos($name, '@') === 0)
+			? md5($name)
+			: $name;
 
-				$chunk = array(
-					'object' => $element
-					,'content' => $content
-					,'placeholders' => $placeholders
-				);
-
-				$this->addElement($name, $chunk);
+		if (!$this->inCache($cache_name)) {
+			if ($chunk = $this->_loadChunk($name)) {
+				$this->addElement($cache_name, $chunk);
 			}
 			else {
-				return false;
+				$this->addTime('Could not load chunk "'.$name.'".');
+				return $this->getChunk('', $properties, $fastMode);
 			}
 		}
 		else {
-			$chunk = $this->getElement($name);
+			$chunk = $this->getElement($cache_name);
 		}
 
-		if (!empty($properties) && $chunk['object'] instanceof modChunk) {
+		if (!empty($chunk) && $chunk['object'] instanceof modChunk) {
+			$chunk['object']->_cacheable = false;
 			$chunk['object']->_processed = false;
 			$chunk['object']->_content = '';
 
 			// Processing quick placeholders
-			if ($pl = $this->getPlaceholders($name)) {
+			if (!empty($chunk['placeholders'])) {
+				$pl = $chunk['placeholders'];
 				foreach ($pl as $k => $v) {
 					if (empty($properties[$k])) {
 						$pl[$k] = '';
@@ -434,6 +411,78 @@ class pdoTools {
 		}
 
 		return $resourceTpl;
+	}
+
+
+	/**
+	 * Loads and returns chunk by various methods.
+	 *
+	 * @param $name
+	 *
+	 * @return array
+	 */
+	protected function _loadChunk($name) {
+		$binding = $content = '';
+
+		$name = trim($name);
+		if (preg_match('/^@(.*?)\s/', $name, $matches)) {
+			$binding = $matches[1];
+			$content = substr($name, strlen($binding) + 1);
+		}
+		$content = trim($content);
+
+		/** @var modChunk $element */
+		switch (strtoupper($binding)) {
+			case 'INLINE':
+				$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
+				$element->setContent($content);
+				$this->addTime('Created inline chunk');
+				break;
+			case 'FILE':
+				$path = !empty($this->config['tplPath'])
+					? $this->config['tplPath'] . '/'
+					: MODX_ASSETS_PATH . 'elements/chunks/';
+				$path = (strpos($content, MODX_BASE_PATH) === false)
+					? MODX_BASE_PATH . ltrim($path, '/') . $content
+					: $content;
+				$path = preg_replace('#/+#', '/', $path);
+				if ($content = file_get_contents($path)) {
+					$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
+					$element->setContent($content);
+					$this->addTime('Loaded chunk from "'.str_replace(MODX_BASE_PATH, '', $path).'"');
+				}
+				break;
+			case 'CHUNK':
+			default:
+				if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
+					$content = $element->getContent();
+					$this->addTime('Loaded chunk "'.$name.'"');
+				}
+		}
+
+		if (empty($content)) {
+			return false;
+		}
+
+		// Preparing special tags
+		preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
+		$src = $dst = $placeholders = array();
+		foreach ($matches[1] as $k => $v) {
+			$src[] = $matches[0][$k];
+			$dst[] = '';
+			$placeholders[$v] = $matches[2][$k];
+		}
+		if (!empty($src) && !empty($dst)) {
+			$content = str_replace($src,$dst,$content);
+		}
+
+		$chunk = array(
+			'object' => $element
+			,'content' => $content
+			,'placeholders' => $placeholders
+		);
+
+		return $chunk;
 	}
 
 }
