@@ -433,6 +433,7 @@ class pdoTools {
 
 		/** @var modChunk $element */
 		switch (strtoupper($binding)) {
+			case 'CODE':
 			case 'INLINE':
 				$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
 				$element->setContent($content);
