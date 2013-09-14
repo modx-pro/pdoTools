@@ -131,7 +131,8 @@ if (!empty($returnIds)) {
 	return $output;
 }
 elseif (!empty($toSeparatePlaceholders)) {
-	$modx->setPlaceholder($toSeparatePlaceholders.'log', $log);
+	$output['log'] = $log;
+	$modx->setPlaceholders($output, $toSeparatePlaceholders);
 }
 else {
 	$output .= $log;
