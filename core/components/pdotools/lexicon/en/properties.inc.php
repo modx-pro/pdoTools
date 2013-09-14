@@ -13,6 +13,8 @@ $_lang['pdotools_prop_hideContainers'] = 'If set, will not show any Resources ma
 $_lang['pdotools_prop_idx'] = 'You can define the starting idx of the resources, which is an property that is incremented as each resource is rendered.';
 $_lang['pdotools_prop_includeContent'] = 'Indicates if the content of each resource should be returned in the results.';
 $_lang['pdotools_prop_includeTVs'] = 'An optional comma-delimited list of TemplateVar names to include.';
+$_lang['pdotools_prop_prepareTVs'] = 'Comma separated list of TV names, that need to be prepared. By default it set to "1", so all TVs in "&includeTVs=``" will be prepared.';
+$_lang['pdotools_prop_processTVs'] = 'Comma separated list of TV names, that need to be processed. If you set it to "1" - all TVs in "&includeTVs=``" will be processed. By default it is empty.';
 $_lang['pdotools_prop_last'] = 'Define the idx which represents the last resource. Default is # of resources being summarized + first - 1.';
 $_lang['pdotools_prop_limit'] = 'Limits the number of resources returned.  Use `0` for unlimited results.';
 $_lang['pdotools_prop_offset'] = 'An offset of resources returned by the criteria to skip.';

@@ -96,10 +96,12 @@ class pdoFetch extends pdoTools {
 					$output = implode(',', $ids);
 				}
 				else if (strtolower($this->config['return']) == 'data') {
+					$rows = $this->prepareResults($rows);
 					$this->addTime('Returning raw data');
 					$output = & $rows;
 				}
 				else {
+					$rows = $this->prepareResults($rows);
 					foreach ($rows as $v) {
 						$v['idx'] = $this->idx++;
 						$tpl = $this->defineChunk($v);
@@ -418,6 +420,52 @@ class pdoFetch extends pdoTools {
 		}
 
 		return $array;
+	}
+
+
+	/**
+	 * Prepares fetched rows and process template variables.
+	 */
+	public function prepareResults(array $rows = array()) {
+		if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
+			$tvs = array_map('trim', explode(',', $this->config['includeTVs']));
+			$prepare = ($this->config['prepareTVs'] == 1)
+				? $tvs
+				: array_map('trim', explode(',', $this->config['prepareTVs']));
+			$process = ($this->config['processTVs'] == 1)
+				? $tvs
+				: array_map('trim', explode(',', $this->config['processTVs']));
+
+			foreach ($rows as & $row) {
+				foreach ($tvs as $tv) {
+					if (!in_array($tv, $process) && !in_array($tv, $prepare)) {continue;}
+
+					/** @var modTemplateVar $templateVar */
+					if (!$templateVar = $this->getElement($tv, 'tv')) {
+						if ($templateVar = $this->modx->getObject('modTemplateVar', array('name' => $tv))) {
+							$this->addElement($tv, $templateVar, 'tv');
+						}
+					}
+
+					if (!$templateVar) {
+						$this->addTime('Could not process or prepare TV "'.$tv.'"');
+						continue;
+					}
+					$key = $this->config['tvPrefix'].$templateVar->name;
+					if (in_array($tv, $process)) {
+						$row[$key] = $templateVar->renderOutput($row['id']);
+					}
+					elseif (in_array($tv, $prepare) && method_exists($templateVar, 'prepareOutput')) {
+						$row[$key] = $templateVar->prepareOutput($row[$key]);
+					}
+				}
+			}
+			$this->addTime('Prepared and processed TVs');
+		}
+
+		//$this->addTime('Prepared fetched rows');
+
+		return $rows;
 	}
 
 }

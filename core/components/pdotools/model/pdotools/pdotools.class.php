@@ -1,11 +1,15 @@
 <?php
 
 class pdoTools {
-	/* @var modX $modx */
+	/** @var modX $modx */
 	public $modx;
 	public $timings = array();
 	public $config = array();
-	public $elements = array();
+	public $elements = array(
+		'chunk' => array(),
+		'snippet' => array(),
+		'tv' => array(),
+	);
 	protected $time;
 	public $idx = 1;
 	protected $count = 0;
@@ -62,8 +66,8 @@ class pdoTools {
 	 *
 	 * @return boolean
 	 * */
-	public function addElement($name, $object) {
-		$this->elements[$name] = $object;
+	public function addElement($name, $object, $type = 'chunk') {
+		$this->elements[$type][$name] = $object;
 
 		return $this->inCache($name);
 	}
@@ -74,8 +78,10 @@ class pdoTools {
 	 *
 	 * @return array|boolean
 	 * */
-	public function getElement($name) {
-		return $this->inCache($name) ? $this->elements[$name] : false;
+	public function getElement($name, $type = 'chunk') {
+		return $this->inCache($name, $type)
+			? $this->elements[$type][$name]
+			: false;
 	}
 
 
@@ -84,8 +90,8 @@ class pdoTools {
 	 *
 	 * @return boolean
 	 * */
-	public function inCache($name) {
-		return isset($this->elements[$name]);
+	public function inCache($name, $type = 'chunk') {
+		return isset($this->elements[$type][$name]);
 	}
 
 

@@ -63,6 +63,14 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
+	,'prepareTVs' => array(
+		'type' => 'textfield'
+		,'value' => '1'
+	)
+	,'processTVs' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
 	,'tvPrefix' => array(
 		'type' => 'textfield'
 		,'value' => 'tv.'
