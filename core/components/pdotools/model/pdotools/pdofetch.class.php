@@ -318,6 +318,12 @@ class pdoFetch extends pdoTools {
 		$tmp = (strpos($this->config['sortby'], '{') === 0)
 			? $this->modx->fromJSON($this->config['sortby'])
 			: array($this->config['sortby'] => $this->config['sortdir']);
+		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
+			$tmp2[$this->config['sortbyTV']] = !empty($this->config['sortdirTV'])
+				? $this->config['sortdirTV']
+				: 'ASC';
+			$tmp = array_merge($tmp2, $tmp);
+		}
 		$sorts = $this->replaceTVCondition($tmp);
 
 		if (is_array($sorts)) {
@@ -369,6 +375,11 @@ class pdoFetch extends pdoTools {
 		if (!empty($this->config['includeTVList']) && (empty($includeTVs) || is_numeric($includeTVs))) {
 			$includeTVs = $this->config['includeTVList'];
 		}
+		if (!empty($this->config['sortbyTV'])) {
+			$includeTVs .= empty($includeTVs)
+				? $this->config['sortbyTV']
+				: ','.$this->config['sortbyTV'];
+		}
 
 		if (!empty($includeTVs)) {
 			$subclass = preg_grep('/^'.$this->config['class'].'/i' , $this->modx->classMap['modResource']);
@@ -377,8 +388,8 @@ class pdoFetch extends pdoTools {
 			}
 			else {
 				$tvs = array_map('trim',explode(',',$includeTVs));
-
-				if(!empty($tvs[0])) {
+				$tvs = array_unique($tvs);
+				if(!empty($tvs)) {
 					$q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $tvs));
 					$q->select('id,name,type,default_text');
 					if ($q->prepare() && $q->stmt->execute()) {
@@ -517,21 +528,18 @@ class pdoFetch extends pdoTools {
 	 *
 	 */
 	public function replaceTVCondition(array $array) {
+		if (empty($this->config['tvsJoin'])) {return $array;}
 		$tvs = implode('|', array_keys($this->config['tvsJoin']));
 
-		if (!empty($tvs)) {
-			foreach ($array as $k => $v) {
-				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', function($matches) {
-					return '`TV'.strtolower($matches[1]).'`.`value`';
-				}, $k);
-				if ($tmp != $k) {
-					$array[$tmp] = $v;
-					unset($array[$k]);
-				}
-			}
+		$sorts = array();
+		foreach ($array as $k => $v) {
+			$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', function($matches) {
+				return '`TV'.strtolower($matches[1]).'`.`value`';
+			}, $k);
+			$sorts[$tmp] = $v;
 		}
 
-		return $array;
+		return $sorts;
 	}
 
 
