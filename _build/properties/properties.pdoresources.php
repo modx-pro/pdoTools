@@ -164,6 +164,10 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
+	,'loadModels' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
 
 );
 

@@ -2,7 +2,7 @@
 require_once 'pdotools.class.php';
 
 class pdoFetch extends pdoTools {
-	/* @var xPDOQuery_mysql $query */
+	/* @var xPDOQuery $query */
 	protected $query;
 
 
@@ -43,6 +43,7 @@ class pdoFetch extends pdoTools {
 			,'tvsSelect' => array()
 
 			,'nestedChunkPrefix' => 'pdotools_'
+			,'loadModels' => ''
 		), $config);
 
 		if (empty($this->config['sortby'])) {
@@ -61,6 +62,7 @@ class pdoFetch extends pdoTools {
 	 * @return array|bool|string
 	 */
 	public function run() {
+		$this->loadModels();
 		$this->makeQuery();
 		$this->addTVs();
 		$this->addJoins();
@@ -128,6 +130,42 @@ class pdoFetch extends pdoTools {
 		return $output;
 	}
 
+
+	/**
+	 * Loads specified list of packages models
+	 */
+	public function loadModels() {
+		if (empty($this->config['loadModels'])) {return;}
+
+		$models = array();
+		if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
+			$tmp = $this->modx->fromJSON($this->config['loadModels']);
+			foreach ($tmp as $k => $v) {
+				$v = trim(strtolower($v));
+				$models[$k] = (strpos($v, MODX_CORE_PATH) === false)
+					? MODX_CORE_PATH . ltrim($v, '/')
+					: $v;
+			}
+		}
+		else {
+			$tmp = array_map('trim', explode(',', $this->config['loadModels']));
+			foreach ($tmp as $v) {
+				$models[$v] = MODX_CORE_PATH . 'components/'.strtolower($v).'/model/';
+			}
+		}
+
+		if (!empty($models)) {
+			foreach ($models as $k => $v) {
+				$t = '/' . str_replace(MODX_BASE_PATH, '', $v);
+				if ($this->modx->addPackage($k, $v)) {
+					$this->addTime('Loaded model "'.$k.'" from "'.$t.'"');
+				}
+				else {
+					$this->addTime('Could not load model "'.$k.'" from "'.$t.'"');
+				}
+			}
+		}
+	}
 
 	/**
 	 * Create object with xPDOQuery

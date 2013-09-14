@@ -45,3 +45,4 @@ $_lang['pdotools_prop_tplCondition'] = 'A condition to compare against the condi
 $_lang['pdotools_prop_conditionalTpls'] = 'A JSON map of conditional operands and tpls to compare against the tplCondition property using the specified tplOperator.';
 $_lang['pdotools_prop_select'] = 'Comma separated list of columns for select from database. You can specify JSON string with array, for example {"modResource":"id,pagetitle,content"}.';
 $_lang['pdotools_prop_toSeparatePlaceholders'] = 'If set, will assign EACH result to a separate placeholder named by this param suffixed with a sequential number (starting from 0).';
+$_lang['pdotools_prop_loadModels'] = 'Comma-separated list of 3rd party components that needed for query. For example: "&loadModels=`ms2gallery,msearch2`".';
