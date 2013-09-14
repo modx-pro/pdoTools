@@ -12,9 +12,14 @@ $_lang['pdotools_prop_first'] = 'Define the idx which represents the first resou
 $_lang['pdotools_prop_hideContainers'] = 'If set, will not show any Resources marked as a container (isfolder).';
 $_lang['pdotools_prop_idx'] = 'You can define the starting idx of the resources, which is an property that is incremented as each resource is rendered.';
 $_lang['pdotools_prop_includeContent'] = 'Indicates if the content of each resource should be returned in the results.';
+
 $_lang['pdotools_prop_includeTVs'] = 'An optional comma-delimited list of TemplateVar names to include.';
 $_lang['pdotools_prop_prepareTVs'] = 'Comma separated list of TV names, that need to be prepared. By default it set to "1", so all TVs in "&includeTVs=``" will be prepared.';
 $_lang['pdotools_prop_processTVs'] = 'Comma separated list of TV names, that need to be processed. If you set it to "1" - all TVs in "&includeTVs=``" will be processed. By default it is empty.';
+$_lang['pdotools_prop_tvFilters'] = 'Delimited-list of TemplateVar values to filter resources by. Supports two delimiters and two value search formats. THe first delimiter || represents a logical OR and the primary grouping mechanism.  Within each group you can provide a comma-delimited list of values. These values can be either tied to a specific TemplateVar by name, e.g. myTV==value, or just the value, indicating you are searching for the value in any TemplateVar tied to the Resource. An example would be &tvFilters=`filter2==one,filter1==bar%||filter1==foo`. <br />NOTE: filtering by values uses a LIKE query and % is considered a wildcard. <br />ANOTHER NOTE: This only looks at the raw value set for specific Resource, i. e. there must be a value specifically set for the Resource and it is not evaluated.';
+$_lang['pdotools_prop_tvFiltersAndDelimiter'] = 'The delimiter to use to separate logical AND expressions in "&tvFilters". Default is ",".';
+$_lang['pdotools_prop_tvFiltersOrDelimiter'] = 'The delimiter to use to separate logical OR expressions in "&tvFilters". Default is "||".';
+
 $_lang['pdotools_prop_last'] = 'Define the idx which represents the last resource. Default is # of resources being summarized + first - 1.';
 $_lang['pdotools_prop_limit'] = 'Limits the number of resources returned.  Use `0` for unlimited results.';
 $_lang['pdotools_prop_offset'] = 'An offset of resources returned by the criteria to skip.';

@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Added parameter "&loadModels=`" for comma-separated list of 3rd party components that needed for query.
 - Added parameters "&prepareTVs=``" and "&processTVs=``".
+- Added parameters "&tvFilters=``", "&tvFiltersAndDelimiter=``" and "&tvFiltersAndDelimiter=``".
 
 1.5.0 pl2
 ==============

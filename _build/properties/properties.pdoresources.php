@@ -59,6 +59,7 @@ $tmp = array(
 		'type' => 'combo-boolean'
 		,'value' => false
 	)
+
 	,'includeTVs' => array(
 		'type' => 'textfield'
 		,'value' => ''
@@ -75,6 +76,19 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => 'tv.'
 	)
+	,'tvFilters' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'tvFiltersAndDelimiter' => array(
+		'type' => 'textfield'
+		,'value' => ','
+	)
+	,'tvFiltersOrDelimiter' => array(
+		'type' => 'textfield'
+		,'value' => '||'
+	)
+
 	,'where' => array(
 		'type' => 'textfield'
 		,'value' => ''

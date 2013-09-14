@@ -42,6 +42,9 @@ class pdoFetch extends pdoTools {
 			,'tvsJoin' => array()
 			,'tvsSelect' => array()
 
+			,'tvFiltersAndDelimiter' => ','
+			,'tvFiltersOrDelimiter' => '||'
+
 			,'nestedChunkPrefix' => 'pdotools_'
 			,'loadModels' => ''
 		), $config);
@@ -95,7 +98,7 @@ class pdoFetch extends pdoTools {
 					}
 					$output = implode(',', $ids);
 				}
-				else if (strtolower($this->config['return']) == 'data') {
+				elseif (strtolower($this->config['return']) == 'data') {
 					$rows = $this->prepareResults($rows);
 					$this->addTime('Returning raw data');
 					$output = & $rows;
@@ -184,6 +187,7 @@ class pdoFetch extends pdoTools {
 	 *
 	 */
 	public function addWhere() {
+		$this->addTVFilters();
 		if (!empty($this->config['where'])) {
 			$where = $this->modx->fromJson($this->config['where']);
 			$where = $this->replaceTVCondition($where);
@@ -263,7 +267,7 @@ class pdoFetch extends pdoTools {
 			');
 			$this->addTime('Parameter "return" set to "ids", so we select only resource id');
 		}
-		else if (!empty($this->config['select'])) {
+		elseif (!empty($this->config['select'])) {
 			$tmp = array_merge($this->modx->fromJSON($this->config['select']), $this->config['tvsSelect']);
 			$i = 0;
 			foreach ($tmp as $k => $v) {
@@ -395,6 +399,114 @@ class pdoFetch extends pdoTools {
 					}
 				}
 			}
+		}
+	}
+
+
+	/**
+	 * Convert tvFilters string to SQL and add to "where" condition
+	 * This algorithm taken from snippet getResources by opengeek
+	 *
+	 */
+	public function addTVFilters() {
+		if (empty($this->config['tvFilters'])) {return;}
+		$tvFiltersAndDelimiter = $this->config['tvFiltersAndDelimiter'];
+		$tvFiltersOrDelimiter = $this->config['tvFiltersOrDelimiter'];
+
+		$tvFilters = array_map('trim', explode($tvFiltersOrDelimiter, $this->config['tvFilters']));
+		$operators = array(
+			'<=>' => '<=>',
+			'===' => '=',
+			'!==' => '!=',
+			'<>' => '<>',
+			'==' => 'LIKE',
+			'!=' => 'NOT LIKE',
+			'<<' => '<',
+			'<=' => '<=',
+			'=<' => '=<',
+			'>>' => '>',
+			'>=' => '>=',
+			'=>' => '=>'
+		);
+		$conditions = array();
+
+		$tmplVarTbl = $this->modx->getTableName('modTemplateVar');
+		$tmplVarResourceTbl = $this->modx->getTableName('modTemplateVarResource');
+
+		foreach ($tvFilters as $tvFilter) {
+			$filterGroup = array();
+			$filters = explode($tvFiltersAndDelimiter, $tvFilter);
+			$multiple = count($filters) > 0;
+			foreach ($filters as $filter) {
+				$operator = '==';
+				$sqlOperator = 'LIKE';
+				foreach ($operators as $op => $opSymbol) {
+					if (strpos($filter, $op, 1) !== false) {
+						$operator = $op;
+						$sqlOperator = $opSymbol;
+						break;
+					}
+				}
+				$tvValueField = 'tvr.value';
+				$tvDefaultField = 'tv.default_text';
+				$f = explode($operator, $filter);
+				if (count($f) == 2) {
+					$tvName = $this->modx->quote($f[0]);
+					if (is_numeric($f[1]) && !in_array($sqlOperator, array('LIKE', 'NOT LIKE'))) {
+						$tvValue = $f[1];
+						if ($f[1] == (integer)$f[1]) {
+							$tvValueField = "CAST({$tvValueField} AS SIGNED INTEGER)";
+							$tvDefaultField = "CAST({$tvDefaultField} AS SIGNED INTEGER)";
+						} else {
+							$tvValueField = "CAST({$tvValueField} AS DECIMAL)";
+							$tvDefaultField = "CAST({$tvDefaultField} AS DECIMAL)";
+						}
+					} else {
+						$tvValue = $this->modx->quote($f[1]);
+					}
+					if ($multiple) {
+						$filterGroup[] =
+							"(EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.name = {$tvName} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id) " .
+							"OR EXISTS (SELECT 1 FROM {$tmplVarTbl} tv WHERE tv.name = {$tvName} AND {$tvDefaultField} {$sqlOperator} {$tvValue} AND tv.id NOT IN (SELECT tmplvarid FROM {$tmplVarResourceTbl} WHERE contentid = modResource.id)) " .
+							")";
+					} else {
+						$filterGroup =
+							"(EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.name = {$tvName} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id) " .
+							"OR EXISTS (SELECT 1 FROM {$tmplVarTbl} tv WHERE tv.name = {$tvName} AND {$tvDefaultField} {$sqlOperator} {$tvValue} AND tv.id NOT IN (SELECT tmplvarid FROM {$tmplVarResourceTbl} WHERE contentid = modResource.id)) " .
+							")";
+					}
+				} elseif (count($f) == 1) {
+					$tvValue = $this->modx->quote($f[0]);
+					if ($multiple) {
+						$filterGroup[] = "EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id)";
+					} else {
+						$filterGroup = "EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id)";
+					}
+				}
+			}
+			$conditions[] = $filterGroup;
+		}
+
+		if (!empty($conditions)) {
+			$firstGroup = true;
+			foreach ($conditions as $cGroup => $c) {
+				if (is_array($c)) {
+					$first = true;
+					foreach ($c as $cond) {
+						if ($first && !$firstGroup) {
+							$this->query->condition($this->query->query['where'][0][1], $cond, xPDOQuery::SQL_OR, null, $cGroup);
+						} else {
+							$this->query->condition($this->query->query['where'][0][1], $cond, xPDOQuery::SQL_AND, null, $cGroup);
+						}
+						$first = false;
+					}
+				} else {
+					$this->query->condition($this->query->query['where'][0][1], $c, $firstGroup ? xPDOQuery::SQL_AND : xPDOQuery::SQL_OR, null, $cGroup);
+				}
+				$firstGroup = false;
+			}
+
+			$this->addTime('Added TVs filters');
 		}
 	}
 
