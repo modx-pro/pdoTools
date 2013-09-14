@@ -403,7 +403,6 @@ class pdoTools {
 						case 'isnull': case 'null':
 							$tplCon = $subject == null || strtolower($subject) == 'null' ? $conditionalTpl : $tplCon;
 							break;
-						/*
 						case 'inarray': case 'in_array': case 'ia':
 							$operand = explode(',', $operand);
 							$tplCon = in_array($subject, $operand) ? $conditionalTpl : $tplCon;
@@ -412,7 +411,6 @@ class pdoTools {
 							$operand = explode(',', $operand);
 							$tplCon = ($subject >= min($operand) && $subject <= max($operand)) ? $conditionalTpl : $tplCon;
 							break;
-						*/
 						case '==': case '=': case 'eq': case 'is': case 'equal': case 'equals': case 'equalto':
 						default:
 							$tplCon = (($subject == $operand) ? $conditionalTpl : $tplCon);
