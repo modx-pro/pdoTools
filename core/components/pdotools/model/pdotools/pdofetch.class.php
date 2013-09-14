@@ -282,7 +282,7 @@ class pdoFetch extends pdoTools {
 				}
 				if ($i == 0) {$v = 'SQL_CALC_FOUND_ROWS '.$v;}
 				$this->query->select($v);
-				$this->addTime('Added selection of <b>'.$k.'</b>: <small>' . $v . '</small>');
+				$this->addTime('Added selection of <b>'.$k.'</b>: <small>' . str_replace('`'.$k.'`.', '', $v) . '</small>');
 				$i++;
 			}
 		}
@@ -293,7 +293,7 @@ class pdoFetch extends pdoTools {
 				$select .= ', '.implode(',', $this->config['tvsSelect']);
 			}
 			$this->query->select($select);
-			$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . $select . '</small>');
+			$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$class.'`.', '', $select) . '</small>');
 		}
 	}
 
