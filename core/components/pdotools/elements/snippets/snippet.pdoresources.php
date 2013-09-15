@@ -12,7 +12,12 @@ if (empty($showUnpublished)) {$where['published'] = 1;}
 if (empty($showHidden)) {$where['hidemenu'] = 0;}
 if (empty($showDeleted)) {$where['deleted'] = 0;}
 if (!empty($hideContainers)) {$where['isfolder'] = 0;}
-$context = !empty($context) ? array_map('trim', explode(',',$context)) : array($modx->context->key);
+if (!empty($context)) {
+	$context = array_map('trim', explode(',', $context));
+	if (!empty($context) && is_array($context)) {
+		$where['context_key:IN'] = $context;
+	}
+}
 
 // Filter by ids
 if (!empty($resources)) {
@@ -57,10 +62,6 @@ if (!empty($parents)) {
 	}
 	if (!empty($parents_in)) {$where[$class.'.parent:IN'] = $parents_in;}
 	if (!empty($parents_out)) {$where[$class.'.parent:NOT IN'] = $parents_out;}
-}
-// Limit query by context, if no resources or parents set
-if (empty($resources) && empty($parents)) {
-	$where['context_key:IN'] = $context;
 }
 
 // Fields to select

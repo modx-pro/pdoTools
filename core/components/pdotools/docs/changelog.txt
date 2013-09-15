@@ -3,6 +3,7 @@ Changelog for pdoTools.
 1.7.0 beta
 ==============
 - New snippet pdoCrumbs.
+- [pdoResources] Improved parameter "&context".
 
 1.6.0 pl1
 ==============
