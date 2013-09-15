@@ -10,6 +10,7 @@ $snippets = array();
 $tmp = array(
 	'pdoResources' => 'pdoresources',
 	'pdoUsers' => 'pdousers',
+	'pdoCrumbs' => 'pdocrumbs',
 );
 
 foreach ($tmp as $k => $v) {

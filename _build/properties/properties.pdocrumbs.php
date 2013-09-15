@@ -1,0 +1,150 @@
+<?php
+
+$properties = array();
+
+$tmp = array(
+	'showLog' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+	,'fastMode' => array(
+		'type' => 'combo-boolean'
+		,'value' => true
+	)
+	,'from' => array(
+		'type' => 'numberfield'
+		,'value' => 0
+	)
+	,'to' => array(
+		'type' => 'numberfield'
+		,'value' => ''
+	)
+	,'limit' => array(
+		'type' => 'numberfield'
+		,'value' => 10
+	)
+	,'exclude' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'outputSeparator' => array(
+		'type' => 'textfield'
+		,'value' => '&nbsp;&rarr;&nbsp;'
+	)
+	,'toPlaceholder' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'includeContent' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+
+	,'includeTVs' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'prepareTVs' => array(
+		'type' => 'textfield'
+		,'value' => '1'
+	)
+	,'processTVs' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'tvPrefix' => array(
+		'type' => 'textfield'
+		,'value' => 'tv.'
+	)
+
+	,'where' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'showUnpublished' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+	,'showDeleted' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+	,'showHidden' => array(
+		'type' => 'combo-boolean'
+		,'value' => true
+	)
+	,'hideContainers' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+
+	,'tpl' => array(
+		'type' => 'textfield'
+		,'value' => '@INLINE <a href="[[+link]]">[[+pagetitle]]</a>'
+	)
+	,'tplCurrent' => array(
+		'type' => 'textfield'
+		,'value' => '@INLINE <span>[[+pagetitle]]</span>'
+	)
+	,'tplMax' => array(
+		'type' => 'textfield'
+		,'value' => '@INLINE <span>&nbsp;...&nbsp;</span>'
+	)
+	,'tplHome' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'tplWrapper' => array(
+		'type' => 'textfield'
+		,'value' => '@INLINE <div class="breadcrumbs">[[+output]]</div>'
+	)
+	,'wrapIfEmpty' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+
+	,'showCurrent' => array(
+		'type' => 'combo-boolean'
+		,'value' => true
+	)
+	,'showHome' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+	,'showAtHome' => array(
+		'type' => 'combo-boolean'
+		,'value' => true
+	)
+	,'hideSingle' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
+	,'direction' => array(
+		'type' => 'list'
+		,'options' => array(
+			array(
+				'name' => 'Left To Right (ltr)'
+				,'value' => 'ltr'
+				,'menu' => ''
+			)
+			,array(
+				'name' => 'Right To Left (rtl)'
+				,'value' => 'rtl'
+				,'menu' => ''
+			)
+		)
+		,'value' => 'ltr'
+	)
+
+);
+
+foreach ($tmp as $k => $v) {
+	$properties[] = array_merge(array(
+			'name' => $k
+			,'desc' => 'pdotools_prop_'.$k
+			,'lexicon' => 'pdotools:properties'
+		), $v
+	);
+}
+
+return $properties;

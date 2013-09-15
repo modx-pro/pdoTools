@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.0 beta
+==============
+- New snippet pdoCrumbs.
+
 1.6.0 pl1
 ==============
 - Fixed compatibility issues in PHP < 5.3.
