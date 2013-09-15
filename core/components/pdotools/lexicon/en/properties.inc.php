@@ -66,3 +66,5 @@ $_lang['pdotools_prop_tplMax'] = 'Сhunk, which is added to the beginning of the
 $_lang['pdotools_prop_select'] = 'Comma separated list of columns for select from database. You can specify JSON string with array, for example {"modResource":"id,pagetitle,content"}.';
 $_lang['pdotools_prop_loadModels'] = 'Comma-separated list of 3rd party components that needed for query. For example: "&loadModels=`ms2gallery,msearch2`".';
 $_lang['pdotools_prop_direction'] = 'Direction or breadcrumb: Left To Right (ltr) or Right To Left (rtl) for Arabic language for example.';
+$_lang['pdotools_prop_id'] = 'Id of the resource.';
+$_lang['pdotools_prop_field'] = 'Field of the resource.';
