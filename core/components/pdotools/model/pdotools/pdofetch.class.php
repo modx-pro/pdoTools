@@ -533,9 +533,8 @@ class pdoFetch extends pdoTools {
 
 		$sorts = array();
 		foreach ($array as $k => $v) {
-			$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', function($matches) {
-				return '`TV'.strtolower($matches[1]).'`.`value`';
-			}, $k);
+			$callback = create_function('$matches', 'return \'`TV\'.strtolower($matches[1]).\'`.`value`\';');
+			$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $k);
 			$sorts[$tmp] = $v;
 		}
 
