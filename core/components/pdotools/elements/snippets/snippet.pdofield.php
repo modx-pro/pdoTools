@@ -17,6 +17,38 @@ if (!empty($options)) {
 	}
 }
 if (empty($id)) {return '';}
+if (!isset($context)) {$context = '';}
+
+if (!empty($top) || !empty($topLevel)) {
+	// Select needed context for parents functionality
+	if (empty($context)) {
+		$q = $modx->newQuery('modResource', $id);
+		$q->select('context_key');
+		if ($q->prepare() && $q->stmt->execute()) {
+			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
+		}
+	}
+	// Select id of parent of specified id on level = &top
+	if (!empty($top) && $id != $top) {
+		$parents = $modx->getParentIds($id, $top, array('context' => $context));
+		if (empty($parents)) {return '';}
+		$id = array_pop($parents);
+	}
+	// Select id of parent of specified id from root on level = &toplevel
+	elseif (!empty($topLevel) && $id != $topLevel) {
+		$childs = array_flip($modx->getChildIds(0, $topLevel, array('context' => $context)));
+		if (empty($childs)) {return '';}
+		while ($parents = $modx->getParentIds($id, 1, array('context' => $context))) {
+			$id = array_pop($parents);
+			if (!isset($childs[$id])) {
+				$parents = $modx->getParentIds($id, 1, array('context' => $context));
+			}
+			else {
+				break;
+			}
+		}
+	}
+}
 
 /* @var pdoFetch $pdoFetch */
 if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}

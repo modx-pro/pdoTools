@@ -23,6 +23,19 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
+	,'context' => array(
+		'type' => 'textfield'
+		,'desc' => 'pdotools_prop_field_context'
+		,'value' => ''
+	)
+	,'top' => array(
+		'type' => 'numberfield'
+		,'value' => ''
+	)
+	,'topLevel' => array(
+		'type' => 'numberfield'
+		,'value' => ''
+	)
 
 );
 

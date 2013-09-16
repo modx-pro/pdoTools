@@ -6,6 +6,7 @@
  * @subpackage lexicon
  */
 $_lang['pdotools_prop_context'] = 'Which Context should be searched in.';
+$_lang['pdotools_prop_field_context'] = 'Context of resource for select it`s parents. Needed for work of parameters "&top" and "&topLevel".';
 $_lang['pdotools_prop_depth'] = 'Integer value indicating depth to search for resources from each parent. First level of resources beneath parent is depth.';
 $_lang['pdotools_prop_fastMode'] = 'Fast chunks processing. If true, MODX parser will not be used and unprocessed tags will be cut.';
 $_lang['pdotools_prop_first'] = 'Define the idx which represents the first resource.';
@@ -68,3 +69,5 @@ $_lang['pdotools_prop_loadModels'] = 'Comma-separated list of 3rd party componen
 $_lang['pdotools_prop_direction'] = 'Direction or breadcrumb: Left To Right (ltr) or Right To Left (rtl) for Arabic language for example.';
 $_lang['pdotools_prop_id'] = 'Id of the resource.';
 $_lang['pdotools_prop_field'] = 'Field of the resource.';
+$_lang['pdotools_prop_top'] = 'Instead of the "&id" will be used his parent on level "&top". View comes from the resource "&id" up, to the root of context.';
+$_lang['pdotools_prop_topLevel'] = 'Instead of the "&id" will be used his parent on level "&topLevel" from the root of context. View comes from the root down to the resource "&id".';
