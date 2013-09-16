@@ -69,5 +69,5 @@ $_lang['pdotools_prop_loadModels'] = 'Comma-separated list of 3rd party componen
 $_lang['pdotools_prop_direction'] = 'Direction or breadcrumb: Left To Right (ltr) or Right To Left (rtl) for Arabic language for example.';
 $_lang['pdotools_prop_id'] = 'Id of the resource.';
 $_lang['pdotools_prop_field'] = 'Field of the resource.';
-$_lang['pdotools_prop_top'] = 'Instead of the "&id" will be used his parent on level "&top". View comes from the resource "&id" up, to the root of context.';
-$_lang['pdotools_prop_topLevel'] = 'Instead of the "&id" will be used his parent on level "&topLevel" from the root of context. View comes from the root down to the resource "&id".';
+$_lang['pdotools_prop_top'] = 'Selects parent of specified "&id" on level "&top".';
+$_lang['pdotools_prop_topLevel'] = 'Selects parent of specified "&id" on level "&topLevel" from root of context.';
