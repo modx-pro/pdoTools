@@ -29,13 +29,13 @@ if (!empty($top) || !empty($topLevel)) {
 		}
 	}
 	// Select id of parent of specified id on level = &top
-	if (!empty($top) && $id != $top) {
+	if (!empty($top)) {
 		$parents = $modx->getParentIds($id, $top, array('context' => $context));
 		if (empty($parents)) {return '';}
 		$id = array_pop($parents);
 	}
 	// Select id of parent of specified id from root on level = &toplevel
-	elseif (!empty($topLevel) && $id != $topLevel) {
+	elseif (!empty($topLevel)) {
 		$childs = array_flip($modx->getChildIds(0, $topLevel, array('context' => $context)));
 		if (empty($childs)) {return '';}
 		while ($parents = $modx->getParentIds($id, 1, array('context' => $context))) {
