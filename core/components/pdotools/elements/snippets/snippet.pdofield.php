@@ -32,15 +32,15 @@ if (!empty($top) || !empty($topLevel)) {
 	$top = isset($top) && intval($top) ? $top : 0;
 	$topLevel= isset($topLevel) && intval($topLevel) ? intval($topLevel) : 0;
 	$pid = $id;
-	$pids = $modx->getParentIds($id, 10, $context);
+	$pids = $modx->getParentIds($id, 10, array('context' => $context));
 	if (!$topLevel || count($pids) >= $topLevel) {
-		while ($parentIds= $modx->getParentIds($id, 1, $context)) {
+		while ($parentIds= $modx->getParentIds($id, 1, array('context' => $context))) {
 			$pid = array_pop($parentIds);
 			if ($pid == $top) {
 				break;
 			}
 			$id = $pid;
-			$parentIds = $modx->getParentIds($id);
+			$parentIds = $modx->getParentIds($id, 10, array('context' => $context));
 			if ($topLevel && count($parentIds) < $topLevel) {
 				break;
 			}
