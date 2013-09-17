@@ -55,7 +55,7 @@ foreach ($parents as $parent) {
 	if (!empty($parent)) {
 		$ids[] = $parent;
 	}
-	if ($parent == $from) {
+	if (!empty($from) && $parent == $from) {
 		break;
 	}
 }
