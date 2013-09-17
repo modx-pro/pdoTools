@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.0 beta2
+==============
+- Added method pdoFetch::checkPermissions() for verify user privileges to view the results.
+
 1.7.0 beta1
 ==============
 - New snippet pdoCrumbs.

@@ -47,6 +47,7 @@ class pdoFetch extends pdoTools {
 
 			,'nestedChunkPrefix' => 'pdotools_'
 			,'loadModels' => ''
+			,'checkPermissions' => ''
 		), $config);
 
 		if (empty($this->config['sortby'])) {
@@ -89,6 +90,7 @@ class pdoFetch extends pdoTools {
 
 				$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
 				$this->addTime('Rows fetched');
+				$rows = $this->checkPermissions($rows);
 				$this->count = count($rows);
 
 				if (strtolower($this->config['return']) == 'ids') {
@@ -586,5 +588,43 @@ class pdoFetch extends pdoTools {
 
 		return $rows;
 	}
+
+
+	/**
+	 * Checks user permissions to view the results
+	 *
+	 * @param array $rows
+	 *
+	 * @return array
+	 */
+	public function checkPermissions($rows = array()) {
+		$permissions = array();
+		if (!empty($this->config['checkPermissions'])) {
+			$tmp = array_map('trim', explode(',', $this->config['checkPermissions']));
+			foreach ($tmp as $v) {
+				$permissions[$v] = true;
+			}
+		}
+		else {
+			return $rows;
+		}
+		$total = $this->modx->getPlaceholder($this->config['totalVar']);
+
+		foreach ($rows as $key => $row) {
+			/** @var modAccessibleObject $object */
+			$object = $this->modx->newObject($this->config['class']);
+			$object->_fields['id'] = $row['id'];
+			if ($object instanceof modAccessibleObject && !$object->checkPolicy($permissions)) {
+				unset($rows[$key]);
+				$this->addTime($this->config['class'] .' #'.$row['id'].' was excluded from results, because you do not have enough permissions');
+				$total--;
+			}
+		}
+
+		$this->addTime('Checked for permissions "'.implode(',', array_keys($permissions)).'"');
+		$this->modx->setPlaceholder($this->config['totalVar'], $total);
+		return $rows;
+	}
+
 
 }
