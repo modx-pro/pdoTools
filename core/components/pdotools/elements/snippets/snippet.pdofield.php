@@ -16,7 +16,7 @@ if (!empty($options)) {
 		$field = $options;
 	}
 }
-if (empty($id)) {return '';}
+if (empty($id)) {$id = $modx->resource->id;}
 if (!isset($context)) {$context = '';}
 
 if (!empty($top) || !empty($topLevel)) {
@@ -28,22 +28,20 @@ if (!empty($top) || !empty($topLevel)) {
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}
-	// Select id of parent of specified id on level = &top
-	if (!empty($top)) {
-		$parents = $modx->getParentIds($id, $top, array('context' => $context));
-		if (empty($parents)) {return '';}
-		$id = array_pop($parents);
-	}
-	// Select id of parent of specified id from root on level = &toplevel
-	elseif (!empty($topLevel)) {
-		$childs = array_flip($modx->getChildIds(0, $topLevel, array('context' => $context)));
-		if (empty($childs)) {return '';}
-		while ($parents = $modx->getParentIds($id, 1, array('context' => $context))) {
-			$id = array_pop($parents);
-			if (!isset($childs[$id])) {
-				$parents = $modx->getParentIds($id, 1, array('context' => $context));
+	// This algorithm taken from snippet "UltimateParent"
+	$top = isset($top) && intval($top) ? $top : 0;
+	$topLevel= isset($topLevel) && intval($topLevel) ? intval($topLevel) : 0;
+	$pid = $id;
+	$pids = $modx->getParentIds($id, 10, $context);
+	if (!$topLevel || count($pids) >= $topLevel) {
+		while ($parentIds= $modx->getParentIds($id, 1, $context)) {
+			$pid = array_pop($parentIds);
+			if ($pid == $top) {
+				break;
 			}
-			else {
+			$id = $pid;
+			$parentIds = $modx->getParentIds($id);
+			if ($topLevel && count($parentIds) < $topLevel) {
 				break;
 			}
 		}

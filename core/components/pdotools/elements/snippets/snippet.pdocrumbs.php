@@ -15,7 +15,7 @@ if ($limit == '') {$limit = 10;}
 if (!empty($maxCrumbs)) {$limit = $maxCrumbs;}
 if (!empty($containerTpl)) {$tplWrapper = $containerTpl;}
 if (!empty($currentCrumbTpl)) {$tplCurrent = $currentCrumbTpl;}
-if (!empty($linkCrumbTpl)) {$tpl = $linkCrumbTpl;}
+if (!empty($linkCrumbTpl)) {$scriptProperties['tpl'] = $linkCrumbTpl;}
 if (!empty($maxCrumbTpl)) {$tplMax = $maxCrumbTpl;}
 if (isset($showBreadCrumbsAtHome)) {$showAtHome = $showBreadCrumbsAtHome;}
 if (isset($showHomeCrumb)) {$showHome = $showHomeCrumb;}
@@ -46,7 +46,7 @@ if (!$resource) {
 }
 
 $parents = $modx->getParentIds($resource->id, $limit, array('context' => $resource->get('context_key')));
-if (!empty($showHomeCrumb)) {
+if (!empty($showHome)) {
 	$parents[] = $siteStart;
 }
 
