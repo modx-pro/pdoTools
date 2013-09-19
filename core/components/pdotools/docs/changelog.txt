@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.0 rc
+==============
+- Script properties are now passed to chunks. You can send any placeholders to it.
+
 1.7.0 beta2
 ==============
 - Added method pdoFetch::checkPermissions() for verify user privileges to view the results.

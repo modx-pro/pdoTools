@@ -118,7 +118,12 @@ if (!empty($rows) && is_array($rows)) {
 			$row['link'] = $modx->makeUrl($row['id'], '', '', $scheme);
 		}
 
-		$row['idx'] = $pdoFetch->idx++;
+		$row = array_merge(
+			$scriptProperties
+			,$row
+			,array('idx' => $pdoFetch->idx++)
+		);
+
 		if ($row['id'] == $resource->id && empty($showCurrent)) {
 			continue;
 		}

@@ -107,14 +107,18 @@ class pdoFetch extends pdoTools {
 				}
 				else {
 					$rows = $this->prepareResults($rows);
-					foreach ($rows as $v) {
-						$v['idx'] = $this->idx++;
-						$tpl = $this->defineChunk($v);
+					foreach ($rows as $row) {
+						$row = array_merge(
+							$this->config,
+							$row,
+							array('idx' => $this->idx++)
+						);
+						$tpl = $this->defineChunk($row);
 						if (empty($tpl)) {
-							$output[] = '<pre>'.$this->getChunk('', $v).'</pre>';
+							$output[] = '<pre>'.$this->getChunk('', $row).'</pre>';
 						}
 						else {
-							$output[] = $this->getChunk($tpl, $v, $this->config['fastMode']);
+							$output[] = $this->getChunk($tpl, $row, $this->config['fastMode']);
 						}
 					}
 					$this->addTime('Returning processed chunks');
