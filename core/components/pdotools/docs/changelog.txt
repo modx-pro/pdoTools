@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 1.7.0 rc
 ==============
+- New snippet pdoSitemap.
 - Script properties are now passed to chunks. You can send any placeholders to it.
 
 1.7.0 beta2

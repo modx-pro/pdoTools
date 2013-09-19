@@ -12,6 +12,7 @@ $tmp = array(
 	'pdoUsers' => 'pdousers',
 	'pdoCrumbs' => 'pdocrumbs',
 	'pdoField' => 'pdofield',
+	'pdoSitemap' => 'pdositemap',
 );
 
 foreach ($tmp as $k => $v) {

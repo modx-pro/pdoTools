@@ -133,8 +133,6 @@ class pdoTools {
 	 * @return string The processed output of the Chunk.
 	 */
 	public function getChunk($name = '', array $properties = array(), $fastMode = false) {
-		$output = null;
-
 		$name = trim($name);
 		if (empty($name)) {
 			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
@@ -207,6 +205,54 @@ class pdoTools {
 		}
 		else {
 			$output = $chunk['content'];
+		}
+
+		return $output;
+	}
+
+
+	/**
+	 * Parse a chunk using an associative array of replacement variables.
+	 *
+	 * @param string $name The name of the chunk.
+	 * @param array $properties An array of properties to replace in the chunk.
+	 * @param string $prefix The placeholder prefix, defaults to [[+.
+	 * @param string $suffix The placeholder suffix, defaults to ]].
+	 *
+	 * @return string The processed chunk with the placeholders replaced.
+	 */
+	public function parseChunk($name = '', array $properties = array(), $prefix = '[[+', $suffix = ']]') {
+		$name = trim($name);
+		if (empty($name)) {
+			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
+		}
+
+		$cache_name = (strpos($name, '@') === 0)
+			? md5($name)
+			: $name;
+
+		if (!$this->inCache($cache_name)) {
+			if ($chunk = $this->_loadChunk($name)) {
+				$this->addElement($cache_name, $chunk);
+			}
+			else {
+				$this->addTime('Could not load chunk "'.$name.'".');
+				return $this->getChunk('', $properties);
+			}
+		}
+		else {
+			$chunk = $this->getElement($cache_name);
+		}
+
+		$output = '';
+		if (!empty($chunk['content'])) {
+			$output = $chunk['content'];
+
+			$pls = array();
+			foreach ($properties as $key => $value) {
+				$pls[] = $prefix.$key.$suffix;
+			}
+			$output = str_replace($pls, $properties, $output);
 		}
 
 		return $output;
@@ -489,6 +535,34 @@ class pdoTools {
 		);
 
 		return $chunk;
+	}
+
+
+	/**
+	 * Builds a hierarchical tree from given array
+	 *
+	 * @param array $rows
+	 *
+	 * @return array
+	 */
+	public function buildTree($tmp = array()) {
+		$rows = array();
+
+		foreach ($tmp as $v) {
+			$rows[$v['id']] = $v;
+		}
+
+		$tree = array();
+		foreach($rows as $id => &$row) {
+			if(empty($row['parent'])) {
+				$tree[$id] = &$row;
+			}
+			else{
+				$tree[$row['parent']]['children'][$id] = &$row;
+			}
+		}
+
+		return $tree;
 	}
 
 }
