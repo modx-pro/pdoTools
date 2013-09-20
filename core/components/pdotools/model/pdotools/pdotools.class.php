@@ -26,7 +26,7 @@ class pdoTools {
 	 * @param modX $modx
 	 * @param array $config
 	 */
-	protected function __construct(modX & $modx, $config = array()) {
+	public function __construct(modX & $modx, $config = array()) {
 		$this->modx = $modx;
 		$this->time = microtime(true);
 
@@ -44,10 +44,13 @@ class pdoTools {
 		$this->config = array_merge(array(
 			'fastMode' => false,
 			'nestedChunkPrefix' => 'pdotools_',
-			'outputSeparator' => "\n",
+
 			'checkPermissions' => '',
 			'loadModels' => '',
-			), $config);
+			'prepareSnippet' => '',
+
+			'outputSeparator' => "\n",
+		), $config);
 
 		if ($clean_timings) {
 			$this->timings = array();
@@ -388,11 +391,12 @@ class pdoTools {
 
 		if (!$element = $this->getStore($name, 'snippet')) {
 			if ($element = $this->modx->getObject('modSnippet', array('name' => $name))) {
-				$this->addStore($name, $element, 'snippet');
+				$this->setStore($name, $element, 'snippet');
 			}
-		}
-		if (!is_object($element) || !($element instanceof modSnippet)) {
-			return '';
+			else {
+				$this->addTime('Could not load snippet "'.$name.'".');
+				return '';
+			}
 		}
 		$element->_cacheable = false;
 		$element->_processed = false;
@@ -413,7 +417,7 @@ class pdoTools {
 
 		return $element->process($scriptProperties);
 	}
-	*/
+
 
 
 	/**
@@ -670,8 +674,37 @@ class pdoTools {
 			$this->addTime('Prepared and processed TVs');
 		}
 
+		/** This method was developed in cooperation with Agel_Nash */
 		if (!empty($this->config['prepareSnippet'])) {
-			//$this->addTime('Prepared fetched rows');
+			$name = trim($this->config['prepareSnippet']);
+			/** @var modSnippet $snippet */
+			if (!$snippet = $this->modx->getObject('modSnippet', array('name' => $name))) {
+				$this->addTime('Could not load snippet "'.$name.'" for preparation of rows.');
+			}
+			else {
+				foreach ($rows as & $row) {
+					$snippet->_cacheable = false;
+					$snippet->_processed = false;
+
+					$tmp = $snippet->process(array(
+						'pdoTools' => $this,
+						'pdoFetch' => $this,
+						'row' => $row,
+					));
+
+					$tmp = ($tmp[0] == '[' || $tmp[0] == '{')
+						? $this->modx->fromJSON($tmp, 1)
+						: unserialize($tmp);
+
+					if (!is_array($tmp)) {
+						$this->addTime('Preparation snippet must return an array, instead of "'.gettype($tmp).'"');
+					}
+					else {
+						$row = array_merge($row, $tmp);
+					}
+				}
+				$this->addTime('Prepared fetched rows by snippet "'.$name.'"');
+			}
 		}
 
 		return $rows;
