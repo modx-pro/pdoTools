@@ -21,7 +21,7 @@ $_lang['pdotools_prop_tvFilters'] = 'Delimited-list of TemplateVar values to fil
 $_lang['pdotools_prop_tvFiltersAndDelimiter'] = 'The delimiter to use to separate logical AND expressions in "&tvFilters". Default is ",".';
 $_lang['pdotools_prop_tvFiltersOrDelimiter'] = 'The delimiter to use to separate logical OR expressions in "&tvFilters". Default is "||".';
 
-$_lang['pdotools_prop_last'] = 'Define the idx which represents the last resource. Default is # of resources being summarized + first - 1.';
+$_lang['pdotools_prop_last'] = 'Define the idx which represents the last reso	urce. Default is # of resources being summarized + first - 1.';
 $_lang['pdotools_prop_limit'] = 'Limits the number of resources returned.  Use `0` for unlimited results.';
 $_lang['pdotools_prop_offset'] = 'An offset of resources returned by the criteria to skip.';
 $_lang['pdotools_prop_outputSeparator'] = 'An optional string to separate each tpl instance.';
@@ -76,3 +76,4 @@ $_lang['pdotools_prop_topLevel'] = 'Selects parent of specified "&id" on level "
 
 $_lang['pdotools_prop_forceXML'] = 'Force the output page as xml.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Schema of sitemap.';
+$_lang['pdotools_prop_schema'] = 'Schema of generation of url, goes to modX::makeUrl().';

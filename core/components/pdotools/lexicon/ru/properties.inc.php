@@ -76,3 +76,4 @@ $_lang['pdotools_prop_topLevel'] = 'Выбирает родителя указа
 
 $_lang['pdotools_prop_forceXML'] = 'Принудительно выводить страницу как xml.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Схема карты сайта.';
+$_lang['pdotools_prop_schema'] = 'Схема формирования url, передаётся в modX::makeUrl().';
