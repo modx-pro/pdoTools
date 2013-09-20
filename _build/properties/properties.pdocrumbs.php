@@ -133,7 +133,7 @@ $tmp = array(
 		)
 		,'value' => 'ltr'
 	)
-	,'schema' => array(
+	,'scheme' => array(
 		'type' => 'list'
 		,'options' => array(
 			array(
