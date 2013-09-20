@@ -206,72 +206,58 @@ class pdoTools {
 			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
 		}
 
-		$cache_name = (strpos($name, '@') === 0)
-			? md5($name)
-			: $name;
-
-		if (!$chunk = $this->getStore($cache_name, 'chunk')) {
-			if ($chunk = $this->_loadChunk($name)) {
-				$this->setStore($cache_name, $chunk, 'chunk');
-			}
-			else {
-				$this->addTime('Could not load chunk "'.$name.'".');
-				return $this->getChunk('', $properties, $fastMode);
-			}
+		/* @var $chunk modChunk[] */
+		$chunk = $this->_loadChunk($name, $properties);
+		if (empty($chunk) || !($chunk['object'] instanceof modChunk)) {
+			return $this->getChunk('', $properties, $fastMode);
 		}
 
-		if (!empty($chunk) && $chunk['object'] instanceof modChunk) {
-			$chunk['object']->_cacheable = false;
-			$chunk['object']->_processed = false;
-			$chunk['object']->_content = '';
+		$chunk['object']->_cacheable = false;
+		$chunk['object']->_processed = false;
+		$chunk['object']->_content = '';
 
-			// Processing quick placeholders
-			if (!empty($chunk['placeholders'])) {
-				$pl = $chunk['placeholders'];
-				foreach ($pl as $k => $v) {
-					if (empty($properties[$k])) {
-						$pl[$k] = '';
-					}
-				}
-				$pl = $this->makePlaceholders($pl);
-				$chunk['content'] = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
-			}
-
-			// Processing standard placeholders
-			$pl = $this->makePlaceholders($properties);
-			$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
-
-			// Processing lexicon placeholders
-			preg_match_all('/\[\[(%|~)(.*?)\]\]/', $content, $matches);
-			$src = $dst = array();
-			$scheme = $this->modx->getOption('link_tag_scheme', -1, true);
-			foreach ($matches[2] as $k => $v) {
-				if ($matches[1][$k] == '%') {
-					$tmp = $this->modx->lexicon($v);
-					if ($tmp != $v) {
-						$src[] = $matches[0][$k];
-						$dst[] = $tmp;
-					}
-				}
-				elseif ($matches[1][$k] == '~' && is_numeric($v)) {
-					if ($tmp = $this->modx->makeUrl($v, '', '', $scheme)) {
-						$src[] = $matches[0][$k];
-						$dst[] = $tmp;
-					}
+		// Processing quick placeholders
+		if (!empty($chunk['placeholders'])) {
+			$pl = $chunk['placeholders'];
+			foreach ($pl as $k => $v) {
+				if (empty($properties[$k])) {
+					$pl[$k] = '';
 				}
 			}
-			if (!empty($src) && !empty($dst)) {
-				$content = str_replace($src, $dst, $content);
-			}
-
-			/* @var $chunk modChunk[] */
-			$output = $fastMode
-				? $this->fastProcess($content, $properties)
-				: $chunk['object']->process($properties, $content);
+			$pl = $this->makePlaceholders($pl);
+			$chunk['content'] = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
 		}
-		else {
-			$output = $chunk['content'];
+
+		// Processing standard placeholders
+		$pl = $this->makePlaceholders($properties);
+		$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
+
+		// Processing lexicon placeholders
+		preg_match_all('/\[\[(%|~)(.*?)\]\]/', $content, $matches);
+		$src = $dst = array();
+		$scheme = $this->modx->getOption('link_tag_scheme', -1, true);
+		foreach ($matches[2] as $k => $v) {
+			if ($matches[1][$k] == '%') {
+				$tmp = $this->modx->lexicon($v);
+				if ($tmp != $v) {
+					$src[] = $matches[0][$k];
+					$dst[] = $tmp;
+				}
+			}
+			elseif ($matches[1][$k] == '~' && is_numeric($v)) {
+				if ($tmp = $this->modx->makeUrl($v, '', '', $scheme)) {
+					$src[] = $matches[0][$k];
+					$dst[] = $tmp;
+				}
+			}
 		}
+		if (!empty($src) && !empty($dst)) {
+			$content = str_replace($src, $dst, $content);
+		}
+
+		$output = $fastMode
+			? $this->fastProcess($content, $properties)
+			: $chunk['object']->process($properties, $content);
 
 		return $output;
 	}
@@ -293,32 +279,18 @@ class pdoTools {
 			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
 		}
 
-		$cache_name = (strpos($name, '@') === 0)
-			? md5($name)
-			: $name;
-
-		if (!$chunk = $this->getStore($cache_name, 'chunk')) {
-			if ($chunk = $this->_loadChunk($name)) {
-				$this->setStore($cache_name, $chunk, 'chunk');
-			}
-			else {
-				$this->addTime('Could not load chunk "'.$name.'".');
-				return $this->parseChunk('', $properties);
-			}
+		$chunk = $this->_loadChunk($name, $properties);
+		if (empty($chunk['content'])) {
+			return $this->parseChunk('', $properties, $prefix, $suffix);
 		}
 
-		$output = '';
-		if (!empty($chunk['content'])) {
-			$output = $chunk['content'];
-
-			$pls = array();
-			foreach ($properties as $key => $value) {
-				$pls[] = $prefix.$key.$suffix;
-			}
-			$output = str_replace($pls, $properties, $output);
+		$output = $chunk['content'];
+		$tmp = array();
+		foreach ($properties as $key => $value) {
+			$tmp[] = $prefix.$key.$suffix;
 		}
 
-		return $output;
+		return str_replace($tmp, $properties, $output);
 	}
 
 
@@ -527,22 +499,35 @@ class pdoTools {
 	/**
 	 * Loads and returns chunk by various methods.
 	 *
-	 * @param $name
+	 * @param string $name Name or binding
+	 * @param array $row Current row with results being processed
 	 *
 	 * @return array
 	 */
-	protected function _loadChunk($name) {
+	protected function _loadChunk($name, $row = array()) {
 		$binding = $content = '';
 
 		$name = trim($name);
-		if (preg_match('/^@(.*?)\s/', $name, $matches)) {
+		if (preg_match('/^@([A-Z]+)/', $name, $matches)) {
 			$binding = $matches[1];
 			$content = substr($name, strlen($binding) + 1);
 		}
-		$content = trim($content);
+		$content = ltrim($content, ' :');
+
+		// Change name for empty TEMPLATE binding so will be used template of given row
+		if ($binding == 'TEMPLATE' && empty($content) && isset($row['template'])) {
+			$name = '@TEMPLATE '.$row['template'];
+			$content = $row['template'];
+		}
+
+		// Load from cache
+		$cache_name = (strpos($name, '@') === 0) ? md5($name) : $name;
+		if ($chunk = $this->getStore($cache_name, 'chunk')) {
+			return $chunk;
+		}
 
 		/** @var modChunk $element */
-		switch (strtoupper($binding)) {
+		switch ($binding) {
 			case 'CODE':
 			case 'INLINE':
 				$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
@@ -560,7 +545,6 @@ class pdoTools {
 
 				if (!preg_match('/(.html|.tpl)$/i', $path)) {
 					$this->addTime('Allowed extensions for @FILE chunks is "html" and "tpl"');
-					$content = '';
 				}
 				elseif ($content = file_get_contents($path)) {
 					$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
@@ -568,7 +552,22 @@ class pdoTools {
 					$this->addTime('Loaded chunk from "'.str_replace(MODX_BASE_PATH, '', $path).'"');
 				}
 				break;
+			case 'TEMPLATE':
+				/** @var modTemplate $template */
+				if ($template = $this->modx->getObject('modTemplate', array('id' => $content, 'OR:templatename:=' => $content))) {
+					$content = $template->getContent();
+					$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
+					$element->setContent($content);
+					$this->addTime('Created chunk from template "'.$template->templatename.'"');
+				}
+				break;
 			case 'CHUNK':
+				$name = $content;
+				if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
+					$content = $element->getContent();
+					$this->addTime('Loaded chunk "'.$name.'"');
+				}
+				break;
 			default:
 				if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
 					$content = $element->getContent();
@@ -576,7 +575,8 @@ class pdoTools {
 				}
 		}
 
-		if (empty($content)) {
+		if (!$element) {
+			$this->addTime('Could not load or create chunk "'.$name.'".');
 			return false;
 		}
 
@@ -589,7 +589,7 @@ class pdoTools {
 			$placeholders[$v] = $matches[2][$k];
 		}
 		if (!empty($src) && !empty($dst)) {
-			$content = str_replace($src,$dst,$content);
+			$content = str_replace($src, $dst, $content);
 		}
 
 		$chunk = array(
@@ -598,6 +598,7 @@ class pdoTools {
 			,'placeholders' => $placeholders
 		);
 
+		$this->setStore($cache_name, $chunk, 'chunk');
 		return $chunk;
 	}
 
