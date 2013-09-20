@@ -3,21 +3,55 @@
 class pdoTools {
 	/** @var modX $modx */
 	public $modx;
+	/** @var array $timings Array with query log */
 	public $timings = array();
+	/** @var array $config Array with class config */
 	public $config = array();
-	public $elements = array(
+	/** @var array $store Array for cache elements and user data */
+	public $store = array(
 		'chunk' => array(),
 		'snippet' => array(),
 		'tv' => array(),
+		'data' => array(),
 	);
-	protected $time;
+	/** @var integer $idx Index of iterator of rows processing */
 	public $idx = 1;
+	/** @var integer $time Time of script start */
+	protected $time;
+	/** @var integer $count Total number of results for chunks processing */
 	protected $count = 0;
 
 
-	function __construct(modX & $modx) {
+	/**
+	 * @param modX $modx
+	 * @param array $config
+	 */
+	protected function __construct(modX & $modx, $config = array()) {
 		$this->modx = $modx;
 		$this->time = microtime(true);
+
+		$this->setConfig($config);
+	}
+
+
+	/**
+	 * Set config from default values and given array.
+	 *
+	 * @param array $config
+	 * @param bool $clean_timings Clean timings array
+	 */
+	public function setConfig(array $config = array(), $clean_timings = true) {
+		$this->config = array_merge(array(
+			'fastMode' => false,
+			'nestedChunkPrefix' => 'pdotools_',
+			'outputSeparator' => "\n",
+			'checkPermissions' => '',
+			'loadModels' => '',
+			), $config);
+
+		if ($clean_timings) {
+			$this->timings = array();
+		}
 	}
 
 
@@ -62,47 +96,78 @@ class pdoTools {
 
 
 	/**
-	 * Add element to cache
+	 * Set data to cache
 	 *
-	 * @return boolean
-	 * */
-	public function addElement($name, $object, $type = 'chunk') {
-		$this->elements[$type][$name] = $object;
-
-		return $this->inCache($name);
+	 * @param $name
+	 * @param $object
+	 * @param string $type
+	 */
+	public function setStore($name, $object, $type = 'data') {
+		$this->store[$type][$name] = $object;
 	}
 
 
 	/**
-	 * Return element from cache
+	 * Get data from cache
 	 *
-	 * @return array|boolean
-	 * */
-	public function getElement($name, $type = 'chunk') {
-		return $this->inCache($name, $type)
-			? $this->elements[$type][$name]
-			: false;
+	 * @param $name
+	 * @param string $type
+	 *
+	 * @return mixed|null
+	 */
+	public function getStore($name, $type = 'data') {
+		return isset($this->store[$type][$name])
+			? $this->store[$type][$name]
+			: null;
 	}
 
 
 	/**
-	 * Check for existing element
-	 *
-	 * @return boolean
-	 * */
-	public function inCache($name, $type = 'chunk') {
-		return isset($this->elements[$type][$name]);
+	 * Loads specified list of packages models
+	 */
+	public function loadModels() {
+		if (empty($this->config['loadModels'])) {return;}
+
+		$models = array();
+		if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
+			$tmp = $this->modx->fromJSON($this->config['loadModels']);
+			foreach ($tmp as $k => $v) {
+				$v = trim(strtolower($v));
+				$models[$k] = (strpos($v, MODX_CORE_PATH) === false)
+					? MODX_CORE_PATH . ltrim($v, '/')
+					: $v;
+			}
+		}
+		else {
+			$tmp = array_map('trim', explode(',', $this->config['loadModels']));
+			foreach ($tmp as $v) {
+				$models[$v] = MODX_CORE_PATH . 'components/'.strtolower($v).'/model/';
+			}
+		}
+
+		if (!empty($models)) {
+			foreach ($models as $k => $v) {
+				$t = '/' . str_replace(MODX_BASE_PATH, '', $v);
+				if ($this->modx->addPackage($k, $v)) {
+					$this->addTime('Loaded model "'.$k.'" from "'.$t.'"');
+				}
+				else {
+					$this->addTime('Could not load model "'.$k.'" from "'.$t.'"');
+				}
+			}
+		}
 	}
 
 
 	/**
-	 * Transform array to placeholdres
+	 * Transform array to placeholders
 	 *
 	 * @param array $array
 	 * @param string $prefix
 	 *
 	 * @return array
-	 */public function makePlaceholders(array $array = array(), $prefix = '') {
+	 */
+	public function makePlaceholders(array $array = array(), $prefix = '') {
 		$result = array(
 			'pl' => array()
 			,'vl' => array()
@@ -126,11 +191,11 @@ class pdoTools {
 	/**
 	 * Process and return the output from a Chunk by name.
 	 *
-	 * @param string $chunkName The name of the chunk.
+	 * @param string $name The name of the chunk.
 	 * @param array $properties An associative array of properties to process the Chunk with, treated as placeholders within the scope of the Element.
-	 * @param boolean $fastMode If true, all MODX tags in chunk will be processed.
+	 * @param boolean $fastMode If false, all MODX tags in chunk will be processed.
 	 *
-	 * @return string The processed output of the Chunk.
+	 * @return mixed The processed output of the Chunk.
 	 */
 	public function getChunk($name = '', array $properties = array(), $fastMode = false) {
 		$name = trim($name);
@@ -142,17 +207,14 @@ class pdoTools {
 			? md5($name)
 			: $name;
 
-		if (!$this->inCache($cache_name)) {
+		if (!$chunk = $this->getStore($cache_name, 'chunk')) {
 			if ($chunk = $this->_loadChunk($name)) {
-				$this->addElement($cache_name, $chunk);
+				$this->setStore($cache_name, $chunk, 'chunk');
 			}
 			else {
 				$this->addTime('Could not load chunk "'.$name.'".');
 				return $this->getChunk('', $properties, $fastMode);
 			}
-		}
-		else {
-			$chunk = $this->getElement($cache_name);
 		}
 
 		if (!empty($chunk) && $chunk['object'] instanceof modChunk) {
@@ -199,6 +261,7 @@ class pdoTools {
 				$content = str_replace($src, $dst, $content);
 			}
 
+			/* @var $chunk modChunk[] */
 			$output = $fastMode
 				? $this->fastProcess($content, $properties)
 				: $chunk['object']->process($properties, $content);
@@ -231,17 +294,14 @@ class pdoTools {
 			? md5($name)
 			: $name;
 
-		if (!$this->inCache($cache_name)) {
+		if (!$chunk = $this->getStore($cache_name, 'chunk')) {
 			if ($chunk = $this->_loadChunk($name)) {
-				$this->addElement($cache_name, $chunk);
+				$this->setStore($cache_name, $chunk, 'chunk');
 			}
 			else {
 				$this->addTime('Could not load chunk "'.$name.'".');
-				return $this->getChunk('', $properties);
+				return $this->parseChunk('', $properties);
 			}
-		}
-		else {
-			$chunk = $this->getElement($cache_name);
 		}
 
 		$output = '';
@@ -326,9 +386,9 @@ class pdoTools {
 			$name = $tag;
 		}
 
-		if (!$element = $this->getElement($name)) {
+		if (!$element = $this->getStore($name, 'snippet')) {
 			if ($element = $this->modx->getObject('modSnippet', array('name' => $name))) {
-				$this->addElement($name, $element);
+				$this->addStore($name, $element, 'snippet');
 			}
 		}
 		if (!is_object($element) || !($element instanceof modSnippet)) {
@@ -541,7 +601,7 @@ class pdoTools {
 	/**
 	 * Builds a hierarchical tree from given array
 	 *
-	 * @param array $rows
+	 * @param array $tmp
 	 *
 	 * @return array
 	 */
@@ -567,7 +627,11 @@ class pdoTools {
 
 
 	/**
-	 * Prepares fetched rows and process template variables.
+	 * Prepares fetched rows and process template variables
+	 *
+	 * @param array $rows
+	 *
+	 * @return array
 	 */
 	public function prepareResults(array $rows = array()) {
 		if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
@@ -584,16 +648,16 @@ class pdoTools {
 					if (!in_array($tv, $process) && !in_array($tv, $prepare)) {continue;}
 
 					/** @var modTemplateVar $templateVar */
-					if (!$templateVar = $this->getElement($tv, 'tv')) {
+					if (!$templateVar = $this->getStore($tv, 'tv')) {
 						if ($templateVar = $this->modx->getObject('modTemplateVar', array('name' => $tv))) {
-							$this->addElement($tv, $templateVar, 'tv');
+							$this->setStore($tv, $templateVar, 'tv');
+						}
+						else {
+							$this->addTime('Could not process or prepare TV "'.$tv.'"');
+							continue;
 						}
 					}
 
-					if (!$templateVar) {
-						$this->addTime('Could not process or prepare TV "'.$tv.'"');
-						continue;
-					}
 					$key = $this->config['tvPrefix'].$templateVar->name;
 					if (in_array($tv, $process)) {
 						$row[$key] = $templateVar->renderOutput($row['id']);
@@ -616,6 +680,10 @@ class pdoTools {
 
 	/**
 	 * Checks user permissions to view the results
+	 *
+	 * @param array $rows
+	 *
+	 * @return array
 	 */
 	public function checkPermissions($rows = array()) {
 		$permissions = array();

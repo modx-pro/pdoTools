@@ -6,62 +6,50 @@ class pdoFetch extends pdoTools {
 	protected $query;
 
 
-	public function __construct(modX $modx, array $config = array()) {
-		parent::__construct($modx);
-
-		$this->setConfig($config);
-	}
-
-
 	/**
-	 * Set default query options and merge it with given config.
-	 * Need for multiple instances of pdoFetch snippets at the one page.
-	 *
+	 * {@inheritdoc}
 	 */
 	public function setConfig(array $config = array(), $clean_timings = true) {
-		$this->config = array_merge(array(
-			'class' => 'modResource'
-			,'limit' => 10
-			,'offset' => 0
-			,'sortby' => ''
-			,'sortdir' => 'DESC'
-			,'groupby' => ''
-			,'totalVar' => 'total'
-			,'outputSeparator' => "\n"
-			,'tpl' => ''
-			,'fastMode' => false
-			,'return' => 'chunks'	 // chunks, data, sql or ids
+		parent::setConfig(
+			array_merge(array(
+				'class' => 'modResource',
+				'limit' => 10,
+				'offset' => 0,
+				'sortby' => '',
+				'sortdir' => 'DESC',
+				'groupby' => '',
+				'totalVar' => 'total',
+				'tpl' => '',
+				'return' => 'chunks',	// chunks, data, sql or ids
 
-			,'select' => ''
-			,'leftJoin' => ''
-			,'rightJoin' => ''
-			,'innerJoin' => ''
+				'select' => '',
+				'leftJoin' => '',
+				'rightJoin' => '',
+				'innerJoin' => '',
 
-			,'includeTVs' => ''
-			,'tvPrefix' => ''
-			,'tvsJoin' => array()
-			,'tvsSelect' => array()
+				'includeTVs' => '',
+				'tvPrefix' => '',
+				'tvsJoin' => array(),
+				'tvsSelect' => array(),
 
-			,'tvFiltersAndDelimiter' => ','
-			,'tvFiltersOrDelimiter' => '||'
-
-			,'nestedChunkPrefix' => 'pdotools_'
-			,'loadModels' => ''
-			,'checkPermissions' => ''
-		), $config);
+				'tvFiltersAndDelimiter' => ',',
+				'tvFiltersOrDelimiter' => '||',
+			), $config)
+		, $clean_timings);
 
 		if (empty($this->config['sortby'])) {
 			$this->config['sortby'] = $this->config['class'].'.'.$this->modx->getPK($this->config['class']);
 		}
-		$this->idx = !empty($this->config['offset']) ? (integer) $this->config['offset'] + 1 : 1;
-		if ($clean_timings) {
-			$this->timings = array();
-		}
+
+		$this->idx = !empty($this->config['offset'])
+			? (integer) $this->config['offset'] + 1
+			: 1;
 	}
 
 
 	/**
-	 * Main method for query processing
+	 * Main method for query processing and fetching rows
+	 * It can return string with SQL query, array or raw rows or processed HTML chunks
 	 *
 	 * @return array|bool|string
 	 */
@@ -143,44 +131,7 @@ class pdoFetch extends pdoTools {
 
 
 	/**
-	 * Loads specified list of packages models
-	 */
-	public function loadModels() {
-		if (empty($this->config['loadModels'])) {return;}
-
-		$models = array();
-		if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
-			$tmp = $this->modx->fromJSON($this->config['loadModels']);
-			foreach ($tmp as $k => $v) {
-				$v = trim(strtolower($v));
-				$models[$k] = (strpos($v, MODX_CORE_PATH) === false)
-					? MODX_CORE_PATH . ltrim($v, '/')
-					: $v;
-			}
-		}
-		else {
-			$tmp = array_map('trim', explode(',', $this->config['loadModels']));
-			foreach ($tmp as $v) {
-				$models[$v] = MODX_CORE_PATH . 'components/'.strtolower($v).'/model/';
-			}
-		}
-
-		if (!empty($models)) {
-			foreach ($models as $k => $v) {
-				$t = '/' . str_replace(MODX_BASE_PATH, '', $v);
-				if ($this->modx->addPackage($k, $v)) {
-					$this->addTime('Loaded model "'.$k.'" from "'.$t.'"');
-				}
-				else {
-					$this->addTime('Could not load model "'.$k.'" from "'.$t.'"');
-				}
-			}
-		}
-	}
-
-	/**
 	 * Create object with xPDOQuery
-	 *
 	 */
 	public function makeQuery() {
 		$this->query = $this->modx->newQuery($this->config['class']);
@@ -190,12 +141,11 @@ class pdoFetch extends pdoTools {
 
 	/**
 	 * Adds where and having conditions
-	 *
 	 */
 	public function addWhere() {
 		$this->addTVFilters();
 		if (!empty($this->config['where'])) {
-			$where = $this->modx->fromJson($this->config['where']);
+			$where = $this->modx->fromJSON($this->config['where']);
 			$where = $this->replaceTVCondition($where);
 			$this->query->where($where);
 
@@ -207,7 +157,7 @@ class pdoFetch extends pdoTools {
 			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>');
 		}
 		if (!empty($this->config['having'])) {
-			$having = $this->modx->fromJson($this->config['having']);
+			$having = $this->modx->fromJSON($this->config['having']);
 			$having = $this->replaceTVCondition($having);
 			$this->query->having($having);
 
@@ -223,7 +173,6 @@ class pdoFetch extends pdoTools {
 
 	/**
 	 * Set "total" placeholder for pagination
-	 *
 	 */
 	public function setTotal() {
 		if ($this->config['return'] != 'sql') {
@@ -238,10 +187,9 @@ class pdoFetch extends pdoTools {
 
 	/**
 	 * Add tables join to query
-	 *
 	 */
 	public function addJoins() {
-		// left join is always need because of TVs
+		// left join is always needed because of TVs
 		if (empty($this->config['leftJoin'])) {
 			$this->config['leftJoin'] = '[]';
 		}
@@ -264,7 +212,6 @@ class pdoFetch extends pdoTools {
 
 	/**
 	 * Add select of fields
-	 *
 	 */
 	public function addSelects() {
 		if ($this->config['return'] == 'ids') {
@@ -306,7 +253,6 @@ class pdoFetch extends pdoTools {
 
 	/**
 	 * Group query by given field
-	 *
 	 */
 	public function addGrouping() {
 		if (!empty($this->config['groupby'])) {
@@ -372,7 +318,6 @@ class pdoFetch extends pdoTools {
 
 	/**
 	 * Add selection of template variables to query
-	 *
 	 */
 	public function addTVs() {
 		$includeTVs = $this->config['includeTVs'];
@@ -423,7 +368,6 @@ class pdoFetch extends pdoTools {
 	/**
 	 * Convert tvFilters string to SQL and add to "where" condition
 	 * This algorithm taken from snippet getResources by opengeek
-	 *
 	 */
 	public function addTVFilters() {
 		if (empty($this->config['tvFilters'])) {return;}
@@ -532,6 +476,9 @@ class pdoFetch extends pdoTools {
 	 * Replaces tv fields to full name format.
 	 * For example, field "test" will be replaced with "TVtest.value", if template variable "test" was joined in query.
 	 *
+	 * @param array $array Array for replacement
+	 *
+	 * @return array $sorts Array with replaced conditions
 	 */
 	public function replaceTVCondition(array $array) {
 		if (empty($this->config['tvsJoin'])) {return $array;}
