@@ -20,6 +20,8 @@ class pdoTools {
 	protected $time;
 	/** @var integer $count Total number of results for chunks processing */
 	protected $count = 0;
+	/** @var boolean $preparing Specifies that now is the preparation */
+	protected $preparing = false;
 
 
 	/**
@@ -201,15 +203,15 @@ class pdoTools {
 	 * @return mixed The processed output of the Chunk.
 	 */
 	public function getChunk($name = '', array $properties = array(), $fastMode = false) {
+		$properties = $this->prepareRow($properties);
 		$name = trim($name);
-		if (empty($name)) {
-			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
-		}
 
 		/* @var $chunk modChunk[] */
-		$chunk = $this->_loadChunk($name, $properties);
-		if (empty($chunk) || !($chunk['object'] instanceof modChunk)) {
-			return $this->getChunk('', $properties, $fastMode);
+		if (!empty($name)) {
+			$chunk = $this->_loadChunk($name, $properties);
+		}
+		if (empty($name) || empty($chunk) || !($chunk['object'] instanceof modChunk)) {
+			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
 		}
 
 		$chunk['object']->_cacheable = false;
@@ -274,14 +276,14 @@ class pdoTools {
 	 * @return string The processed chunk with the placeholders replaced.
 	 */
 	public function parseChunk($name = '', array $properties = array(), $prefix = '[[+', $suffix = ']]') {
+		$properties = $this->prepareRow($properties);
 		$name = trim($name);
-		if (empty($name)) {
-			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
-		}
 
-		$chunk = $this->_loadChunk($name, $properties);
-		if (empty($chunk['content'])) {
-			return $this->parseChunk('', $properties, $prefix, $suffix);
+		if (!empty($name)) {
+			$chunk = $this->_loadChunk($name, $properties);
+		}
+		if (empty($name) || empty($chunk['content'])) {
+			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
 		}
 
 		$output = $chunk['content'];
@@ -638,7 +640,7 @@ class pdoTools {
 	 *
 	 * @return array
 	 */
-	public function prepareResults(array $rows = array()) {
+	public function prepareRows(array $rows = array()) {
 		if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
 			$tvs = array_map('trim', explode(',', $this->config['includeTVs']));
 			$prepare = ($this->config['prepareTVs'] == 1)
@@ -675,42 +677,59 @@ class pdoTools {
 			$this->addTime('Prepared and processed TVs');
 		}
 
-		/** This method was developed in cooperation with Agel_Nash */
-		if (!empty($this->config['prepareSnippet'])) {
-			$name = trim($this->config['prepareSnippet']);
-			/** @var modSnippet $snippet */
-			if (!$snippet = $this->modx->getObject('modSnippet', array('name' => $name))) {
-				$this->addTime('Could not load snippet "'.$name.'" for preparation of rows.');
-			}
-			else {
-				foreach ($rows as & $row) {
-					$snippet->_cacheable = false;
-					$snippet->_processed = false;
-
-					$tmp = $snippet->process(array(
-						'pdoTools' => $this,
-						'pdoFetch' => $this,
-						'row' => $row,
-					));
-
-					$tmp = ($tmp[0] == '[' || $tmp[0] == '{')
-						? $this->modx->fromJSON($tmp, 1)
-						: unserialize($tmp);
-
-					if (!is_array($tmp)) {
-						$this->addTime('Preparation snippet must return an array, instead of "'.gettype($tmp).'"');
-					}
-					else {
-						$row = array_merge($row, $tmp);
-					}
-				}
-				$this->addTime('Prepared fetched rows by snippet "'.$name.'"');
-			}
-		}
-
 		return $rows;
 	}
 
+
+	/**
+	 * Allow user to prepare single row by custom snippet before render chunk
+	 * This method was developed in cooperation with Agel_Nash
+	 *
+	 * @param array $row
+	 *
+	 * @return array
+	 */
+	public function prepareRow($row = array()) {
+		if ($this->preparing) {return $row;}
+
+		if (!empty($this->config['prepareSnippet'])) {
+			$this->preparing = true;
+			$name = trim($this->config['prepareSnippet']);
+
+			/** @var modSnippet $snippet */
+			if (!$snippet = $this->getStore($name, 'snippet')) {
+				if ($snippet = $this->modx->getObject('modSnippet', array('name' => $name))) {
+					$this->setStore($name, $snippet, 'snippet');
+				}
+				else {
+					$this->addTime('Could not load snippet "'.$name.'" for preparation of row.');
+					return '';
+				}
+			}
+			$snippet->_cacheable = false;
+			$snippet->_processed = false;
+
+			$tmp = $snippet->process(array(
+				'pdoTools' => $this,
+				'pdoFetch' => $this,
+				'row' => $row,
+			));
+
+			$tmp = ($tmp[0] == '[' || $tmp[0] == '{')
+				? $this->modx->fromJSON($tmp, 1)
+				: unserialize($tmp);
+
+			if (!is_array($tmp)) {
+				$this->addTime('Preparation snippet must return an array, instead of "'.gettype($tmp).'"');
+			}
+			else {
+				$row = array_merge($row, $tmp);
+			}
+			$this->preparing = false;;
+		}
+
+		return $row;
+	}
 
 	/**
 	 * Checks user permissions to view the results

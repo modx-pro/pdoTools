@@ -89,12 +89,11 @@ class pdoFetch extends pdoTools {
 					$output = implode(',', $ids);
 				}
 				elseif (strtolower($this->config['return']) == 'data') {
-					$rows = $this->prepareResults($rows);
+					$rows = $this->prepareRows($rows);
 					$this->addTime('Returning raw data');
 					$output = & $rows;
 				}
 				else {
-					$rows = $this->prepareResults($rows);
 					foreach ($rows as $row) {
 						$row = array_merge(
 							$this->config,
