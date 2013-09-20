@@ -3,8 +3,9 @@ Changelog for pdoTools.
 1.7.0 rc2
 ==============
 - Ability to specify snippet for preparation of fetched rows by parameter "&prepareSnippet=``".
-- [pdoSitemap] Allow to exclude zero templates.
 - Added @TEMPLATE binding. You can use name or id of any template. If empty - will use template of each row.
+- [pdoSitemap] Allow to exclude zero templates.
+- [pdoCrumbs] Added parameter "&schema=``".
 
 1.7.0 rc
 ==============
