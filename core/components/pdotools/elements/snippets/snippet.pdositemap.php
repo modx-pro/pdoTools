@@ -129,7 +129,7 @@ if (!empty($templates)) {
 	$templates_in = $templates_out = array();
 	foreach ($templates as $v) {
 		if (!is_numeric($v)) {continue;}
-		if ($v < 0) {$templates_out[] = abs($v);}
+		if ($v[0] == '-') {$templates_out[] = abs($v);}
 		else {$templates_in[] = $v;}
 	}
 	if (!empty($templates_in)) {$where[$class.'.template:IN'] = $templates_in;}

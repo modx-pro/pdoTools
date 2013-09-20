@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.0 rc2
+==============
+- [pdoSitemap] Allow to exclude zero templates.
+
 1.7.0 rc
 ==============
 - New snippet pdoSitemap.
