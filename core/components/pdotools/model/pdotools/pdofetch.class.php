@@ -347,6 +347,7 @@ class pdoFetch extends pdoTools {
 						while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 							$name = strtolower($tv['name']);
 							$alias = 'TV'.$name;
+							$tv['default_text'] = str_replace(',', '&#44;', $tv['default_text']);
 							$this->config['tvsJoin'][$name] = array(
 								'class' => 'modTemplateVarResource'
 								,'alias' => $alias
