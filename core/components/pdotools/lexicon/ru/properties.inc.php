@@ -23,6 +23,7 @@ $_lang['pdotools_prop_tvFiltersOrDelimiter'] = 'Разделитель для у
 
 $_lang['pdotools_prop_last'] = 'Номер последней итерации вывода результатов. По умолчанию он рассчитается автоматически, по формуле (total + first - 1).';
 $_lang['pdotools_prop_limit'] = 'Ограничение количества результатов выборки. Можно использовать "0".';
+$_lang['pdotools_prop_neighbors_limit'] = 'Количество соседних документов справа и слева. По умолчанию - 1.';
 $_lang['pdotools_prop_offset'] = 'Пропуск результатов от начала.';
 $_lang['pdotools_prop_outputSeparator'] = 'Необязательная строка для разделения результатов работы.';
 $_lang['pdotools_prop_parents'] = 'Список родителей, через запятую, для поиска результатов. По умолчанию выборка ограничена текущим родителем. Если поставить 0 - выборка не ограничивается. Если id родителя начинается с дефиса, он и его потомки исключается из выборки.';
@@ -56,6 +57,7 @@ $_lang['pdotools_prop_tplFirst'] = 'Имя чанка для первого ре
 $_lang['pdotools_prop_tplLast'] = 'Имя чанка для последнего ресурса в результатах.';
 $_lang['pdotools_prop_tplOdd'] = 'Имя чанка для каждого второго ресурса.';
 $_lang['pdotools_prop_tplWrapper'] = 'Чанк-обёртка, для заворачивания всех результатов. Понимает один плейсхолдер: [[+output]]. Не работает вместе с параметром "toSeparatePlaceholders".';
+$_lang['pdotools_prop_neighbors_tplWrapper'] = 'Чанк-обёртка, для заворачивания результатов. Понимает плейсхолдеры: [[+left]], [[+top]], [[+right]] и [[+log]]. Не работает вместе с параметром "toSeparatePlaceholders".';
 $_lang['pdotools_prop_tvPrefix'] = 'Префикс для ТВ параметров.';
 $_lang['pdotools_prop_where'] = 'Массив дополнительных параметров выборки, закодированный в JSON.';
 $_lang['pdotools_prop_wrapIfEmpty'] = 'Включает вывод чанка-обертки (tplWrapper) даже если результатов нет.';
@@ -65,6 +67,9 @@ $_lang['pdotools_prop_conditionalTpls'] = 'JSON строка с массивом
 $_lang['pdotools_prop_tplCurrent'] = 'Чанк оформления текущего документа в навигации.';
 $_lang['pdotools_prop_tplHome'] = 'Чанк оформления ссылки на главную страницу.';
 $_lang['pdotools_prop_tplMax'] = 'Чанк, который добавляется в начало результатов, если их больше чем "&limit".';
+$_lang['pdotools_prop_tplPrev'] = 'Чанк ссылки на предыдущий документ.';
+$_lang['pdotools_prop_tplUp'] = 'Чанк ссылки на родительский документ.';
+$_lang['pdotools_prop_tplNext'] = 'Чанк ссылки на следующий документ.';
 
 $_lang['pdotools_prop_select'] = 'Список полей для выборки, через запятую. Можно указывать JSON строку с массивом, например {"modResource":"id,pagetitle,content"}.';
 $_lang['pdotools_prop_loadModels'] = 'Список компонентов, через запятую, чьи модели нужно загрузить для построения запроса. Например: "&loadModels=`ms2gallery,msearch2`".';

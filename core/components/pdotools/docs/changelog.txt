@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.0 rc3
+==============
+- New snippet pdoNeighbors.
+
 1.7.0 rc2
 ==============
 - Ability to specify snippet for preparation of fetched rows by parameter "&prepareSnippet=``".

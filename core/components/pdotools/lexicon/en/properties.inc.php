@@ -21,7 +21,8 @@ $_lang['pdotools_prop_tvFilters'] = 'Delimited-list of TemplateVar values to fil
 $_lang['pdotools_prop_tvFiltersAndDelimiter'] = 'The delimiter to use to separate logical AND expressions in "&tvFilters". Default is ",".';
 $_lang['pdotools_prop_tvFiltersOrDelimiter'] = 'The delimiter to use to separate logical OR expressions in "&tvFilters". Default is "||".';
 
-$_lang['pdotools_prop_last'] = 'Define the idx which represents the last reso	urce. Default is # of resources being summarized + first - 1.';
+$_lang['pdotools_prop_last'] = 'Define the idx which represents the last resource. Default is # of resources being summarized + first - 1.';
+$_lang['pdotools_prop_neighbors_limit'] = 'The number of neighboring documents on the right and left. The default is 1.';
 $_lang['pdotools_prop_limit'] = 'Limits the number of resources returned.  Use `0` for unlimited results.';
 $_lang['pdotools_prop_offset'] = 'An offset of resources returned by the criteria to skip.';
 $_lang['pdotools_prop_outputSeparator'] = 'An optional string to separate each tpl instance.';
@@ -56,6 +57,7 @@ $_lang['pdotools_prop_tplFirst'] = 'Name of a chunk serving as resource template
 $_lang['pdotools_prop_tplLast'] = 'Name of a chunk serving as resource template for the last resource.';
 $_lang['pdotools_prop_tplOdd'] = 'Name of a chunk serving as resource template for resources with an odd idx value (see idx property).';
 $_lang['pdotools_prop_tplWrapper'] = 'Name of a chunk serving as a wrapper template for the output. This does not work with toSeparatePlaceholders.';
+$_lang['pdotools_prop_neighbors_tplWrapper'] = 'Name of a chunk serving as a wrapper template for the output. This does not work with toSeparatePlaceholders.';
 $_lang['pdotools_prop_tvPrefix'] = 'The prefix for TemplateVar properties.';
 $_lang['pdotools_prop_where'] = 'A JSON-style expression of criteria to build any additional where clauses from.';
 $_lang['pdotools_prop_wrapIfEmpty'] = 'If true, will output the wrapper specified in &tplWrapper even if the output is empty.';
@@ -65,6 +67,9 @@ $_lang['pdotools_prop_conditionalTpls'] = 'A JSON map of conditional operands an
 $_lang['pdotools_prop_tplCurrent'] = 'Сhunk of the current document in navigation.';
 $_lang['pdotools_prop_tplHome'] = 'Сhunk of the link to the main page.';
 $_lang['pdotools_prop_tplMax'] = 'Сhunk, which is added to the beginning of the results, if there is more than "&limit.';
+$_lang['pdotools_prop_tplPrev'] = 'Сhunk with link to previous document.';
+$_lang['pdotools_prop_tplUp'] = 'Сhunk with link to the parent document.';
+$_lang['pdotools_prop_tplNext'] = 'Сhunk with link to the following document.';
 
 $_lang['pdotools_prop_select'] = 'Comma separated list of columns for select from database. You can specify JSON string with array, for example {"modResource":"id,pagetitle,content"}.';
 $_lang['pdotools_prop_loadModels'] = 'Comma-separated list of 3rd party components that needed for query. For example: "&loadModels=`ms2gallery,msearch2`".';

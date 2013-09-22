@@ -13,6 +13,7 @@ $tmp = array(
 	'pdoCrumbs' => 'pdocrumbs',
 	'pdoField' => 'pdofield',
 	'pdoSitemap' => 'pdositemap',
+	'pdoNeighbors' => 'pdoneighbors',
 );
 
 foreach ($tmp as $k => $v) {
