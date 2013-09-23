@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.7.0 pl
+1.7.0 pl1
 ==============
 - New snippet pdoCrumbs.
 - New snippet pdoField.

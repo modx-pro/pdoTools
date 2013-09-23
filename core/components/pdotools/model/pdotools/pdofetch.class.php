@@ -94,6 +94,7 @@ class pdoFetch extends pdoTools {
 					$output = & $rows;
 				}
 				else {
+					$rows = $this->prepareRows($rows);
 					foreach ($rows as $row) {
 						$row = array_merge(
 							$this->config,
