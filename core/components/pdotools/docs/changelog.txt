@@ -1,30 +1,16 @@
 Changelog for pdoTools.
 
-1.7.0 rc3
-==============
-- New snippet pdoNeighbors.
-
-1.7.0 rc2
-==============
-- Ability to specify snippet for preparation of fetched rows by parameter "&prepareSnippet=``".
-- Added @TEMPLATE binding. You can use name or id of any template. If empty - will use template of each row.
-- [pdoSitemap] Allow to exclude zero templates.
-- [pdoCrumbs] Added parameter "&scheme=``".
-
-1.7.0 rc
-==============
-- New snippet pdoSitemap.
-- Script properties are now passed to chunks. You can send any placeholders to it.
-
-1.7.0 beta2
-==============
-- Added method pdoFetch::checkPermissions() for verify user privileges to view the results.
-
-1.7.0 beta1
+1.7.0 pl
 ==============
 - New snippet pdoCrumbs.
 - New snippet pdoField.
+- New snippet pdoSitemap.
+- New snippet pdoNeighbors.
+- Ability to specify snippet for preparation of fetched rows by parameter "&prepareSnippet=``".
+- Added method pdoTools::checkPermissions() for checking user privileges to view the results.
+- Added @TEMPLATE binding. You can use name or id of any template. If empty - will use template of each row.
 - [pdoResources] Improved parameter "&context".
+- [pdoResources] Script properties are now passed to chunks. You can send any placeholders to it.
 
 1.6.0 pl1
 ==============
