@@ -137,15 +137,16 @@ if (!empty($rows) && is_array($rows)) {
 			: $pdoFetch->getChunk($tpl, $row, $fastMode);
 	}
 }
-
-$log = '';
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-	$log .= '<pre class="pdoCrumbsLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
-}
+$pdoFetch->addTime('Chunks processed');
 
 if (count($output) == 1 && !empty($hideSingle)) {
 	$pdoFetch->addTime('The only result was hidden, because the parameter "hideSingle" activated');
 	$output = array();
+}
+
+$log = '';
+if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+	$log .= '<pre class="pdoCrumbsLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 
 if (!empty($toSeparatePlaceholders)) {
