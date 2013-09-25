@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.1 pl
+==============
+- [pdoCrumbs] Fixed work with "modSymLink" and "modWebLink" resources.
+
 1.7.0 pl1
 ==============
 - New snippet pdoCrumbs.

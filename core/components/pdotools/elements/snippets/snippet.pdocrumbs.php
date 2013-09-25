@@ -67,10 +67,6 @@ if (!empty($exclude)) {
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
-if (empty($includeContent)) {
-	$key = array_search('content', $resourceColumns);
-	unset($resourceColumns[$key]);
-}
 $select = array($class => implode(',',$resourceColumns));
 
 // Add custom parameters
@@ -109,13 +105,13 @@ if (!empty($rows) && is_array($rows)) {
 	}
 
 	foreach ($rows as $row) {
-		if ($row['class_key'] == 'modWebLink') {
+		if (in_array($row['class_key'], array('modWebLink','modSymLink'))) {
 			$row['link'] = is_numeric($row['content'])
-				? $modx->makeUrl($row['content'], '', '', $scheme)
+				? $modx->makeUrl($row['content'], $row['context_key'], '', $scheme)
 				: $row['content'];
 		}
 		else {
-			$row['link'] = $modx->makeUrl($row['id'], '', '', $scheme);
+			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
 		}
 
 		$row = array_merge(

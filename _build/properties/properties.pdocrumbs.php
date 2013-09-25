@@ -35,10 +35,6 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
-	,'includeContent' => array(
-		'type' => 'combo-boolean'
-		,'value' => false
-	)
 
 	,'includeTVs' => array(
 		'type' => 'textfield'
