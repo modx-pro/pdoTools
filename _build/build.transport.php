@@ -23,6 +23,7 @@ $sources = array(
 	'lexicon' => $root . 'core/components/'.PKG_NAME_LOWER.'/lexicon/',
 	'docs' => $root.'core/components/'.PKG_NAME_LOWER.'/docs/',
 	'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
+	'resolvers' => $root . '_build/resolvers/',
 );
 unset($root);
 
@@ -35,6 +36,7 @@ $modx->initialize('mgr');
 echo '<pre>'; /* used for nice formatting of log messages */
 $modx->setLogLevel(modX::LOG_LEVEL_INFO);
 $modx->setLogTarget('ECHO');
+$modx->getService('error','error.modError');
 
 $modx->loadClass('transport.modPackageBuilder','',false, true);
 $builder = new modPackageBuilder($modx);
@@ -72,15 +74,24 @@ $attr = array(
 	),
 );
 
-/* now pack in the license file, readme and setup options */
 $vehicle = $builder->createVehicle($category,$attr);
-$modx->log(modX::LOG_LEVEL_INFO,'Adding resolvers to category...');
+
+/* now pack in resolvers */
 $vehicle->resolve('file',array(
 	'source' => $sources['source_core'],
 	'target' => "return MODX_CORE_PATH . 'components/';",
 ));
 
-$modx->log(modX::LOG_LEVEL_INFO,'Packaged in resolvers.'); flush();
+foreach ($BUILD_RESOLVERS as $resolver) {
+	if ($vehicle->resolve('php', array('source' => $sources['resolvers'] . 'resolve.'.$resolver.'.php'))) {
+		$modx->log(modX::LOG_LEVEL_INFO,'Added resolver "'.$resolver.'" to category.');
+	}
+	else {
+		$modx->log(modX::LOG_LEVEL_INFO,'Could not add resolver "'.$resolver.'" to category.');
+	}
+}
+
+flush();
 $builder->putVehicle($vehicle);
 
 $builder->setPackageAttributes(array(
@@ -133,7 +144,10 @@ if (defined('PKG_AUTO_INSTALL') && PKG_AUTO_INSTALL) {
 		}
 		$package->save();
 	}
-	$package->install();
+
+	if ($package->install()) {
+		$modx->runProcessor('system/clearcache');
+	}
 }
 
 $modx->log(modX::LOG_LEVEL_INFO,"\n<br />Execution time: {$totalTime}\n");
