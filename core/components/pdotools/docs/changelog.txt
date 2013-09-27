@@ -3,6 +3,9 @@ Changelog for pdoTools.
 1.7.1 pl
 ==============
 - [pdoCrumbs] Fixed work with "modSymLink" and "modWebLink" resources.
+- Added 2 new methods: pdoFetch::getObject() and pdoFetch::getCollection().
+- Ability to send arrays into common config parameters. JSON is still supported.
+- Improved select of default values in TVs.
 
 1.7.0 pl1
 ==============

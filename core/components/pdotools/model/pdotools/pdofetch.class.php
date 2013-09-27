@@ -61,8 +61,7 @@ class pdoFetch extends pdoTools {
 		$this->addGrouping();
 		$this->addSelects();
 		$this->addWhere();
-
-		if (!$this->prepareQuery()) {return false;}
+		$this->prepareQuery();
 
 		$output = '';
 		if (strtolower($this->config['return']) == 'sql') {
@@ -124,6 +123,7 @@ class pdoFetch extends pdoTools {
 				$this->modx->log(modX::LOG_LEVEL_INFO, '[pdoTools] '.$this->query->toSql());
 				$errors = $this->query->stmt->errorInfo();
 				$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Error '.$errors[0].': '.$errors[2]);
+				$this->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
 			}
 		}
 		return $output;
@@ -145,8 +145,11 @@ class pdoFetch extends pdoTools {
 	public function addWhere() {
 		$this->addTVFilters();
 		if (!empty($this->config['where'])) {
-			$where = $this->modx->fromJSON($this->config['where']);
-			$where = $this->replaceTVCondition($where);
+			$tmp = $this->config['where'];
+			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+				$tmp = $this->modx->fromJSON($tmp);
+			}
+			$where = $this->replaceTVCondition($tmp);
 			$this->query->where($where);
 
 			$condition = array();
@@ -157,8 +160,11 @@ class pdoFetch extends pdoTools {
 			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>');
 		}
 		if (!empty($this->config['having'])) {
-			$having = $this->modx->fromJSON($this->config['having']);
-			$having = $this->replaceTVCondition($having);
+			$tmp = $this->config['having'];
+			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+				$tmp = $this->modx->fromJSON($tmp);
+			}
+			$having = $this->replaceTVCondition($tmp);
 			$this->query->having($having);
 
 			$condition = array();
@@ -196,7 +202,10 @@ class pdoFetch extends pdoTools {
 
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
 			if (!empty($this->config[$join])) {
-				$tmp = $this->modx->fromJSON($this->config[$join]);
+				$tmp = $this->config[$join];
+				if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+					$tmp = $this->modx->fromJSON($tmp);
+				}
 				if ($join == 'leftJoin' && !empty($this->config['tvsJoin'])) {
 					$tmp = array_merge($tmp, $this->config['tvsJoin']);
 				}
@@ -221,7 +230,11 @@ class pdoFetch extends pdoTools {
 			$this->addTime('Parameter "return" set to "ids", so we select only resource id');
 		}
 		elseif (!empty($this->config['select'])) {
-			$tmp = array_merge($this->modx->fromJSON($this->config['select']), $this->config['tvsSelect']);
+			$tmp = $this->config['select'];
+			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+				$tmp = $this->modx->fromJSON($tmp);
+			}
+			$tmp = array_merge($tmp, $this->config['tvsSelect']);
 			$i = 0;
 			foreach ($tmp as $k => $v) {
 				if (is_numeric($k)) {$k = $this->config['class'];}
@@ -235,6 +248,9 @@ class pdoFetch extends pdoTools {
 				}
 				if ($i == 0) {$v = 'SQL_CALC_FOUND_ROWS '.$v;}
 				$this->query->select($v);
+				if (is_array($v)) {
+					$v = current($v) . ' AS ' . current(array_flip($v));
+				}
 				$this->addTime('Added selection of <b>'.$k.'</b>: <small>' . str_replace('`'.$k.'`.', '', $v) . '</small>');
 				$i++;
 			}
@@ -249,7 +265,6 @@ class pdoFetch extends pdoTools {
 			$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$class.'`.', '', $select) . '</small>');
 		}
 	}
-
 
 	/**
 	 * Group query by given field
@@ -267,7 +282,8 @@ class pdoFetch extends pdoTools {
 	 * Add sort to query
 	 */
 	public function addSort() {
-		$tmp = (strpos($this->config['sortby'], '{') === 0)
+		$tmp = $this->config['sortby'];
+		$tmp = (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
 			? $this->modx->fromJSON($this->config['sortby'])
 			: array($this->config['sortby'] => $this->config['sortdir']);
 		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
@@ -309,8 +325,10 @@ class pdoFetch extends pdoTools {
 	 */
 	public function prepareQuery() {
 		$this->addSort();
-		$this->query->limit($this->config['limit'], $this->config['offset']);
-		$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>');
+		if (!empty($this->config['limit'])) {
+			$this->query->limit($this->config['limit'], $this->config['offset']);
+			$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>');
+		}
 
 		return $this->query->prepare();
 	}
@@ -348,14 +366,14 @@ class pdoFetch extends pdoTools {
 						while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 							$name = strtolower($tv['name']);
 							$alias = 'TV'.$name;
-							$tv['default_text'] = str_replace(',', '&#44;', $tv['default_text']);
 							$this->config['tvsJoin'][$name] = array(
 								'class' => 'modTemplateVarResource'
 								,'alias' => $alias
 								,'on' => '`TV'.$name.'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$name.'`.`tmplvarid` = '.$tv['id']
 								,'tv' => $tv
 							);
-							$this->config['tvsSelect'][$alias] = 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'") as `'.$tvPrefix.$tv['name'].'`';
+							// $this->config['tvsSelect'][$alias] = 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'") AS `'.$tvPrefix.$tv['name'].'`';
+							$this->config['tvsSelect'][$alias] = array('`'.$tvPrefix.$tv['name'].'`' => 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'")');
 							$tvs[] = $tv['name'];
 						}
 						$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>');
@@ -493,6 +511,107 @@ class pdoFetch extends pdoTools {
 		}
 
 		return $sorts;
+	}
+
+
+	/**
+	 * Simple and quick replacement for modX::getObject()
+	 *
+	 * @param $class
+	 * @param string $where
+	 * @param array $config
+	 *
+	 * @return array
+	 */
+	public function getObject($class, $where = '', $config = array()) {
+		$config['class'] = $class;
+		$config['limit'] = 1;
+		if (!empty($where)) {
+			unset($config['where']);
+			if (is_numeric($where)) {
+				$where = array($this->modx->getPK($class) => (integer) $where);
+			}
+			elseif ($where[0] == '{' || $where[0] == '[') {
+				$where = $this->modx->fromJSON($where);
+			}
+			$config['where'] = $where;
+		}
+
+		$this->setConfig($config, true);
+		$this->loadModels();
+		$this->makeQuery();
+		$this->addTVs();
+		$this->addJoins();
+		$this->addGrouping();
+		$this->addSelects();
+		$this->addWhere();
+
+		$this->query->prepare();
+		$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
+
+		$row = array();
+		if ($this->query->stmt->execute()) {
+			$row = $this->query->stmt->fetch(PDO::FETCH_ASSOC);
+		}
+		else {
+			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load object "'.$class.'": '.print_r($this->query->stmt->errorInfo(), true));
+		}
+
+		return $row;
+	}
+
+
+	/**
+	 * Simple and quick replacement for modX::getCollection()
+	 *
+	 * @param $class
+	 * @param string $where
+	 * @param array $config
+	 *
+	 * @return array
+	 */
+	public function getCollection($class, $where = '', $config = array()) {
+		$config['class'] = $class;
+		$config['limit'] = !isset($config['limit']) ? 0 : (integer) $config['limit'];
+		if (!empty($where)) {
+			unset($config['where']);
+			if (is_numeric($where)) {
+				$where = array($this->modx->getPK($class) => (integer) $where);
+			}
+			elseif ($where[0] == '{' || $where[0] == '[') {
+				$where = $this->modx->fromJSON($where);
+			}
+			$config['where'] = $where;
+		}
+
+		$this->setConfig($config, true);
+		$this->loadModels();
+		$this->makeQuery();
+		$this->addTVs();
+		$this->addJoins();
+		$this->addGrouping();
+		$this->addSelects();
+		$this->addWhere();
+		$this->prepareQuery();
+
+		$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
+
+		$rows = array();
+		if ($this->query->stmt->execute()) {
+			$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
+
+			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
+			$q->execute();
+			$total = $q->fetch(PDO::FETCH_COLUMN);
+			$this->addTime('Total rows: <b>'.$total.'</b>');
+
+			$rows = $this->checkPermissions($rows);
+		}
+		else {
+			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load collection "'.$class.'": '.print_r($this->query->stmt->errorInfo(), true));
+		}
+
+		return $rows;
 	}
 
 }
