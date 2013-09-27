@@ -82,3 +82,6 @@ $_lang['pdotools_prop_topLevel'] = 'Выбирает родителя указа
 $_lang['pdotools_prop_forceXML'] = 'Принудительно выводить страницу как xml.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Схема карты сайта.';
 $_lang['pdotools_prop_scheme'] = 'Схема формирования url, передаётся в modX::makeUrl().';
+
+$_lang['pdotools_prop_field_default'] = 'Укажите дополнительное поле ресурса, которое вернётся, если "&field" окажется пуст.';
+$_lang['pdotools_prop_field_output'] = 'Указанная здесь строка вернётся, если и "&default" и "&field" оказались пусты.';

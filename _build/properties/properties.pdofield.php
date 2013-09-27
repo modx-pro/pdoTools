@@ -36,6 +36,16 @@ $tmp = array(
 		'type' => 'numberfield'
 		,'value' => ''
 	)
+	,'default' => array(
+		'type' => 'textfield'
+		,'desc' => 'pdotools_prop_field_default'
+		,'value' => ''
+	)
+	,'output' => array(
+		'type' => 'textfield'
+		,'desc' => 'pdotools_prop_field_output'
+		,'value' => ''
+	)
 
 );
 

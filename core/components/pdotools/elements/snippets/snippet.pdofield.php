@@ -1,6 +1,9 @@
 <?php
 /* @var array $scriptProperties */
 if (!empty($input)) {$id = $input;}
+if (!isset($default)) {$default = '';}
+if (!isset($output)) {$output = '';}
+$class = 'modResource';
 
 if (empty($field)) {$field = 'pagetitle';}
 if (!empty($options)) {
@@ -22,7 +25,7 @@ if (!isset($context)) {$context = '';}
 if (!empty($top) || !empty($topLevel)) {
 	// Select needed context for parents functionality
 	if (empty($context)) {
-		$q = $modx->newQuery('modResource', $id);
+		$q = $modx->newQuery($class, $id);
 		$q->select('context_key');
 		if ($q->prepare() && $q->stmt->execute()) {
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
@@ -53,9 +56,7 @@ if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pd
 $pdoFetch = new pdoFetch($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 
-$class = 'modResource';
 $where = array($class.'.id' => $id);
-
 // Add custom parameters
 foreach (array('where') as $v) {
 	if (!empty($scriptProperties[$v])) {
@@ -70,38 +71,40 @@ $pdoFetch->addTime('Conditions prepared');
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
+$field = strtolower($field);
 if (in_array($field, $resourceColumns)) {
-	$select = array($class => $field);
-	$includeTVs = '';
+	$scriptProperties['select'] = array($class => $field);
+	$scriptProperties['includeTVs'] = '';
 }
 else {
-	$select = array($class => 'id');
-	$includeTVs = $field;
+	$scriptProperties['select'] = array($class => 'id');
+	$scriptProperties['includeTVs'] = $field;
 }
-
-// Default parameters
-$default = array(
-	'class' => $class,
-	'where' => $modx->toJSON($where),
-	'select' => $modx->toJSON($select),
-	'includeTVs' => $includeTVs,
-	'sortby' => $class.'.id',
-	'sortdir' => 'asc',
-	'return' => 'data',
-	'totalVar' => 'pdofield.total',
-	'limit' => 1,
-);
-
-// Merge all properties and run!
-$pdoFetch->addTime('Query parameters ready');
-$pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
-$row = $pdoFetch->run();
-
-if (is_array($row)) {
-	if (!empty($row[0]) && (empty($includeTVs) || count($row[0]) == 2)) {
-		return array_pop($row[0]);
+// Additional default field
+if (!empty($default)) {
+	$default = strtolower($default);
+	if (in_array($default, $resourceColumns)) {
+		$scriptProperties['select'][$class] .= ','.$default;
+	}
+	else {
+		$scriptProperties['includeTVs'] = empty($scriptProperties['includeTVs'])
+			? $default
+			: $scriptProperties['includeTVs'] . ',' . $default;
 	}
 }
-else {
-	return $row;
+
+if ($row = $pdoFetch->getObject($class, $where, $scriptProperties)) {
+	foreach ($row as $k => $v) {
+		$k = strtolower($k);
+		if ($k == $field && $v != '') {
+			$output = $v;
+			break;
+		}
+		elseif ($k == $default && $v != '') {
+			$output = $v;
+			break;
+		}
+	}
 }
+
+return $output;

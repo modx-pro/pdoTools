@@ -1,11 +1,15 @@
 Changelog for pdoTools.
 
-1.7.1 pl
+1.7.2 pl
 ==============
-- [pdoCrumbs] Fixed work with "modSymLink" and "modWebLink" resources.
+- [pdoField] Added new parameters: "default=``" and "&field=``".
 - Added 2 new methods: pdoFetch::getObject() and pdoFetch::getCollection().
 - Ability to send arrays into common config parameters. JSON is still supported.
 - Improved select of default values in TVs.
+
+1.7.1 pl
+==============
+- [pdoCrumbs] Fixed work with "modSymLink" and "modWebLink" resources.
 
 1.7.0 pl1
 ==============

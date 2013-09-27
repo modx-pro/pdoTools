@@ -82,3 +82,6 @@ $_lang['pdotools_prop_topLevel'] = 'Selects parent of specified "&id" on level "
 $_lang['pdotools_prop_forceXML'] = 'Force the output page as xml.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Schema of sitemap.';
 $_lang['pdotools_prop_scheme'] = 'Scheme of generation of url, goes to modX::makeUrl().';
+
+$_lang['pdotools_prop_field_default'] = 'Specify an additional field of resource that returns if "&field" will be empty.';
+$_lang['pdotools_prop_field_output'] = 'This string will return, and if "&default" and "&field" was empty.';
