@@ -31,22 +31,29 @@ if (!empty($top) || !empty($topLevel)) {
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}
-	// This algorithm taken from snippet "UltimateParent"
-	$top = isset($top) && intval($top) ? $top : 0;
-	$topLevel= isset($topLevel) && intval($topLevel) ? intval($topLevel) : 0;
-	$pid = $id;
-	$pids = $modx->getParentIds($id, 10, array('context' => $context));
-	if (!$topLevel || count($pids) >= $topLevel) {
-		while ($parentIds= $modx->getParentIds($id, 1, array('context' => $context))) {
-			$pid = array_pop($parentIds);
-			if ($pid == $top) {
+	// Gets the parent from root of context, if specified
+	if (!empty($topLevel)) {
+		$pids = $modx->getChildIds(0, $topLevel, array('context' => $context));
+		$pid = $id;
+		while (true) {
+			$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+			if (!$pid = current($tmp)) {
+				break;
+			}
+			elseif (in_array($pid, $pids)) {
+				$id = $pid;
+				break;
+			}
+		}
+	}
+	elseif (!empty($top)) {
+		$pid = $id;
+		for ($i = 1; $i <= $top; $i++) {
+			$tmp = $modx->getParentIds($pid, 1, array('context' => $context)); 
+			if (!$pid = current($tmp)) {
 				break;
 			}
 			$id = $pid;
-			$parentIds = $modx->getParentIds($id, 10, array('context' => $context));
-			if ($topLevel && count($parentIds) < $topLevel) {
-				break;
-			}
 		}
 	}
 }

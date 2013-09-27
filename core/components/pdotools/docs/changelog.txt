@@ -3,6 +3,7 @@ Changelog for pdoTools.
 1.7.2 pl
 ==============
 - [pdoField] Added new parameters: "default=``" and "&field=``".
+- [pdoField] Improved logic of "&top=``" and "&topLevel=``".
 - Added 2 new methods: pdoFetch::getObject() and pdoFetch::getCollection().
 - Ability to send arrays into common config parameters. JSON is still supported.
 - Improved select of default values in TVs.
