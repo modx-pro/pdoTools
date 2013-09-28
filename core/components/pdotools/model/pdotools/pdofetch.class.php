@@ -524,6 +524,9 @@ class pdoFetch extends pdoTools {
 	 * @return array
 	 */
 	public function getObject($class, $where = '', $config = array()) {
+		if (!empty($config['loadModels'])) {$this->config['loadModels'] = $config['loadModels'];}
+		$this->loadModels();
+
 		$config['class'] = $class;
 		$config['limit'] = 1;
 		if (!empty($where)) {
@@ -538,7 +541,6 @@ class pdoFetch extends pdoTools {
 		}
 
 		$this->setConfig($config, true);
-		$this->loadModels();
 		$this->makeQuery();
 		$this->addTVs();
 		$this->addJoins();
@@ -571,6 +573,9 @@ class pdoFetch extends pdoTools {
 	 * @return array
 	 */
 	public function getCollection($class, $where = '', $config = array()) {
+		if (!empty($config['loadModels'])) {$this->config['loadModels'] = $config['loadModels'];}
+		$this->loadModels();
+
 		$config['class'] = $class;
 		$config['limit'] = !isset($config['limit']) ? 0 : (integer) $config['limit'];
 		if (!empty($where)) {
@@ -585,7 +590,6 @@ class pdoFetch extends pdoTools {
 		}
 
 		$this->setConfig($config, true);
-		$this->loadModels();
 		$this->makeQuery();
 		$this->addTVs();
 		$this->addJoins();

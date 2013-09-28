@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.7.2 pl
+1.7.2 pl1
 ==============
 - [pdoField] Added new parameters: "default=``" and "&field=``".
 - [pdoField] Improved logic of "&top=``" and "&topLevel=``".
