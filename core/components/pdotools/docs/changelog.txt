@@ -2,6 +2,10 @@ Changelog for pdoTools.
 
 1.7.2 pl1
 ==============
+- [pdoCrumbs] Fixed possible E_NOTICE on line 157.
+
+1.7.2 pl1
+==============
 - [pdoField] Added new parameters: "default=``" and "&field=``".
 - [pdoField] Improved logic of "&top=``" and "&topLevel=``".
 - Added 2 new methods: pdoFetch::getObject() and pdoFetch::getCollection().

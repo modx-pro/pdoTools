@@ -98,7 +98,7 @@ $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $rows = $pdoFetch->run();
 
-$output = '';
+$output = array();
 if (!empty($rows) && is_array($rows)) {
 	if (strtolower($direction) == 'ltr') {
 		$rows = array_reverse($rows);
