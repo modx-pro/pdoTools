@@ -134,7 +134,7 @@ $tmp = array(
 		,'options' => array(
 			array(
 				'name' => '-1 (relative to site_url)'
-				,'value' => '-1'
+				,'value' => -1
 			)
 			,array(
 				'name' => 'full (absolute, prepended with site_url)'

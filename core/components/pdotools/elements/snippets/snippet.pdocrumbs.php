@@ -11,6 +11,7 @@ if (empty($scheme)) {$scheme = $modx->getOption('link_tag_scheme');}
 if (empty($direction)) {$direction = 'ltr';}
 if ($outputSeparator == '&nbsp;&rarr;&nbsp;' && $direction == 'rtl') {$outputSeparator = '&nbsp;&larr;&nbsp;';}
 if ($limit == '') {$limit = 10;}
+if (isset($scheme) && is_numeric($scheme)) {$scheme = (integer) $scheme;}
 // For compatibility with BreadCrumb
 if (!empty($maxCrumbs)) {$limit = $maxCrumbs;}
 if (!empty($containerTpl)) {$tplWrapper = $containerTpl;}
