@@ -78,7 +78,6 @@ if (!empty($rows)) {
 	foreach ($rows as $row) {
 		if ($row['id'] == $resource->id) {
 			$found = true;
-			continue;
 		}
 		elseif ($row['id'] == $resource->parent) {
 			$output['up'] = $pdoFetch->getChunk($tplUp, $row, $fastMode);

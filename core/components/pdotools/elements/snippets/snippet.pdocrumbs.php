@@ -119,6 +119,7 @@ if (!empty($rows) && is_array($rows)) {
 			,$row
 			,array('idx' => $pdoFetch->idx++)
 		);
+		if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
 
 		if ($row['id'] == $resource->id && empty($showCurrent)) {
 			continue;

@@ -9,7 +9,7 @@ $tmp = array(
 	)
 	,'fastMode' => array(
 		'type' => 'combo-boolean'
-		,'value' => true
+		,'value' => false
 	)
 	,'from' => array(
 		'type' => 'numberfield'
@@ -76,11 +76,11 @@ $tmp = array(
 
 	,'tpl' => array(
 		'type' => 'textfield'
-		,'value' => '@INLINE <a href="[[+link]]">[[+pagetitle]]</a>'
+		,'value' => '@INLINE <a href="[[+link]]">[[+menutitle]]</a>'
 	)
 	,'tplCurrent' => array(
 		'type' => 'textfield'
-		,'value' => '@INLINE <span>[[+pagetitle]]</span>'
+		,'value' => '@INLINE <span>[[+menutitle]]</span>'
 	)
 	,'tplMax' => array(
 		'type' => 'textfield'
