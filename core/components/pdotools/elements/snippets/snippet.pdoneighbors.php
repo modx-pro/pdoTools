@@ -76,6 +76,8 @@ $found = false;
 $prev = $next = array();
 if (!empty($rows)) {
 	foreach ($rows as $row) {
+		if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
+
 		if ($row['id'] == $resource->id) {
 			$found = true;
 		}

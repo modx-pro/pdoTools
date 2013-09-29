@@ -23,15 +23,15 @@ $tmp = array(
 
 	'tplPrev' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <span class="link-prev"><a href="/[[+uri]]">&larr; [[+pagetitle]]</a></span>',
+		'value' => '@INLINE <span class="link-prev"><a href="/[[+uri]]">&larr; [[+menutitle]]</a></span>',
 	),
 	'tplUp' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <span class="link-up">&uarr; <a href="/[[+uri]]">[[+pagetitle]]</a></span>',
+		'value' => '@INLINE <span class="link-up">&uarr; <a href="/[[+uri]]">[[+menutitle]]</a></span>',
 	),
 	'tplNext' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <span class="link-next"><a href="/[[+uri]]">[[+pagetitle]] &rarr;</a></span>',
+		'value' => '@INLINE <span class="link-next"><a href="/[[+uri]]">[[+menutitle]] &rarr;</a></span>',
 	),
 	'tplWrapper' => array(
 		'type' => 'textfield',

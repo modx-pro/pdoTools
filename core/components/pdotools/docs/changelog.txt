@@ -3,7 +3,7 @@ Changelog for pdoTools.
 1.7.2 pl1
 ==============
 - [pdoCrumbs] Fixed possible E_NOTICE on line 157.
-- [#6] pdoCrumbs uses "menutitle" by default. If it is empty, will be used "pagetitle".
+- [#6] pdoCrumbs and pdoNeighbors are now uses "menutitle" by default. If it is empty, will be used "pagetitle".
 
 1.7.2 pl1
 ==============
