@@ -1,11 +1,14 @@
 Changelog for pdoTools.
 
+1.7.4 pl
+==============
+- [#7] [pdoSitemap] Fixed hidden parameters "&sortBy" and "&sortDir" that used for compatibility with GoogleSiteMap.
+
 1.7.3 pl1
 ==============
 - [pdoCrumbs] Fixed possible E_NOTICE on line 157.
 - [pdoCrumbs] Fixed generation of link to site start in relative mode.
 - [#6] pdoCrumbs and pdoNeighbors are now uses "menutitle" by default. If it is empty, will be used "pagetitle".
-
 
 1.7.2 pl1
 ==============

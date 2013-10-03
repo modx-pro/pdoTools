@@ -50,8 +50,8 @@ if (!empty($startId)) {
 		$parents = $startId;
 	}
 }
-if (!empty($sortBy)) {$sortby = $sortBy;}
-if (!empty($sortDir)) {$sortdir = $sortDir;}
+if (!empty($sortBy)) {$scriptProperties['sortby'] = $sortBy;}
+if (!empty($sortDir)) {$scriptProperties['sortdir'] = $sortDir;}
 if (!empty($priorityTV)) {
 	if (!empty($scriptProperties['includeTVs'])) {
 		$scriptProperties['includeTVs'] .= ','.$priorityTV;
