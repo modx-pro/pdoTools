@@ -50,8 +50,16 @@ if (!empty($startId)) {
 		$parents = $startId;
 	}
 }
-if (!empty($sortBy)) {$sortby = $sortBy;}
-if (!empty($sortDir)) {$sortdir = $sortDir;}
+if (!empty($sortBy)) {
+	$sortby = $sortBy;
+	$scriptProperties['sortby'] = $sortby;
+	unset($scriptProperties['sortBy']);
+}
+if (!empty($sortDir)) {
+	$sortdir = $sortDir;
+	$scriptProperties['sortdir'] = $sortdir;
+	unset($scriptProperties['sortDir']);
+}
 if (!empty($priorityTV)) {
 	if (!empty($scriptProperties['includeTVs'])) {
 		$scriptProperties['includeTVs'] .= ','.$priorityTV;
