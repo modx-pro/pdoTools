@@ -372,8 +372,7 @@ class pdoFetch extends pdoTools {
 								,'on' => '`TV'.$name.'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$name.'`.`tmplvarid` = '.$tv['id']
 								,'tv' => $tv
 							);
-							// $this->config['tvsSelect'][$alias] = 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'") AS `'.$tvPrefix.$tv['name'].'`';
-							$this->config['tvsSelect'][$alias] = array('`'.$tvPrefix.$tv['name'].'`' => 'IFNULL(`'.$alias.'`.`value`, "'.$tv['default_text'].'")');
+							$this->config['tvsSelect'][$alias] = array('`'.$tvPrefix.$tv['name'].'`' => 'IFNULL(`'.$alias.'`.`value`, '.$this->modx->quote($tv['default_text']).')');
 							$tvs[] = $tv['name'];
 						}
 						$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>');

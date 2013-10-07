@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.7.5 pl
+==============
+- Improved handling of "default_text" parameter in TVs.
+
 1.7.4 pl
 ==============
 - [#7] [pdoSitemap] Fixed hidden parameters "&sortBy" and "&sortDir" that used for compatibility with GoogleSiteMap.
