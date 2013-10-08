@@ -608,27 +608,28 @@ class pdoTools {
 	/**
 	 * Builds a hierarchical tree from given array
 	 *
-	 * @param array $tmp
+	 * @param array $tmp Array with rows
+	 * @param string $id Name of primary key
+	 * @param string $parent Name of parent key
 	 *
 	 * @return array
 	 */
-	public function buildTree($tmp = array()) {
-		$rows = array();
-
+	public function buildTree($tmp = array(), $id = 'id', $parent = 'parent') {
+		$rows = $tree= array();
 		foreach ($tmp as $v) {
-			$rows[$v['id']] = $v;
+			$rows[$v[$id]] = $v;
 		}
 
-		$tree = array();
-		foreach($rows as $id => &$row) {
-			if(empty($row['parent'])) {
+		foreach ($rows as $id => &$row) {
+			if (empty($row[$parent])) {
 				$tree[$id] = &$row;
 			}
 			else{
-				$tree[$row['parent']]['children'][$id] = &$row;
+				$rows[$row[$parent]]['children'][$id] = &$row;
 			}
 		}
 
+		ksort($tree);
 		return $tree;
 	}
 
@@ -730,6 +731,7 @@ class pdoTools {
 
 		return $row;
 	}
+
 
 	/**
 	 * Checks user permissions to view the results
