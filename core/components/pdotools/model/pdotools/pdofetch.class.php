@@ -2,6 +2,12 @@
 require_once 'pdotools.class.php';
 
 class pdoFetch extends pdoTools {
+	/* @var string $class Name of class for work with */
+	protected $class;
+	/* @var string $pk Primary key of class */
+	protected $pk;
+	/* @var array $ancestry Array with ancestors of class */
+	protected $ancestry = array();
 	/* @var xPDOQuery $query */
 	protected $query;
 
@@ -37,8 +43,12 @@ class pdoFetch extends pdoTools {
 			), $config)
 		, $clean_timings);
 
+		$this->class = $this->config['class'];
+		$this->pk = $this->modx->getPK($this->class);
+		$this->ancestry = $this->modx->getAncestry($this->class);
+
 		if (empty($this->config['sortby'])) {
-			$this->config['sortby'] = $this->config['class'].'.'.$this->modx->getPK($this->config['class']);
+			$this->config['sortby'] = $this->class.'.'.$this->pk;
 		}
 
 		$this->idx = !empty($this->config['offset'])
@@ -134,7 +144,7 @@ class pdoFetch extends pdoTools {
 	 * Create object with xPDOQuery
 	 */
 	public function makeQuery() {
-		$this->query = $this->modx->newQuery($this->config['class']);
+		$this->query = $this->modx->newQuery($this->class);
 		$this->addTime('xPDO query object created');
 	}
 
@@ -238,7 +248,7 @@ class pdoFetch extends pdoTools {
 	public function addSelects() {
 		if ($this->config['return'] == 'ids') {
 			$this->query->select('
-				SQL_CALC_FOUND_ROWS `'.$this->config['class'].'`.`id`
+				SQL_CALC_FOUND_ROWS `'.$this->class.'`.`id`
 			');
 			$this->addTime('Parameter "return" set to "ids", so we select only resource id');
 		}
@@ -250,7 +260,7 @@ class pdoFetch extends pdoTools {
 			$tmp = array_merge($tmp, $this->config['tvsSelect']);
 			$i = 0;
 			foreach ($tmp as $k => $v) {
-				if (is_numeric($k)) {$k = $this->config['class'];}
+				if (is_numeric($k)) {$k = $this->class;}
 				if (strpos($k, 'TV') !== 0 && strpos($v, $k) === false && isset($this->modx->map[$k])) {
 					if ($v == 'all' || $v == '*') {
 						$v = $this->modx->getSelectColumns($k, $k);
@@ -269,7 +279,7 @@ class pdoFetch extends pdoTools {
 			}
 		}
 		else {
-			$class = $this->config['class'];
+			$class = $this->class;
 			$select = 'SQL_CALC_FOUND_ROWS ' . $this->modx->getSelectColumns($class,$class);
 			if (!empty($this->config['tvsSelect'])) {
 				$select .= ', '.implode(',', $this->config['tvsSelect']);
@@ -364,9 +374,9 @@ class pdoFetch extends pdoTools {
 		}
 
 		if (!empty($includeTVs)) {
-			$subclass = preg_grep('/^'.$this->config['class'].'/i' , $this->modx->classMap['modResource']);
-			if (!preg_match('/^modResource$/i', $this->config['class']) && !count($subclass)) {
-				$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Instantiated a derived class "'.$this->config['class'].'" that is not a subclass of the "modResource", so tvs not joining.');
+			$subclass = preg_grep('/^'.$this->class.'/i' , $this->modx->classMap['modResource']);
+			if (!preg_match('/^modResource$/i', $this->class) && !count($subclass)) {
+				$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Instantiated a derived class "'.$this->class.'" that is not a subclass of the "modResource", so tvs not joining.');
 			}
 			else {
 				$tvs = array_map('trim',explode(',',$includeTVs));
@@ -382,7 +392,7 @@ class pdoFetch extends pdoTools {
 							$this->config['tvsJoin'][$name] = array(
 								'class' => 'modTemplateVarResource'
 								,'alias' => $alias
-								,'on' => '`TV'.$name.'`.`contentid` = `'.$this->config['class'].'`.`id` AND `TV'.$name.'`.`tmplvarid` = '.$tv['id']
+								,'on' => '`TV'.$name.'`.`contentid` = `'.$this->class.'`.`id` AND `TV'.$name.'`.`tmplvarid` = '.$tv['id']
 								,'tv' => $tv
 							);
 							$this->config['tvsSelect'][$alias] = array('`'.$tvPrefix.$tv['name'].'`' => 'IFNULL(`'.$alias.'`.`value`, '.$this->modx->quote($tv['default_text']).')');
@@ -405,11 +415,10 @@ class pdoFetch extends pdoTools {
 	 */
 	public function additionalConditions($where = array()) {
 		$config = $this->config;
-		$class = $this->config['class'];
+		$class = $this->class;
 
 		// These rules works only for descendants of modResource
-		$ancestry = $this->modx->getAncestry($class);
-		if (!in_array('modResource', $ancestry) || !empty($config['disableConditions'])) {
+		if (!in_array('modResource', $this->ancestry) || !empty($config['disableConditions'])) {
 			return $where;
 		}
 
@@ -595,6 +604,7 @@ class pdoFetch extends pdoTools {
 			}
 		}
 		$this->addTime('Processed additional conditions');
+		$this->config['where'] = $where;
 		return $where;
 	}
 
