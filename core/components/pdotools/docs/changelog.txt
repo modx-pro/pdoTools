@@ -4,6 +4,9 @@ Changelog for pdoTools.
 ==============
 - Improved handling of "default_text" parameter in TVs.
 - Fixed and improved method pdoTools::buildTree().
+- The logic of build the conditions of the query moved into new method pdoFetch::additionalConditions().
+- Improved method pdoFetch::addSelects().
+- Improved method pdoFetch::addSort().
 
 1.7.4 pl
 ==============
