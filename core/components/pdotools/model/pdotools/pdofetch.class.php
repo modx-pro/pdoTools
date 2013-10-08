@@ -144,17 +144,30 @@ class pdoFetch extends pdoTools {
 	 */
 	public function addWhere() {
 		$this->addTVFilters();
+
+		$where = array();
 		if (!empty($this->config['where'])) {
 			$tmp = $this->config['where'];
 			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
 				$tmp = $this->modx->fromJSON($tmp);
 			}
 			$where = $this->replaceTVCondition($tmp);
+		}
+		$where = $this->additionalConditions($where);
+		if (!empty($where)) {
 			$this->query->where($where);
-
 			$condition = array();
 			foreach ($where as $k => $v) {
-				if (is_array($v)) {$condition[] = $k.'('.implode(',',$v).')';}
+				if (is_array($v)) {
+					if (isset($v[0])) {
+						$condition[] = is_array($v) ? $k.'('.implode(',',$v).')' : $k.'='.$v;
+					}
+					else {
+						foreach ($v as $k2 => $v2) {
+							$condition[] = is_array($v2) ? $k2.'('.implode(',',$v2).')' : $k2.'='.$v2;
+						}
+					}
+				}
 				else {$condition[] = $k.'='.$v;}
 			}
 			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>');
@@ -380,6 +393,209 @@ class pdoFetch extends pdoTools {
 				}
 			}
 		}
+	}
+
+
+	/**
+	 * This method handles popular parameters and adds conditions to query
+	 *
+	 * @param array $where Current conditions
+	 *
+	 * @return array
+	 */
+	public function additionalConditions($where = array()) {
+		$config = $this->config;
+		$class = $this->config['class'];
+
+		// These rules works only for descendants of modResource
+		$ancestry = $this->modx->getAncestry($class);
+		if (!in_array('modResource', $ancestry) || !empty($config['disableConditions'])) {
+			return $where;
+		}
+
+		$params = array(
+			'resources' => 'id',
+			'parents' => 'parent',
+			'templates' => 'template',
+			'showUnpublished' => 'published',
+			'showHidden' => 'hidemenu',
+			'showDeleted' => 'deleted',
+			'hideContainers' => 'isfolder',
+			'hideUnsearchable' => 'searchable',
+			'context' => 'context_key',
+		);
+
+		// Exclude parameters that may already have been processed
+		foreach ($params as $param => $field) {
+			$found = false;
+			if (isset($config[$param])) {
+				foreach ($where as $k => $v) {
+					// Usual condition
+					if (!is_numeric($k) && strpos($k, $field) === 0 || strpos($k, $class.'.'.$field) !== false) {
+						$found = true;
+						break;
+					}
+					// Array of conditions
+					elseif (is_numeric($k) && is_array($v)) {
+						foreach ($v as $k2 => $v2) {
+							if (strpos($k2, $field) === 0 || strpos($k2, $class.'.'.$field) !== false) {
+								$found = true;
+								break(2);
+							}
+						}
+					}
+					// Raw SQL string
+					elseif (is_numeric($k) && strpos($v, $class) !== false && preg_match('/\b'.$field.'\b/i', $v)) {
+						$found = true;
+						break;
+					}
+				}
+				if ($found) {
+					unset($params[$param]);
+				}
+				else {
+					$params[$param] = $config[$param];
+				}
+			}
+			else {
+				unset($params[$param]);
+			}
+		}
+
+		// Process the remaining parameters
+		foreach ($params as $param => $value) {
+			switch ($param) {
+				case 'showUnpublished':
+					if (empty($value)) {
+						$where[$class.'.published'] = 1;
+					}
+					break;
+				case 'showHidden':
+					if (empty($value)) {
+						$where[$class.'.hidemenu'] = 0;
+					}
+					break;
+				case 'showDeleted':
+					if (empty($value)) {
+						$where[$class.'.deleted'] = 0;
+					}
+					break;
+				case 'hideContainers':
+					if (!empty($value)) {
+						$where[$class.'.isfolder'] = 0;
+					}
+					break;
+				case 'hideUnsearchable':
+					if (!empty($value)) {
+						$where[$class.'.searchable'] = 1;
+					}
+					break;
+				case 'context':
+					if (!empty($value)) {
+						$context = array_map('trim', explode(',', $value));
+						if (!empty($context) && is_array($context)) {
+							if (count($context) == 1) {
+								$where[$class.'.context_key'] = $context[0];
+							}
+							else {
+								$where[$class.'.context_key:IN'] = $context;
+							}
+						}
+					}
+					break;
+				case 'resources':
+					if (!empty($value)) {
+						$resources = array_map('trim', explode(',', $value));
+						$resources_in = $resources_out = array();
+						foreach ($resources as $v) {
+							if (!is_numeric($v)) {continue;}
+							if ($v < 0) {$resources_out[] = abs($v);}
+							else {$resources_in[] = abs($v);}
+						}
+						if (!empty($resources_in)) {
+							$where[$class.'.id:IN'] = $resources_in;
+						}
+						if (!empty($resources_out)) {
+							$where[$class.'.id:NOT IN'] = $resources_out;
+						}
+					}
+					break;
+				case 'parents':
+					if (!empty($value)) {
+						$parents = array_map('trim', explode(',', $value));
+						$parents_in = $parents_out = array();
+						foreach ($parents as $v) {
+							if (!is_numeric($v)) {continue;}
+							if ($v[0] == '-') {$parents_out[] = abs($v);}
+							else {$parents_in[] = abs($v);}
+						}
+						$depth = (isset($config['depth']) && $config['depth'] != '')
+							? (integer) $config['depth']
+							: 10;
+						if (!empty($depth) && $depth > 0) {
+							$pids = array();
+							$q = $this->modx->newQuery($class, array('id:IN' => array_merge($parents_in, $parents_out)));
+							$q->select('id,context_key');
+							if ($q->prepare() && $q->stmt->execute()) {
+								while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
+									$pids[$row['id']] = $row['context_key'];
+								}
+							}
+							foreach ($pids as $k => $v) {
+								if (!is_numeric($k)) {continue;}
+								elseif (in_array($k, $parents_in)) {
+									$parents_in = array_merge($parents_in, $this->modx->getChildIds($k, $depth, array('context' => $v)));
+								}
+								else {
+									$parents_out = array_merge($parents_out, $this->modx->getChildIds($k, $depth, array('context' => $v)));
+								}
+							}
+						}
+						// Support of miniShop2 categories
+						$members = array();
+						if (strpos($this->modx->config['extension_packages'], 'minishop2') !== false) {
+							if (!empty($parents_in) || !empty($parents_out)) {
+								$q = $this->modx->newQuery('msCategoryMember');
+								if (!empty($parents_in)) {$q->where(array('category_id:IN' => $parents_in));}
+								if (!empty($parents_out)) {$q->where(array('category_id:NOT IN' => $parents_out));}
+								$q->select('product_id');
+								if ($q->prepare() && $q->stmt->execute()) {
+									$members = $q->stmt->fetchAll(PDO::FETCH_COLUMN);
+								}
+							}
+						}
+						// Add parent to conditions
+						if (!empty($parents_in) && !empty($members)) {
+							$where[] = array(
+								$class.'.parent:IN' => $parents_in,
+								'OR:'.$class.'.id:IN' => $members
+							);
+						}
+						elseif (!empty($parents_in)) {
+							$where[$class.'.parent:IN'] = $parents_in;
+						}
+						if (!empty($parents_out)) {
+							$where[$class.'.parent:NOT IN'] = $parents_out;
+						}
+					}
+					break;
+				case 'templates':
+					if (!empty($value)) {
+						$templates = array_map('trim', explode(',', $value));
+						$templates_in = $templates_out = array();
+						foreach ($templates as $v) {
+							if (!is_numeric($v)) {continue;}
+							if ($v[0] == '-') {$templates_out[] = abs($v);}
+							else {$templates_in[] = abs($v);}
+						}
+						if (!empty($templates_in)) {$where[$class.'.template:IN'] = $templates_in;}
+						if (!empty($templates_out)) {$where[$class.'.template:NOT IN'] = $templates_out;}
+					}
+					break;
+			}
+		}
+		$this->addTime('Processed additional conditions');
+		return $where;
 	}
 
 
