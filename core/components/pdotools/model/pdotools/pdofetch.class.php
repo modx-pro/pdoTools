@@ -46,11 +46,6 @@ class pdoFetch extends pdoTools {
 		$this->class = $this->config['class'];
 		$this->pk = $this->modx->getPK($this->class);
 		$this->ancestry = $this->modx->getAncestry($this->class);
-
-		if (empty($this->config['sortby'])) {
-			$this->config['sortby'] = $this->class.'.'.$this->pk;
-		}
-
 		$this->idx = !empty($this->config['offset'])
 			? (integer) $this->config['offset'] + 1
 			: 1;
@@ -306,15 +301,33 @@ class pdoFetch extends pdoTools {
 	 */
 	public function addSort() {
 		$tmp = $this->config['sortby'];
-		$tmp = (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
-			? $this->modx->fromJSON($this->config['sortby'])
-			: array($this->config['sortby'] => $this->config['sortdir']);
-		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
+		if (empty($tmp)) {
+			$resources = $this->class.'.'.$this->pk.':IN';
+			if (!empty($this->config['where'][$resources])) {
+				$tmp = array(
+					$this->class.'.'.$this->pk => 'find_in_set(`'.$this->class.'`.`'.$this->pk.'`,\''.implode(',', $this->config['where'][$resources]).'\')',
+				);
+			}
+			else {
+				$tmp = array(
+					$this->class.'.'.$this->pk => !empty($this->config['sortdir'])
+						? $this->config['sortdir']
+						: 'ASC'
+				);
+			}
+		}
+		else {
+			$tmp = (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
+				? $this->modx->fromJSON($this->config['sortby'])
+				: array($this->config['sortby'] => $this->config['sortdir']);
+		}
+		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp['sortby'])) {
 			$tmp2[$this->config['sortbyTV']] = !empty($this->config['sortdirTV'])
 				? $this->config['sortdirTV']
 				: 'ASC';
 			$tmp = array_merge($tmp2, $tmp);
 		}
+
 		$sorts = $this->replaceTVCondition($tmp);
 
 		if (is_array($sorts)) {
