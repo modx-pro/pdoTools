@@ -243,14 +243,15 @@ class pdoFetch extends pdoTools {
 	public function addSelects() {
 		if ($this->config['return'] == 'ids') {
 			$this->query->select('
-				SQL_CALC_FOUND_ROWS `'.$this->class.'`.`id`
+				SQL_CALC_FOUND_ROWS `'.$this->class.'`.`'.$this->pk.'`
 			');
-			$this->addTime('Parameter "return" set to "ids", so we select only resource id');
+			$this->addTime('Parameter "return" set to "ids", so we select only primary key');
 		}
-		elseif (!empty($this->config['select'])) {
-			$tmp = $this->config['select'];
-			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
-				$tmp = $this->modx->fromJSON($tmp);
+		elseif ($tmp = $this->config['select']) {
+			if (!is_array($tmp)) {
+				$tmp = ($tmp[0] == '{' || $tmp[0] == '[')
+					? $this->modx->fromJSON($tmp)
+					: array($this->class => $tmp);
 			}
 			$tmp = array_merge($tmp, $this->config['tvsSelect']);
 			$i = 0;
@@ -274,13 +275,13 @@ class pdoFetch extends pdoTools {
 			}
 		}
 		else {
-			$class = $this->class;
-			$select = 'SQL_CALC_FOUND_ROWS ' . $this->modx->getSelectColumns($class,$class);
-			if (!empty($this->config['tvsSelect'])) {
-				$select .= ', '.implode(',', $this->config['tvsSelect']);
+			$columns = array_keys($this->modx->getFieldMeta($this->class));
+			if (isset($this->config['includeContent']) && empty($this->config['includeContent'])) {
+				$key = array_search('content', $columns);
+				unset($columns[$key]);
 			}
-			$this->query->select($select);
-			$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$class.'`.', '', $select) . '</small>');
+			$this->config['select'] = array($this->class => implode(',', $columns));
+			$this->addSelects();
 		}
 	}
 
