@@ -1,12 +1,13 @@
 Changelog for pdoTools.
 
-1.8.0 pl
+1.8.0 beta
 ==============
 - Improved handling of "default_text" parameter in TVs.
 - Fixed and improved method pdoTools::buildTree().
 - The logic of build the conditions of the query moved into new method pdoFetch::additionalConditions().
 - Improved method pdoFetch::addSelects().
 - Improved method pdoFetch::addSort().
+- Improved some snippets in accordance to new abilities of pdoFetch: pdoResources, pdoNeighbors and pdoSitemap.
 
 1.7.4 pl
 ==============

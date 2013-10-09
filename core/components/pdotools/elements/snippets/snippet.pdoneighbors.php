@@ -20,12 +20,12 @@ $resource = ($id == $modx->resource->id)
 	: $modx->getObject($class, $id);
 if (!$resource) {return '';}
 
-$where = array("($class.parent = $resource->parent OR $class.id = $resource->parent)");
-$where[$class.'.context_key'] = $resource->context_key;
-if (empty($showUnpublished)) {$where[$class.'.published'] = 1;}
-if (empty($showHidden)) {$where[$class.'.hidemenu'] = 0;}
-if (empty($showDeleted)) {$where[$class.'.deleted'] = 0;}
-if (!empty($hideContainers)) {$where[$class.'.isfolder'] = 0;}
+$where = array(
+	array(
+		$class.'.parent' => $resource->parent,
+		'OR:'.$class.'.id:=' => $resource->parent,
+	)
+);
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
@@ -57,7 +57,7 @@ $default = array(
 	'sortdir' => 'ASC',
 	'return' => 'data',
 	'limit' => 0,
-	'totalVar' => 'neighbors.total',
+	'totalVar' => 'pdoneighbors.total',
 );
 
 // Merge all properties and run!

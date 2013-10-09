@@ -14,40 +14,40 @@ if (empty($outputSeparator)) {$outputSeparator = "\n";}
 // Convert parameters from GoogleSiteMap if exists
 if (!empty($itemTpl)) {$tpl = $itemTpl;}
 if (!empty($containerTpl)) {$tplWrapper = $containerTpl;}
-if (!empty($allowedtemplates)) {$templates = $allowedtemplates;}
-if (!empty($maxDepth)) {$depth = $maxDepth;}
-if (isset($hideDeleted)) {$showDeleted = !$hideDeleted;}
+if (!empty($allowedtemplates)) {$scriptProperties['templates'] = $allowedtemplates;}
+if (!empty($maxDepth)) {$scriptProperties['depth'] = $maxDepth;}
+if (isset($hideDeleted)) {$scriptProperties['showDeleted'] = !$hideDeleted;}
+if (isset($published)) {$scriptProperties['showUnpublished'] = !$published;}
+if (isset($searchable)) {$scriptProperties['showUnsearchable'] = !$searchable;}
 if (!empty($googleSchema)) {$sitemapSchema = $googleSchema;}
-if (isset($published)) {$showUnpublished = !$published;}
-if (isset($searchable)) {$showUnsearchable = !$searchable;}
 if (!empty($excludeResources)) {
 	$tmp = array_map('trim', explode(',', $excludeResources));
 	foreach ($tmp as $v) {
-		if (!empty($resources)) {
-			$resources .= ',-'.$v;
+		if (!empty($scriptProperties['resources'])) {
+			$scriptProperties['resources'] .= ',-'.$v;
 		}
 		else {
-			$resources = '-'.$v;
+			$scriptProperties['resources'] = '-'.$v;
 		}
 	}
 }
 if (!empty($excludeChildrenOf)) {
 	$tmp = array_map('trim', explode(',', $excludeChildrenOf));
 	foreach ($tmp as $v) {
-		if (!empty($parents)) {
-			$parents .= ',-'.$v;
+		if (!empty($scriptProperties['parents'])) {
+			$scriptProperties['parents'] .= ',-'.$v;
 		}
 		else {
-			$parents = '-'.$v;
+			$scriptProperties['parents'] = '-'.$v;
 		}
 	}
 }
 if (!empty($startId)) {
-	if (!empty($parents)) {
-		$parents .= ','.$startId;
+	if (!empty($scriptProperties['parents'])) {
+		$scriptProperties['parents'] .= ','.$startId;
 	}
 	else {
-		$parents = $startId;
+		$scriptProperties['parents'] = $startId;
 	}
 }
 if (!empty($sortBy)) {$scriptProperties['sortby'] = $sortBy;}
@@ -65,79 +65,18 @@ if (!empty($itemSeparator)) {$outputSeparator = $itemSeparator;}
 
 
 $class = 'modResource';
-// Start building "Where" expression
 $where = array();
-if (empty($showUnpublished)) {$where['published'] = 1;}
 if (empty($showHidden)) {
-	//$where['hidemenu'] = 0;
-	$where[] = "(`$class`.`hidemenu` = 0 OR `class_key` IN ('Ticket','Article'))";
+	$where[] = array(
+		$class.'.hidemenu' => 0,
+		'OR:'.$class.'.class_key:IN' => array('Ticket','Article')
+	);
 }
-if (empty($showDeleted)) {$where['deleted'] = 0;}
-if (!empty($hideUnsearchable)) {$where['searchable'] = 1;}
-if (empty($context)) {$context = $modx->context->key;}
-$context = array_map('trim', explode(',', $context));
-if (!empty($context) && is_array($context)) {
-	$where['context_key:IN'] = $context;
-}
-
-// Filter by ids
-if (!empty($resources)) {
-	$resources = array_map('trim', explode(',', $resources));
-	$resources_in = $resources_out = array();
-	foreach ($resources as $v) {
-		if (!is_numeric($v)) {continue;}
-		if ($v < 0) {$resources_out[] = abs($v);}
-		else {$resources_in[] = $v;}
-	}
-	if (!empty($resources_in)) {$where[$class.'.id:IN'] = $resources_in;}
-	if (!empty($resources_out)) {$where[$class.'.id:NOT IN'] = $resources_out;}
-}
-// Filter by parents
-if (!empty($parents)) {
-	$pids = array();
-	$parents = array_map('trim', explode(',', $parents));
-	$parents_in = $parents_out = array();
-	foreach ($parents as $v) {
-		if (!is_numeric($v)) {continue;}
-		if ($v < 0) {$parents_out[] = abs($v);}
-		else {$parents_in[] = $v;}
-	}
-	if (!empty($depth) && $depth > 0) {
-		$q = $modx->newQuery($class, array('id:IN' => array_merge($parents_in, $parents_out)));
-		$q->select('id,context_key');
-		if ($q->prepare() && $q->stmt->execute()) {
-			while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
-				$pids[$row['id']] = $row['context_key'];
-			}
-		}
-		foreach ($pids as $k => $v) {
-			if (!is_numeric($k)) {continue;}
-			elseif (in_array($k, $parents_in)) {
-				$parents_in = array_merge($parents_in, $modx->getChildIds($k, $depth, array('context' => $v)));
-			}
-			else {
-				$parents_out = array_merge($parents_out, $modx->getChildIds($k, $depth, array('context' => $v)));
-			}
-		}
-	}
-	if (!empty($parents_in)) {$where[$class.'.parent:IN'] = $parents_in;}
-	if (!empty($parents_out)) {$where[$class.'.parent:NOT IN'] = $parents_out;}
-}
-// Filter by templates
-if (!empty($templates)) {
-	$templates = array_map('trim', explode(',', $templates));
-	$templates_in = $templates_out = array();
-	foreach ($templates as $v) {
-		if (!is_numeric($v)) {continue;}
-		if ($v[0] == '-') {$templates_out[] = abs($v);}
-		else {$templates_in[] = $v;}
-	}
-	if (!empty($templates_in)) {$where[$class.'.template:IN'] = $templates_in;}
-	if (!empty($templates_out)) {$where[$class.'.template:NOT IN'] = $templates_out;}
+if (empty($context)) {
+	$scriptProperties['context'] = $modx->context->key;
 }
 
 $select = array($class => 'id,editedon,createdon');
-
 // Add custom parameters
 foreach (array('where','select') as $v) {
 	if (!empty($scriptProperties[$v])) {
@@ -217,7 +156,7 @@ $output = $pdoFetch->getChunk($tplWrapper, array(
 $pdoFetch->addTime('Rows wrapped');
 
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-	$output .= '<pre class="pdoResourcesLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+	$output .= '<pre class="pdoSitemapLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 
 if (!empty($forceXML)) {

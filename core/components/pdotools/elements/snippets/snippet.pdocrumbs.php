@@ -91,7 +91,8 @@ $default = array(
 	'sortby' => "find_in_set(`$class`.`id`,'".implode(',', $ids)."')",
 	'sortdir' => '',
 	'return' => 'data',
-	'totalVar' => 'pdocrumbs.total'
+	'totalVar' => 'pdocrumbs.total',
+	'disableConditions' => true
 );
 
 // Merge all properties and run!

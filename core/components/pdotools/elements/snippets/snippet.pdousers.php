@@ -43,12 +43,12 @@ foreach ($tmp as $k => $p) {
 		${$k.'_in'} = ${$k.'_out'} = $fetch_in = $fetch_out = array();
 		foreach ($$k as $v) {
 			if (is_numeric($v)) {
-				if (strpos($v, '-') === 0) {${$k.'_out'}[] = abs($v);}
-				else {${$k.'_in'}[] = $v;}
+				if ($v[0] == '-') {${$k.'_out'}[] = abs($v);}
+				else {${$k.'_in'}[] = abs($v);}
 			}
 			else {
-				if (strpos($v, '-') === 0) {$fetch_out[] = substr($v, 1);}
-				else {$fetch_in[] = $v;}
+				if ($v[0] == '-') {$fetch_out[] = abs($v);}
+				else {$fetch_in[] = abs($v);}
 			}
 		}
 
@@ -108,6 +108,7 @@ $default = array(
 	'sortdir' => 'ASC',
 	'fastMode' => false,
 	'return' => !empty($returnIds) ? 'ids' : 'chunks',
+	'disableConditions' => true
 );
 
 if (!empty($users_in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == $class.'.id')) {

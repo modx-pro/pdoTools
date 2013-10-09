@@ -100,6 +100,7 @@ if (!empty($default)) {
 	}
 }
 
+$scriptProperties['disableConditions'] = true;
 if ($row = $pdoFetch->getObject($class, $where, $scriptProperties)) {
 	foreach ($row as $k => $v) {
 		$k = strtolower($k);
