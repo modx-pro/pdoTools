@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.8.0 beta
+1.8.0 beta1
 ==============
 - Improved handling of "default_text" parameter in TVs.
 - Fixed and improved method pdoTools::buildTree().
