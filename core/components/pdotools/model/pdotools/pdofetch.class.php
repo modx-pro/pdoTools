@@ -306,7 +306,7 @@ class pdoFetch extends pdoTools {
 			$resources = $this->class.'.'.$this->pk.':IN';
 			if (!empty($this->config['where'][$resources])) {
 				$tmp = array(
-					$this->class.'.'.$this->pk => 'find_in_set(`'.$this->class.'`.`'.$this->pk.'`,\''.implode(',', $this->config['where'][$resources]).'\')',
+					'find_in_set(`'.$this->class.'`.`'.$this->pk.'`,\''.implode(',', $this->config['where'][$resources]).'\')' => ''
 				);
 			}
 			else {
@@ -330,7 +330,6 @@ class pdoFetch extends pdoTools {
 		}
 
 		$sorts = $this->replaceTVCondition($tmp);
-
 		if (is_array($sorts)) {
 			while (list($sortby, $sortdir) = each($sorts)) {
 				if (preg_match_all('/TV(.*?)[`|.]/', $sortby, $matches)) {
@@ -552,7 +551,7 @@ class pdoFetch extends pdoTools {
 							if ($v[0] == '-') {$parents_out[] = abs($v);}
 							else {$parents_in[] = abs($v);}
 						}
-						$depth = (isset($config['depth']) && $config['depth'] != '')
+						$depth = (isset($config['depth']) && $config['depth'] !== '')
 							? (integer) $config['depth']
 							: 10;
 						if (!empty($depth) && $depth > 0) {
@@ -795,7 +794,10 @@ class pdoFetch extends pdoTools {
 			$row = $this->query->stmt->fetch(PDO::FETCH_ASSOC);
 		}
 		else {
-			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load object "'.$class.'": '.print_r($this->query->stmt->errorInfo(), true));
+			$errors = $this->query->stmt->errorInfo();
+			$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load object "'.$class.'": Error '.$errors[0].': '.$errors[2]);
+			$this->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
+
 		}
 
 		return $row;
@@ -815,7 +817,7 @@ class pdoFetch extends pdoTools {
 		if (!empty($config['loadModels'])) {$this->config['loadModels'] = $config['loadModels'];}
 		$this->loadModels();
 
-		$config['class'] = $class;
+		$this->class = $class;
 		$config['limit'] = !isset($config['limit']) ? 0 : (integer) $config['limit'];
 		if (!empty($where)) {
 			unset($config['where']);
@@ -851,7 +853,9 @@ class pdoFetch extends pdoTools {
 			$rows = $this->checkPermissions($rows);
 		}
 		else {
-			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load collection "'.$class.'": '.print_r($this->query->stmt->errorInfo(), true));
+			$errors = $this->query->stmt->errorInfo();
+			$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load collection of "'.$class.'": Error '.$errors[0].': '.$errors[2]);
+			$this->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
 		}
 
 		return $rows;
