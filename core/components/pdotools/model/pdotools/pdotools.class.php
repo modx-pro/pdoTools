@@ -642,6 +642,7 @@ class pdoTools {
 	 * @return array
 	 */
 	public function prepareRows(array $rows = array()) {
+		$prepare = $process = array();
 		if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
 			$tvs = array_map('trim', explode(',', $this->config['includeTVs']));
 			$prepare = ($this->config['prepareTVs'] == 1)
@@ -650,8 +651,18 @@ class pdoTools {
 			$process = ($this->config['processTVs'] == 1)
 				? $tvs
 				: array_map('trim', explode(',', $this->config['processTVs']));
+		}
 
-			foreach ($rows as & $row) {
+		foreach ($rows as & $row) {
+			// Extract JSON fields
+			foreach ($row as $k => $v) {
+				if ($v[0] == '{' || $v[0] == '[') {
+					$row[$k] = $this->modx->fromJSON($v);
+				}
+			}
+
+			// Prepare and process TVs
+			if (!empty($tvs)) {
 				foreach ($tvs as $tv) {
 					if (!in_array($tv, $process) && !in_array($tv, $prepare)) {continue;}
 
@@ -675,6 +686,9 @@ class pdoTools {
 					}
 				}
 			}
+		}
+
+		if (!empty($tvs)) {
 			$this->addTime('Prepared and processed TVs');
 		}
 
@@ -726,7 +740,7 @@ class pdoTools {
 			else {
 				$row = array_merge($row, $tmp);
 			}
-			$this->preparing = false;;
+			$this->preparing = false;
 		}
 
 		return $row;
