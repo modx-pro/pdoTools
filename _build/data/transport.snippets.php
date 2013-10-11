@@ -14,6 +14,7 @@ $tmp = array(
 	'pdoField' => 'pdofield',
 	'pdoSitemap' => 'pdositemap',
 	'pdoNeighbors' => 'pdoneighbors',
+	'pdoPage' => 'pdopage',
 );
 
 foreach ($tmp as $k => $v) {
