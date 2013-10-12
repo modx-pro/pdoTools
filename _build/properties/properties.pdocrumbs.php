@@ -153,7 +153,7 @@ $tmp = array(
 				,'value' => 'https'
 			)
 		)
-		,'value' => '-1'
+		,'value' => -1
 	)
 
 );

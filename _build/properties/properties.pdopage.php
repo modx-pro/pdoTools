@@ -10,7 +10,11 @@ $tmp = array(
 	),
 	'limit' => array(
 		'type' => 'numberfield',
-		'value' => '',
+		'value' => 10,
+	),
+	'maxLimit' => array(
+		'type' => 'numberfield',
+		'value' => 100,
 	),
 	'offset' => array(
 		'type' => 'numberfield',
@@ -23,15 +27,15 @@ $tmp = array(
 	),
 	'pageVarKey' => array(
 		'type' => 'textfield',
-		'value' => '',
+		'value' => 'page',
 	),
 	'totalVar' => array(
-		'type' => 'numberfield',
-		'value' => '',
+		'type' => 'textfield',
+		'value' => 'total',
 	),
 	'pageLimit' => array(
 		'type' => 'numberfield',
-		'value' => '',
+		'value' => 2,
 	),
 
 	'element' => array(
@@ -53,7 +57,7 @@ $tmp = array(
 	// pageNavTpl
 	'tplPage' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li[[+classes]]><a[[+classes]][[+title]] href="[[+href]]">[[+pageNo]]</a></li>',
+		'value' => '@INLINE <li><a href="[[+href]]">[[+pageNo]]</a></li>',
 	),
 	// pageNavOuterTpl
 	'tplPageWrapper' => array(
@@ -63,27 +67,27 @@ $tmp = array(
 	// pageActiveTpl
 	'tplPageActive' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li[[+activeClasses]]><a[[+activeClasses:default=` class="active"`]][[+title]] href="[[+href]]">[[+pageNo]]</a></li>',
+		'value' => '@INLINE <li><a class="active" href="[[+href]]">[[+pageNo]]</a></li>',
 	),
 	// pageFirstTpl
 	'tplPageFirst' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">First</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">&lt;&lt;</a></li>',
 	),
 	// pageLastTpl
 	'tplPageLast' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">Last</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">&gt;&gt;</a></li>',
 	),
 	// pagePrevTpl
 	'tplPagePrev' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">&lt;&lt;</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">&lt;</a></li>',
 	),
 	// pageNextTpl
 	'tplPageNext' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">&gt;&gt;</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">&gt;</a></li>',
 	),
 	// pageSkipTpl
 	'tplPageSkip' => array(
@@ -119,9 +123,32 @@ $tmp = array(
 		'value' => '',
 	),
 
-	'pageNavScheme' => array(
-		'type' => 'textfield',
-		'value' => '',
+	// pageNavScheme
+	'scheme' => array(
+		'type' => 'list',
+		'options' => array(
+			array(
+				'name' => '-1 (relative to site_url)',
+				'value' => -1,
+			),
+			array(
+				'name' => 'full (absolute, prepended with site_url)',
+				'value' => 'full',
+			),
+			array(
+				'name' => 'abs (absolute, prepended with base_url)',
+				'value' => 'abs',
+			),
+			array(
+				'name' => 'http (absolute, forced to http scheme)',
+				'value' => 'http',
+			),
+			array(
+				'name' => 'https (absolute, forced to https scheme)',
+				'value' => 'https',
+			),
+		),
+		'value' => -1,
 	),
 
 	'showEdgePages' => array(
