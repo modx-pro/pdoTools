@@ -41,6 +41,7 @@ class pdoFetch extends pdoTools {
 			), $config)
 		, $clean_timings);
 
+		if (empty($this->config['class'])) {$this->config['class'] = 'modResource';}
 		$this->pk = $this->modx->getPK($this->config['class']);
 		$this->ancestry = $this->modx->getAncestry($this->config['class']);
 		$this->idx = !empty($this->config['offset'])
@@ -769,10 +770,12 @@ class pdoFetch extends pdoTools {
 			if (is_numeric($where)) {
 				$where = array($this->modx->getPK($class) => (integer) $where);
 			}
-			elseif ($where[0] == '{' || $where[0] == '[') {
+			elseif (is_scalar($where) && ($where[0] == '{' || $where[0] == '[')) {
 				$where = $this->modx->fromJSON($where);
 			}
-			$config['where'] = $where;
+			if (is_array($where)) {
+				$config['where'] = $where;
+			}
 		}
 
 		$this->setConfig($config, true);
@@ -821,10 +824,12 @@ class pdoFetch extends pdoTools {
 			if (is_numeric($where)) {
 				$where = array($this->modx->getPK($class) => (integer) $where);
 			}
-			elseif ($where[0] == '{' || $where[0] == '[') {
+			elseif (is_scalar($where) && ($where[0] == '{' || $where[0] == '[')) {
 				$where = $this->modx->fromJSON($where);
 			}
-			$config['where'] = $where;
+			if (is_array($where)) {
+				$config['where'] = $where;
+			}
 		}
 
 		$this->setConfig($config, true);

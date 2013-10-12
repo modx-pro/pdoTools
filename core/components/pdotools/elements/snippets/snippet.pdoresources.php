@@ -8,7 +8,7 @@ if (!empty($returnIds)) {
 }
 
 /* @var pdoFetch $pdoFetch */
-if (!$modx->loadClass('pdofetch', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
+if (!$modx->getService('pdoFetch')) {return false;}
 $pdoFetch = new pdoFetch($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 $output = $pdoFetch->run();

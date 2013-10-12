@@ -34,53 +34,59 @@ $tmp = array(
 		'value' => '',
 	),
 
+	'element' => array(
+		'type' => 'textfield',
+		'value' => 'pdoResources',
+	),
 	// elementClass
+	/*
 	'class' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
+	*/
 
 	'pageNavVar' => array(
 		'type' => 'textfield',
 		'value' => 'page.nav',
 	),
 	// pageNavTpl
-	'tpl' => array(
+	'tplPage' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li[[+classes]]><a[[+classes]][[+title]] href="[[+href]]">[[+pageNo]]</a></li>',
 	),
 	// pageNavOuterTpl
-	'tplWrapper' => array(
+	'tplPageWrapper' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE [[+first]][[+prev]][[+pages]][[+next]][[+last]]',
 	),
 	// pageActiveTpl
-	'tplActive' => array(
+	'tplPageActive' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li[[+activeClasses]]><a[[+activeClasses:default=` class="active"`]][[+title]] href="[[+href]]">[[+pageNo]]</a></li>',
 	),
 	// pageFirstTpl
-	'tplFirst' => array(
+	'tplPageFirst' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">First</a></li>',
 	),
 	// pageLastTpl
-	'tplLast' => array(
+	'tplPageLast' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">Last</a></li>',
 	),
 	// pagePrevTpl
-	'tplPrev' => array(
+	'tplPagePrev' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">&lt;&lt;</a></li>',
 	),
 	// pageNextTpl
-	'tplNext' => array(
+	'tplPageNext' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a[[+classes]][[+title]] href="[[+href]]">&gt;&gt;</a></li>',
 	),
 	// pageSkipTpl
-	'tplSkip' => array(
+	'tplPageSkip' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><span>...</span></li>',
 	),
@@ -121,6 +127,10 @@ $tmp = array(
 	'showEdgePages' => array(
 		'type' => 'combo-boolean',
 		'value' => true,
+	),
+	'toPlaceholder' => array(
+		'type' => 'textfield',
+		'value' => '',
 	),
 	/*
 	'strictMode' => array(

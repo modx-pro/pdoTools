@@ -44,6 +44,26 @@ $builder->createPackage(PKG_NAME_LOWER,PKG_VERSION,PKG_RELEASE);
 $builder->registerNamespace(PKG_NAME_LOWER,false,true,'{core_path}components/'.PKG_NAME_LOWER.'/');
 $modx->log(modX::LOG_LEVEL_INFO,'Created Transport Package and Namespace.');
 
+/* load system settings */
+if (defined('BUILD_SETTING_UPDATE')) {
+	$settings = include $sources['data'].'transport.settings.php';
+	if (!is_array($settings)) {
+		$modx->log(modX::LOG_LEVEL_ERROR,'Could not package in settings.');
+	} else {
+		$attributes= array(
+			xPDOTransport::UNIQUE_KEY => 'key',
+			xPDOTransport::PRESERVE_KEYS => true,
+			xPDOTransport::UPDATE_OBJECT => BUILD_SETTING_UPDATE,
+		);
+		foreach ($settings as $setting) {
+			$vehicle = $builder->createVehicle($setting,$attributes);
+			$builder->putVehicle($vehicle);
+		}
+		$modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($settings).' System Settings.');
+	}
+	unset($settings,$setting,$attributes);
+}
+
 /* create category */
 $category= $modx->newObject('modCategory');
 $category->set('id',1);
