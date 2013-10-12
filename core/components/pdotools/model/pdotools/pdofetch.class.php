@@ -41,6 +41,7 @@ class pdoFetch extends pdoTools {
 			), $config)
 		, $clean_timings);
 
+		if (empty($this->config['class'])) {$this->config['class'] = 'modResource';}
 		$this->pk = $this->modx->getPK($this->config['class']);
 		$this->ancestry = $this->modx->getAncestry($this->config['class']);
 		$this->idx = !empty($this->config['offset'])
@@ -150,7 +151,7 @@ class pdoFetch extends pdoTools {
 		$where = array();
 		if (!empty($this->config['where'])) {
 			$tmp = $this->config['where'];
-			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+			if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
 				$tmp = $this->modx->fromJSON($tmp);
 			}
 			$where = $this->replaceTVCondition($tmp);
@@ -176,7 +177,7 @@ class pdoFetch extends pdoTools {
 		}
 		if (!empty($this->config['having'])) {
 			$tmp = $this->config['having'];
-			if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+			if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
 				$tmp = $this->modx->fromJSON($tmp);
 			}
 			$having = $this->replaceTVCondition($tmp);
@@ -218,7 +219,7 @@ class pdoFetch extends pdoTools {
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
 			if (!empty($this->config[$join])) {
 				$tmp = $this->config[$join];
-				if (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+				if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
 					$tmp = $this->modx->fromJSON($tmp);
 				}
 				if ($join == 'leftJoin' && !empty($this->config['tvsJoin'])) {
@@ -246,7 +247,7 @@ class pdoFetch extends pdoTools {
 		}
 		elseif ($tmp = $this->config['select']) {
 			if (!is_array($tmp)) {
-				$tmp = ($tmp[0] == '{' || $tmp[0] == '[')
+				$tmp = (!empty($tmp) && $tmp[0] == '{' || $tmp[0] == '[')
 					? $this->modx->fromJSON($tmp)
 					: array($this->config['class'] => $tmp);
 			}
@@ -315,7 +316,7 @@ class pdoFetch extends pdoTools {
 			}
 		}
 		else {
-			$tmp = (!is_array($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
+			$tmp = (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
 				? $this->modx->fromJSON($this->config['sortby'])
 				: array($this->config['sortby'] => $this->config['sortdir']);
 		}
@@ -769,10 +770,12 @@ class pdoFetch extends pdoTools {
 			if (is_numeric($where)) {
 				$where = array($this->modx->getPK($class) => (integer) $where);
 			}
-			elseif ($where[0] == '{' || $where[0] == '[') {
+			elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
 				$where = $this->modx->fromJSON($where);
 			}
-			$config['where'] = $where;
+			if (is_array($where)) {
+				$config['where'] = $where;
+			}
 		}
 
 		$this->setConfig($config, true);
@@ -821,10 +824,12 @@ class pdoFetch extends pdoTools {
 			if (is_numeric($where)) {
 				$where = array($this->modx->getPK($class) => (integer) $where);
 			}
-			elseif ($where[0] == '{' || $where[0] == '[') {
+			elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
 				$where = $this->modx->fromJSON($where);
 			}
-			$config['where'] = $where;
+			if (is_array($where)) {
+				$config['where'] = $where;
+			}
 		}
 
 		$this->setConfig($config, true);
