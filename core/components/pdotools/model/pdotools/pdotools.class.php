@@ -211,7 +211,9 @@ class pdoTools {
 			$chunk = $this->_loadChunk($name, $properties);
 		}
 		if (empty($name) || empty($chunk) || !($chunk['object'] instanceof modChunk)) {
-			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
+			return !empty($properties)
+				? str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'))
+				: '';
 		}
 
 		$chunk['object']->_cacheable = false;
@@ -283,7 +285,9 @@ class pdoTools {
 			$chunk = $this->_loadChunk($name, $properties);
 		}
 		if (empty($name) || empty($chunk['content'])) {
-			return str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'));
+			return !empty($properties)
+				? str_replace(array('[',']','`'), array('&#91;','&#93;','&#96;'), htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'))
+				: '';
 		}
 
 		$output = $chunk['content'];
