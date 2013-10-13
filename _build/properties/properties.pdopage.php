@@ -35,20 +35,13 @@ $tmp = array(
 	),
 	'pageLimit' => array(
 		'type' => 'numberfield',
-		'value' => 2,
+		'value' => 5,
 	),
 
 	'element' => array(
 		'type' => 'textfield',
 		'value' => 'pdoResources',
 	),
-	// elementClass
-	/*
-	'class' => array(
-		'type' => 'textfield',
-		'value' => '',
-	),
-	*/
 
 	'pageNavVar' => array(
 		'type' => 'textfield',
@@ -67,34 +60,50 @@ $tmp = array(
 	// pageActiveTpl
 	'tplPageActive' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li><a class="active" href="[[+href]]">[[+pageNo]]</a></li>',
+		'value' => '@INLINE <li class="active"><a href="[[+href]]">[[+pageNo]]</a></li>',
 	),
 	// pageFirstTpl
 	'tplPageFirst' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a href="[[+href]]">&lt;&lt;</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">[[%pdopage_first]]</a></li>',
 	),
 	// pageLastTpl
 	'tplPageLast' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a href="[[+href]]">&gt;&gt;</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">[[%pdopage_last]]</a></li>',
 	),
 	// pagePrevTpl
 	'tplPagePrev' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a href="[[+href]]">&lt;</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">&laquo;</a></li>',
 	),
 	// pageNextTpl
 	'tplPageNext' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><a href="[[+href]]">&gt;</a></li>',
+		'value' => '@INLINE <li class="control"><a href="[[+href]]">&raquo;</a></li>',
 	),
 	// pageSkipTpl
 	'tplPageSkip' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><span>...</span></li>',
+		'value' => '@INLINE <li class="disabled"><span>...</span></li>',
 	),
 
+	'tplPageFirstEmpty' => array(
+		'type' => 'textfield',
+		'value' => '@INLINE <li class="control"><span>[[%pdopage_first]]</span></li>',
+	),
+	'tplPageLastEmpty' => array(
+		'type' => 'textfield',
+		'value' => '@INLINE <li class="control"><span>[[%pdopage_last]]</span></li>',
+	),
+	'tplPagePrevEmpty' => array(
+		'type' => 'textfield',
+		'value' => '@INLINE <li class="disabled"><span>&laquo;</span></li>',
+	),
+	'tplPageNextEmpty' => array(
+		'type' => 'textfield',
+		'value' => '@INLINE <li class="disabled"><span>&raquo;</span></li>',
+	),
 
 	'cache' => array(
 		'type' => 'textfield',
@@ -151,22 +160,10 @@ $tmp = array(
 		'value' => -1,
 	),
 
-	'showEdgePages' => array(
-		'type' => 'combo-boolean',
-		'value' => true,
-	),
 	'toPlaceholder' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	/*
-	'strictMode' => array(
-		'type' => 'combo-boolean',
-		'value' => true,
-	),
-	*/
-
-
 
 );
 

@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Added processing of JSON fields. For example, you can use [[+extended.keyname]] in chunks of pdoUsers.
 - pdoTools was removed from system extension packages, but you can still use "$modx->getService('pdoFetch');".
+- Fixed getting chunk without any parameters.
 
 1.8.0 beta1
 ==============

@@ -3,6 +3,22 @@ require_once 'pdotools.class.php';
 
 class pdoPage extends pdoTools {
 
+	/**
+	 * @param modX $modx
+	 * @param array $config
+	 */
+	public function __construct(modX & $modx, $config = array()) {
+		$modx->lexicon->load('pdotools:pdopage');
+
+		return parent::__construct($modx, $config);
+	}
+
+
+	/**
+	 * Redirect user to the first page of pagination
+	 *
+	 * @return string
+	 */
 	public function redirectToFirst() {
 		unset($_GET[$this->config['pageVarKey']]);
 		unset($_GET[$this->modx->getOption('request_param_alias', null, 'q')]);
@@ -97,6 +113,225 @@ class pdoPage extends pdoTools {
 		return !empty($tpl)
 			? $this->getChunk($tpl, $data)
 			: '';
+	}
+
+
+	/**
+	 * Classic pagination: 3,4,5,6,7,8,9,10,11,12,13,14
+	 *
+	 * @param int $page
+	 * @param int $pages
+	 * @param string $url
+	 *
+	 * @return string
+	 */
+	public function buildClassicPagination($page = 1, $pages = 5, $url = '') {
+		$pageLimit = $this->config['pageLimit'];
+
+		if ($pageLimit > $pages) {$pageLimit = 0;}
+		else {
+			// -1 because we need to show current page
+			$tmp = (integer) floor(($pageLimit - 1) / 2);
+			$left = $tmp;						// Pages from left
+			$right = $pageLimit - $left - 1;	// Pages from right
+
+			if ($page - 1 == 0) {
+				$right += $left;
+				$left = 0;
+			}
+			elseif ($page - 1 < $left) {
+				$tmp = $left - ($page - 1);
+				$left -= $tmp;
+				$right += $tmp;
+			}
+			elseif ($pages - $page == 0) {
+				$left += $right;
+				$right = 0;
+			}
+			elseif ($pages - $page < $right) {
+				$tmp = $right - ($pages - $page);
+				$right -= $tmp;
+				$left += $tmp;
+			}
+
+			$i = $page - $left;
+			$pageLimit = $page + $right;
+		}
+
+		if (empty($i)) {$i = 1;}
+		$pagination = '';
+		while ($i <= $pages) {
+			if (!empty($pageLimit) && $i > $pageLimit) {
+				break;
+			}
+
+			if ($page == $i && !empty($this->config['tplPageActive'])) {
+				$tpl = $this->config['tplPageActive'];
+			}
+			elseif (!empty($this->config['tplPage'])) {
+				$tpl = $this->config['tplPage'];
+			}
+
+			$pagination .= !empty($tpl)
+				? $this->makePageLink($url, $i, $tpl)
+				: '';
+
+			$i++;
+		}
+
+		return $pagination;
+	}
+
+
+	/**
+	 * Modern pagination: 1,2,..,8,9,...,13,14
+	 *
+	 * @param int $page
+	 * @param int $pages
+	 * @param string $url
+	 *
+	 * @return string
+	 */
+	public function buildModernPagination($page = 1, $pages = 5, $url = '') {
+		$pageLimit = $this->config['pageLimit'];
+
+		$left = $right = $center = 0;
+
+		if ($pageLimit > $pages || $pageLimit < 7) {
+			return $this->buildClassicPagination($page, $pages, $url);
+		}
+		else {
+			$tmp = (integer) floor($pageLimit / 3);
+			$left = $right = $tmp;
+			$center = $pageLimit - ($tmp * 2);
+		}
+
+		$pagination = array();
+		// Left
+		for ($i = 1; $i <= $left; $i++) {
+			if ($page == $i && !empty($this->config['tplPageActive'])) {
+				$tpl = $this->config['tplPageActive'];
+			}
+			elseif (!empty($this->config['tplPage'])) {
+				$tpl = $this->config['tplPage'];
+			}
+			$pagination[$i] = !empty($tpl)
+				? $this->makePageLink($url, $i, $tpl)
+				: '';
+		}
+
+		// Right
+		for ($i = $pages - $right + 1; $i <= $pages; $i++) {
+			if ($page == $i && !empty($this->config['tplPageActive'])) {
+				$tpl = $this->config['tplPageActive'];
+			}
+			elseif (!empty($this->config['tplPage'])) {
+				$tpl = $this->config['tplPage'];
+			}
+			$pagination[$i] = !empty($tpl)
+				? $this->makePageLink($url, $i, $tpl)
+				: '';
+		}
+
+		// Center
+		if ($page <= $left) {
+			$i = $left + 1;
+			while ($i <= $center + $left) {
+				if ($i == $center + $left && !empty($this->config['tplPageSkip'])) {
+					$tpl = $this->config['tplPageSkip'];
+				}
+				else {
+					$tpl = $this->config['tplPage'];
+				}
+
+				$pagination[$i] = !empty($tpl)
+					? $this->makePageLink($url, $i, $tpl)
+					: '';
+				$i++;
+			}
+		}
+		elseif ($page > $pages - $right) {
+			$i = $pages - $right - $center + 1;
+			while ($i <= $pages - $right) {
+				if ($i == $pages - $right - $center + 1 && !empty($this->config['tplPageSkip'])) {
+					$tpl = $this->config['tplPageSkip'];
+				}
+				else {
+					$tpl = $this->config['tplPage'];
+				}
+
+				$pagination[$i] = !empty($tpl)
+					? $this->makePageLink($url, $i, $tpl)
+					: '';
+				$i++;
+			}
+		}
+		else {
+			if ($page - $center < $left) {
+				$i = $left + 1;
+				while ($i <= $center + $left) {
+					if ($page == $i && !empty($this->config['tplPageActive'])) {
+						$tpl = $this->config['tplPageActive'];
+					}
+					elseif (!empty($this->config['tplPage'])) {
+						$tpl = $this->config['tplPage'];
+					}
+					$pagination[$i] = !empty($tpl)
+						? $this->makePageLink($url, $i, $tpl)
+						: '';
+					$i++;
+				}
+				if (!empty($this->config['tplPageSkip'])) {
+					$key = ($page + 1 == $left + $center)
+						? $pages - $right + 1
+						: $left + $center;
+					$pagination[$key] = $this->getChunk($this->config['tplPageSkip']);
+				}
+			}
+			elseif ($page + $center - 1 > $pages - $right) {
+				$i = $pages - $right - $center + 1;
+				while ($i <= $pages - $right) {
+					if ($page == $i && !empty($this->config['tplPageActive'])) {
+						$tpl = $this->config['tplPageActive'];
+					}
+					elseif (!empty($this->config['tplPage'])) {
+						$tpl = $this->config['tplPage'];
+					}
+					$pagination[$i] = !empty($tpl)
+						? $this->makePageLink($url, $i, $tpl)
+						: '';
+					$i++;
+				}
+				if (!empty($this->config['tplPageSkip'])) {
+					$key = ($page - 1 == $pages - $right - $center + 1)
+						? $left
+						: $pages - $right - $center + 1;
+					$pagination[$key] = $this->getChunk($this->config['tplPageSkip']);
+				}
+			}
+			else {
+				$tmp = (integer) floor(($center - 1) / 2);
+				$i = $page - $tmp;
+				while ($i < $page - $tmp + $center) {
+					if ($page == $i && !empty($this->config['tplPageActive'])) {
+						$tpl = $this->config['tplPageActive'];
+					}
+					elseif (!empty($this->config['tplPage'])) {
+						$tpl = $this->config['tplPage'];
+					}
+					$pagination[$i] = !empty($tpl)
+						? $this->makePageLink($url, $i, $tpl)
+						: '';
+					$i++;
+				}
+				if (!empty($this->config['tplPageSkip'])) {
+					$pagination[$left] = $pagination[$pages - $right + 1] = $this->getChunk($this->config['tplPageSkip']);
+				}
+			}
+		}
+
+		ksort($pagination);
+		return implode($pagination);
 	}
 
 }
