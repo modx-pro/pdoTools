@@ -85,3 +85,27 @@ $_lang['pdotools_prop_scheme'] = 'Scheme of generation of url, goes to modX::mak
 
 $_lang['pdotools_prop_field_default'] = 'Specify an additional field of resource that returns if "&field" will be empty.';
 $_lang['pdotools_prop_field_output'] = 'This string will return, and if "&default" and "&field" was empty.';
+
+$_lang['pdotools_prop_cache'] = 'Caching the results of the work of the snippet.';
+$_lang['pdotools_prop_cachePageKey'] = 'The name of the key cache.';
+$_lang['pdotools_prop_cacheTime'] = 'Time, the relevance of the cache, in seconds.';
+$_lang['pdotools_prop_element'] = 'The name of the snippet to run.';
+$_lang['pdotools_prop_maxLimit'] = 'The maximum limit of the query. Overrides the limit specified by the user via a url.';
+$_lang['pdotools_prop_page'] = 'Number of page for output. Overlaps number specified user via the url.';
+$_lang['pdotools_prop_pageLimit'] = 'Number of links on a pages. If is 7 or more turns on the advanced mode.';
+$_lang['pdotools_prop_pageNavVar'] = 'Name of placeholder for output pagination.';
+$_lang['pdotools_prop_pageVarKey'] = 'the Name of the variable to search for the page number in the url.';
+$_lang['pdotools_prop_plPrefix'] = 'Prefix for issuance placeholders, it is empty by default.';
+
+$_lang['pdotools_prop_tplPage'] = 'Chunk of registration of the normal link to the page.';
+$_lang['pdotools_prop_tplPageActive'] = 'Chunk of the link to the current page.';
+$_lang['pdotools_prop_tplPageFirst'] = 'Chunk of the link to the first page.';
+$_lang['pdotools_prop_tplPagePrev'] = 'Chunk of the link to the previous page.';
+$_lang['pdotools_prop_tplPageLast'] = 'Chunk of the link to the last page.';
+$_lang['pdotools_prop_tplPageNext'] = 'Chunk of the link to the next page.';
+$_lang['pdotools_prop_tplPageFirstEmpty'] = 'Chunk output if no link on the first page.';
+$_lang['pdotools_prop_tplPagePrevEmpty'] = 'Chunk output if no link to the previous page.';
+$_lang['pdotools_prop_tplPageLastEmpty'] = 'Chunk output if no link to the last page.';
+$_lang['pdotools_prop_tplPageNextEmpty'] = 'Chunk output if no link to the next page.';
+$_lang['pdotools_prop_tplPageSkip'] = 'Chunk clearance missing pages in advanced mode, the display (&pageLimit >= 7).';
+$_lang['pdotools_prop_tplPageWrapper'] = 'Chunk of the decoration of the block pagination, as you could see placeholders contains pages.';

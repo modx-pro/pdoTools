@@ -615,17 +615,21 @@ class pdoTools {
 	 * @param array $tmp Array with rows
 	 * @param string $id Name of primary key
 	 * @param string $parent Name of parent key
+	 * @param integer $root Id of root document for build
 	 *
 	 * @return array
 	 */
-	public function buildTree($tmp = array(), $id = 'id', $parent = 'parent') {
+	public function buildTree($tmp = array(), $id = 'id', $parent = 'parent', $root = 0) {
+		if (empty($id)) {$id = 'id';}
+		if (empty($parent)) {$parent = 'parent';}
+
 		$rows = $tree= array();
 		foreach ($tmp as $v) {
 			$rows[$v[$id]] = $v;
 		}
 
 		foreach ($rows as $id => &$row) {
-			if (empty($row[$parent])) {
+			if ($row[$parent] == $root) {
 				$tree[$id] = &$row;
 			}
 			else{

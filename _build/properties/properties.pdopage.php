@@ -3,7 +3,6 @@
 $properties = array();
 
 $tmp = array(
-	// namespace
 	'plPrefix' => array(
 		'type' => 'textfield',
 		'value' => '',
@@ -47,42 +46,34 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'page.nav',
 	),
-	// pageNavTpl
 	'tplPage' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li><a href="[[+href]]">[[+pageNo]]</a></li>',
 	),
-	// pageNavOuterTpl
 	'tplPageWrapper' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE [[+first]][[+prev]][[+pages]][[+next]][[+last]]',
 	),
-	// pageActiveTpl
 	'tplPageActive' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="active"><a href="[[+href]]">[[+pageNo]]</a></li>',
 	),
-	// pageFirstTpl
 	'tplPageFirst' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a href="[[+href]]">[[%pdopage_first]]</a></li>',
 	),
-	// pageLastTpl
 	'tplPageLast' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a href="[[+href]]">[[%pdopage_last]]</a></li>',
 	),
-	// pagePrevTpl
 	'tplPagePrev' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a href="[[+href]]">&laquo;</a></li>',
 	),
-	// pageNextTpl
 	'tplPageNext' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="control"><a href="[[+href]]">&raquo;</a></li>',
 	),
-	// pageSkipTpl
 	'tplPageSkip' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li class="disabled"><span>...</span></li>',
@@ -106,7 +97,7 @@ $tmp = array(
 	),
 
 	'cache' => array(
-		'type' => 'textfield',
+		'type' => 'list',
 		'options' => array(
 			array('text' => 'Disabled','value' => ''),
 			array('text' => 'URI','value' => 'uri'),
@@ -119,6 +110,11 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => '',
 	),
+	'cacheTime' => array(
+		'type' => 'numberfield',
+		'value' => 0,
+	),
+	/*
 	'cache_key' => array(
 		'type' => 'textfield',
 		'value' => 'resource',
@@ -131,8 +127,8 @@ $tmp = array(
 		'type' => 'numberfield',
 		'value' => '',
 	),
+	*/
 
-	// pageNavScheme
 	'scheme' => array(
 		'type' => 'list',
 		'options' => array(
