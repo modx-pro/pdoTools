@@ -39,8 +39,14 @@ elseif (!empty($_REQUEST[$pageVarKey])) {
 unset($_REQUEST[$pageVarKey]);
 
 // Limit
-if (!empty($_REQUEST['limit']) && is_numeric($_REQUEST['limit']) && (integer) $_REQUEST['limit']) {
-	$scriptProperties['limit'] = (integer) $_REQUEST['limit'];
+if (isset($_REQUEST['limit'])) {
+	if (is_numeric($_REQUEST['limit']) && abs($_REQUEST['limit']) > 0) {
+		$scriptProperties['limit'] = abs($_REQUEST['limit']);
+	}
+	else {
+		unset($_GET['limit']);
+		return $pdoPage->redirectToFirst();
+	}
 }
 if (!empty($maxLimit) && !empty($scriptProperties['limit']) && $scriptProperties['limit'] > $maxLimit) {
 	$scriptProperties['limit'] = $maxLimit;
