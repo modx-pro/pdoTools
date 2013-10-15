@@ -41,7 +41,9 @@ class pdoPage extends pdoTools {
 	public function getBaseUrl() {
 		if ($this->modx->getOption('friendly_urls')) {
 			$q_var = $this->modx->getOption('request_param_alias', null, 'q');
-			$q_val = $_GET[$q_var];
+			$q_val = isset($_GET[$q_var])
+				? $_GET[$q_var]
+				: '';
 			unset($_GET[$q_var]);
 
 			$host = '';
@@ -62,9 +64,10 @@ class pdoPage extends pdoTools {
 		}
 		else {
 			$id_var = $this->modx->getOption('request_param_id', null, 'id');
-			$id_val = $_GET[$id_var];
+			$id_val = isset($_GET[$id_var])
+				? $_GET[$id_var]
+				: $this->modx->getOption('site_start');
 			unset($_GET[$id_var]);
-
 			$url = $this->modx->makeUrl($id_val, '', '', $this->config['scheme']);
 		}
 
