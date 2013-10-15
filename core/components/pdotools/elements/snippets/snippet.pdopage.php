@@ -114,14 +114,11 @@ else {
 				}
 			}
 		}
-	}
-	else {
-		$pagination = array('first' => '', 'prev' => '', 'pages' => '', 'next' => '', 'last' => '');
-	}
 
-	$pagination = !empty($tplPageWrapper)
-		? $pdoPage->getChunk($tplPageWrapper, $pagination)
-		: $pdoPage->parseChunk('', $pagination);
+		$pagination = !empty($tplPageWrapper)
+			? $pdoPage->getChunk($tplPageWrapper, $pagination)
+			: $pdoPage->parseChunk('', $pagination);
+	}
 }
 
 $data = array(

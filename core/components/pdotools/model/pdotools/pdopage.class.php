@@ -41,8 +41,8 @@ class pdoPage extends pdoTools {
 	public function getBaseUrl() {
 		if ($this->modx->getOption('friendly_urls')) {
 			$q_var = $this->modx->getOption('request_param_alias', null, 'q');
-			$q_val = $_REQUEST[$q_var];
-			unset($_REQUEST[$q_var]);
+			$q_val = $_GET[$q_var];
+			unset($_GET[$q_var]);
 
 			$host = '';
 			switch ($this->config['scheme']) {
@@ -62,8 +62,8 @@ class pdoPage extends pdoTools {
 		}
 		else {
 			$id_var = $this->modx->getOption('request_param_id', null, 'id');
-			$id_val = $_REQUEST[$id_var];
-			unset($_REQUEST[$id_var]);
+			$id_val = $_GET[$id_var];
+			unset($_GET[$id_var]);
 
 			$url = $this->modx->makeUrl($id_val, '', '', $this->config['scheme']);
 		}
@@ -93,11 +93,14 @@ class pdoPage extends pdoTools {
 				: '?';
 			$href .= $this->config['pageVarKey'] . '=' . $page;
 		}
-		if (!empty($_REQUEST)) {
+		if (!empty($_GET)) {
+			if (isset($_GET[$this->config['pageVarKey']])) {
+				unset($_GET[$this->config['pageVarKey']]);
+			}
 			$href .= strpos($href, '?') !== false
 				? '&'
 				: '?';
-			$href .= http_build_query($_REQUEST);
+			$href .= http_build_query($_GET);
 		}
 
 		if (!empty($href) && $this->modx->getOption('xhtml_urls', null, false)) {
@@ -437,7 +440,8 @@ class pdoPage extends pdoTools {
 
 			case 'modx':
 			default:
-				$cachePageKey = $this->modx->resource->getCacheKey() . '/' . $cachePagePrefix . $page . '/' . md5(http_build_query($this->modx->request->getParameters()));
+				$request = $this->modx->request->getParameters(array(), 'REQUEST');
+				$cachePageKey = $this->modx->resource->getCacheKey() . '/' . $cachePagePrefix . $page . '/' . md5(http_build_query($request));
 		}
 
 		return $cachePageKey;
