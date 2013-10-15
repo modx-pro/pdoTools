@@ -393,7 +393,7 @@ class pdoPage extends pdoTools {
 				? $this->config['cache_handler']
 				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
 			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
-				? (integer) $this->config['cache_expires']
+				? (integer) $this->config['cacheTime']
 				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
 		);
 
