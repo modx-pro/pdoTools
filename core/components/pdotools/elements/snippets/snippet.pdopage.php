@@ -84,33 +84,39 @@ else {
 	$pages = ceil($total / $scriptProperties['limit']);
 
 	// Redirect to start if somebody specified incorrect page
-	if ($page > $pages) {
+	if ($page > 1 && $page > $pages) {
 		return $pdoPage->redirectToFirst();
 	}
+	elseif (!empty($pages) && $pages > 1) {
+		$pagination = array(
+			'first' => $page > 2 && !empty($tplPageFirst)
+				? $pdoPage->makePageLink($url, 1, $tplPageFirst)
+				: '',
+			'prev' => $page > 1 && !empty($tplPagePrev)
+				? $pdoPage->makePageLink($url, $page - 1, $tplPagePrev)
+				: '',
+			'pages' => $pageLimit >= 7 && empty($disableModernPagination)
+				? $pdoPage->buildModernPagination($page, $pages, $url)
+				: $pdoPage->buildClassicPagination($page, $pages, $url),
+			'next' => $page < $pages && !empty($tplPageNext)
+				? $pdoPage->makePageLink($url, $page + 1, $tplPageNext)
+				: '',
+			'last' => $page < $pages - 1 && !empty($tplPageLast)
+				? $pdoPage->makePageLink($url, $pages, $tplPageLast)
+				: '',
+		);
 
-	$pagination = array(
-		'first' => $page > 2 && !empty($tplPageFirst)
-			? $pdoPage->makePageLink($url, 1, $tplPageFirst)
-			: '',
-		'prev' => $page > 1 && !empty($tplPagePrev)
-			? $pdoPage->makePageLink($url, $page - 1, $tplPagePrev)
-			: '',
-		'pages' => $pageLimit >= 7 && empty($disableModernPagination)
-			? $pdoPage->buildModernPagination($page, $pages, $url)
-			: $pdoPage->buildClassicPagination($page, $pages, $url),
-		'next' => $page < $pages && !empty($tplPageNext)
-			? $pdoPage->makePageLink($url, $page + 1, $tplPageNext)
-			: '',
-		'last' => $page < $pages - 1 && !empty($tplPageLast)
-			? $pdoPage->makePageLink($url, $pages, $tplPageLast)
-			: '',
-	);
-
-	foreach (array('first','prev','next','last') as $v) {
-		$tpl = 'tplPage'.ucfirst($v).'Empty';
-		if (!empty(${$tpl}) && empty($pagination[$v])) {
-			$pagination[$v] = $pdoPage->getChunk(${$tpl});
+		if (!empty($pages)) {
+			foreach (array('first','prev','next','last') as $v) {
+				$tpl = 'tplPage'.ucfirst($v).'Empty';
+				if (!empty(${$tpl}) && empty($pagination[$v])) {
+					$pagination[$v] = $pdoPage->getChunk(${$tpl});
+				}
+			}
 		}
+	}
+	else {
+		$pagination = array('first' => '', 'prev' => '', 'pages' => '', 'next' => '', 'last' => '');
 	}
 
 	$pagination = !empty($tplPageWrapper)
