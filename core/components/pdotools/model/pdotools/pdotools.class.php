@@ -715,13 +715,6 @@ class pdoTools {
 	public function prepareRow($row = array()) {
 		if ($this->preparing) {return $row;}
 
-		// Extract JSON fields
-		foreach ($row as $k => $v) {
-			if (is_scalar($v) && !empty($v) && ($v[0] == '{' || $v[0] == '[')) {
-				$row[$k] = $this->modx->fromJSON($v);
-			}
-		}
-
 		if (!empty($this->config['prepareSnippet'])) {
 			$this->preparing = true;
 			$name = trim($this->config['prepareSnippet']);

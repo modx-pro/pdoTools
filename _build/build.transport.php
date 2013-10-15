@@ -23,6 +23,7 @@ $sources = array(
 	'lexicon' => $root . 'core/components/'.PKG_NAME_LOWER.'/lexicon/',
 	'docs' => $root.'core/components/'.PKG_NAME_LOWER.'/docs/',
 	'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
+	'source_model' => $root.'core/model/modx/'.PKG_NAME_LOWER,
 	'resolvers' => $root . '_build/resolvers/',
 );
 unset($root);
@@ -100,6 +101,10 @@ $vehicle = $builder->createVehicle($category,$attr);
 $vehicle->resolve('file',array(
 	'source' => $sources['source_core'],
 	'target' => "return MODX_CORE_PATH . 'components/';",
+));
+$vehicle->resolve('file',array(
+	'source' => $sources['source_model'],
+	'target' => "return MODX_CORE_PATH . 'model/modx/';",
 ));
 
 foreach ($BUILD_RESOLVERS as $resolver) {
