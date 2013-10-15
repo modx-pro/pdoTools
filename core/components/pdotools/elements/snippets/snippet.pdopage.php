@@ -39,8 +39,8 @@ elseif (!empty($_REQUEST[$pageVarKey])) {
 unset($_REQUEST[$pageVarKey]);
 
 // Limit
-if (!empty($_REQUEST['limit']) && is_numeric($_REQUEST['limit'])) {
-	$scriptProperties['limit'] = $_REQUEST['limit'];
+if (!empty($_REQUEST['limit']) && is_numeric($_REQUEST['limit']) && (integer) $_REQUEST['limit']) {
+	$scriptProperties['limit'] = (integer) $_REQUEST['limit'];
 }
 if (!empty($maxLimit) && !empty($scriptProperties['limit']) && $scriptProperties['limit'] > $maxLimit) {
 	$scriptProperties['limit'] = $maxLimit;
@@ -89,7 +89,7 @@ else {
 	}
 	elseif (!empty($pages) && $pages > 1) {
 		$pagination = array(
-			'first' => $page > 2 && !empty($tplPageFirst)
+			'first' => $page > 1 && !empty($tplPageFirst)
 				? $pdoPage->makePageLink($url, 1, $tplPageFirst)
 				: '',
 			'prev' => $page > 1 && !empty($tplPagePrev)
@@ -101,7 +101,7 @@ else {
 			'next' => $page < $pages && !empty($tplPageNext)
 				? $pdoPage->makePageLink($url, $page + 1, $tplPageNext)
 				: '',
-			'last' => $page < $pages - 1 && !empty($tplPageLast)
+			'last' => $page < $pages && !empty($tplPageLast)
 				? $pdoPage->makePageLink($url, $pages, $tplPageLast)
 				: '',
 		);
@@ -137,5 +137,6 @@ $modx->setPlaceholders($data, $plPrefix);
 if (!empty($toPlaceholder)) {
 	$modx->setPlaceholder($toPlaceholder, $output);
 }
-
-return $output;
+else {
+	return $output;
+}
