@@ -203,7 +203,7 @@ class pdoPage extends pdoTools {
 
 		$left = $right = $center = 0;
 
-		if ($pageLimit > $pages || $pageLimit < 7) {
+		if ($pageLimit >= $pages || $pageLimit < 7) {
 			return $this->buildClassicPagination($page, $pages, $url);
 		}
 		else {
