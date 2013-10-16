@@ -573,7 +573,7 @@ class pdoFetch extends pdoTools {
 						}
 						// Support of miniShop2 categories
 						$members = array();
-						if (strpos($this->modx->config['extension_packages'], 'minishop2') !== false) {
+						if (strpos($this->modx->config['extension_packages'], 'minishop2') !== false && empty($this->config['disableMS2'])) {
 							if (!empty($parents_in) || !empty($parents_out)) {
 								$q = $this->modx->newQuery('msCategoryMember');
 								if (!empty($parents_in)) {$q->where(array('category_id:IN' => $parents_in));}
@@ -586,15 +586,30 @@ class pdoFetch extends pdoTools {
 						}
 						// Add parent to conditions
 						if (!empty($parents_in) && !empty($members)) {
+							if (!empty($this->config['includeParents'])) {
+								$members = array_merge($members, $parents_in);
+							}
 							$where[] = array(
 								$class.'.parent:IN' => $parents_in,
 								'OR:'.$class.'.id:IN' => $members
 							);
 						}
+						elseif (!empty($parents_in) && !empty($this->config['includeParents'])) {
+							$where[] = array(
+								$class.'.parent:IN' => $parents_in,
+								'OR:'.$class.'.id:IN' => $parents_in
+							);
+						}
 						elseif (!empty($parents_in)) {
 							$where[$class.'.parent:IN'] = $parents_in;
 						}
-						if (!empty($parents_out)) {
+						if (!empty($parents_out) && !empty($this->config['includeParents'])) {
+							$where[] = array(
+								$class.'.parent:NOT IN' => $parents_out,
+								'AND:'.$class.'.id:NOT IN' => $parents_out
+							);
+						}
+						elseif (!empty($parents_out)) {
 							$where[$class.'.parent:NOT IN'] = $parents_out;
 						}
 					}
