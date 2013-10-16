@@ -131,11 +131,13 @@ $data = array(
 	'scriptProperties' => $scriptProperties,
 	'output' => $output,
 	'pageCount' => $pageCount,
+	'page' => $page,
 	$pageNavVar => $pagination,
 	$totalVar => $total,
 );
-
 $pdoPage->setCache($page, $data);
+
+unset($data['scriptProperties']);
 $modx->setPlaceholders($data, $plPrefix);
 
 if (!empty($toPlaceholder)) {
