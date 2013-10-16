@@ -615,11 +615,10 @@ class pdoTools {
 	 * @param array $tmp Array with rows
 	 * @param string $id Name of primary key
 	 * @param string $parent Name of parent key
-	 * @param integer $root Id of root document for build
 	 *
 	 * @return array
 	 */
-	public function buildTree($tmp = array(), $id = 'id', $parent = 'parent', $root = 0) {
+	public function buildTree($tmp = array(), $id = 'id', $parent = 'parent') {
 		if (empty($id)) {$id = 'id';}
 		if (empty($parent)) {$parent = 'parent';}
 
@@ -629,7 +628,7 @@ class pdoTools {
 		}
 
 		foreach ($rows as $id => &$row) {
-			if ($row[$parent] == $root) {
+			if (empty($row[$parent])) {
 				$tree[$id] = &$row;
 			}
 			else{
@@ -637,7 +636,6 @@ class pdoTools {
 			}
 		}
 
-		ksort($tree);
 		return $tree;
 	}
 
