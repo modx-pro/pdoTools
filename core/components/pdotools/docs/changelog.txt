@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.8.0 pl
+==============
+- [#9] [pdoPage] Added placeholder "pageCount".
+
 1.8.0 rc5
 ==============
 - Added processing of JSON fields. For example, you can use [[+extended.keyname]] in chunks of pdoUsers.

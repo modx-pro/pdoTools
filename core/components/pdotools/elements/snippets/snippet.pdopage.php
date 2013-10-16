@@ -63,7 +63,7 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 }
 
 $url = $pdoPage->getBaseUrl();
-$output = $pagination = $total = '';
+$output = $pagination = $total = $pageCount = '';
 
 if ($cached = $pdoPage->getCache($page)) {
 	extract($cached);
@@ -87,13 +87,13 @@ else {
 	}
 	/** Pagination */
 	$total = $modx->getPlaceholder($totalVar);
-	$pages = ceil($total / $scriptProperties['limit']);
+	$pageCount = ceil($total / $scriptProperties['limit']);
 
 	// Redirect to start if somebody specified incorrect page
-	if ($page > 1 && $page > $pages) {
+	if ($page > 1 && $page > $pageCount) {
 		return $pdoPage->redirectToFirst();
 	}
-	elseif (!empty($pages) && $pages > 1) {
+	elseif (!empty($pageCount) && $pageCount > 1) {
 		$pagination = array(
 			'first' => $page > 1 && !empty($tplPageFirst)
 				? $pdoPage->makePageLink($url, 1, $tplPageFirst)
@@ -102,17 +102,17 @@ else {
 				? $pdoPage->makePageLink($url, $page - 1, $tplPagePrev)
 				: '',
 			'pages' => $pageLimit >= 7 && empty($disableModernPagination)
-				? $pdoPage->buildModernPagination($page, $pages, $url)
-				: $pdoPage->buildClassicPagination($page, $pages, $url),
-			'next' => $page < $pages && !empty($tplPageNext)
+				? $pdoPage->buildModernPagination($page, $pageCount, $url)
+				: $pdoPage->buildClassicPagination($page, $pageCount, $url),
+			'next' => $page < $pageCount && !empty($tplPageNext)
 				? $pdoPage->makePageLink($url, $page + 1, $tplPageNext)
 				: '',
-			'last' => $page < $pages && !empty($tplPageLast)
-				? $pdoPage->makePageLink($url, $pages, $tplPageLast)
+			'last' => $page < $pageCount && !empty($tplPageLast)
+				? $pdoPage->makePageLink($url, $pageCount, $tplPageLast)
 				: '',
 		);
 
-		if (!empty($pages)) {
+		if (!empty($pageCount)) {
 			foreach (array('first','prev','next','last') as $v) {
 				$tpl = 'tplPage'.ucfirst($v).'Empty';
 				if (!empty(${$tpl}) && empty($pagination[$v])) {
@@ -130,6 +130,7 @@ else {
 $data = array(
 	'scriptProperties' => $scriptProperties,
 	'output' => $output,
+	'pageCount' => $pageCount,
 	$pageNavVar => $pagination,
 	$totalVar => $total,
 );
