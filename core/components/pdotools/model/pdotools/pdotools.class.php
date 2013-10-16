@@ -22,6 +22,7 @@ class pdoTools {
 	protected $count = 0;
 	/** @var boolean $preparing Specifies that now is the preparation */
 	protected $preparing = false;
+	protected $start = 0;
 
 
 	/**
@@ -30,7 +31,7 @@ class pdoTools {
 	 */
 	public function __construct(modX & $modx, $config = array()) {
 		$this->modx = $modx;
-		$this->time = microtime(true);
+		$this->time = $this->start = microtime(true);
 
 		$this->setConfig($config);
 	}
@@ -83,18 +84,23 @@ class pdoTools {
 	 * @return array|string
 	 */
 	public function getTime($string = true) {
+		$this->timings[] = array(
+			'time' => number_format(round(microtime(true) - $this->start, 7), 7),
+			'message' => '<b>Total time</b>'
+		);
+		$this->timings[] = array(
+			'time' => number_format(round((memory_get_usage(true)), 2), 0, ',', ' '),
+			'message' => '<b>Memory usage</b>'
+		);
+
 		if (!$string) {
 			return $this->timings;
 		}
 		else {
-			$res = $sum = null;
+			$res = '';
 			foreach ($this->timings as $v) {
 				$res .= $v['time'] . ': ' . $v['message'] . "\n";
-				$sum += $v['time'];
 			}
-
-			$res .= number_format(round($sum, 7), 7) . ": <b>Total time</b>\n";
-			$res .= number_format(round((memory_get_usage(true)), 2), 0, ',', ' ').': <b>Memory usage</b>';
 			return $res;
 		}
 	}
