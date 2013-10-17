@@ -6,6 +6,7 @@ Changelog for pdoTools.
 - [#9] [pdoPage] Added placeholder "pageCount".
 - [#8] Improved support of big numbers when sorting by TVs.
 - Fixed work of pdoPage when it called multiple times on page.
+- Fixed mistype in pdoFetch::getCollection().
 
 1.8.0 rc5
 ==============
