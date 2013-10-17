@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - [#10] [pdoPage] Added placeholder "page".
 - [#9] [pdoPage] Added placeholder "pageCount".
 - [#8] Improved support of big numbers when sorting by TVs.
+- Fixed work of pdoPage when it called multiple times on page.
 
 1.8.0 rc5
 ==============

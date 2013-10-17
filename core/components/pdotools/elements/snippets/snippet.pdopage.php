@@ -36,7 +36,6 @@ if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || $_R
 elseif (!empty($_REQUEST[$pageVarKey])) {
 	$page = (integer) $_REQUEST[$pageVarKey];
 }
-unset($_REQUEST[$pageVarKey]);
 
 // Limit
 if (isset($_REQUEST['limit'])) {
