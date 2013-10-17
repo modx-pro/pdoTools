@@ -2,6 +2,7 @@
 require_once 'pdotools.class.php';
 
 class pdoPage extends pdoTools {
+	protected $req_var = '';
 
 	/**
 	 * @param modX $modx
@@ -44,7 +45,7 @@ class pdoPage extends pdoTools {
 			$q_val = isset($_GET[$q_var])
 				? $_GET[$q_var]
 				: '';
-			unset($_GET[$q_var]);
+			$this->req_var = $q_var;
 
 			$host = '';
 			switch ($this->config['scheme']) {
@@ -67,7 +68,8 @@ class pdoPage extends pdoTools {
 			$id_val = isset($_GET[$id_var])
 				? $_GET[$id_var]
 				: $this->modx->getOption('site_start');
-			unset($_GET[$id_var]);
+			$this->req_var = $id_var;
+
 			$url = $this->modx->makeUrl($id_val, '', '', $this->config['scheme']);
 		}
 
@@ -97,13 +99,16 @@ class pdoPage extends pdoTools {
 			$href .= $this->config['pageVarKey'] . '=' . $page;
 		}
 		if (!empty($_GET)) {
-			if (isset($_GET[$this->config['pageVarKey']])) {
-				unset($_GET[$this->config['pageVarKey']]);
+			$request = $_GET;
+			unset($request[$this->req_var]);
+			unset($request[$this->config['pageVarKey']]);
+
+			if (!empty($request)) {
+				$href .= strpos($href, '?') !== false
+					? '&'
+					: '?';
+				$href .= http_build_query($request);
 			}
-			$href .= strpos($href, '?') !== false
-				? '&'
-				: '?';
-			$href .= http_build_query($_GET);
 		}
 
 		if (!empty($href) && $this->modx->getOption('xhtml_urls', null, false)) {
