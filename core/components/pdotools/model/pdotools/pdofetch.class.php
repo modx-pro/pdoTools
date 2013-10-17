@@ -832,7 +832,7 @@ class pdoFetch extends pdoTools {
 		if (!empty($config['loadModels'])) {$this->config['loadModels'] = $config['loadModels'];}
 		$this->loadModels();
 
-		$this->config['class'] = $class;
+		$config['class'] = $class;
 		$config['limit'] = !isset($config['limit']) ? 0 : (integer) $config['limit'];
 		if (!empty($where)) {
 			unset($config['where']);
