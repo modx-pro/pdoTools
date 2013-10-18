@@ -12,22 +12,15 @@ $tmp = array(
 		'type' => 'combo-boolean',
 		'value' => false,
 	),
-
-	// level
-	'depth' => array(
+	'level' => array(
 		'type' => 'numberfield',
-		'value' => 10,
+		'value' => 0,
 	),
-
-	// startId
-	// includeDocs
-	// excludeDocs
 	'parents' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// displayStart
-	'includeParents' => array(
+	'displayStart' => array(
 		'type' => 'combo-boolean',
 		'value' => false,
 	),
@@ -39,7 +32,6 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// contexts
 	'context' => array(
 		'type' => 'textfield',
 		'value' => '',
@@ -57,10 +49,9 @@ $tmp = array(
 	),
 	*/
 
-	// ph
 	'plPrefix' => array(
 		'type' => 'textfield',
-		'value' => '',
+		'value' => 'wf.',
 	),
 	// ignoreHidden
 	'showHidden' => array(
@@ -89,7 +80,6 @@ $tmp = array(
 		'value' => true,
 	),
 
-	// sortOrder
 	'sortdir' => array(
 		'type' => 'list',
 		'options' => array(
@@ -98,7 +88,6 @@ $tmp = array(
 		),
 		'value' => 'ASC'
 	),
-	// sortBy
 	'sortby' => array(
 		'type' => 'textfield',
 		'value' => 'menuindex',
@@ -115,10 +104,6 @@ $tmp = array(
 	// titleOfLinks
 
 	'firstClass' => array(
-		'type' => 'textfield',
-		'value' => 'first',
-	),
-	'' => array(
 		'type' => 'textfield',
 		'value' => 'first',
 	),
@@ -148,7 +133,7 @@ $tmp = array(
 	),
 	'levelClass' => array(
 		'type' => 'textfield',
-		'value' => 'first',
+		'value' => '',
 	),
 	'selfClass' => array(
 		'type' => 'textfield',
@@ -159,71 +144,56 @@ $tmp = array(
 		'value' => '',
 	),
 
-	// outerTpl
 	'tplOuter' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <ul[[+classes]]>[[+wrapper]]</ul>',
 	),
-	// rowTpl
 	'tpl' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li[[+classes]]><a href="[[+link]]" title="" [[+attributes]]>[[+menutitle]]</a>[[+wrapper]]</li>',
+		'value' => '@INLINE <li[[+classes]]><a href="[[+link]]" [[+attributes]]>[[+menutitle]]</a>[[+wrapper]]</li>',
 	),
-	// parentRowTpl
 	'tplParentRow' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// parentRowHereTpl
 	'tplParentRowHere' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// hereTpl
 	'tplHere' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// innerTpl
 	'tplInner' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// innerRowTpl
 	'tplInnerRow' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// innerHereTpl
 	'tplInnerHere' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// activeParentRowTpl
 	'tplParentRowActive' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// categoryFoldersTpl
 	'tplCategoryFolder' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
-	// startItemTpl
-	/*
 	'tplStart' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <h2[[+classes]]>[[+menutitle]]</h2>[[+wrapper]]',
 	),
-	*/
 
-	// permissions
 	'checkPermissions' => array(
 		'type' => 'textfield',
 		//'value' => 'load',
 		'value' => '',
 	),
-	// hereId
 	'hereId' => array(
 		'type' => 'numberfield',
 		'value' => '',
