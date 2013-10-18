@@ -15,7 +15,7 @@ $tmp = array(
 	'pdoSitemap' => 'pdositemap',
 	'pdoNeighbors' => 'pdoneighbors',
 	'pdoPage' => 'pdopage',
-	'pdoMenu' => 'pdomenu',
+	//'pdoMenu' => 'pdomenu',
 );
 
 foreach ($tmp as $k => $v) {
