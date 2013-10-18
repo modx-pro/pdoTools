@@ -49,7 +49,7 @@ class pdoMenu extends pdoFetch {
 		if ($this->currentResource = $modx->getObject('modResource', $config['hereId'])) {
 			$tmp = $modx->getParentIds(
 				$this->currentResource->id,
-				$config['depth'],
+				100,
 				array('context' => $this->currentResource->context_key)
 			);
 			$tmp[] = $config['hereId'];
@@ -68,33 +68,21 @@ class pdoMenu extends pdoFetch {
 	 * @return mixed
 	 */
 	public function templateTree($tree = array()) {
-		$output = '';
-
-		// Flatten tree if needed
-		$first = current($tree);
-		if (empty($first['id'])) {
-			$tmp = $tree;
-			$tree = array();
-			foreach ($tmp as $v) {
-				$tree = array_merge($tree, $v['children']);
-			}
-		}
-
-		$tplOuter = !empty($this->config['tplOuter'])
-			? $this->config['tplOuter']
-			: '@INLINE <ul[[+classes]]>[[+wrapper]]</ul>';
-
 		$this->tree = $tree;
 		$count = count($tree);
+		$output = '';
 
 		$idx = 1;
+		$this->addTime('Start template tree');
 		foreach ($tree as $row) {
+			if (empty($row['id'])) {continue;}
 			$this->level = 1;
 			$row['idx'] = $idx++;
 			$row['last'] = (integer) $row['idx'] == $count;
 
 			$output .= $this->templateBranch($row);
 		}
+		$this->addTime('End template tree');
 
 		$row = $this->addWayFinderPlaceholders(
 			array(
@@ -104,9 +92,8 @@ class pdoMenu extends pdoFetch {
 				'classnames' => $this->config['outerClass'],
 			)
 		);
-		$output = $this->getChunk($tplOuter, $row, $this->config['fastMode']);
 
-		return $output;
+		return $this->parseChunk($this->config['tplOuter'], $row);
 	}
 
 
@@ -122,7 +109,7 @@ class pdoMenu extends pdoFetch {
 		$children = '';
 		$row['level'] = $this->level;
 
-		if (!empty($row['children']) && ($this->isHere($row['id']) || empty($this->config['hideSubMenus']))) {
+		if (!empty($row['children']) && ($this->isHere($row['id']) || empty($this->config['hideSubMenus'])) && $this->checkResource($row['id'])) {
 			$idx = 1;
 			$this->level++;
 			$count = count($row['children']);
@@ -140,12 +127,14 @@ class pdoMenu extends pdoFetch {
 		}
 
 		if (!empty($children)) {
-			$row['wrapper'] = $this->getChunk($this->config['tplInner'], array(
-				'wrapper' => $children,
-				'classes' => ' class="'.$this->config['innerClass'].'"',
-				'classNames' => $this->config['innerClass'],
-				'classnames' => $this->config['innerClass'],
-			), $this->config['fastMode']);
+			$row['wrapper'] = $this->parseChunk($this->config['tplInner'],
+				array(
+					'wrapper' => $children,
+					'classes' => ' class="'.$this->config['innerClass'].'"',
+					'classNames' => $this->config['innerClass'],
+					'classnames' => $this->config['innerClass'],
+				)
+			);
 		}
 		else {
 			$row['wrapper'] = '';
@@ -177,16 +166,10 @@ class pdoMenu extends pdoFetch {
 			? $row[$this->config['titleOfLinks']]
 			: '';
 
-		if (empty($row['id'])) {
-			$output = $row['wrapper'];
-		}
-		else {
-			$tpl = $this->getTpl($row);
-			$row = $this->addWayFinderPlaceholders($row);
-			$output = $this->getChunk($tpl, $row, $this->config['fastMode']);
-		}
+		$tpl = $this->getTpl($row);
+		$row = $this->addWayFinderPlaceholders($row);
 
-		return $output;
+		return $this->getChunk($tpl, $row, $this->config['fastMode']);
 	}
 
 
@@ -302,6 +285,10 @@ class pdoMenu extends pdoFetch {
 				case 'menutitle':
 					$row[$pl.'linktext'] = $v;
 					break;
+				case 'link_attributes':
+					$row[$pl.'attributes'] = $v;
+					$row['attributes'] = $v;
+					break;
 				case 'children':
 					$row[$pl.'subitemcount'] = $v;
 					break;
@@ -311,6 +298,133 @@ class pdoMenu extends pdoFetch {
 		}
 
 		return $row;
+	}
+
+
+	/**
+	 * Verification of resource status
+	 *
+	 * @param int $id
+	 *
+	 * @return bool|int
+	 */
+	public function checkResource($id = 0) {
+		$tmp = array();
+		if (empty($this->config['showHidden'])) {
+			$tmp['hidemenu'] = 0;
+		}
+		if (empty($this->config['showUnpublished'])) {
+			$tmp['published'] = 1;
+		}
+		if (!empty($this->config['hideUnsearchable'])) {
+			$tmp['searchable'] = 1;
+		}
+
+		if (!empty($tmp)) {
+			$tmp['id'] = $id;
+			$q = $this->modx->newQuery('modResource', $tmp);
+			$q->select('id');
+			if ($q->prepare() && $q->stmt->execute()) {
+				$res = $q->stmt->fetch(PDO::FETCH_COLUMN);
+				return (boolean) $res;
+			}
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * Returns data from cache
+	 *
+	 * @var mixed $key
+	 *
+	 * @return bool|mixed
+	 */
+	public function getCache($key = '') {
+		$cacheKey = $this->getCacheKey($key);
+		$cacheOptions = $this->getCacheOptions();
+
+		$cached = false;
+		if (!empty($cacheOptions) && !empty($cacheKey) && $this->modx->getCacheManager()) {
+			$cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions);
+		}
+
+		return $cached;
+	}
+
+
+	/**
+	 * Sets data to cache
+	 *
+	 * @param array $data
+	 * @var mixed $key
+	 *
+	 * @return void
+	 */
+	public function setCache($data = array(), $key = '') {
+		$cacheKey = $this->getCacheKey($key);
+		$cacheOptions = $this->getCacheOptions();
+
+		if (!empty($cacheKey) && !empty($cacheOptions) && $this->modx->getCacheManager()) {
+			$this->modx->cacheManager->set(
+				$cacheKey,
+				$data,
+				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
+				$cacheOptions
+			);
+		}
+	}
+
+
+	/**
+	 * Returns array with options for cache
+	 *
+	 * @return array
+	 */
+	public function getCacheOptions() {
+		$cacheOptions = array(
+			xPDO::OPT_CACHE_KEY => !empty($this->config['cache_key'])
+				? $this->config['cache_key']
+				: $this->modx->getOption('cache_resource_key', null, 'resource'),
+			xPDO::OPT_CACHE_HANDLER => !empty($this->config['cache_handler'])
+				? $this->config['cache_handler']
+				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
+			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
+				? (integer) $this->config['cacheTime']
+				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
+		);
+
+		return $cacheOptions;
+	}
+
+
+	/**
+	 * Returns key for cache
+	 *
+	 * @var mixed $key
+	 *
+	 * @return bool|string
+	 */
+	public function getCacheKey($key = '') {
+		if (isset($this->config['cache'])) {
+			$cache = (!is_scalar($this->config['cache']) || empty($this->config['cache']))
+				? false
+				: (string) $this->config['cache'];
+		} else {
+			$cache = (boolean) $this->modx->getOption('cache_resource', null, false);
+		}
+
+		if (!$cache) {return false;}
+
+		$cachePrefix = !empty($this->config['cachePrefix'])
+			? $this->config['cachePrefix']
+			: '';
+		if (empty($key)) {$key = $this->config;}
+
+		$cacheKey = $this->modx->resource->getCacheKey() . '/' . $cachePrefix . $this->modx->user->id . '-' . md5(base64_encode(serialize($key)));
+
+		return $cacheKey;
 	}
 
 }

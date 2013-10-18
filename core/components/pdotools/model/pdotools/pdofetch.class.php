@@ -570,6 +570,9 @@ class pdoFetch extends pdoTools {
 									$parents_out = array_merge($parents_out, $this->modx->getChildIds($k, $depth, array('context' => $v)));
 								}
 							}
+							if (empty($parents_in)) {
+								$parents_in = $this->modx->getChildIds(0, $depth, array('context' => $this->config['context']));
+							}
 						}
 						// Support of miniShop2 categories
 						$members = array();

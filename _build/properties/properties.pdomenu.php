@@ -37,23 +37,20 @@ $tmp = array(
 		'value' => '',
 	),
 
-	// cacheResults
-	/*
 	'cache' => array(
-		'type' => 'textfield',
-		'value' => '',
+		'type' => 'combo-boolean',
+		'value' => true,
 	),
 	'cacheTime' => array(
 		'type' => 'numberfield',
-		'value' => '',
+		'value' => 3600,
 	),
-	*/
+
 
 	'plPrefix' => array(
 		'type' => 'textfield',
 		'value' => 'wf.',
 	),
-	// ignoreHidden
 	'showHidden' => array(
 		'type' => 'combo-boolean',
 		'value' => false,
@@ -99,9 +96,14 @@ $tmp = array(
 
 	// cssTpl
 	// jsTpl
-	// rowIdPrefix
+
 	// textOfLinks
 	// titleOfLinks
+
+	'rowIdPrefix' => array(
+		'type' => 'textfield',
+		'value' => '',
+	),
 
 	'firstClass' => array(
 		'type' => 'textfield',
