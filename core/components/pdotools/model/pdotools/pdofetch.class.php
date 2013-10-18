@@ -376,7 +376,7 @@ class pdoFetch extends pdoTools {
 		$tvPrefix = $this->config['tvPrefix'];
 
 		if (!empty($this->config['includeTVList']) && (empty($includeTVs) || is_numeric($includeTVs))) {
-			$includeTVs = $this->config['includeTVList'];
+			$this->config['includeTVs'] = $includeTVs = $this->config['includeTVList'];
 		}
 		if (!empty($this->config['sortbyTV'])) {
 			$includeTVs .= empty($includeTVs)
