@@ -265,11 +265,14 @@ class pdoTools {
 			$content = str_replace($src, $dst, $content);
 		}
 
-		$output = $fastMode
-			? $this->fastProcess($content, $properties)
-			: $chunk['object']->process($properties, $content);
-
-		return $output;
+		if (strpos($content, '[[') !== false) {
+			return $fastMode
+				? $this->fastProcess($content, $properties)
+				: $chunk['object']->process($properties, $content);
+		}
+		else {
+			return $content;
+		}
 	}
 
 
