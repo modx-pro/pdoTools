@@ -127,14 +127,13 @@ class pdoMenu extends pdoFetch {
 		}
 
 		if (!empty($children)) {
-			$row['wrapper'] = $this->parseChunk($this->config['tplInner'],
-				array(
-					'wrapper' => $children,
-					'classes' => ' class="'.$this->config['innerClass'].'"',
-					'classNames' => $this->config['innerClass'],
-					'classnames' => $this->config['innerClass'],
-				)
-			);
+			$pls = $this->addWayFinderPlaceholders(array(
+				'wrapper' => $children,
+				'classes' => ' class="'.$this->config['innerClass'].'"',
+				'classNames' => $this->config['innerClass'],
+				'classnames' => $this->config['innerClass'],
+			));
+			$row['wrapper'] = $this->parseChunk($this->config['tplInner'], $pls);
 		}
 		else {
 			$row['wrapper'] = '';

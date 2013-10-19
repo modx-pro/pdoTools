@@ -4,8 +4,8 @@
 define('PKG_NAME','pdoTools');
 define('PKG_NAME_LOWER',strtolower(PKG_NAME));
 
-define('PKG_VERSION','1.8.0');
-define('PKG_RELEASE','pl');
+define('PKG_VERSION','1.8.1');
+define('PKG_RELEASE','pl2');
 define('PKG_AUTO_INSTALL', true);
 
 
@@ -50,5 +50,5 @@ define('BUILD_SNIPPET_STATIC', false);
 //define('BUILD_PLUGIN_STATIC', false);
 
 $BUILD_RESOLVERS = array(
-	'extension'
+	//'extension'
 );

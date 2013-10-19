@@ -57,8 +57,8 @@ foreach ($tmp as $k => $p) {
 			$q->select('id,'.$p['name']);
 			$tstart = microtime(true);
 			if ($q->prepare() && $q->stmt->execute()) {
-				$this->modx->queryTime += microtime(true) - $tstart;
-				$this->modx->executedQueries++;
+				$modx->queryTime += microtime(true) - $tstart;
+				$modx->executedQueries++;
 				while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 					if (in_array($row[$p['name']], $fetch_in)) {
 						${$k.'_in'}[] = $row['id'];

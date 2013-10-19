@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.8.1 pl
+1.8.1 pl2
 ==============
 - Accelerated method pdoTools::getChunk().
 - Added snippet pdoMenu.

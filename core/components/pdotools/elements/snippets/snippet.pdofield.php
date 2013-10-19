@@ -29,8 +29,8 @@ if (!empty($top) || !empty($topLevel)) {
 		$q->select('context_key');
 		$tstart = microtime(true);
 		if ($q->prepare() && $q->stmt->execute()) {
-			$this->modx->queryTime += microtime(true) - $tstart;
-			$this->modx->executedQueries++;
+			$modx->queryTime += microtime(true) - $tstart;
+			$modx->executedQueries++;
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}

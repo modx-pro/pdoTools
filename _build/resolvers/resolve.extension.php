@@ -13,11 +13,9 @@ if ($object->xpdo) {
 		case xPDOTransport::ACTION_INSTALL:
 		case xPDOTransport::ACTION_UPGRADE:
 			//$modx->addExtensionPackage('pdotools', '[[++core_path]]components/pdotools/model/');
-			$modx->removeExtensionPackage('pdotools');
 			break;
 
 		case xPDOTransport::ACTION_UNINSTALL:
-			$modx->removeExtensionPackage('pdotools');
 			break;
 	}
 }
