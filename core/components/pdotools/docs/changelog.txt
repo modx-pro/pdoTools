@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Accelerated method pdoTools::getChunk().
 - Added snippet pdoMenu.
+- Added support for tags [^qt^] and [^q^].
 
 1.8.0 pl
 ==============

@@ -324,7 +324,11 @@ class pdoMenu extends pdoFetch {
 			$tmp['id'] = $id;
 			$q = $this->modx->newQuery('modResource', $tmp);
 			$q->select('id');
+
+			$tstart = microtime(true);
 			if ($q->prepare() && $q->stmt->execute()) {
+				$this->modx->queryTime += microtime(true) - $tstart;
+				$this->modx->executedQueries++;
 				$res = $q->stmt->fetch(PDO::FETCH_COLUMN);
 				return (boolean) $res;
 			}

@@ -55,7 +55,10 @@ foreach ($tmp as $k => $p) {
 		if (!empty($fetch_in) || !empty($fetch_out)) {
 			$q = $modx->newQuery($p['class'], array($p['name'].':IN' => array_merge($fetch_in, $fetch_out)));
 			$q->select('id,'.$p['name']);
+			$tstart = microtime(true);
 			if ($q->prepare() && $q->stmt->execute()) {
+				$this->modx->queryTime += microtime(true) - $tstart;
+				$this->modx->executedQueries++;
 				while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 					if (in_array($row[$p['name']], $fetch_in)) {
 						${$k.'_in'}[] = $row['id'];

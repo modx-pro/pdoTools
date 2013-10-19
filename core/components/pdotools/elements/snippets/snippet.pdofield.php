@@ -27,7 +27,10 @@ if (!empty($top) || !empty($topLevel)) {
 	if (empty($context)) {
 		$q = $modx->newQuery($class, $id);
 		$q->select('context_key');
+		$tstart = microtime(true);
 		if ($q->prepare() && $q->stmt->execute()) {
+			$this->modx->queryTime += microtime(true) - $tstart;
+			$this->modx->executedQueries++;
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}

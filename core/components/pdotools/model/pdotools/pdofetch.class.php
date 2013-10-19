@@ -73,9 +73,11 @@ class pdoFetch extends pdoTools {
 		}
 		else {
 			$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
+			$tstart = microtime(true);
 			if ($this->query->stmt->execute()) {
+				$this->modx->queryTime += microtime(true) - $tstart;
+				$this->modx->executedQueries++;
 				$this->addTime('SQL executed');
-
 				$this->setTotal();
 
 				$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -199,7 +201,11 @@ class pdoFetch extends pdoTools {
 	public function setTotal() {
 		if ($this->config['return'] != 'sql') {
 			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
+
+			$tstart = microtime(true);
 			$q->execute();
+			$this->modx->queryTime += microtime(true) - $tstart;
+			$this->modx->executedQueries++;
 			$total = $q->fetch(PDO::FETCH_COLUMN);
 			$this->addTime('Total rows: <b>'.$total.'</b>');
 			$this->modx->setPlaceholder($this->config['totalVar'], $total);
@@ -395,7 +401,10 @@ class pdoFetch extends pdoTools {
 				if(!empty($tvs)) {
 					$q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $tvs));
 					$q->select('id,name,type,default_text');
+					$tstart = microtime(true);
 					if ($q->prepare() && $q->stmt->execute()) {
+						$this->modx->queryTime += microtime(true) - $tstart;
+						$this->modx->executedQueries++;
 						$tvs = array();
 						while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 							$name = strtolower($tv['name']);
@@ -556,7 +565,10 @@ class pdoFetch extends pdoTools {
 							$pids = array();
 							$q = $this->modx->newQuery($class, array('id:IN' => array_merge($parents_in, $parents_out)));
 							$q->select('id,context_key');
+							$tstart = microtime(true);
 							if ($q->prepare() && $q->stmt->execute()) {
+								$this->modx->queryTime += microtime(true) - $tstart;
+								$this->modx->executedQueries++;
 								while ($row = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
 									$pids[$row['id']] = $row['context_key'];
 								}
@@ -582,7 +594,10 @@ class pdoFetch extends pdoTools {
 								if (!empty($parents_in)) {$q->where(array('category_id:IN' => $parents_in));}
 								if (!empty($parents_out)) {$q->where(array('category_id:NOT IN' => $parents_out));}
 								$q->select('product_id');
+								$tstart = microtime(true);
 								if ($q->prepare() && $q->stmt->execute()) {
+									$this->modx->queryTime += microtime(true) - $tstart;
+									$this->modx->executedQueries++;
 									$members = $q->stmt->fetchAll(PDO::FETCH_COLUMN);
 								}
 							}
@@ -808,7 +823,10 @@ class pdoFetch extends pdoTools {
 		$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
 
 		$row = array();
+		$tstart = microtime(true);
 		if ($this->query->stmt->execute()) {
+			$this->modx->queryTime += microtime(true) - $tstart;
+			$this->modx->executedQueries++;
 			$row = $this->query->stmt->fetch(PDO::FETCH_ASSOC);
 		}
 		else {
@@ -862,11 +880,17 @@ class pdoFetch extends pdoTools {
 		$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
 
 		$rows = array();
+		$tstart = microtime(true);
 		if ($this->query->stmt->execute()) {
+			$this->modx->queryTime += microtime(true) - $tstart;
+			$this->modx->executedQueries++;
 			$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
 
 			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
+			$tstart = microtime(true);
 			$q->execute();
+			$this->modx->queryTime += microtime(true) - $tstart;
+			$this->modx->executedQueries++;
 			$total = $q->fetch(PDO::FETCH_COLUMN);
 			$this->addTime('Total rows: <b>'.$total.'</b>');
 
