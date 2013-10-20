@@ -19,7 +19,7 @@ class pdoFetch extends pdoTools {
 				'class' => 'modResource',
 				'limit' => 10,
 				'offset' => 0,
-				'sortby' => '',
+				'sortby' => 'modResource.id',
 				'sortdir' => 'DESC',
 				'groupby' => '',
 				'totalVar' => 'total',
@@ -38,6 +38,8 @@ class pdoFetch extends pdoTools {
 
 				'tvFiltersAndDelimiter' => ',',
 				'tvFiltersOrDelimiter' => '||',
+
+				'additionalPlaceholders' => ''
 			), $config)
 		, $clean_timings);
 
@@ -100,11 +102,11 @@ class pdoFetch extends pdoTools {
 				else {
 					$rows = $this->prepareRows($rows);
 					foreach ($rows as $row) {
-						$row = array_merge(
-							$this->config,
-							$row,
-							array('idx' => $this->idx++)
-						);
+						if (!empty($this->config['additionalPlaceholders'])) {
+							$row = array_merge($this->config['additionalPlaceholders'], $row);
+						}
+						$row['idx'] = $this->idx++;
+
 						$tpl = $this->defineChunk($row);
 						if (empty($tpl)) {
 							$output[] = '<pre>'.$this->getChunk('', $row).'</pre>';

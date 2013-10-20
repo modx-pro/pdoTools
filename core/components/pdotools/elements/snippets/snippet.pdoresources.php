@@ -7,6 +7,19 @@ if (!empty($returnIds)) {
 	$scriptProperties['return'] = 'ids';
 }
 
+// Adding extra parameters into special place so we can put them in results
+/** @var modSnippet $snippet */
+$additionalPlaceholders = array();
+if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
+	$properties = unserialize($snippet->properties);
+	foreach ($scriptProperties as $k => $v) {
+		if (!isset($properties[$k])) {
+			$additionalPlaceholders[$k] = $v;
+		}
+	}
+}
+$scriptProperties['additionalPlaceholders'] = $additionalPlaceholders;
+
 /* @var pdoFetch $pdoFetch */
 if (!$modx->getService('pdoFetch')) {return false;}
 $pdoFetch = new pdoFetch($modx, $scriptProperties);

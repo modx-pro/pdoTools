@@ -3,6 +3,7 @@ Changelog for pdoTools.
 1.8.2 pl
 ==============
 - Improved preparation of template variables.
+- Improved transfer of additional parameters from snippet to results.
 
 1.8.1 pl2
 ==============
