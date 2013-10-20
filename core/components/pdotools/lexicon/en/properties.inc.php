@@ -109,3 +109,34 @@ $_lang['pdotools_prop_tplPageLastEmpty'] = 'Chunk output if no link to the last 
 $_lang['pdotools_prop_tplPageNextEmpty'] = 'Chunk output if no link to the next page.';
 $_lang['pdotools_prop_tplPageSkip'] = 'Chunk clearance missing pages in advanced mode, the display (&pageLimit >= 7).';
 $_lang['pdotools_prop_tplPageWrapper'] = 'Chunk of the decoration of the block pagination, as you could see placeholders contains pages.';
+
+$_lang['pdotools_prop_previewUnpublished'] = 'Optional. If set to Yes, if you are logged into the mgr and have the view_unpublished permission, it will allow previewing of unpublished resources in your menus in the front-end.';
+$_lang['pdotools_prop_checkPermissions'] = 'Comma separated list of permissions to check when building menu.';
+$_lang['pdotools_prop_displayStart'] = 'Show the document as referenced by startId in the menu.';
+$_lang['pdotools_prop_hideSubMenus'] = 'The hideSubMenus parameter will remove all non-active submenus from the script output if set to 1. This parameter only works if multiple levels are being displayed.';
+$_lang['pdotools_prop_useWeblinkUrl'] = 'If WebLinks are used in the output, script will output the link specified in the WebLink instead of the normal MODx link. To use the standard display of WebLinks (like any other Resource) set this to 0.';
+$_lang['pdotools_prop_rowIdPrefix'] = 'If set, script will replace the id placeholder with a unique id consisting of the specified prefix plus the Resource id.';
+$_lang['pdotools_prop_level'] = 'Depth (number of levels) to build the menu from. 0 goes through all levels.';
+$_lang['pdotools_prop_hereId'] = 'Optional. If set, will change the "here" Resource to this ID. Defaults to the currently active Resource.';
+
+$_lang['pdotools_prop_webLinkClass'] = 'CSS class for weblink items.';
+$_lang['pdotools_prop_firstClass'] = 'CSS class for the first item at a given menu level.';
+$_lang['pdotools_prop_hereClass'] = 'CSS class for the items showing where you are, all the way up the chain.';
+$_lang['pdotools_prop_innerClass'] = 'CSS class for the inner template.';
+$_lang['pdotools_prop_lastClass'] = 'CSS class for the last item at a given menu level.';
+$_lang['pdotools_prop_levelClass'] = 'CSS class denoting every output row level. The level number will be added to the specified class (level1, level2, level3 etc if you specified "level").';
+$_lang['pdotools_prop_outerClass'] = 'CSS class for the outer template.';
+$_lang['pdotools_prop_parentClass'] = 'CSS class for menu items that are a container and have children.';
+$_lang['pdotools_prop_rowClass'] = 'CSS class denoting each output row.';
+$_lang['pdotools_prop_selfClass'] = 'CSS class for the current item.';
+
+$_lang['pdotools_prop_tplCategoryFolder'] = 'Name of the chunk containing the template for the outer most container; if not included, a string including "<ul>[[+wf.wrapper]]</ul>" is assumed.';
+$_lang['pdotools_prop_tplHere'] = 'Name of the chunk containing the template for the current Resource if it is a container and has children. Remember the [wf.wrapper] placeholder to output the children documents.';
+$_lang['pdotools_prop_tplInner'] = 'Name of the chunk containing the template for each submenu. If no innerTpl is specified the outerTpl is used in its place.';
+$_lang['pdotools_prop_tplInnerHere'] = 'Name of the chunk containing the template for the current Resource if it is in a subfolder.';
+$_lang['pdotools_prop_tplInnerRow'] = 'Name of the chunk containing the template for the current Resource if it is in a subfolder.';
+$_lang['pdotools_prop_tplOuter'] = 'Name of the chunk containing the template for the outer most container; if not included, a string including "<ul>[[+wrapper]]</ul>" is assumed.';
+$_lang['pdotools_prop_tplParentRow'] = 'Name of the chunk containing the template for any Resource that is a container and has children. Remember the [[+wrapper]] placeholder to output the children documents.';
+$_lang['pdotools_prop_tplParentRowActive'] = 'Name of the chunk containing the template for items that are containers, have children and are currently active in the tree.';
+$_lang['pdotools_prop_tplParentRowHere'] = 'Name of the chunk containing the template for the current Resource if it is a container and has children. Remember the [wf.wrapper] placeholder to output the children documents.';
+$_lang['pdotools_prop_tplStart'] = 'Name of the chunk containing the template for the start item, if enabled via the &displayStart parameter. Note: the default template shows the start item but does not link it. If you do not need a link, a class can be applied to the default template using the parameter &firstClass=`className`.';
