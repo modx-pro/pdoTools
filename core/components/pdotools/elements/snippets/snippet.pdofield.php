@@ -118,4 +118,9 @@ if ($row = $pdoFetch->getObject($class, $where, $scriptProperties)) {
 	}
 }
 
-return $output;
+if (!empty($toPlaceholder)) {
+	$modx->setPlaceholder($toPlaceholder, $output);
+}
+else {
+	return $output;
+}

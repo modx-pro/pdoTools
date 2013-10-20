@@ -46,6 +46,10 @@ $tmp = array(
 		,'desc' => 'pdotools_prop_field_output'
 		,'value' => ''
 	)
+	,'toPlaceholder' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
 
 );
 

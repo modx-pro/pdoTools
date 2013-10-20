@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - Improved preparation of template variables.
 - Improved transfer of additional parameters from snippet to results.
 - [pdoMenu] Added lexicon entries for parameters.
+- [#12] Added parameter "toPlaceholder".
 
 1.8.1 pl2
 ==============
