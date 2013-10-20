@@ -66,10 +66,14 @@ class pdoTools {
 	 *
 	 * @param $message
 	 */
-	public function addTime($message) {
+	public function addTime($message, $delta = null) {
 		$time = microtime(true);
+		if (!$delta) {
+			$delta = $time - $this->time;
+		}
+
 		$this->timings[] = array(
-			'time' =>  number_format(round(($time - $this->time), 7), 7)
+			'time' =>  number_format(round(($delta), 7), 7)
 			,'message' => $message
 		);
 		$this->time = $time;
@@ -139,6 +143,7 @@ class pdoTools {
 	public function loadModels() {
 		if (empty($this->config['loadModels'])) {return;}
 
+		$time = microtime(true);
 		$models = array();
 		if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
 			$tmp = $this->modx->fromJSON($this->config['loadModels']);
@@ -160,11 +165,12 @@ class pdoTools {
 			foreach ($models as $k => $v) {
 				$t = '/' . str_replace(MODX_BASE_PATH, '', $v);
 				if ($this->modx->addPackage($k, $v)) {
-					$this->addTime('Loaded model "'.$k.'" from "'.$t.'"');
+					$this->addTime('Loaded model "'.$k.'" from "'.$t.'"', microtime(true) - $time);
 				}
 				else {
-					$this->addTime('Could not load model "'.$k.'" from "'.$t.'"');
+					$this->addTime('Could not load model "'.$k.'" from "'.$t.'"', microtime(true) - $time);
 				}
+				$time = microtime(true);
 			}
 		}
 	}
@@ -628,6 +634,8 @@ class pdoTools {
 	 * @return array
 	 */
 	public function buildTree($tmp = array(), $id = 'id', $parent = 'parent') {
+		$time = microtime(true);
+
 		if (empty($id)) {$id = 'id';}
 		if (empty($parent)) {$parent = 'parent';}
 
@@ -645,6 +653,7 @@ class pdoTools {
 			}
 		}
 
+		$this->addTime('Tree was built', microtime(true) - $time);
 		return $tree;
 	}
 
@@ -657,6 +666,7 @@ class pdoTools {
 	 * @return array
 	 */
 	public function prepareRows(array $rows = array()) {
+		$time = microtime(true);
 		$prepare = $process = $prepareTypes = array();
 		if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
 			$tvs = array_map('trim', explode(',', $this->config['includeTVs']));
@@ -725,7 +735,7 @@ class pdoTools {
 		}
 
 		if (!empty($tvs)) {
-			$this->addTime('Prepared and processed TVs');
+			$this->addTime('Prepared and processed TVs', microtime(true) - $time);
 		}
 
 		return $rows;

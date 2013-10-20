@@ -79,7 +79,7 @@ class pdoFetch extends pdoTools {
 			if ($this->query->stmt->execute()) {
 				$this->modx->queryTime += microtime(true) - $tstart;
 				$this->modx->executedQueries++;
-				$this->addTime('SQL executed');
+				$this->addTime('SQL executed', microtime(true) - $tstart);
 				$this->setTotal();
 
 				$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -101,6 +101,8 @@ class pdoFetch extends pdoTools {
 				}
 				else {
 					$rows = $this->prepareRows($rows);
+
+					$time = microtime(true);
 					foreach ($rows as $row) {
 						if (!empty($this->config['additionalPlaceholders'])) {
 							$row = array_merge($this->config['additionalPlaceholders'], $row);
@@ -115,7 +117,7 @@ class pdoFetch extends pdoTools {
 							$output[] = $this->getChunk($tpl, $row, $this->config['fastMode']);
 						}
 					}
-					$this->addTime('Returning processed chunks');
+					$this->addTime('Returning processed chunks', microtime(true) - $time);
 
 					if (!empty($this->config['toSeparatePlaceholders'])) {
 						$this->modx->setPlaceholders($output, $this->config['toSeparatePlaceholders']);
@@ -141,8 +143,9 @@ class pdoFetch extends pdoTools {
 	 * Create object with xPDOQuery
 	 */
 	public function makeQuery() {
+		$time = microtime(true);
 		$this->query = $this->modx->newQuery($this->config['class']);
-		$this->addTime('xPDO query object created');
+		$this->addTime('xPDO query object created', microtime(true) - $time);
 	}
 
 
@@ -152,6 +155,7 @@ class pdoFetch extends pdoTools {
 	public function addWhere() {
 		$this->addTVFilters();
 
+		$time = microtime(true);
 		$where = array();
 		if (!empty($this->config['where'])) {
 			$tmp = $this->config['where'];
@@ -177,8 +181,9 @@ class pdoFetch extends pdoTools {
 				}
 				else {$condition[] = $k.'='.$v;}
 			}
-			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>');
+			$this->addTime('Added where condition: <b>' .implode(', ',$condition).'</b>', microtime(true) - $time);
 		}
+		$time = microtime(true);
 		if (!empty($this->config['having'])) {
 			$tmp = $this->config['having'];
 			if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
@@ -192,7 +197,7 @@ class pdoFetch extends pdoTools {
 				if (is_array($v)) {$condition[] = $k.'('.implode(',',$v).')';}
 				else {$condition[] = $k.'='.$v;}
 			}
-			$this->addTime('Added having condition: <b>' .implode(', ',$condition).'</b>');
+			$this->addTime('Added having condition: <b>' .implode(', ',$condition).'</b>', microtime(true) - $time);
 		}
 	}
 
@@ -202,15 +207,19 @@ class pdoFetch extends pdoTools {
 	 */
 	public function setTotal() {
 		if ($this->config['return'] != 'sql') {
+			$time = microtime(true);
+
 			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
 
 			$tstart = microtime(true);
 			$q->execute();
 			$this->modx->queryTime += microtime(true) - $tstart;
 			$this->modx->executedQueries++;
+
 			$total = $q->fetch(PDO::FETCH_COLUMN);
-			$this->addTime('Total rows: <b>'.$total.'</b>');
 			$this->modx->setPlaceholder($this->config['totalVar'], $total);
+
+			$this->addTime('Total rows: <b>'.$total.'</b>', microtime(true) - $time);
 		}
 	}
 
@@ -219,6 +228,7 @@ class pdoFetch extends pdoTools {
 	 * Add tables join to query
 	 */
 	public function addJoins() {
+		$time = microtime(true);
 		// left join is always needed because of TVs
 		if (empty($this->config['leftJoin'])) {
 			$this->config['leftJoin'] = '[]';
@@ -236,7 +246,9 @@ class pdoFetch extends pdoTools {
 				foreach ($tmp as $k => $v) {
 					$class = !empty($v['class']) ? $v['class'] : $k;
 					$this->query->$join($class, $v['alias'], $v['on']);
-					$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$v['alias'].'</b>');
+
+					$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$v['alias'].'</b>', microtime(true) - $time);
+					$time = microtime(true);
 				}
 			}
 		}
@@ -247,11 +259,13 @@ class pdoFetch extends pdoTools {
 	 * Add select of fields
 	 */
 	public function addSelects() {
+		$time = microtime(true);
+
 		if ($this->config['return'] == 'ids') {
 			$this->query->select('
 				SQL_CALC_FOUND_ROWS `'.$this->config['class'].'`.`'.$this->pk.'`
 			');
-			$this->addTime('Parameter "return" set to "ids", so we select only primary key');
+			$this->addTime('Parameter "return" set to "ids", so we select only primary key', microtime(true) - $time);
 		}
 		elseif ($tmp = $this->config['select']) {
 			if (!is_array($tmp)) {
@@ -276,8 +290,9 @@ class pdoFetch extends pdoTools {
 				if (is_array($v)) {
 					$v = current($v) . ' AS ' . current(array_flip($v));
 				}
-				$this->addTime('Added selection of <b>'.$k.'</b>: <small>' . str_replace('`'.$k.'`.', '', $v) . '</small>');
 				$i++;
+				$this->addTime('Added selection of <b>'.$k.'</b>: <small>' . str_replace('`'.$k.'`.', '', $v) . '</small>', microtime(true) - $time);
+				$time = microtime(true);
 			}
 		}
 		else {
@@ -296,9 +311,10 @@ class pdoFetch extends pdoTools {
 	 */
 	public function addGrouping() {
 		if (!empty($this->config['groupby'])) {
+			$time = microtime(true);
 			$groupby = $this->config['groupby'];
 			$this->query->groupby($groupby);
-			$this->addTime('Grouped by <b>'.$groupby.'</b>');
+			$this->addTime('Grouped by <b>'.$groupby.'</b>', microtime(true) - $time);
 		}
 	}
 
@@ -307,6 +323,7 @@ class pdoFetch extends pdoTools {
 	 * Add sort to query
 	 */
 	public function addSort() {
+		$time = microtime(true);
 		$tmp = $this->config['sortby'];
 		if (empty($tmp)) {
 			$resources = $this->config['class'].'.'.$this->pk.':IN';
@@ -354,7 +371,9 @@ class pdoFetch extends pdoTools {
 					}
 				}
 				$this->query->sortby($sortby, $sortdir);
-				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>');
+
+				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>', microtime(true) - $time);
+				$time = microtime(true);
 			}
 		}
 	}
@@ -367,9 +386,11 @@ class pdoFetch extends pdoTools {
 	 */
 	public function prepareQuery() {
 		$this->addSort();
+
 		if (!empty($this->config['limit'])) {
+			$time = microtime(true);
 			$this->query->limit($this->config['limit'], $this->config['offset']);
-			$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>');
+			$this->addTime('Limited to <b>'.$this->config['limit'].'</b>, offset <b>'.$this->config['offset'].'</b>', microtime(true) - $time);
 		}
 
 		return $this->query->prepare();
@@ -380,6 +401,8 @@ class pdoFetch extends pdoTools {
 	 * Add selection of template variables to query
 	 */
 	public function addTVs() {
+		$time = microtime(true);
+
 		$includeTVs = $this->config['includeTVs'];
 		$tvPrefix = $this->config['tvPrefix'];
 
@@ -420,7 +443,8 @@ class pdoFetch extends pdoTools {
 							$this->config['tvsSelect'][$alias] = array('`'.$tvPrefix.$tv['name'].'`' => 'IFNULL(`'.$alias.'`.`value`, '.$this->modx->quote($tv['default_text']).')');
 							$tvs[] = $tv['name'];
 						}
-						$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>');
+
+						$this->addTime('Included list of tvs: <b>'.implode(', ',$tvs).'</b>', microtime(true) - $time);
 					}
 				}
 			}
@@ -443,6 +467,7 @@ class pdoFetch extends pdoTools {
 		if (!in_array('modResource', $this->ancestry) || !empty($config['disableConditions'])) {
 			return $where;
 		}
+		$time = microtime(true);
 
 		$params = array(
 			'resources' => 'id',
@@ -649,8 +674,9 @@ class pdoFetch extends pdoTools {
 					break;
 			}
 		}
-		$this->addTime('Processed additional conditions');
 		$this->config['where'] = $where;
+
+		$this->addTime('Processed additional conditions', microtime(true) - $time);
 		return $where;
 	}
 
@@ -660,6 +686,8 @@ class pdoFetch extends pdoTools {
 	 * This algorithm taken from snippet getResources by opengeek
 	 */
 	public function addTVFilters() {
+		$time = microtime(true);
+
 		if (empty($this->config['tvFilters'])) {return;}
 		$tvFiltersAndDelimiter = $this->config['tvFiltersAndDelimiter'];
 		$tvFiltersOrDelimiter = $this->config['tvFiltersOrDelimiter'];
@@ -757,7 +785,7 @@ class pdoFetch extends pdoTools {
 				$firstGroup = false;
 			}
 
-			$this->addTime('Added TVs filters');
+			$this->addTime('Added TVs filters', microtime(true) - $time);
 		}
 	}
 
@@ -772,6 +800,8 @@ class pdoFetch extends pdoTools {
 	 */
 	public function replaceTVCondition(array $array) {
 		if (empty($this->config['tvsJoin'])) {return $array;}
+
+		$time = microtime(true);
 		$tvs = implode('|', array_keys($this->config['tvsJoin']));
 
 		$sorts = array();
@@ -781,6 +811,7 @@ class pdoFetch extends pdoTools {
 			$sorts[$tmp] = $v;
 		}
 
+		$this->addTime('Replaced TV conditions', microtime(true) - $time);
 		return $sorts;
 	}
 

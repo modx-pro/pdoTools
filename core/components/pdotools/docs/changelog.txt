@@ -6,6 +6,7 @@ Changelog for pdoTools.
 - Improved transfer of additional parameters from snippet to results.
 - [pdoMenu] Added lexicon entries for parameters.
 - [#12] Added parameter "toPlaceholder".
+- Increased accuracy of timings log.
 
 1.8.1 pl2
 ==============
