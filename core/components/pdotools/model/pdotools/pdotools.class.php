@@ -657,15 +657,20 @@ class pdoTools {
 	 * @return array
 	 */
 	public function prepareRows(array $rows = array()) {
-		$prepare = $process = array();
+		$prepare = $process = $prepareTypes = array();
 		if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
 			$tvs = array_map('trim', explode(',', $this->config['includeTVs']));
 			$prepare = ($this->config['prepareTVs'] == 1)
 				? $tvs
 				: array_map('trim', explode(',', $this->config['prepareTVs']));
+			$prepareTypes = array_map('trim', explode(',', $this->modx->getOption('manipulatable_url_tv_output_types',null,'image,file')));
 			$process = ($this->config['processTVs'] == 1)
 				? $tvs
 				: array_map('trim', explode(',', $this->config['processTVs']));
+
+			$prepare = array_flip($prepare);
+			$prepareTypes = array_flip($prepareTypes);
+			$process = array_flip($process);
 		}
 
 		foreach ($rows as & $row) {
@@ -679,11 +684,15 @@ class pdoTools {
 			// Prepare and process TVs
 			if (!empty($tvs)) {
 				foreach ($tvs as $tv) {
-					if (!in_array($tv, $process) && !in_array($tv, $prepare)) {continue;}
+					if (!isset($process[$tv]) && !isset($prepare[$tv])) {continue;}
 
 					/** @var modTemplateVar $templateVar */
 					if (!$templateVar = $this->getStore($tv, 'tv')) {
 						if ($templateVar = $this->modx->getObject('modTemplateVar', array('name' => $tv))) {
+							$sourceCache = isset($prepareTypes[$templateVar->type])
+								? $templateVar->getSourceCache($this->modx->context->get('key'))
+								: null;
+							$templateVar->set('sourceCache', $sourceCache);
 							$this->setStore($tv, $templateVar, 'tv');
 						}
 						else {
@@ -693,11 +702,23 @@ class pdoTools {
 					}
 
 					$key = $this->config['tvPrefix'].$templateVar->name;
-					if (in_array($tv, $process)) {
+					if (isset($process[$tv])) {
 						$row[$key] = $templateVar->renderOutput($row['id']);
 					}
-					elseif (in_array($tv, $prepare) && method_exists($templateVar, 'prepareOutput')) {
-						$row[$key] = $templateVar->prepareOutput($row[$key]);
+					elseif (isset($prepare[$tv]) && strpos($row[$key],'://') === false && method_exists($templateVar, 'prepareOutput')) {
+						if ($source = $templateVar->sourceCache) {
+							if ($source['class_key'] == 'modFileMediaSource') {
+								if (!empty($source['baseUrl'])) {
+									$row[$key] = $source['baseUrl'].$row[$key];
+									if (isset($source['baseUrlRelative']) && !empty($source['baseUrlRelative'])) {
+										$row[$key] = $this->modx->context->getOption('base_url',null,MODX_BASE_URL).$row[$key];
+									}
+								}
+							}
+							else {
+								$row[$key] = $templateVar->prepareOutput($row[$key]);
+							}
+						}
 					}
 				}
 			}
