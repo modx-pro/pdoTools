@@ -1,10 +1,11 @@
 Changelog for pdoTools.
 
-1.8.3 pl
+1.8.3 pl1
 ==============
 - Improved preparation of template variables.
 - Improved transfer of additional parameters from snippet to results.
 - [pdoMenu] Added lexicon entries for parameters.
+- [pdoMenu] Allow to specify "limit" and "offset".
 - [#12] Added parameter "toPlaceholder".
 - Increased accuracy of timings log.
 

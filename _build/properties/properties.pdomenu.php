@@ -89,6 +89,14 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'menuindex',
 	),
+	'limit' => array(
+		'type' => 'numberfield',
+		'value' => 0,
+	),
+	'offset' => array(
+		'type' => 'numberfield',
+		'value' => 0,
+	),
 
 	// cssTpl
 	// jsTpl
