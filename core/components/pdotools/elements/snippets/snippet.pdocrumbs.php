@@ -23,13 +23,13 @@ if (isset($showHomeCrumb)) {$showHome = $showHomeCrumb;}
 if (isset($showCurrentCrumb)) {$showCurrent = $showCurrentCrumb;}
 // --
 $fastMode = !empty($fastMode);
-$siteStart = $modx->getOption('site_start');
+$siteStart = $modx->getOption('siteStart', $scriptProperties, $modx->getOption('site_start'));
 
 if (empty($showAtHome) && $modx->resource->id == $siteStart) {
 	return '';
 }
 
-$class = 'modResource';
+$class = $modx->getOption('class', $scriptProperties, 'modResource');;
 // Start building "Where" expression
 $where = array();
 if (empty($showUnpublished) && empty($showUnPub)) {$where['published'] = 1;}
