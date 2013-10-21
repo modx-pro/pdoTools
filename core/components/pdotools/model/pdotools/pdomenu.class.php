@@ -31,10 +31,10 @@ class pdoMenu extends pdoFetch {
 				'levelClass' => '',
 				'selfClass' => '',
 				'webLinkClass' => '',
+				'limit' => 0,
 			),
 			$config,
 			array(
-				'limit' => 0,
 				'return' => 'data',
 			)
 		);

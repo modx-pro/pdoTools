@@ -89,10 +89,6 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'menuindex',
 	),
-	'limit' => array(
-		'type' => 'numberfield',
-		'value' => 10,
-	),
 
 	// cssTpl
 	// jsTpl
