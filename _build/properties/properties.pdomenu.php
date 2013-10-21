@@ -65,7 +65,7 @@ $tmp = array(
 	),
 	'previewUnpublished' => array(
 		'type' => 'combo-boolean',
-		'value' => true,
+		'value' => false,
 	),
 	'hideSubMenus' => array(
 		'type' => 'combo-boolean',
