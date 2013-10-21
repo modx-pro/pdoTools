@@ -39,7 +39,7 @@ $tmp = array(
 
 	'cache' => array(
 		'type' => 'combo-boolean',
-		'value' => true,
+		'value' => false,
 	),
 	'cacheTime' => array(
 		'type' => 'numberfield',
