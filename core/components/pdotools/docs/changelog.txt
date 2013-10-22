@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+1.8.4 pl
+==============
+- [pdoCrumbs] Added ability to specify the crumbs root (defaulting to site_start)
+- [pdoCrumbs] Added ability to specify class_key (ie. to generate crumbs only for derivative classes)
+
 1.8.3 pl3
 ==============
 - Improved preparation of template variables.
