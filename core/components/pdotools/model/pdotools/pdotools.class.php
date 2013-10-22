@@ -686,8 +686,11 @@ class pdoTools {
 		foreach ($rows as & $row) {
 			// Extract JSON fields
 			foreach ($row as $k => $v) {
-				if (!empty($v) && is_string($v) && ($v[0] == '{' || $v[0] == '[')) {
-					$row[$k] = $this->modx->fromJSON($v);
+				if (!empty($v) && is_string($v) && strlen($v) >= 2 && (($v[0] == '{' && $v[1] == '"') || ($v[0] == '[' && $v[1] != '['))) {
+					$tmp = $this->modx->fromJSON($v);
+					if ($tmp !== null) {
+						$row[$k] = $tmp;
+					}
 				}
 			}
 
