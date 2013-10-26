@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.8.5 pl
+==============
+- [#15] [pdoPage] Improved generation of links to pages.
+
 1.8.4 pl
 ==============
 - [pdoCrumbs] Added ability to specify the crumbs root (defaulting to site_start)

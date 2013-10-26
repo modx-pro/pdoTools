@@ -34,6 +34,7 @@ class pdoPage extends pdoTools {
 		return '';
 	}
 
+
 	/**
 	 * Returns current base url for pagination
 	 *
@@ -42,8 +43,8 @@ class pdoPage extends pdoTools {
 	public function getBaseUrl() {
 		if ($this->modx->getOption('friendly_urls')) {
 			$q_var = $this->modx->getOption('request_param_alias', null, 'q');
-			$q_val = isset($_GET[$q_var])
-				? $_GET[$q_var]
+			$q_val = isset($_REQUEST[$q_var])
+				? $_REQUEST[$q_var]
 				: '';
 			$this->req_var = $q_var;
 
