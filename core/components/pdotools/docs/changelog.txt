@@ -3,6 +3,10 @@ Changelog for pdoTools.
 1.8.5 pl
 ==============
 - [#15] [pdoPage] Improved generation of links to pages.
+- [pdoMenu] Improved processing of classes "modSymlink" and "modWeblink".
+- [pdoBreadcrumbs] Improved processing of classes "modSymlink" and "modWeblink". Added parameter "&useWeblink".
+- [pdoNeighbors] Added parameter "&useWeblink" and placeholder "[[+link]]".
+- [pdoSitemap] Added parameter "&useWeblink" and proper processing of classes "modSymlink" and "modWeblink".
 
 1.8.4 pl
 ==============

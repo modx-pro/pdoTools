@@ -7,10 +7,7 @@ $pdoFetch->addTime('pdoTools loaded');
 
 if (empty($id)) {$id = $modx->resource->id;}
 if (empty($limit)) {$limit = 1;}
-if (empty($tplWrapper)) {$tplWrapper = '@INLINE <div class="neighbors">[[+prev]][[+up]][[+next]]</div>';}
-if (!isset($tplPrev)) {$tplPrev = '@INLINE <span class="link-prev">&larr; <a href="/[[+uri]]">[[+pagetitle]]</a></span>';}
-if (!isset($tplUp)) {$tplUp = '@INLINE <span class="link-up">&uarr; <a href="/[[+uri]]">[[+pagetitle]]</a></span>';}
-if (!isset($tplNext)) {$tplNext = '@INLINE <span class="link-next"><a href="/[[+uri]]">[[+pagetitle]]</a> &rarr;</span>';}
+if (empty($scheme)) {$scheme = $modx->getOption('link_tag_scheme');}
 if (!isset($outputSeparator)) {$outputSeparator = "\n";}
 $fastMode = !empty($fastMode);
 
@@ -29,7 +26,7 @@ $where = array(
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
-if (empty($includeContent)) {
+if (empty($includeContent) && empty($useWeblinkUrl)) {
 	$key = array_search('content', $resourceColumns);
 	unset($resourceColumns[$key]);
 }
@@ -77,12 +74,22 @@ $prev = $next = array();
 if (!empty($rows)) {
 	foreach ($rows as $row) {
 		if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
+		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
+				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
+				: $row['content'];
+		}
+		else {
+			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+		}
 
 		if ($row['id'] == $resource->id) {
 			$found = true;
 		}
 		elseif ($row['id'] == $resource->parent) {
-			$output['up'] = $pdoFetch->getChunk($tplUp, $row, $fastMode);
+			$output['up'] = !empty($tplUp)
+				? $pdoFetch->getChunk($tplUp, $row, $fastMode)
+				: $pdoFetch->getChunk('', $row);
 		}
 		elseif ($found) {
 			$next[] = $row;
@@ -94,10 +101,14 @@ if (!empty($rows)) {
 }
 
 while (count($output['prev']) < $limit && !empty($prev)) {
-	$output['prev'][] = $pdoFetch->getChunk($tplPrev, array_pop($prev), $fastMode);
+	$output['prev'][] = !empty($tplPrev)
+		? $pdoFetch->getChunk($tplPrev, array_pop($prev), $fastMode)
+		: $pdoFetch->getChunk('', array_pop($prev));
 }
 while (count($output['next']) < $limit && !empty($next)) {
-	$output['next'][] = $pdoFetch->getChunk($tplNext, array_shift($next), $fastMode);
+	$output['next'][] = !empty($tplNext)
+		? $pdoFetch->getChunk($tplNext, array_shift($next), $fastMode)
+		: $pdoFetch->getChunk('', array_shift($next));
 }
 $pdoFetch->addTime('Chunks processed');
 
@@ -113,9 +124,11 @@ if (!empty($toSeparatePlaceholders)) {
 	$modx->setPlaceholders($output, $toSeparatePlaceholders);
 }
 else {
-	$output = $pdoFetch->getChunk($tplWrapper, $output, $fastMode);
-
+	$output = !empty($tplWrapper)
+		? $pdoFetch->getChunk($tplWrapper, $output, $fastMode)
+		: $pdoFetch->getChunk('', $output);
 	$output .= $log;
+
 	if (!empty($toPlaceholder)) {
 		$modx->setPlaceholder($toPlaceholder, $output);
 	}

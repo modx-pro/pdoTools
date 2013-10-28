@@ -29,7 +29,7 @@ if (empty($showAtHome) && $modx->resource->id == $siteStart) {
 	return '';
 }
 
-$class = $modx->getOption('class', $scriptProperties, 'modResource');;
+$class = $modx->getOption('class', $scriptProperties, 'modResource');
 // Start building "Where" expression
 $where = array();
 if (empty($showUnpublished) && empty($showUnPub)) {$where['published'] = 1;}
@@ -107,9 +107,9 @@ if (!empty($rows) && is_array($rows)) {
 	}
 
 	foreach ($rows as $row) {
-		if (in_array($row['class_key'], array('modWebLink','modSymLink'))) {
-			$row['link'] = is_numeric($row['content'])
-				? $modx->makeUrl($row['content'], $row['context_key'], '', $scheme)
+		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
+				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
 				: $row['content'];
 		}
 		else {

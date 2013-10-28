@@ -152,9 +152,9 @@ class pdoMenu extends pdoFetch {
 			$row['classNames'] = $row['classnames'] = $row['classes'] = '';
 		}
 
-		if (!empty($this->config['useWeblinkUrl']) && in_array($row['class_key'], array('modWebLink','modSymLink'))) {
-			$row['link'] = is_numeric($row['content'])
-				? $this->modx->makeUrl($row['content'], $row['context_key'], '', $this->config['scheme'])
+		if (!empty($this->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
+				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $this->config['scheme'])
 				: $row['content'];
 		}
 		else {

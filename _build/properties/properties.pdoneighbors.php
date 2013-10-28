@@ -23,15 +23,15 @@ $tmp = array(
 
 	'tplPrev' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <span class="link-prev"><a href="/[[+uri]]">&larr; [[+menutitle]]</a></span>',
+		'value' => '@INLINE <span class="link-prev"><a href="[[+link]]">&larr; [[+menutitle]]</a></span>',
 	),
 	'tplUp' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <span class="link-up">&uarr; <a href="/[[+uri]]">[[+menutitle]]</a></span>',
+		'value' => '@INLINE <span class="link-up">&uarr; <a href="[[+link]]">[[+menutitle]]</a></span>',
 	),
 	'tplNext' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <span class="link-next"><a href="/[[+uri]]">[[+menutitle]] &rarr;</a></span>',
+		'value' => '@INLINE <span class="link-next"><a href="[[+link]]">[[+menutitle]] &rarr;</a></span>',
 	),
 	'tplWrapper' => array(
 		'type' => 'textfield',
@@ -92,7 +92,37 @@ $tmp = array(
 	'tvPrefix' => array(
 		'type' => 'textfield',
 		'value' => 'tv.',
-	)
+	),
+	'scheme' => array(
+		'type' => 'list',
+		'options' => array(
+			array(
+				'name' => '-1 (relative to site_url)',
+				'value' => -1,
+			),
+			array(
+				'name' => 'full (absolute, prepended with site_url)',
+				'value' => 'full',
+			),
+			array(
+				'name' => 'abs (absolute, prepended with base_url)',
+				'value' => 'abs',
+			),
+			array(
+				'name' => 'http (absolute, forced to http scheme)',
+				'value' => 'http',
+			),
+			array(
+				'name' => 'https (absolute, forced to https scheme)',
+				'value' => 'https',
+			),
+		),
+		'value' => -1,
+	),
+	'useWeblinkUrl' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
 
 );
 

@@ -154,7 +154,11 @@ $tmp = array(
 			)
 		)
 		,'value' => -1
-	)
+	),
+	'useWeblinkUrl' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
 
 );
 

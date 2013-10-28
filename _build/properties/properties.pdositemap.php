@@ -83,7 +83,10 @@ $tmp = array(
 		'type' => 'combo-boolean'
 		,'value' => true
 	),
-
+	'useWeblinkUrl' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
 );
 
 foreach ($tmp as $k => $v) {

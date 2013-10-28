@@ -10,6 +10,7 @@ if (empty($tpl)) {$tpl = "@INLINE \n<url>\n\t<loc>[[+url]]</loc>\n\t<lastmod>[[+
 if (empty($tplWrapper)) {$tplWrapper = "@INLINE <?xml version=\"1.0\" encoding=\"[[++modx_charset]]\"?>\n<urlset xmlns=\"[[+schema]]\">\n[[+output]]\n</urlset>";}
 if (empty($sitemapSchema)) {$sitemapSchema = 'http://www.sitemaps.org/schemas/sitemap/0.9';}
 if (empty($outputSeparator)) {$outputSeparator = "\n";}
+$scheme = 'full';
 
 // Convert parameters from GoogleSiteMap if exists
 if (!empty($itemTpl)) {$tpl = $itemTpl;}
@@ -76,7 +77,8 @@ if (empty($context)) {
 	$scriptProperties['context'] = $modx->context->key;
 }
 
-$select = array($class => 'id,editedon,createdon');
+$select = array($class => 'id,editedon,createdon,context_key,class_key');
+if (!empty($useWeblinkUrl)) {$select[$class] .= ',content';}
 // Add custom parameters
 foreach (array('where','select') as $v) {
 	if (!empty($scriptProperties[$v])) {
@@ -110,7 +112,14 @@ $rows = $pdoFetch->run();
 $now = time();
 $output = array();
 foreach ($rows as $row) {
-	$url = $modx->makeUrl($row['id'], '', '', 'full');
+	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+		$url = is_numeric(trim($row['content'], '[]~ '))
+			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
+			: $row['content'];
+	}
+	else {
+		$url = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+	}
 
 	$time = !empty($row['editedon'])
 		? $row['editedon']
