@@ -615,7 +615,7 @@ class pdoFetch extends pdoTools {
 						}
 						// Support of miniShop2 categories
 						$members = array();
-						if (strpos($this->modx->config['extension_packages'], 'minishop2') !== false && empty($this->config['disableMS2'])) {
+						if (isset($this->modx->config['extension_packages']) && strpos($this->modx->config['extension_packages'], 'minishop2') !== false && empty($this->config['disableMS2'])) {
 							if (!empty($parents_in) || !empty($parents_out)) {
 								$q = $this->modx->newQuery('msCategoryMember');
 								if (!empty($parents_in)) {$q->where(array('category_id:IN' => $parents_in));}

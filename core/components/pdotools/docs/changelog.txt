@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.8.6 pl
+==============
+- Fixed possibly E_NOTICE when site has no extension packages installed.
+
 1.8.5 pl
 ==============
 - [#15] [pdoPage] Improved generation of links to pages.
