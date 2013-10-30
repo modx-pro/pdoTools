@@ -283,6 +283,7 @@ class pdoMenu extends pdoFetch {
 					break;
 				case 'menutitle':
 					$row[$pl.'linktext'] = $v;
+					$row[$pl.'menutitle'] = $v;
 					break;
 				case 'link_attributes':
 					$row[$pl.'attributes'] = $v;
