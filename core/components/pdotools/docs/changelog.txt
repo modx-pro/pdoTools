@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Fixed possibly E_NOTICE when site has no extension packages installed.
 - [#17] [pdoMenu] Added placeholder [[+wf.menutitle]].
+- [#16] [pdoMenu] Disabled status verification of specified parents.
 
 1.8.5 pl
 ==============

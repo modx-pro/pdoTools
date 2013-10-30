@@ -38,6 +38,9 @@ if (isset($level)) {
 		: $level - 1;
 }
 
+// Save original parents specified by user
+$specified_parents = array_map('trim', explode(',', $scriptProperties['parents']));
+
 if ($scriptProperties['parents'] === '') {
 	$scriptProperties['parents'] = $modx->resource->id;
 }
@@ -115,7 +118,7 @@ else {
 	$tree = array();
 	foreach ($tmp as $k => $v) {
 		if (empty($v['id'])) {
-			if (empty($row['id']) && !$pdoMenu->checkResource($k)) {
+			if (!in_array($k, $specified_parents) && !$pdoMenu->checkResource($k)) {
 				continue;
 			}
 			else {
