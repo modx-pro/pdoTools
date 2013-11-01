@@ -28,15 +28,13 @@ if (!empty($excludeDocs)) {
 	}
 }
 
-if (!empty($scriptProperties['previewUnpublished']) && $modx->hasPermission('view_unpublished')) {
+if (!empty($previewUnpublished) && $modx->hasPermission('view_unpublished')) {
 	$scriptProperties['showUnpublished'] = 1;
 }
 
-if (isset($level)) {
-	$scriptProperties['depth'] = empty($level)
-		? $scriptProperties['depth'] = 100
-		: $level - 1;
-}
+$scriptProperties['depth'] = empty($level) ? 100 : abs($level) - 1;
+if (!empty($contexts)) {$scriptProperties['context'] = $contexts;}
+if (empty($scriptProperties['context'])) {$scriptProperties['context'] = $modx->resource->context_key;}
 
 // Save original parents specified by user
 $specified_parents = array_map('trim', explode(',', $scriptProperties['parents']));
@@ -46,11 +44,12 @@ if ($scriptProperties['parents'] === '') {
 }
 elseif ($scriptProperties['parents'] === 0 || $scriptProperties['parents'] === '0') {
 	if ($scriptProperties['depth'] !== '' && $scriptProperties['depth'] !== 100) {
-		$parents = $modx->getChildIds(0, $scriptProperties['depth'], array('context' => $modx->resource->context_key));
-
-		$scriptProperties['parents'] = !empty($parents)
-			? implode(',', $parents)
-			: '+0';
+		$contexts = array_map('trim', explode(',', $scriptProperties['context']));
+		$parents = array();
+		foreach ($contexts as $ctx) {
+			$parents = array_merge($parents, $modx->getChildIds(0, $scriptProperties['depth'], array('context' => $ctx)));
+		}
+		$scriptProperties['parents'] = implode(',', $parents);
 		$scriptProperties['depth'] = 0;
 	}
 	$scriptProperties['includeParents'] = 1;
@@ -65,7 +64,6 @@ else {
 		else {$parents_in[] = abs($v);}
 	}
 
-
 	if (empty($parents_in)) {
 		$scriptProperties['includeParents'] = 1;
 		$scriptProperties['displayStart'] = 0;
@@ -78,10 +76,8 @@ if (!empty($ph)) {$toPlaceholder = $ph;}
 if (!empty($sortOrder)) {$scriptProperties['sortdir'] = $sortOrder;}
 if (!empty($sortBy)) {$scriptProperties['sortby'] = $sortBy;}
 if (!empty($permissions)) {$scriptProperties['checkPermissions'] = $permissions;}
-if (!empty($contexts)) {$scriptProperties['context'] = $contexts;}
 if (!empty($cacheResults)) {$scriptProperties['cache'] = $cacheResults;}
 if (!empty($ignoreHidden)) {$scriptProperties['showHidden'] = $ignoreHidden;}
-if (empty($scriptProperties['context'])) {$scriptProperties['context'] = $modx->resource->context_key;}
 
 $wfTemplates = array(
 	'outerTpl' => 'tplOuter',
