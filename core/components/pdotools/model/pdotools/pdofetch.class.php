@@ -39,7 +39,9 @@ class pdoFetch extends pdoTools {
 				'tvFiltersAndDelimiter' => ',',
 				'tvFiltersOrDelimiter' => '||',
 
-				'additionalPlaceholders' => ''
+				'additionalPlaceholders' => '',
+				'useWeblinkUrl' => false,
+				'scheme' => -1,
 			), $config)
 		, $clean_timings);
 
@@ -108,6 +110,26 @@ class pdoFetch extends pdoTools {
 							$row = array_merge($this->config['additionalPlaceholders'], $row);
 						}
 						$row['idx'] = $this->idx++;
+
+						// Add placeholder [[+link]] if specified
+						if (!empty($this->config['useWeblinkUrl'])) {
+							if ($this->config['scheme'] === '-1') {$this->config['scheme'] = -1;}
+							if (!isset($row['context_key'])) {$row['context_key'] = '';}
+							if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink')) {
+								if (!isset($row['content'])) {$row['content'] = '';}
+								$row['link'] = is_numeric(trim($row['content'], '[]~ '))
+									? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $this->config['scheme'])
+									: (isset($row['content'])
+										? $row['content']
+										: '');
+							}
+							else {
+								$row['link'] = $this->modx->makeUrl($row['id'], $row['context_key'], '', $this->config['scheme']);
+							}
+						}
+						else {
+							$row['link'] = '';
+						}
 
 						$tpl = $this->defineChunk($row);
 						if (empty($tpl)) {
@@ -297,7 +319,7 @@ class pdoFetch extends pdoTools {
 		}
 		else {
 			$columns = array_keys($this->modx->getFieldMeta($this->config['class']));
-			if (isset($this->config['includeContent']) && empty($this->config['includeContent'])) {
+			if (isset($this->config['includeContent']) && empty($this->config['includeContent']) && empty($this->config['useWeblinkUrl'])) {
 				$key = array_search('content', $columns);
 				unset($columns[$key]);
 			}

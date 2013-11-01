@@ -190,6 +190,36 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
+	,'scheme' => array(
+		'type' => 'list'
+		,'options' => array(
+			array(
+				'name' => '-1 (relative to site_url)'
+				,'value' => -1
+			)
+			,array(
+				'name' => 'full (absolute, prepended with site_url)'
+				,'value' => 'full'
+			)
+			,array(
+				'name' => 'abs (absolute, prepended with base_url)'
+				,'value' => 'abs'
+			)
+			,array(
+				'name' => 'http (absolute, forced to http scheme)'
+				,'value' => 'http'
+			)
+			,array(
+				'name' => 'https (absolute, forced to https scheme)'
+				,'value' => 'https'
+			)
+		)
+		,'value' => -1
+	),
+	'useWeblinkUrl' => array(
+		'type' => 'combo-boolean',
+		'value' => false,
+	),
 
 );
 
