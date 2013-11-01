@@ -639,17 +639,29 @@ class pdoTools {
 		if (empty($id)) {$id = 'id';}
 		if (empty($parent)) {$parent = 'parent';}
 
-		$rows = $tree= array();
-		foreach ($tmp as $v) {
-			$rows[$v[$id]] = $v;
+		if (count($tmp) == 1) {
+			$row = current($tmp);
+			$tree = array(
+				$row[$parent] => array(
+					'children' => array(
+						$row[$id] => $row
+					)
+				)
+			);
 		}
-
-		foreach ($rows as $id => &$row) {
-			if (empty($row[$parent])) {
-				$tree[$id] = &$row;
+		else {
+			$rows = $tree= array();
+			foreach ($tmp as $v) {
+				$rows[$v[$id]] = $v;
 			}
-			else{
-				$rows[$row[$parent]]['children'][$id] = &$row;
+
+			foreach ($rows as $id => &$row) {
+				if (empty($row[$parent])) {
+					$tree[$id] = &$row;
+				}
+				else{
+					$rows[$row[$parent]]['children'][$id] = &$row;
+				}
 			}
 		}
 
