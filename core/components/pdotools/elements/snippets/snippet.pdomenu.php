@@ -49,7 +49,7 @@ elseif ($scriptProperties['parents'] === 0 || $scriptProperties['parents'] === '
 		foreach ($contexts as $ctx) {
 			$parents = array_merge($parents, $modx->getChildIds(0, $scriptProperties['depth'], array('context' => $ctx)));
 		}
-		$scriptProperties['parents'] = implode(',', $parents);
+		$scriptProperties['parents'] = !empty($parents) ? implode(',', $parents) : '+0';
 		$scriptProperties['depth'] = 0;
 	}
 	$scriptProperties['includeParents'] = 1;

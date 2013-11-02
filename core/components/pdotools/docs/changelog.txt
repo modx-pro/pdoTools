@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.8.6 pl1
+1.8.6 pl2
 ==============
 - Fixed possibly E_NOTICE when site has no extension packages installed.
 - [#17] [pdoMenu] Added placeholder [[+wf.menutitle]].
