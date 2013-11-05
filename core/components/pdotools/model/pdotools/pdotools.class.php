@@ -53,6 +53,7 @@ class pdoTools {
 			'prepareSnippet' => '',
 
 			'outputSeparator' => "\n",
+			'decodeJSON' => true,
 		), $config);
 
 		if ($clean_timings) {
@@ -697,11 +698,13 @@ class pdoTools {
 
 		foreach ($rows as & $row) {
 			// Extract JSON fields
-			foreach ($row as $k => $v) {
-				if (!empty($v) && is_string($v) && strlen($v) >= 2 && (($v[0] == '{' && $v[1] == '"') || ($v[0] == '[' && $v[1] != '['))) {
-					$tmp = $this->modx->fromJSON($v);
-					if ($tmp !== null) {
-						$row[$k] = $tmp;
+			if ($this->config['decodeJSON']) {
+				foreach ($row as $k => $v) {
+					if (!empty($v) && is_string($v) && strlen($v) >= 2 && (($v[0] == '{' && $v[1] == '"') || ($v[0] == '[' && $v[1] != '['))) {
+						$tmp = $this->modx->fromJSON($v);
+						if ($tmp !== null) {
+							$row[$k] = $tmp;
+						}
 					}
 				}
 			}
@@ -730,7 +733,7 @@ class pdoTools {
 					if (isset($process[$tv])) {
 						$row[$key] = $templateVar->renderOutput($row['id']);
 					}
-					elseif (isset($prepare[$tv]) && strpos($row[$key],'://') === false && method_exists($templateVar, 'prepareOutput')) {
+					elseif (isset($prepare[$tv]) && is_string($row[$key]) && strpos($row[$key],'://') === false && method_exists($templateVar, 'prepareOutput')) {
 						if ($source = $templateVar->sourceCache) {
 							if ($source['class_key'] == 'modFileMediaSource') {
 								if (!empty($source['baseUrl'])) {

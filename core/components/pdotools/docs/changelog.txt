@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.8.7 pl
+==============
+- Added boolean parameter "decodeJSON" to specify whether or not decode JSON in results rows.
+
 1.8.6 pl2
 ==============
 - Fixed possibly E_NOTICE when site has no extension packages installed.
