@@ -242,8 +242,8 @@ class pdoMenu extends pdoFetch {
 		elseif ($row['id'] == $this->config['hereId'] && !empty($this->config['tplHere'])) {
 			$tpl = 'tplHere';
 		}
-		elseif ($row['isfolder'] && !empty($this->config['tplActiveParentRow']) && ($row['level'] < $this->config['level'] || empty($this->config['level'])) && $this->isHere($row['id'])) {
-			$tpl = 'tplActiveParentRow';
+		elseif ($row['isfolder'] && !empty($this->config['tplParentRowActive']) && ($row['level'] < $this->config['level'] || empty($this->config['level'])) && $this->isHere($row['id'])) {
+			$tpl = 'tplParentRowActive';
 		}
 		elseif ($row['isfolder'] && !empty($this->config['tplCategoryFolders'])  && (empty($row['template']) || strpos($row['link_attributes'], 'rel="category"') != false) && ($row['level'] < $this->config['level'] || empty($this->config['level']))) {
 			$tpl = 'tplCategoryFolders';

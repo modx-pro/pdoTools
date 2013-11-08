@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Rewrited cache of snippets "pdoMenu" and "pdoPage".
 - New methods pdoTools::getCache() and pdoTools::setCache().
+- [pdoMenu] Fixed parameter "tplParentRowActive".
 
 1.8.7 pl
 ==============
