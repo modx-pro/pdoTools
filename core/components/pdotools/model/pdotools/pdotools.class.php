@@ -65,6 +65,9 @@ class pdoTools {
 	/**
 	 * Add new record to timings log
 	 *
+	 * @var string $message
+	 * @var integer $delta
+	 *
 	 * @param $message
 	 */
 	public function addTime($message, $delta = null) {
@@ -344,74 +347,6 @@ class pdoTools {
 
 		return $content;
 	}
-
-
-	/**
-	 * Fast processing of some MODX elements: snippets and simple output filters
-	 * @param $tag
-	 * @param array $properties
-	 * @param string $token
-	 *
-	 * @disabled
-	 *
-	 * @return mixed|string
-	 */
-	/*
-	public function fastElement($tag, $properties = array(), $token = '+') {
-		$scriptProperties = array();
-
-		// Snippet with parameters
-		if ($pos = strpos($tag, '?')) {
-			$name = substr($tag, 0, $pos);
-			$scriptProperties = $this->modx->parser->parseProperties(substr($tag, $pos + 1));
-		}
-		// Filter without options
-		elseif (strpos($tag, ':') !== false) {
-			$tmp = explode(':', $tag);
-			$scriptProperties['input'] = $tmp[0];
-			$scriptProperties['name'] = $name = $tmp[1];
-			$scriptProperties['options'] = null;
-		}
-		// Filter with options
-		elseif (preg_match('/^(.*?):(.*)(?:=`(.*?)`)$/', $tag, $matches)) {
-			$scriptProperties['input'] = $matches[1];
-			$scriptProperties['name'] = $name = $matches[2];
-			$scriptProperties['options'] = $matches[3];
-		}
-		// Snippet without parameters
-		else {
-			$name = $tag;
-		}
-
-		if (!$element = $this->getStore($name, 'snippet')) {
-			if ($element = $this->modx->getObject('modSnippet', array('name' => $name))) {
-				$this->setStore($name, $element, 'snippet');
-			}
-			else {
-				$this->addTime('Could not load snippet "'.$name.'".');
-				return '';
-			}
-		}
-		$element->_cacheable = false;
-		$element->_processed = false;
-
-		if ($token == '+') {
-			$scriptProperties['tag'] = '[[+'.$tag.']]';
-
-			if (array_key_exists($scriptProperties['input'], $properties)) {
-				$scriptProperties['input'] = $properties[$scriptProperties['input']];
-			}
-			elseif (array_key_exists($scriptProperties['input'], $this->modx->placeholders)) {
-				$scriptProperties['input'] = $this->modx->placeholders[$scriptProperties['input']];
-			}
-			else {
-				return '';
-			}
-		}
-
-		return $element->process($scriptProperties);
-	}
-
 
 
 	/**
@@ -845,6 +780,93 @@ class pdoTools {
 		$this->addTime('Checked for permissions "'.implode(',', array_keys($permissions)).'"');
 		$this->modx->setPlaceholder($this->config['totalVar'], $total);
 		return $rows;
+	}
+
+
+	/**
+	 * Returns data from cache
+	 *
+	 * @param mixed $options
+	 *
+	 * @return bool|mixed
+	 */
+	public function getCache($options = '') {
+		$cacheKey = $this->getCacheKey($options);
+		$cacheOptions = $this->getCacheOptions();
+
+		$cached = false;
+		if (!empty($cacheOptions) && !empty($cacheKey) && $this->modx->getCacheManager()) {
+			$cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions);
+			$this->addTime('Retrieved cached data for key "' . $cacheKey .'"');
+		}
+		else {
+			$this->addTime('No cached data for key "' . $cacheKey .'"');
+		}
+
+		return $cached;
+	}
+
+
+	/**
+	 * Sets data to cache
+	 *
+	 * @param array $data
+	 * @param mixed $options
+	 *
+	 * @return void
+	 */
+	public function setCache($data = array(), $options = '') {
+		$cacheKey = $this->getCacheKey($options);
+		$cacheOptions = $this->getCacheOptions();
+
+		if (!empty($cacheKey) && !empty($cacheOptions) && $this->modx->getCacheManager()) {
+			$this->modx->cacheManager->set(
+				$cacheKey,
+				$data,
+				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
+				$cacheOptions
+			);
+			$this->addTime('Cached data with key "' . $cacheKey .'"');
+		}
+	}
+
+
+	/**
+	 * Returns array with options for cache
+	 *
+	 * @return array
+	 */
+	public function getCacheOptions() {
+		$cacheOptions = array(
+			xPDO::OPT_CACHE_KEY => !empty($this->config['cache_key'])
+				? $this->config['cache_key']
+				: $this->modx->getOption('cache_resource_key', null, 'resource'),
+			xPDO::OPT_CACHE_HANDLER => !empty($this->config['cache_handler'])
+				? $this->config['cache_handler']
+				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
+			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
+				? (integer) $this->config['cacheTime']
+				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
+		);
+
+		return $cacheOptions;
+	}
+
+
+	/**
+	 * Returns key for cache of specified options
+	 *
+	 * @var mixed $options
+	 *
+	 * @return bool|string
+	 */
+	public function getCacheKey($options = '') {
+		if (empty($this->config['cache'])) {return false;}
+		if (empty($options)) {$options = $this->config;}
+
+		$cacheKey = $this->modx->resource->getCacheKey() . '/' . $this->modx->user->id . '/' . sha1(serialize($options));
+		$this->addTime('Generated cache key: "' . $cacheKey .'"');
+		return $cacheKey;
 	}
 
 }

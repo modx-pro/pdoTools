@@ -105,10 +105,7 @@ if (!$modx->loadClass('pdoMenu', MODX_CORE_PATH . 'components/pdotools/model/pdo
 $pdoMenu = new pdoMenu($modx, $scriptProperties);
 $pdoMenu->addTime('pdoTools loaded');
 
-if (!empty($cache) && $data = $pdoMenu->getCache($scriptProperties)) {
-	$tree = $data['tree'];
-}
-else {
+if (!$output = $pdoMenu->getCache($scriptProperties)) {
 	$rows = $pdoMenu->run();
 	$tmp = $pdoMenu->buildTree($rows);
 	$tree = array();
@@ -126,9 +123,9 @@ else {
 		}
 	}
 
-	$pdoMenu->setCache(array('tree' => $tree), $scriptProperties);
+	$output = $pdoMenu->templateTree($tree);
+	$pdoMenu->setCache($output, $scriptProperties);
 }
-$output = $pdoMenu->templateTree($tree);
 
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 	$output .= '<pre class="pdoMenuLog">' . print_r($pdoMenu->getTime(), 1) . '</pre>';

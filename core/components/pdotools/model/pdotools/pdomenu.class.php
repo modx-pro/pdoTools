@@ -101,7 +101,6 @@ class pdoMenu extends pdoFetch {
 	 * Recursive template of branch of menu
 	 *
 	 * @param array $row
-	 * @param null $tpl
 	 *
 	 * @return mixed|string
 	 */
@@ -188,7 +187,6 @@ class pdoMenu extends pdoFetch {
 	 * Determine style class for current item being processed
 	 *
 	 * @param array $row Array with resource properties
-	 * @param string $type
 	 *
 	 * @return string
 	 */
@@ -335,100 +333,6 @@ class pdoMenu extends pdoFetch {
 		}
 
 		return true;
-	}
-
-
-	/**
-	 * Returns data from cache
-	 *
-	 * @var mixed $key
-	 *
-	 * @return bool|mixed
-	 */
-	public function getCache($key = '') {
-		$cacheKey = $this->getCacheKey($key);
-		$cacheOptions = $this->getCacheOptions();
-
-		$cached = false;
-		if (!empty($cacheOptions) && !empty($cacheKey) && $this->modx->getCacheManager()) {
-			$cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions);
-		}
-
-		return $cached;
-	}
-
-
-	/**
-	 * Sets data to cache
-	 *
-	 * @param array $data
-	 * @var mixed $key
-	 *
-	 * @return void
-	 */
-	public function setCache($data = array(), $key = '') {
-		$cacheKey = $this->getCacheKey($key);
-		$cacheOptions = $this->getCacheOptions();
-
-		if (!empty($cacheKey) && !empty($cacheOptions) && $this->modx->getCacheManager()) {
-			$this->modx->cacheManager->set(
-				$cacheKey,
-				$data,
-				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
-				$cacheOptions
-			);
-		}
-	}
-
-
-	/**
-	 * Returns array with options for cache
-	 *
-	 * @return array
-	 */
-	public function getCacheOptions() {
-		$cacheOptions = array(
-			xPDO::OPT_CACHE_KEY => !empty($this->config['cache_key'])
-				? $this->config['cache_key']
-				: $this->modx->getOption('cache_resource_key', null, 'resource'),
-			xPDO::OPT_CACHE_HANDLER => !empty($this->config['cache_handler'])
-				? $this->config['cache_handler']
-				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
-			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
-				? (integer) $this->config['cacheTime']
-				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
-		);
-
-		return $cacheOptions;
-	}
-
-
-	/**
-	 * Returns key for cache
-	 *
-	 * @var mixed $key
-	 *
-	 * @return bool|string
-	 */
-	public function getCacheKey($key = '') {
-		if (isset($this->config['cache'])) {
-			$cache = (!is_scalar($this->config['cache']) || empty($this->config['cache']))
-				? false
-				: (string) $this->config['cache'];
-		} else {
-			$cache = (boolean) $this->modx->getOption('cache_resource', null, false);
-		}
-
-		if (!$cache) {return false;}
-
-		$cachePrefix = !empty($this->config['cachePrefix'])
-			? $this->config['cachePrefix']
-			: '';
-		if (empty($key)) {$key = $this->config;}
-
-		$cacheKey = $this->modx->resource->getCacheKey() . '/' . $cachePrefix . $this->modx->user->id . '-' . md5(base64_encode(serialize($key)));
-
-		return $cacheKey;
 	}
 
 }

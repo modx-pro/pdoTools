@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+1.8.8 pl
+==============
+- Rewrited cache of snippets "pdoMenu" and "pdoPage".
+- New methods pdoTools::getCache() and pdoTools::setCache().
+
 1.8.7 pl
 ==============
 - Added boolean parameter "decodeJSON" to specify whether or not decode JSON in results rows.

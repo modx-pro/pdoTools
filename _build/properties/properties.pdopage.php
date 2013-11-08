@@ -97,37 +97,13 @@ $tmp = array(
 	),
 
 	'cache' => array(
-		'type' => 'list',
-		'options' => array(
-			array('text' => 'Disabled','value' => ''),
-			array('text' => 'URI','value' => 'uri'),
-			array('text' => 'Custom','value' => 'custom'),
-			array('text' => 'MODX','value' => 'modx'),
-		),
-		'value' => '',
-	),
-	'cachePageKey' => array(
-		'type' => 'textfield',
-		'value' => '',
+		'type' => 'combo-boolean',
+		'value' => false,
 	),
 	'cacheTime' => array(
 		'type' => 'numberfield',
-		'value' => 0,
+		'value' => 3600,
 	),
-	/*
-	'cache_key' => array(
-		'type' => 'textfield',
-		'value' => 'resource',
-	),
-	'cache_handler' => array(
-		'type' => 'textfield',
-		'value' => '',
-	),
-	'cache_expires' => array(
-		'type' => 'numberfield',
-		'value' => '',
-	),
-	*/
 
 	'scheme' => array(
 		'type' => 'list',

@@ -207,8 +207,6 @@ class pdoPage extends pdoTools {
 	public function buildModernPagination($page = 1, $pages = 5, $url = '') {
 		$pageLimit = $this->config['pageLimit'];
 
-		$left = $right = $center = 0;
-
 		if ($pageLimit >= $pages || $pageLimit < 7) {
 			return $this->buildClassicPagination($page, $pages, $url);
 		}
@@ -344,116 +342,6 @@ class pdoPage extends pdoTools {
 
 		ksort($pagination);
 		return implode($pagination);
-	}
-
-
-	/**
-	 * Returns data from cache
-	 *
-	 * @param int $page
-	 *
-	 * @return bool|mixed
-	 */
-	public function getCache($page = 1) {
-		$cachePageKey = $this->getCacheKey($page);
-		$cacheOptions = $this->getCacheOptions();
-
-		$cached = false;
-		if (!empty($cacheOptions) && !empty($cachePageKey) && $this->modx->getCacheManager()) {
-			$cached = $this->modx->cacheManager->get($cachePageKey, $cacheOptions);
-		}
-
-		return $cached;
-	}
-
-
-	/**
-	 * Sets data to cache
-	 *
-	 * @param int $page
-	 * @param array $data
-	 *
-	 * @return void
-	 */
-	public function setCache($page = 1, $data = array()) {
-		$cachePageKey = $this->getCacheKey($page);
-		$cacheOptions = $this->getCacheOptions();
-
-		//$properties['pageUrl'] = $modx->makeUrl($modx->resource->get('id'), '', $qs);
-		if (!empty($cachePageKey) && !empty($cacheOptions) && $this->modx->getCacheManager()) {
-			$this->modx->cacheManager->set(
-				$cachePageKey,
-				$data,
-				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
-				$cacheOptions
-			);
-		}
-	}
-
-
-	/**
-	 * Returns array with options for cache
-	 *
-	 * @return array
-	 */
-	public function getCacheOptions() {
-		$cacheOptions = array(
-			xPDO::OPT_CACHE_KEY => !empty($this->config['cache_key'])
-				? $this->config['cache_key']
-				: $this->modx->getOption('cache_resource_key', null, 'resource'),
-			xPDO::OPT_CACHE_HANDLER => !empty($this->config['cache_handler'])
-				? $this->config['cache_handler']
-				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
-			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
-				? (integer) $this->config['cacheTime']
-				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
-		);
-
-		return $cacheOptions;
-	}
-
-
-	/**
-	 * Returns key for cache
-	 * This method was originaly written by Agel_Nash for getPageExt
-	 *
-	 * @param int $page
-	 *
-	 * @return bool|string
-	 */
-	public function getCacheKey($page = 1) {
-		if (isset($this->config['cache'])) {
-			$cache = (!is_scalar($this->config['cache']) || empty($this->config['cache']))
-				? false
-				: (string) $this->config['cache'];
-		} else {
-			$cache = (boolean) $this->modx->getOption('cache_resource', null, false);
-		}
-
-		if (!$cache) {return false;}
-
-		$cachePagePrefix = !empty($this->config['cachePagePrefix'])
-			? $this->config['cachePagePrefix']
-			: '';
-
-		switch ($cache) {
-			case 'uri':
-				$cachePageKey = $this->modx->resource->getCacheKey() . '/' . $cachePagePrefix . $page . '/' . md5($_SERVER['REQUEST_URI']);
-				break;
-
-			case 'custom':
-				$cachePageKey = !empty($this->config['cachePageKey'])
-					? $this->config['cachePageKey']
-					: false;
-				break;
-
-			case 'modx':
-			default:
-				$request = $this->modx->request->getParameters(array(), 'REQUEST');
-				$cachePageKey = $this->modx->resource->getCacheKey() . '/' . $cachePagePrefix . $page . '/' . md5(http_build_query($request));
-		}
-
-		return $cachePageKey;
 	}
 
 }

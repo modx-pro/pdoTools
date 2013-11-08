@@ -36,6 +36,8 @@ if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || $_R
 elseif (!empty($_REQUEST[$pageVarKey])) {
 	$page = (integer) $_REQUEST[$pageVarKey];
 }
+$scriptProperties['page'] = $page;
+$scriptProperties['request'] = $_REQUEST;
 
 // Limit
 if (isset($_REQUEST['limit'])) {
@@ -64,12 +66,7 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
-if ($cached = $pdoPage->getCache($page)) {
-	extract($cached);
-	$pagination = $cached[$pageNavVar];
-	$total = $cached[$totalVar];
-}
-else {
+if (!$data = $pdoPage->getCache($scriptProperties)) {
 	if ($object = $modx->getObject('modSnippet', array('name' => $scriptProperties['element']))) {
 		$object->setCacheable(false);
 
@@ -124,24 +121,22 @@ else {
 			? $pdoPage->getChunk($tplPageWrapper, $pagination)
 			: $pdoPage->parseChunk('', $pagination);
 	}
+
+	$data = array(
+		'output' => $output,
+		'pageCount' => $pageCount,
+		'page' => $page,
+		$pageNavVar => $pagination,
+		$totalVar => $total,
+	);
+	$pdoPage->setCache($data, $scriptProperties);
 }
 
-$data = array(
-	'scriptProperties' => $scriptProperties,
-	'output' => $output,
-	'pageCount' => $pageCount,
-	'page' => $page,
-	$pageNavVar => $pagination,
-	$totalVar => $total,
-);
-$pdoPage->setCache($page, $data);
-
-unset($data['scriptProperties']);
 $modx->setPlaceholders($data, $plPrefix);
 
 if (!empty($toPlaceholder)) {
-	$modx->setPlaceholder($toPlaceholder, $output);
+	$modx->setPlaceholder($toPlaceholder, $data['output']);
 }
 else {
-	return $output;
+	return $data['output'];
 }
