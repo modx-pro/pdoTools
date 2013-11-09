@@ -359,6 +359,8 @@ class pdoTools {
 	 */
 	public function defineChunk($properties = array()) {
 		$idx = isset($properties['idx']) ? (integer) $properties['idx'] : $this->idx++;
+		$idx -= $this->config['offset'];
+
 		$first = empty($this->config['first']) ? ($this->config['offset'] + 1) : (integer) $this->config['first'];
 		$last = empty($this->config['last']) ? ($this->count + $this->config['offset']) : (integer) $this->config['last'];
 

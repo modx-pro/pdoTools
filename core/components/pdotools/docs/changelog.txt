@@ -1,10 +1,11 @@
 Changelog for pdoTools.
 
-1.8.8 pl
+1.8.8 pl1
 ==============
 - Rewrited cache of snippets "pdoMenu" and "pdoPage".
 - New methods pdoTools::getCache() and pdoTools::setCache().
 - [pdoMenu] Fixed parameter "tplParentRowActive".
+- [#18] Fixed "idx" in pdoTools::defineChunk().
 
 1.8.7 pl
 ==============
