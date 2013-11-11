@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.8.8 pl1
+1.8.8 pl2
 ==============
 - Rewrited cache of snippets "pdoMenu" and "pdoPage".
 - New methods pdoTools::getCache() and pdoTools::setCache().
