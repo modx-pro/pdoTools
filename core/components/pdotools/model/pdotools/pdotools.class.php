@@ -790,16 +790,16 @@ class pdoTools {
 	 *
 	 * @param mixed $options
 	 *
-	 * @return bool|mixed
+	 * @return mixed
 	 */
 	public function getCache($options = '') {
 		$cacheKey = $this->getCacheKey($options);
 		$cacheOptions = $this->getCacheOptions();
 
-		$cached = false;
+		$cached = '';
 		if (!empty($cacheOptions) && !empty($cacheKey) && $this->modx->getCacheManager()) {
 			$cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions);
-			$this->addTime('Retrieved cached data for key "' . $cacheKey .'"');
+			$this->addTime('Retrieved data from cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . '/' . $cacheKey .'"');
 		}
 		else {
 			$this->addTime('No cached data for key "' . $cacheKey .'"');
@@ -828,7 +828,7 @@ class pdoTools {
 				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
 				$cacheOptions
 			);
-			$this->addTime('Cached data with key "' . $cacheKey .'"');
+			$this->addTime('Saved data to cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . '/' . $cacheKey . '"');
 		}
 	}
 
@@ -838,14 +838,18 @@ class pdoTools {
 	 *
 	 * @return array
 	 */
-	public function getCacheOptions() {
+	protected function getCacheOptions() {
 		$cacheOptions = array(
 			xPDO::OPT_CACHE_KEY => !empty($this->config['cache_key'])
 				? $this->config['cache_key']
-				: $this->modx->getOption('cache_resource_key', null, 'resource'),
+				: (!empty($this->modx->resource)
+					? $this->modx->getOption('cache_resource_key', null, 'resource')
+					: 'default'),
+
 			xPDO::OPT_CACHE_HANDLER => !empty($this->config['cache_handler'])
 				? $this->config['cache_handler']
 				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
+
 			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
 				? (integer) $this->config['cacheTime']
 				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
@@ -862,13 +866,15 @@ class pdoTools {
 	 *
 	 * @return bool|string
 	 */
-	public function getCacheKey($options = '') {
+	protected function getCacheKey($options = '') {
 		if (empty($this->config['cache'])) {return false;}
 		if (empty($options)) {$options = $this->config;}
 
-		$cacheKey = $this->modx->resource->getCacheKey() . '/' . $this->modx->user->id . '/' . sha1(serialize($options));
-		$this->addTime('Generated cache key: "' . $cacheKey .'"');
-		return $cacheKey;
+		$key = !empty($this->modx->resource)
+			? $this->modx->resource->getCacheKey() . '/'
+			: '';
+
+		return $key . $this->modx->user->id . '/' . sha1(serialize($options));
 	}
 
 }
