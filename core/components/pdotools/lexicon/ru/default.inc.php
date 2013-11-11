@@ -4,6 +4,7 @@
  *
  * @package pdotools
  * @subpackage lexicon
+ * @language ru
  */
 $_lang['pdotools'] = 'pdoTools';
 

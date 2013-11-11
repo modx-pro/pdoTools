@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.8.9 pl
+==============
+- Added german lexicon.
+
 1.8.8 pl2
 ==============
 - Rewrited cache of snippets "pdoMenu" and "pdoPage".

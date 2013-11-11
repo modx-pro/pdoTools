@@ -4,6 +4,7 @@
  *
  * @package pdotools
  * @subpackage lexicon
+ * @language en
  */
 $_lang['pdotools_prop_context'] = 'Which Context should be searched in.';
 $_lang['pdotools_prop_field_context'] = 'Context of resource for selecting its parents. Needed for work of parameters "&top" and "&topLevel".';

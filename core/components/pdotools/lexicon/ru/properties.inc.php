@@ -4,6 +4,7 @@
  *
  * @package pdotools
  * @subpackage lexicon
+ * @language ru
  */
 $_lang['pdotools_prop_context'] = 'Ограничение выборки по контексту ресурсов.';
 $_lang['pdotools_prop_field_context'] = 'Контекст ресурса, для выборки его родителей. Нужен для работы параметров "&top" и "&topLevel".';
