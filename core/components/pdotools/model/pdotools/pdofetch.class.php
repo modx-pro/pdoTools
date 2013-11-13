@@ -184,6 +184,9 @@ class pdoFetch extends pdoTools {
 			if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
 				$tmp = $this->modx->fromJSON($tmp);
 			}
+			if (!is_array($tmp)) {
+				$tmp = array($tmp);
+			}
 			$where = $this->replaceTVCondition($tmp);
 		}
 		$where = $this->additionalConditions($where);
