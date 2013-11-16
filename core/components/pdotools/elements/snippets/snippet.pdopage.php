@@ -8,6 +8,7 @@ $pdoPage->addTime('pdoTools loaded');
 // Default variables
 if (empty($pageVarKey)) {$pageVarKey = 'page';}
 if (empty($pageNavVar)) {$pageNavVar = 'page.nav';}
+if (empty($pageCountVar)) {$pageCountVar = 'pageCount';}
 if (empty($totalVar)) {$totalVar = 'total';}
 if (empty($page)) {$page = 1;}
 if (empty($scheme)) {$scheme = -1;} elseif (is_numeric($scheme)) {$scheme = (integer) $scheme;}
@@ -124,8 +125,8 @@ if (!$data = $pdoPage->getCache($scriptProperties)) {
 
 	$data = array(
 		'output' => $output,
-		'pageCount' => $pageCount,
-		'page' => $page,
+		$pageVarKey => $page,
+		$pageCountVar => $pageCount,
 		$pageNavVar => $pagination,
 		$totalVar => $total,
 	);

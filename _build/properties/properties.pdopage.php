@@ -46,6 +46,11 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'page.nav',
 	),
+	'pageCountVar' => array(
+		'type' => 'textfield',
+		'value' => 'pageCount',
+	),
+
 	'tplPage' => array(
 		'type' => 'textfield',
 		'value' => '@INLINE <li><a href="[[+href]]">[[+pageNo]]</a></li>',

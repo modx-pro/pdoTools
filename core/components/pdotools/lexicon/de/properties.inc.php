@@ -99,6 +99,7 @@ $_lang['pdotools_prop_maxLimit'] = 'The maximum limit of the query. Overrides th
 $_lang['pdotools_prop_page'] = 'Number of page for output. Overlaps number specified user via the url.';
 $_lang['pdotools_prop_pageLimit'] = 'Anzahl der Links zu anderen Seiten. Ist dieser Wert größer oder gleich 7, wird der erweiterte Modus eingeschaltet.';
 $_lang['pdotools_prop_pageNavVar'] = 'Name des Platzhalters für die Ausgabe der Paginierung (Links zu anderen Seiten).';
+$_lang['pdotools_prop_pageCountVar'] = 'Name des Platzhalters für die Ausgabe der Anzahl der Seiten.';
 $_lang['pdotools_prop_pageVarKey'] = 'Der Name des Parameters, der in der URL die Seitennummer angibt.';
 $_lang['pdotools_prop_plPrefix'] = 'Präfix für Platzhalter; dieses Feld ist standardmäßig leer.';  // It is not empty in pdoMenu... issuance = output???
 

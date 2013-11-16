@@ -97,6 +97,7 @@ $_lang['pdotools_prop_maxLimit'] = 'The maximum limit of the query. Overrides th
 $_lang['pdotools_prop_page'] = 'Number of page for output. Overlaps number specified user via the url.';
 $_lang['pdotools_prop_pageLimit'] = 'Number of links on a pages. If is 7 or more turns on the advanced mode.';
 $_lang['pdotools_prop_pageNavVar'] = 'Name of placeholder for output pagination.';
+$_lang['pdotools_prop_pageCountVar'] = 'Name of placeholder for output number of pages.';
 $_lang['pdotools_prop_pageVarKey'] = 'The Name of the variable to search for the page number in the url.';
 $_lang['pdotools_prop_plPrefix'] = 'Prefix for issuance placeholders, it is empty by default.';  // It is not empty in pdoMenu... issuance = output???
 
