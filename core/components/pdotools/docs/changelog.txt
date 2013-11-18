@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - Added german lexicon.
 - [#20] Ability to specify not JSON string in &where=``.
 - [pdoPage] Added parameter "pageCountVar" for specifying name of variable with number of pages.
+- [pdoField] Ability to specify class for fetching field.
 
 1.8.8 pl2
 ==============

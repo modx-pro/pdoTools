@@ -3,7 +3,8 @@
 if (!empty($input)) {$id = $input;}
 if (!isset($default)) {$default = '';}
 if (!isset($output)) {$output = '';}
-$class = 'modResource';
+$class = $modx->getOption('class', $scriptProperties, 'modResource', true);
+$isResource = in_array($class, $modx->getDescendants('modResource'));
 
 if (empty($field)) {$field = 'pagetitle';}
 if (!empty($options)) {
@@ -22,7 +23,7 @@ if (!empty($options)) {
 if (empty($id)) {$id = $modx->resource->id;}
 if (!isset($context)) {$context = '';}
 
-if (!empty($top) || !empty($topLevel)) {
+if ((!empty($top) || !empty($topLevel)) && $isResource) {
 	// Select needed context for parents functionality
 	if (empty($context)) {
 		$q = $modx->newQuery($class, $id);
@@ -86,7 +87,7 @@ if (in_array($field, $resourceColumns)) {
 	$scriptProperties['select'] = array($class => $field);
 	$scriptProperties['includeTVs'] = '';
 }
-else {
+elseif ($isResource) {
 	$scriptProperties['select'] = array($class => 'id');
 	$scriptProperties['includeTVs'] = $field;
 }
@@ -96,7 +97,7 @@ if (!empty($default)) {
 	if (in_array($default, $resourceColumns)) {
 		$scriptProperties['select'][$class] .= ','.$default;
 	}
-	else {
+	elseif ($isResource) {
 		$scriptProperties['includeTVs'] = empty($scriptProperties['includeTVs'])
 			? $default
 			: $scriptProperties['includeTVs'] . ',' . $default;
