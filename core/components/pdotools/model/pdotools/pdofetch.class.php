@@ -256,7 +256,7 @@ class pdoFetch extends pdoTools {
 		$time = microtime(true);
 		// left join is always needed because of TVs
 		if (empty($this->config['leftJoin'])) {
-			$this->config['leftJoin'] = '[]';
+			$this->config['leftJoin'] = array();
 		}
 
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
@@ -270,9 +270,14 @@ class pdoFetch extends pdoTools {
 				}
 				foreach ($tmp as $k => $v) {
 					$class = !empty($v['class']) ? $v['class'] : $k;
-					$this->query->$join($class, $v['alias'], $v['on']);
-
-					$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$v['alias'].'</b>', microtime(true) - $time);
+					$alias = !empty($v['alias']) ? $v['alias'] : $k;
+					if (!is_numeric($alias) && !is_numeric($class)) {
+						$this->query->$join($class, $alias, $v['on']);
+						$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$v['alias'].'</b>', microtime(true) - $time);
+					}
+					else {
+						$this->addTime('Could not '.$join.' <i>'.$class.'</i> as <b>'.$alias.'</b>', microtime(true) - $time);
+					}
 					$time = microtime(true);
 				}
 			}

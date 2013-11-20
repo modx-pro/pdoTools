@@ -6,6 +6,7 @@ Changelog for pdoTools.
 - [#20] Ability to specify not JSON string in &where=``.
 - [pdoPage] Added parameter "pageCountVar" for specifying name of variable with number of pages.
 - [pdoField] Ability to specify class for fetching field.
+- Improved joining of tables in pdoFetch.
 
 1.8.8 pl2
 ==============
