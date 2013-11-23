@@ -4,7 +4,7 @@ if (!empty($input)) {$id = $input;}
 if (!isset($default)) {$default = '';}
 if (!isset($output)) {$output = '';}
 $class = $modx->getOption('class', $scriptProperties, 'modResource', true);
-$isResource = in_array($class, $modx->getDescendants('modResource'));
+$isResource = $class == 'modResource' || in_array($class, $modx->getDescendants('modResource'));
 
 if (empty($field)) {$field = 'pagetitle';}
 if (!empty($options)) {
