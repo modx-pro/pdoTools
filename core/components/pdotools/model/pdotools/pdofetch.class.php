@@ -256,7 +256,7 @@ class pdoFetch extends pdoTools {
 		$time = microtime(true);
 		// left join is always needed because of TVs
 		if (empty($this->config['leftJoin'])) {
-			$this->config['leftJoin'] = array();
+			$this->config['leftJoin'] = '[]';
 		}
 
 		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
