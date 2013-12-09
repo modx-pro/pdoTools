@@ -891,6 +891,9 @@ class pdoFetch extends pdoTools {
 			$this->modx->queryTime += microtime(true) - $tstart;
 			$this->modx->executedQueries++;
 			$row = $this->query->stmt->fetch(PDO::FETCH_ASSOC);
+
+			$tmp = $this->prepareRows(array($row));
+			$row = $tmp[0];
 		}
 		else {
 			$errors = $this->query->stmt->errorInfo();
@@ -958,6 +961,7 @@ class pdoFetch extends pdoTools {
 			$this->addTime('Total rows: <b>'.$total.'</b>');
 
 			$rows = $this->checkPermissions($rows);
+			$rows = $this->prepareRows($rows);
 		}
 		else {
 			$errors = $this->query->stmt->errorInfo();

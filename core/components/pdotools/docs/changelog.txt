@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.8.9 pl2
+1.8.9 pl3
 ==============
 - Added german lexicon.
 - [#20] Ability to specify not JSON string in &where=``.
@@ -8,6 +8,7 @@ Changelog for pdoTools.
 - [pdoPage] Support Bootstrap3.
 - [pdoField] Ability to specify class for fetching field.
 - Improved joining of tables in pdoFetch.
+- Added preparing and processing TVs in getObject and getCollection methods.
 
 1.8.8 pl2
 ==============
