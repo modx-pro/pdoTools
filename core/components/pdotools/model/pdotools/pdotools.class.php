@@ -168,7 +168,7 @@ class pdoTools {
 		if (!empty($models)) {
 			foreach ($models as $k => $v) {
 				$t = '/' . str_replace(MODX_BASE_PATH, '', $v);
-				if ($this->modx->addPackage($k, $v)) {
+				if ($this->modx->addPackage(strtolower($k), $v)) {
 					$this->addTime('Loaded model "'.$k.'" from "'.$t.'"', microtime(true) - $time);
 				}
 				else {
