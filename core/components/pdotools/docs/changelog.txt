@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - Improved method pdoTools::getChunk().
 - Improved method pdoTools::parseChunk().
 - Improved method pdoTools::fastProcess().
+- Improved method pdoTools::makePlaceholders().
 
 1.8.9 pl4
 ==============

@@ -187,24 +187,24 @@ class pdoTools {
 	 * @param string $plPrefix
 	 * @param string $prefix
 	 * @param string $suffix
-	 * @param string $token
-	 * @param bool $uncached
+	 * @param bool $uncacheable
 	 *
 	 * @return array
 	 */
-	public function makePlaceholders(array $array = array(), $plPrefix = '', $prefix = '[[', $suffix = ']]', $token = '+', $uncached = true) {
+	public function makePlaceholders(array $array = array(), $plPrefix = '', $prefix = '[[+', $suffix = ']]', $uncacheable = true) {
 		$result = array('pl' => array(), 'vl' => array());
 
+		$uncached_prefix = str_replace('[[', '[[!', $prefix);
 		foreach ($array as $k => $v) {
 			if (is_array($v)) {
-				$result = array_merge_recursive($result, $this->makePlaceholders($v, $k.'.', $prefix, $suffix, $token, $uncached));
+				$result = array_merge_recursive($result, $this->makePlaceholders($v, $k.'.', $prefix, $suffix, $uncacheable));
 			}
 			else {
 				$pl = $plPrefix.$k;
-				$result['pl'][$pl] = $prefix.$token.$pl.$suffix;
+				$result['pl'][$pl] = $prefix.$pl.$suffix;
 				$result['vl'][$pl] = $v;
-				if ($uncached) {
-					$result['pl']['!'.$pl] = $prefix.'!'.$token.$pl.$suffix;
+				if ($uncacheable) {
+					$result['pl']['!'.$pl] = $uncached_prefix.$pl.$suffix;
 					$result['vl']['!'.$pl] = $v;
 				}
 			}
@@ -255,7 +255,7 @@ class pdoTools {
 
 		// Processing system placeholders
 		if (strpos($content, '[[') !== false) {
-			$content = $this->fastProcess($content, $fastMode);
+			$content = $this->fastProcess($content, $fastMode, $fastMode);
 		}
 
 		// Processing chunk if needed
@@ -305,10 +305,11 @@ class pdoTools {
 	 *
 	 * @param string $content
 	 * @param bool $cutUnprocessed
+	 * @param bool $processUncacheable
 	 *
 	 * @return mixed
 	 */
-	public function fastProcess($content, $cutUnprocessed = true) {
+	public function fastProcess($content, $cutUnprocessed = true, $processUncacheable = true) {
 		$matches = array();
 		$this->modx->getParser()->collectElementTags($content, $matches);
 
@@ -316,7 +317,7 @@ class pdoTools {
 
 		$src = $dst = $unprocessed = array();
 		foreach ($matches as $v) {
-			if (strpos($v[1], ':') !== false || strpos($v[1], '`') !== false) {
+			if (strpos($v[1], ':') !== false || strpos($v[1], '`') !== false || ($v[1][0] == '!' && !$processUncacheable)) {
 				$unprocessed[] = $v[0];
 				continue;
 			}
