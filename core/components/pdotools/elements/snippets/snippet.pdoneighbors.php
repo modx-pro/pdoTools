@@ -63,15 +63,34 @@ $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 
 $rows = $pdoFetch->run();
-$output = array(
-	'prev' => array(),
-	'up' => '',
-	'next' => array(),
-);
 
 $found = false;
-$prev = $next = array();
+$tmp = array('prev' => array(),'up' => array(),'next' => array());
 if (!empty($rows)) {
+	foreach ($rows as $row) {
+		if ($row['id'] == $resource->id) {
+			$found = true;
+		}
+		elseif ($row['id'] == $resource->parent) {
+			$tmp['up'][] = $row;
+		}
+		elseif ($found) {
+			$tmp['next'][] = $row;
+			if (count($tmp['next']) >= $limit) {break;}
+		}
+		else {
+			$tmp['prev'][] = $row;
+		}
+	}
+}
+$tmp['prev'] = array_reverse($tmp['prev']);
+$pdoFetch->addTime('Resources sorted');
+
+$output = array('prev' => array(),'up' => array(),'next' => array());
+foreach ($tmp as $type => $rows) {
+	$tpl = ${'tpl'.ucfirst($type)};
+
+	$i = 0;
 	foreach ($rows as $row) {
 		if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
 		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
@@ -83,32 +102,13 @@ if (!empty($rows)) {
 			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
 		}
 
-		if ($row['id'] == $resource->id) {
-			$found = true;
-		}
-		elseif ($row['id'] == $resource->parent) {
-			$output['up'] = !empty($tplUp)
-				? $pdoFetch->getChunk($tplUp, $row, $fastMode)
-				: $pdoFetch->getChunk('', $row);
-		}
-		elseif ($found) {
-			$next[] = $row;
-		}
-		else {
-			$prev[] = $row;
-		}
-	}
-}
+		$output[$type][] = !empty($tpl)
+			? $pdoFetch->getChunk($tpl, $row, $fastMode)
+			: $pdoFetch->getChunk('', $row);
 
-while (count($output['prev']) < $limit && !empty($prev)) {
-	$output['prev'][] = !empty($tplPrev)
-		? $pdoFetch->getChunk($tplPrev, array_pop($prev), $fastMode)
-		: $pdoFetch->getChunk('', array_pop($prev));
-}
-while (count($output['next']) < $limit && !empty($next)) {
-	$output['next'][] = !empty($tplNext)
-		? $pdoFetch->getChunk($tplNext, array_shift($next), $fastMode)
-		: $pdoFetch->getChunk('', array_shift($next));
+		$i++;
+		if ($i >= $limit) {break;}
+	}
 }
 $pdoFetch->addTime('Chunks processed');
 
@@ -116,8 +116,10 @@ $log = '';
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 	$log .= '<pre class="pdoNeighborsLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
-$output['prev'] = implode($outputSeparator, $output['prev']);
-$output['next'] = implode($outputSeparator, $output['next']);
+
+foreach ($output as &$row) {
+	$row = implode($outputSeparator, $row);
+}
 
 if (!empty($toSeparatePlaceholders)) {
 	$output['log'] = $log;
