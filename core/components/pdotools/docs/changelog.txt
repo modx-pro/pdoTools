@@ -1,5 +1,11 @@
 Changelog for pdoTools.
 
+1.9.0 beta
+==============
+- Improved method pdoTools::getChunk().
+- Improved method pdoTools::parseChunk().
+- Improved method pdoTools::fastProcess().
+
 1.8.9 pl4
 ==============
 - Added german lexicon.
