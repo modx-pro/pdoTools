@@ -23,6 +23,8 @@ class pdoTools {
 	/** @var boolean $preparing Specifies that now is the preparation */
 	protected $preparing = false;
 	protected $start = 0;
+	/** @var pdoParser $parser */
+	public $parser;
 
 
 	/**
@@ -34,6 +36,24 @@ class pdoTools {
 		$this->time = $this->start = microtime(true);
 
 		$this->setConfig($config);
+	}
+
+
+	/**
+	 * Loads pdoTools parser
+	 *
+	 * @return pdoParser
+	 */
+	protected function getParser() {
+		$this->parser = $this->modx->getParser();
+		if (!($this->parser instanceof pdoParser)) {
+			if (!class_exists('pdoParser')) {
+				require_once dirname(__FILE__) . '/pdoparser.class.php';
+			}
+			$this->parser = new pdoParser($this->modx);
+		}
+
+		return $this->parser;
 	}
 
 
@@ -237,6 +257,8 @@ class pdoTools {
 				: '';
 		}
 
+		$content = $chunk['content'];
+
 		// Processing quick placeholders
 		if (!empty($chunk['placeholders'])) {
 			$pl = $chunk['placeholders'];
@@ -245,13 +267,17 @@ class pdoTools {
 					$pl[$k] = '';
 				}
 			}
-			$pl = $this->makePlaceholders($pl);
-			$chunk['content'] = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
+			if (!empty($pl)) {
+				$pl = $this->makePlaceholders($pl);
+				$content = str_replace($pl['pl'], $pl['vl'], $content);
+			}
 		}
 
 		// Processing given placeholders
-		$pl = $this->makePlaceholders($properties);
-		$content = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
+		if (!empty($properties)) {
+			$pl = $this->makePlaceholders($properties);
+			$content = str_replace($pl['pl'], $pl['vl'], $content);
+		}
 
 		// Processing system placeholders
 		if (strpos($content, '[[') !== false) {
@@ -304,70 +330,30 @@ class pdoTools {
 	 * Fast processing of MODX tags.
 	 *
 	 * @param string $content
-	 * @param bool $cutUnprocessed
 	 * @param bool $processUncacheable
+	 * @param bool $fastMode
 	 *
 	 * @return mixed
 	 */
-	public function fastProcess($content, $cutUnprocessed = true, $processUncacheable = true) {
+	public function fastProcess($content, $processUncacheable = true, $fastMode = true) {
 		$matches = array();
-		$this->modx->getParser()->collectElementTags($content, $matches);
+		$this->getParser()->collectElementTags($content, $matches);
 
-		$scheme = $this->modx->getOption('link_tag_scheme', -1, true);
+		$unprocessed = $pl = $vl = array();
+		foreach ($matches as $tag) {
+			$tmp = $this->parser->processTag($tag, $processUncacheable, $fastMode);
 
-		$src = $dst = $unprocessed = array();
-		foreach ($matches as $v) {
-			if (strpos($v[1], ':') !== false || strpos($v[1], '`') !== false || ($v[1][0] == '!' && !$processUncacheable)) {
-				$unprocessed[] = $v[0];
-				continue;
+			if ($tmp === $tag[0]) {
+				$unprocessed[] = $tmp;
 			}
-			$processed = false;
-
-			$value = preg_replace('/^(?:!|)[%|~|+|*]+/', '', $v[1]);
-			$token = $v[1][0] == '!' ? $v[1][1] : $v[1][0];
-			switch ($token) {
-				// Lexicon
-				case '%':
-					$tmp = $this->modx->lexicon($value);
-					if ($tmp != $value) {
-						$src[] = $v[0];
-						$dst[] = $tmp;
-						$processed = true;
-					}
-					break;
-				// Link
-				case '~':
-					if (is_numeric($value) && $tmp = $this->modx->makeUrl($value, '', '', $scheme)) {
-						$src[] = $v[0];
-						$dst[] = $tmp;
-						$processed = true;
-					}
-					break;
-				// System setting
-				case '+':
-					if (isset($this->modx->placeholders['+'.$value])) {
-						$src[] = $v[0];
-						$dst[] = $this->modx->placeholders['+'.$value];
-						$processed = true;
-					}
-					break;
-				// Resource field
-				case '*':
-					if (isset($this->modx->resource) && isset($this->modx->resource->_fields[$value])) {
-						$src[] = $v[0];
-						$dst[] = $this->modx->resource->_fields[$value];
-						$processed = true;
-					}
-					break;
-			}
-
-			if (!$processed) {
-				$unprocessed[] = $v[0];
+			else {
+				$pl = $tag[0];
+				$vl = $tmp;
 			}
 		}
 
-		$content = str_replace($src, $dst, $content);
-		if ($cutUnprocessed) {
+		$content = str_replace($pl, $vl, $content);
+		if ($fastMode) {
 			$content = str_replace($unprocessed, '', $content);
 		}
 

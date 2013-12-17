@@ -13,6 +13,18 @@ $tmp = array(
 		'value' => 'pdotools.pdofetch',
 		'key' => 'pdoFetch.class'
 	),
+	/*
+	'parser_class' => array(
+		'xtype' => 'textfield',
+		'value' => 'pdoParser',
+		'key' => 'parser_class'
+	),
+	'parser_class_path' => array(
+		'xtype' => 'textfield',
+		'value' => '{core_path}components/pdotools/model/pdotools/',
+		'key' => 'parser_class_path'
+	),
+	*/
 );
 
 foreach ($tmp as $k => $v) {
