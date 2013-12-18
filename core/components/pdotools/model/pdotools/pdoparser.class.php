@@ -12,11 +12,10 @@ class pdoParser extends modParser {
 	 *
 	 * @param string $tag A full tag string parsed from content.
 	 * @param boolean $processUncacheable
-	 * @param boolean $fastMode Return unprocessed tags, or send them to modParser?
 	 *
 	 * @return mixed The output of the processed element represented by the specified tag.
 	 */
-	public function processTag($tag, $processUncacheable = true, $fastMode = false) {
+	public function processTag($tag, $processUncacheable = true) {
 		$outerTag = $tag[0];
 		$innerTag = $tag[1];
 		$processed = false;
@@ -96,13 +95,12 @@ class pdoParser extends modParser {
 			if ($this->modx->getDebug() === true) {
 				$this->modx->log(xPDO::LOG_LEVEL_DEBUG, "Processing {$outerTag} as {$innerTag}:\n" . print_r($output, 1) . "\n\n");
 			}
-			return $output;
 		}
 		else {
-			return $fastMode
-				? $outerTag
-				: parent::processTag($tag, $processUncacheable);
+			$output = parent::processTag($tag, $processUncacheable);
 		}
+
+		return $output;
 	}
 
 }

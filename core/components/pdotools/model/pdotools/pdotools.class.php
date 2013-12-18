@@ -279,17 +279,17 @@ class pdoTools {
 			$content = str_replace($pl['pl'], $pl['vl'], $content);
 		}
 
-		// Processing system placeholders
+		// Processing other placeholders
 		if (strpos($content, '[[') !== false) {
-			$content = $this->fastProcess($content, $fastMode, $fastMode);
-		}
-
-		// Processing chunk if needed
-		if (strpos($content, '[[') !== false) {
-			$chunk['object']->_cacheable = false;
-			$chunk['object']->_processed = false;
-			$chunk['object']->_content = '';
-			$content = $chunk['object']->process($properties, $content);
+			if ($fastMode) {
+				$content = $this->fastProcess($content, true);
+			}
+			else {
+				$chunk['object']->_cacheable = false;
+				$chunk['object']->_processed = false;
+				$chunk['object']->_content = '';
+				$content = $chunk['object']->process($properties, $content);
+			}
 		}
 
 		return $content;
@@ -331,31 +331,28 @@ class pdoTools {
 	 *
 	 * @param string $content
 	 * @param bool $processUncacheable
-	 * @param bool $fastMode
 	 *
 	 * @return mixed
 	 */
-	public function fastProcess($content, $processUncacheable = true, $fastMode = true) {
+	public function fastProcess($content, $processUncacheable = true) {
 		$matches = array();
 		$this->getParser()->collectElementTags($content, $matches);
 
 		$unprocessed = $pl = $vl = array();
 		foreach ($matches as $tag) {
-			$tmp = $this->parser->processTag($tag, $processUncacheable, $fastMode);
+			$tmp = $this->parser->processTag($tag, $processUncacheable);
 
 			if ($tmp === $tag[0]) {
 				$unprocessed[] = $tmp;
 			}
 			else {
-				$pl = $tag[0];
-				$vl = $tmp;
+				$pl[] = $tag[0];
+				$vl[] = $tmp;
 			}
 		}
 
 		$content = str_replace($pl, $vl, $content);
-		if ($fastMode) {
-			$content = str_replace($unprocessed, '', $content);
-		}
+		$content = str_replace($unprocessed, '', $content);
 
 		return $content;
 	}
