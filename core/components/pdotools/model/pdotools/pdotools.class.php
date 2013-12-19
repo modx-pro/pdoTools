@@ -675,14 +675,17 @@ class pdoTools {
 						}
 					}
 
-					$key = $this->config['tvPrefix'].$templateVar->name;
+					$tvPrefix = !empty($this->config['tvPrefix']) ?
+						trim($this->config['tvPrefix'])
+						: '';
+					$key = $tvPrefix . $templateVar->name;
 					if (isset($process[$tv])) {
 						$row[$key] = $templateVar->renderOutput($row['id']);
 					}
 					elseif (isset($prepare[$tv]) && is_string($row[$key]) && strpos($row[$key],'://') === false && method_exists($templateVar, 'prepareOutput')) {
 						if ($source = $templateVar->sourceCache) {
 							if ($source['class_key'] == 'modFileMediaSource') {
-								if (!empty($source['baseUrl'])) {
+								if (!empty($source['baseUrl']) && !empty($row[$key])) {
 									$row[$key] = $source['baseUrl'].$row[$key];
 									if (isset($source['baseUrlRelative']) && !empty($source['baseUrlRelative'])) {
 										$row[$key] = $this->modx->context->getOption('base_url',null,MODX_BASE_URL).$row[$key];

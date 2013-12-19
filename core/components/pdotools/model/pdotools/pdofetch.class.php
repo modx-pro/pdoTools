@@ -434,7 +434,9 @@ class pdoFetch extends pdoTools {
 		$time = microtime(true);
 
 		$includeTVs = $this->config['includeTVs'];
-		$tvPrefix = $this->config['tvPrefix'];
+		$tvPrefix = !empty($this->config['tvPrefix']) ?
+			trim($this->config['tvPrefix'])
+			: '';
 
 		if (!empty($this->config['includeTVList']) && (empty($includeTVs) || is_numeric($includeTVs))) {
 			$this->config['includeTVs'] = $includeTVs = $this->config['includeTVList'];

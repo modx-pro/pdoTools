@@ -9,6 +9,7 @@ Changelog for pdoTools.
 - Accelerated snippet pdoNeighbors.
 - Fixed bug in pdoUsers when usersgroups was specified by names.
 - Added pdoParser.
+- [#24] Fixed prepareTVs and empty tvPrefix.
 
 1.8.9 pl4
 ==============
