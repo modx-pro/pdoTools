@@ -47,8 +47,8 @@ foreach ($tmp as $k => $p) {
 				else {${$k.'_in'}[] = abs($v);}
 			}
 			else {
-				if ($v[0] == '-') {$fetch_out[] = abs($v);}
-				else {$fetch_in[] = abs($v);}
+				if ($v[0] == '-') {$fetch_out[] = $v;}
+				else {$fetch_in[] = $v;}
 			}
 		}
 
