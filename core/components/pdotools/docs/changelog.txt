@@ -10,6 +10,7 @@ Changelog for pdoTools.
 - Fixed bug in pdoUsers when usersgroups was specified by names.
 - Added pdoParser.
 - [#24] Fixed prepareTVs and empty tvPrefix.
+- [#23] [pdoResources] Ability to return ids to placeholder.
 
 1.8.9 pl4
 ==============
