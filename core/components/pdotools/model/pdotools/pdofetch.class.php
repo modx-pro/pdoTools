@@ -849,7 +849,7 @@ class pdoFetch extends pdoTools {
 
 
 	/**
-	 * Simple and quick replacement for modX::getObject()
+	 * PDO replacement for modX::getObject()
 	 *
 	 * @param $class
 	 * @param string $where
@@ -858,58 +858,62 @@ class pdoFetch extends pdoTools {
 	 * @return array
 	 */
 	public function getObject($class, $where = '', $config = array()) {
-		if (!empty($config['loadModels'])) {$this->config['loadModels'] = $config['loadModels'];}
-		$this->loadModels();
+		/** @var pdoFetch $instance */
+		$instance = new pdoFetch($this->modx, $config);
+		
+		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
+		$instance->loadModels();
 
 		$config['class'] = $class;
 		$config['limit'] = 1;
 		if (!empty($where)) {
 			unset($config['where']);
 			if (is_numeric($where)) {
-				$where = array($this->modx->getPK($class) => (integer) $where);
+				$where = array($instance->modx->getPK($class) => (integer) $where);
 			}
 			elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
-				$where = $this->modx->fromJSON($where);
+				$where = $instance->modx->fromJSON($where);
 			}
 			if (is_array($where)) {
 				$config['where'] = $where;
 			}
 		}
 
-		$this->setConfig($config, true);
-		$this->makeQuery();
-		$this->addTVs();
-		$this->addJoins();
-		$this->addGrouping();
-		$this->addSelects();
-		$this->addWhere();
+		$instance->setConfig($config, true);
+		$instance->makeQuery();
+		$instance->addTVs();
+		$instance->addJoins();
+		$instance->addGrouping();
+		$instance->addSelects();
+		$instance->addWhere();
 
-		$this->query->prepare();
-		$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
+		$instance->query->prepare();
+		$instance->addTime('SQL prepared <small>"'.$instance->query->toSql().'"</small>');
 
 		$row = array();
 		$tstart = microtime(true);
-		if ($this->query->stmt->execute()) {
-			$this->modx->queryTime += microtime(true) - $tstart;
-			$this->modx->executedQueries++;
-			$row = $this->query->stmt->fetch(PDO::FETCH_ASSOC);
+		if ($instance->query->stmt->execute()) {
+			$instance->modx->queryTime += microtime(true) - $tstart;
+			$instance->modx->executedQueries++;
+			$row = $instance->query->stmt->fetch(PDO::FETCH_ASSOC);
 
-			$tmp = $this->prepareRows(array($row));
+			$tmp = $instance->prepareRows(array($row));
 			$row = $tmp[0];
 		}
 		else {
-			$errors = $this->query->stmt->errorInfo();
-			$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load object "'.$class.'": Error '.$errors[0].': '.$errors[2]);
-			$this->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
+			$errors = $instance->query->stmt->errorInfo();
+			$instance->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load object "'.$class.'": Error '.$errors[0].': '.$errors[2]);
+			$instance->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
 
 		}
 
+		$this->modx->setPlaceholder('pdoTools.log', $instance->getTime());
 		return $row;
 	}
 
 
 	/**
-	 * Simple and quick replacement for modX::getCollection()
+	 * PDO replacement for modX::getCollection()
 	 *
 	 * @param $class
 	 * @param string $where
@@ -918,59 +922,63 @@ class pdoFetch extends pdoTools {
 	 * @return array
 	 */
 	public function getCollection($class, $where = '', $config = array()) {
-		if (!empty($config['loadModels'])) {$this->config['loadModels'] = $config['loadModels'];}
-		$this->loadModels();
+		/** @var pdoFetch $instance */
+		$instance = new pdoFetch($this->modx, $config);
+
+		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
+		$instance->loadModels();
 
 		$config['class'] = $class;
 		$config['limit'] = !isset($config['limit']) ? 0 : (integer) $config['limit'];
 		if (!empty($where)) {
 			unset($config['where']);
 			if (is_numeric($where)) {
-				$where = array($this->modx->getPK($class) => (integer) $where);
+				$where = array($instance->modx->getPK($class) => (integer) $where);
 			}
 			elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
-				$where = $this->modx->fromJSON($where);
+				$where = $instance->modx->fromJSON($where);
 			}
 			if (is_array($where)) {
 				$config['where'] = $where;
 			}
 		}
 
-		$this->setConfig($config, true);
-		$this->makeQuery();
-		$this->addTVs();
-		$this->addJoins();
-		$this->addGrouping();
-		$this->addSelects();
-		$this->addWhere();
-		$this->prepareQuery();
+		$instance->setConfig($config, true);
+		$instance->makeQuery();
+		$instance->addTVs();
+		$instance->addJoins();
+		$instance->addGrouping();
+		$instance->addSelects();
+		$instance->addWhere();
+		$instance->prepareQuery();
 
-		$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
+		$instance->addTime('SQL prepared <small>"'.$instance->query->toSql().'"</small>');
 
 		$rows = array();
 		$tstart = microtime(true);
-		if ($this->query->stmt->execute()) {
-			$this->modx->queryTime += microtime(true) - $tstart;
-			$this->modx->executedQueries++;
-			$rows = $this->query->stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ($instance->query->stmt->execute()) {
+			$instance->modx->queryTime += microtime(true) - $tstart;
+			$instance->modx->executedQueries++;
+			$rows = $instance->query->stmt->fetchAll(PDO::FETCH_ASSOC);
 
-			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
+			$q = $instance->modx->prepare("SELECT FOUND_ROWS();");
 			$tstart = microtime(true);
 			$q->execute();
-			$this->modx->queryTime += microtime(true) - $tstart;
-			$this->modx->executedQueries++;
+			$instance->modx->queryTime += microtime(true) - $tstart;
+			$instance->modx->executedQueries++;
 			$total = $q->fetch(PDO::FETCH_COLUMN);
-			$this->addTime('Total rows: <b>'.$total.'</b>');
+			$instance->addTime('Total rows: <b>'.$total.'</b>');
 
-			$rows = $this->checkPermissions($rows);
-			$rows = $this->prepareRows($rows);
+			$rows = $instance->checkPermissions($rows);
+			$rows = $instance->prepareRows($rows);
 		}
 		else {
-			$errors = $this->query->stmt->errorInfo();
-			$this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load collection of "'.$class.'": Error '.$errors[0].': '.$errors[2]);
-			$this->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
+			$errors = $instance->query->stmt->errorInfo();
+			$instance->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load collection of "'.$class.'": Error '.$errors[0].': '.$errors[2]);
+			$instance->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
 		}
 
+		$this->modx->setPlaceholder('pdoTools.log', $instance->getTime());
 		return $rows;
 	}
 
