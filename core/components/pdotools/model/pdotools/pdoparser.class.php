@@ -21,13 +21,15 @@ class pdoParser extends modParser {
 		$processed = false;
 		$output = '';
 
-		// Uncacheable tag
-		if ($innerTag[0] == '!' && !$processUncacheable) {
-			return $outerTag;
-		}
 		// Disabled tag
-		elseif ($innerTag[0] == '-') {
+		if ($innerTag[0] == '-') {
 			return '';
+		}
+		// Uncacheable tag
+		elseif ($innerTag[0] == '!' && !$processUncacheable) {
+			$this->processElementTags($outerTag, $innerTag, $processUncacheable);
+			$outerTag = '[['.$innerTag.']]';
+			return $outerTag;
 		}
 		// We processing only certain types of tags without filters and parameters
 		elseif (strpos($innerTag, ':') == false && strpos($innerTag, '`') === false && preg_match('/^(?:!|)[-|%|~|+|*]+/', $innerTag, $matches)) {
