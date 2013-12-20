@@ -13,6 +13,7 @@ class pdoTools {
 		'snippet' => array(),
 		'tv' => array(),
 		'data' => array(),
+		'resource' => array(),
 	);
 	/** @var integer $idx Index of iterator of rows processing */
 	public $idx = 1;

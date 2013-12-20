@@ -9,7 +9,7 @@ Changelog for pdoTools.
 - Accelerated snippet pdoNeighbors.
 - Fixed bug in pdoUsers when usersgroups was specified by names.
 - getObject and getCollection() runs in separate instance.
-- Added pdoParser.
+- Added pdoParser with FastField tags.
 - [#24] Fixed prepareTVs and empty tvPrefix.
 - [#23] [pdoResources] Ability to return ids to placeholder.
 
