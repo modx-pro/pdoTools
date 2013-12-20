@@ -68,10 +68,13 @@ class pdoTools {
 		$this->config = array_merge(array(
 			'fastMode' => false,
 			'nestedChunkPrefix' => 'pdotools_',
+			'offset' => 0,
 
 			'checkPermissions' => '',
 			'loadModels' => '',
 			'prepareSnippet' => '',
+			'prepareTVs' => '',
+			'processTVs' => '',
 
 			'outputSeparator' => "\n",
 			'decodeJSON' => true,

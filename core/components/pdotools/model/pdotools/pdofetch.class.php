@@ -18,7 +18,6 @@ class pdoFetch extends pdoTools {
 			array_merge(array(
 				'class' => 'modResource',
 				'limit' => 10,
-				'offset' => 0,
 				'sortby' => '',
 				'sortdir' => '',
 				'groupby' => '',
