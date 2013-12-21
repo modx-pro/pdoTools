@@ -48,8 +48,13 @@ class pdoParser extends modParser {
 		}
 		// We processing only certain types of tags without filters and parameters
 		elseif (strpos($innerTag, ':') == false && strpos($innerTag, '`') === false && preg_match('/^(?:!|)[-|%|~|+|*|#]+/', $innerTag, $matches)) {
-			$innerTag = str_replace($matches[0], '', $innerTag);
-			$token = ltrim($matches[0], '!');
+			if (strpos($innerTag, '[[') !== false) {
+				$this->processElementTags($outerTag, $innerTag, $processUncacheable);
+				$outerTag = '[['.$innerTag.']]';
+			}
+			$innerTag = ltrim($innerTag, '!');
+			$token = $innerTag[0];
+			$innerTag = substr($innerTag, 1);
 			switch ($token) {
 				// Lexicon tag
 				case '%':
@@ -69,16 +74,11 @@ class pdoParser extends modParser {
 					}
 					break;
 				// Usual placeholder
+				// and
+				// System setting
 				case '+':
 					if (isset($this->modx->placeholders[$innerTag])) {
 						$output = $this->modx->placeholders[$innerTag];
-						$processed = true;
-					}
-					break;
-				// System setting
-				case '++':
-					if (isset($this->modx->placeholders['+'.$innerTag])) {
-						$output = $this->modx->placeholders['+'.$innerTag];
 						$processed = true;
 					}
 					break;
