@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.9.0 beta1
+1.9.0 rc
 ==============
 - Improved method pdoTools::getChunk().
 - Improved method pdoTools::parseChunk().
@@ -10,6 +10,7 @@ Changelog for pdoTools.
 - Fixed bug in pdoUsers when usersgroups was specified by names.
 - getObject and getCollection() runs in separate instance.
 - Added pdoParser with FastField tags.
+- [pdoPage] Changed default value of parameter "totalVar" due to issues.
 - [#24] Fixed prepareTVs and empty tvPrefix.
 - [#23] [pdoResources] Ability to return ids to placeholder.
 

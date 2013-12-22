@@ -30,7 +30,7 @@ $tmp = array(
 	),
 	'totalVar' => array(
 		'type' => 'textfield',
-		'value' => 'total',
+		'value' => 'page.total',
 	),
 	'pageLimit' => array(
 		'type' => 'numberfield',
