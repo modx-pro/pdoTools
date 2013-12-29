@@ -221,7 +221,7 @@ class pdoTools {
 		$uncached_prefix = str_replace('[[', '[[!', $prefix);
 		foreach ($array as $k => $v) {
 			if (is_array($v)) {
-				$result = array_merge_recursive($result, $this->makePlaceholders($v, $k.'.', $prefix, $suffix, $uncacheable));
+				$result = array_merge_recursive($result, $this->makePlaceholders($v, $plPrefix . $k.'.', $prefix, $suffix, $uncacheable));
 			}
 			else {
 				$pl = $plPrefix.$k;

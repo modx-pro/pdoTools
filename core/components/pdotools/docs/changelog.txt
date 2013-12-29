@@ -13,6 +13,8 @@ Changelog for pdoTools.
 - [pdoPage] Changed default value of parameter "totalVar" due to issues.
 - [#24] Fixed prepareTVs and empty tvPrefix.
 - [#23] [pdoResources] Ability to return ids to placeholder.
+- Fixed warning when getObject returns false.
+- Fixed placeholders prefix in recursive makePlaceholders.
 
 1.8.9 pl4
 ==============

@@ -894,10 +894,13 @@ class pdoFetch extends pdoTools {
 		if ($instance->query->stmt->execute()) {
 			$instance->modx->queryTime += microtime(true) - $tstart;
 			$instance->modx->executedQueries++;
-			$row = $instance->query->stmt->fetch(PDO::FETCH_ASSOC);
-
-			$tmp = $instance->prepareRows(array($row));
-			$row = $tmp[0];
+			if (!$row = $instance->query->stmt->fetch(PDO::FETCH_ASSOC)) {
+				$row = array();
+			}
+			else {
+				$tmp = $instance->prepareRows(array($row));
+				$row = $tmp[0];
+			}
 		}
 		else {
 			$errors = $instance->query->stmt->errorInfo();
@@ -958,18 +961,21 @@ class pdoFetch extends pdoTools {
 		if ($instance->query->stmt->execute()) {
 			$instance->modx->queryTime += microtime(true) - $tstart;
 			$instance->modx->executedQueries++;
-			$rows = $instance->query->stmt->fetchAll(PDO::FETCH_ASSOC);
+			if (!$rows = $instance->query->stmt->fetchAll(PDO::FETCH_ASSOC)) {
+				$rows = array();
+			}
+			else {
+				$q = $instance->modx->prepare("SELECT FOUND_ROWS();");
+				$tstart = microtime(true);
+				$q->execute();
+				$instance->modx->queryTime += microtime(true) - $tstart;
+				$instance->modx->executedQueries++;
+				$total = $q->fetch(PDO::FETCH_COLUMN);
+				$instance->addTime('Total rows: <b>'.$total.'</b>');
 
-			$q = $instance->modx->prepare("SELECT FOUND_ROWS();");
-			$tstart = microtime(true);
-			$q->execute();
-			$instance->modx->queryTime += microtime(true) - $tstart;
-			$instance->modx->executedQueries++;
-			$total = $q->fetch(PDO::FETCH_COLUMN);
-			$instance->addTime('Total rows: <b>'.$total.'</b>');
-
-			$rows = $instance->checkPermissions($rows);
-			$rows = $instance->prepareRows($rows);
+				$rows = $instance->checkPermissions($rows);
+				$rows = $instance->prepareRows($rows);
+			}
 		}
 		else {
 			$errors = $instance->query->stmt->errorInfo();
