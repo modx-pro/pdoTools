@@ -6,8 +6,6 @@ class pdoMenu extends pdoFetch {
 	protected $tree = array();
 	/** @var array $parentTree */
 	protected $parentTree = array();
-	/** @var modResource $currentResource */
-	protected $currentResource = null;
 	/** @var int $level */
 	protected $level = 1;
 
@@ -46,17 +44,15 @@ class pdoMenu extends pdoFetch {
 			$config['hereId'] = $modx->resource->id;
 		}
 
-		if ($this->currentResource = $modx->getObject('modResource', $config['hereId'])) {
-			$tmp = $modx->getParentIds(
-				$this->currentResource->id,
-				100,
-				array('context' => $this->currentResource->context_key)
-			);
+		$parent = parent::__construct($modx, $config);
+
+		if ($currentResource = parent::getObject('modResource', $config['hereId'])) {
+			$tmp = $modx->getParentIds($currentResource['id'], 100, array('context' => $currentResource['context_key']));
 			$tmp[] = $config['hereId'];
 			$this->parentTree = array_flip($tmp);
 		}
 
-		return parent::__construct($modx, $config);
+		return $parent;
 	}
 
 
@@ -119,7 +115,7 @@ class pdoMenu extends pdoFetch {
 				$children .= $this->templateBranch($v);
 			}
 			$this->level--;
-			$row['children'] = count($row['children']);
+			$row['children'] = $count;
 		}
 		else {
 			$row['children'] = 0;
@@ -205,7 +201,7 @@ class pdoMenu extends pdoFetch {
 		if (!empty($this->config['levelClass'])) {
 			$classes[] = $this->config['levelClass'] . $row['level'];
 		}
-		if ($row['isfolder'] && !empty($this->config['parentClass']) && ($row['level'] < $this->config['level'] || empty($this->config['level']))) {
+		if ($row['children'] && !empty($this->config['parentClass']) && ($row['level'] < $this->config['level'] || empty($this->config['level']))) {
 			$classes[] = $this->config['parentClass'];
 		}
 		if ($this->isHere($row['id']) && !empty($this->config['hereClass'])) {
@@ -233,22 +229,22 @@ class pdoMenu extends pdoFetch {
 		if ( $row['level'] == 1 && !empty($this->config['tplStart']) && !empty($this->config['displayStart'])) {
 			$tpl = 'tplStart';
 		}
-		elseif ($row['id'] == $this->config['hereId'] && !empty($this->config['tplParentRowHere']) && $row['isfolder'] && ($row['level'] < $this->config['level'] || empty($this->config['level'])) && !empty($row['children'])) {
+		elseif ($row['children'] && $row['id'] == $this->config['hereId'] && !empty($this->config['tplParentRowHere'])) {
 			$tpl = 'tplParentRowHere';
 		}
-		elseif ($row['id'] == $this->config['hereId'] && !empty($this->config['tplInnerHere']) && $row['level'] > 1) {
+		elseif ($row['level'] > 1 && $row['id'] == $this->config['hereId'] && !empty($this->config['tplInnerHere'])) {
 			$tpl = 'tplInnerHere';
 		}
 		elseif ($row['id'] == $this->config['hereId'] && !empty($this->config['tplHere'])) {
 			$tpl = 'tplHere';
 		}
-		elseif ($row['isfolder'] && !empty($this->config['tplParentRowActive']) && ($row['level'] < $this->config['level'] || empty($this->config['level'])) && $this->isHere($row['id'])) {
+		elseif ($row['children'] && $this->isHere($row['id']) && !empty($this->config['tplParentRowActive'])) {
 			$tpl = 'tplParentRowActive';
 		}
-		elseif ($row['isfolder'] && !empty($this->config['tplCategoryFolders'])  && (empty($row['template']) || strpos($row['link_attributes'], 'rel="category"') != false) && ($row['level'] < $this->config['level'] || empty($this->config['level']))) {
+		elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->config['tplCategoryFolders'])) {
 			$tpl = 'tplCategoryFolders';
 		}
-		elseif ($row['isfolder'] && !empty($this->config['tplParentRow']) && ($row['level'] < $this->config['level'] || empty($this->config['level'])) && !empty($row['children'])) {
+		elseif ($row['children'] && !empty($this->config['tplParentRow'])) {
 			$tpl = 'tplParentRow';
 		}
 		elseif ($row['level'] > 1 && !empty($this->config['tplInnerRow'])) {

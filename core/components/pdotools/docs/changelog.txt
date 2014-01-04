@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.0 rc1
+==============
+- [pdoMenu] Chunks of parents and categories are now depends on the descendants and ignores parameter isfolder.
+
 1.9.0 rc
 ==============
 - Improved method pdoTools::getChunk().

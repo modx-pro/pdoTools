@@ -68,7 +68,6 @@ else {
 		$scriptProperties['includeParents'] = 1;
 		$scriptProperties['displayStart'] = 0;
 	}
-
 }
 
 if (!empty($displayStart)) {$scriptProperties['includeParents'] = 1;}
