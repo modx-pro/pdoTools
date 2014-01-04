@@ -17,12 +17,34 @@ $resource = ($id == $modx->resource->id)
 	: $modx->getObject($class, $id);
 if (!$resource) {return '';}
 
-$where = array(
-	array(
-		$class.'.parent' => $resource->parent,
-		'OR:'.$class.'.id:=' => $resource->parent,
-	)
-);
+// We need to determine ids of neighbors
+$params = $scriptProperties;
+$params['select'] = 'id';
+$params['limit'] = 0;
+$ids = $pdoFetch->getCollection('modResource', array('parent' => $resource->parent), $params);
+$found = false;
+$prev = $next = array();
+foreach ($ids as $v) {
+	if ($v['id'] == $id) {
+		$found = true;
+		continue;
+	}
+	elseif (!$found) {
+		$prev[] = $v['id'];
+	}
+	else {
+		$next[] = $v['id'];
+		if (count($next) >= $limit) {
+			break;
+		}
+	}
+}
+$prev = array_splice($prev, $limit * -1);
+$ids = array_merge($prev, $next, array($resource->parent));
+$pdoFetch->addTime('Found ids of neighbors: ' . implode(',', $ids));
+
+// Query conditions
+$where = array($class.'.id:IN' => $ids);
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
@@ -63,51 +85,35 @@ $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 
 $rows = $pdoFetch->run();
+$prev = array_flip($prev);
+$next = array_flip($next);
 
-$found = false;
-$tmp = array('prev' => array(),'up' => array(),'next' => array());
-if (!empty($rows)) {
-	foreach ($rows as $row) {
-		if ($row['id'] == $resource->id) {
-			$found = true;
-		}
-		elseif ($row['id'] == $resource->parent) {
-			$tmp['up'][] = $row;
-		}
-		elseif ($found) {
-			$tmp['next'][] = $row;
-			if (count($tmp['next']) >= $limit) {break;}
-		}
-		else {
-			$tmp['prev'][] = $row;
-		}
+$output = array('prev' => array(), 'up' => array(), 'next' => array());
+foreach ($rows as $row) {
+	if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
+	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+		$row['link'] = is_numeric(trim($row['content'], '[]~ '))
+			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
+			: $row['content'];
 	}
-}
-$tmp['prev'] = array_reverse($tmp['prev']);
-$pdoFetch->addTime('Resources sorted');
+	else {
+		$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+	}
 
-$output = array('prev' => array(),'up' => array(),'next' => array());
-foreach ($tmp as $type => $rows) {
-	$tpl = ${'tpl'.ucfirst($type)};
-
-	$i = 0;
-	foreach ($rows as $row) {
-		if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
-		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
-			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
-				: $row['content'];
-		}
-		else {
-			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
-		}
-
-		$output[$type][] = !empty($tpl)
-			? $pdoFetch->getChunk($tpl, $row, $fastMode)
+	if (isset($prev[$row['id']])) {
+		$output['prev'][] = !empty($tplPrev)
+			? $pdoFetch->getChunk($tplPrev, $row, $fastMode)
 			: $pdoFetch->getChunk('', $row);
-
-		$i++;
-		if ($i >= $limit) {break;}
+	}
+	elseif (isset($next[$row['id']])) {
+		$output['next'][] = !empty($tplNext)
+			? $pdoFetch->getChunk($tplNext, $row, $fastMode)
+			: $pdoFetch->getChunk('', $row);
+	}
+	else {
+		$output['up'][] = !empty($tplUp)
+			? $pdoFetch->getChunk($tplUp, $row, $fastMode)
+			: $pdoFetch->getChunk('', $row);
 	}
 }
 $pdoFetch->addTime('Chunks processed');
