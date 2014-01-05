@@ -1,8 +1,9 @@
 <?php
 /* @var array $scriptProperties */
 /* @var pdoFetch $pdoFetch */
-if (!$modx->getService('pdoFetch')) {return false;}
-$pdoFetch = new pdoFetch($modx, $scriptProperties);
+$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
+if (!$pdoClass = $modx->loadClass($fqn, '', false, true)) {return false;}
+$pdoFetch = new $pdoClass($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 
 // Default variables

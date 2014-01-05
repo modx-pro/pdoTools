@@ -1,7 +1,10 @@
 <?php
-require_once 'pdofetch.class.php';
 
-class pdoMenu extends pdoFetch {
+class pdoMenu {
+	/** @var modX $modx */
+	public $modx;
+	/** @var  pdoFetch|pdoTools $pdoTools  */
+	public $pdoTools;
 	/** @var array $tree */
 	protected $tree = array();
 	/** @var array $parentTree */
@@ -15,7 +18,7 @@ class pdoMenu extends pdoFetch {
 	 * @param array $config
 	 */
 	public function __construct(modX & $modx, $config = array()) {
-		$modx->lexicon->load('pdotools:pdomenu');
+		$this->modx = &$modx;
 
 		$config = array_merge(
 			array(
@@ -44,15 +47,22 @@ class pdoMenu extends pdoFetch {
 			$config['hereId'] = $modx->resource->id;
 		}
 
-		$parent = parent::__construct($modx, $config);
+		$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
+		if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
+			$this->pdoTools = new $pdoClass($modx, $config);
+		}
+		else {
+			@session_write_close();
+			exit('Fatal error: could not load pdoTools!');
+		}
 
-		if ($currentResource = parent::getObject('modResource', $config['hereId'])) {
+		if ($currentResource = $this->pdoTools->getObject('modResource', $config['hereId'])) {
 			$tmp = $modx->getParentIds($currentResource['id'], 100, array('context' => $currentResource['context_key']));
 			$tmp[] = $config['hereId'];
 			$this->parentTree = array_flip($tmp);
 		}
 
-		return $parent;
+		$modx->lexicon->load('pdotools:pdomenu');
 	}
 
 
@@ -69,7 +79,7 @@ class pdoMenu extends pdoFetch {
 		$output = '';
 
 		$idx = 1;
-		$this->addTime('Start template tree');
+		$this->pdoTools->addTime('Start template tree');
 		foreach ($tree as $row) {
 			if (empty($row['id'])) {continue;}
 			$this->level = 1;
@@ -78,18 +88,18 @@ class pdoMenu extends pdoFetch {
 
 			$output .= $this->templateBranch($row);
 		}
-		$this->addTime('End template tree');
+		$this->pdoTools->addTime('End template tree');
 
 		$row = $this->addWayFinderPlaceholders(
 			array(
 				'wrapper' => $output,
-				'classes' => ' class="'.$this->config['outerClass'].'"',
-				'classNames' => $this->config['outerClass'],
-				'classnames' => $this->config['outerClass'],
+				'classes' => ' class="'.$this->pdoTools->config['outerClass'].'"',
+				'classNames' => $this->pdoTools->config['outerClass'],
+				'classnames' => $this->pdoTools->config['outerClass'],
 			)
 		);
 
-		return $this->parseChunk($this->config['tplOuter'], $row);
+		return $this->pdoTools->parseChunk($this->pdoTools->config['tplOuter'], $row);
 	}
 
 
@@ -104,7 +114,7 @@ class pdoMenu extends pdoFetch {
 		$children = '';
 		$row['level'] = $this->level;
 
-		if (!empty($row['children']) && ($this->isHere($row['id']) || empty($this->config['hideSubMenus'])) && $this->checkResource($row['id'])) {
+		if (!empty($row['children']) && ($this->isHere($row['id']) || empty($this->pdoTools->config['hideSubMenus'])) && $this->checkResource($row['id'])) {
 			$idx = 1;
 			$this->level++;
 			$count = count($row['children']);
@@ -124,11 +134,11 @@ class pdoMenu extends pdoFetch {
 		if (!empty($children)) {
 			$pls = $this->addWayFinderPlaceholders(array(
 				'wrapper' => $children,
-				'classes' => ' class="'.$this->config['innerClass'].'"',
-				'classNames' => $this->config['innerClass'],
-				'classnames' => $this->config['innerClass'],
+				'classes' => ' class="'.$this->pdoTools->config['innerClass'].'"',
+				'classNames' => $this->pdoTools->config['innerClass'],
+				'classnames' => $this->pdoTools->config['innerClass'],
 			));
-			$row['wrapper'] = $this->parseChunk($this->config['tplInner'], $pls);
+			$row['wrapper'] = $this->pdoTools->parseChunk($this->pdoTools->config['tplInner'], $pls);
 		}
 		else {
 			$row['wrapper'] = '';
@@ -147,23 +157,23 @@ class pdoMenu extends pdoFetch {
 			$row['classNames'] = $row['classnames'] = $row['classes'] = '';
 		}
 
-		if (!empty($this->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+		if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
 			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $this->config['scheme'])
+				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $this->pdoTools->config['scheme'])
 				: $row['content'];
 		}
 		else {
-			$row['link'] = $this->modx->makeUrl($row['id'], $row['context_key'], '', $this->config['scheme']);
+			$row['link'] = $this->modx->makeUrl($row['id'], $row['context_key'], '', $this->pdoTools->config['scheme']);
 		}
 
-		$row['title'] = !empty($this->config['titleOfLinks'])
-			? $row[$this->config['titleOfLinks']]
+		$row['title'] = !empty($this->pdoTools->config['titleOfLinks'])
+			? $row[$this->pdoTools->config['titleOfLinks']]
 			: '';
 
 		$tpl = $this->getTpl($row);
 		$row = $this->addWayFinderPlaceholders($row);
 
-		return $this->getChunk($tpl, $row, $this->config['fastMode']);
+		return $this->pdoTools->getChunk($tpl, $row, $this->pdoTools->config['fastMode']);
 	}
 
 
@@ -189,29 +199,29 @@ class pdoMenu extends pdoFetch {
 	public function getClasses($row = array()) {
 		$classes = array();
 
-		if (!empty($this->config['rowClass'])) {
-			$classes[] = $this->config['rowClass'];
+		if (!empty($this->pdoTools->config['rowClass'])) {
+			$classes[] = $this->pdoTools->config['rowClass'];
 		}
-		if ($row['idx'] == 1 && !empty($this->config['firstClass'])) {
-			$classes[] = $this->config['firstClass'];
+		if ($row['idx'] == 1 && !empty($this->pdoTools->config['firstClass'])) {
+			$classes[] = $this->pdoTools->config['firstClass'];
 		}
-		elseif (!empty($row['last']) && !empty($this->config['lastClass'])) {
-			$classes[] = $this->config['lastClass'];
+		elseif (!empty($row['last']) && !empty($this->pdoTools->config['lastClass'])) {
+			$classes[] = $this->pdoTools->config['lastClass'];
 		}
-		if (!empty($this->config['levelClass'])) {
-			$classes[] = $this->config['levelClass'] . $row['level'];
+		if (!empty($this->pdoTools->config['levelClass'])) {
+			$classes[] = $this->pdoTools->config['levelClass'] . $row['level'];
 		}
-		if ($row['children'] && !empty($this->config['parentClass']) && ($row['level'] < $this->config['level'] || empty($this->config['level']))) {
-			$classes[] = $this->config['parentClass'];
+		if ($row['children'] && !empty($this->pdoTools->config['parentClass']) && ($row['level'] < $this->pdoTools->config['level'] || empty($this->pdoTools->config['level']))) {
+			$classes[] = $this->pdoTools->config['parentClass'];
 		}
-		if ($this->isHere($row['id']) && !empty($this->config['hereClass'])) {
-			$classes[] = $this->config['hereClass'];
+		if ($this->isHere($row['id']) && !empty($this->pdoTools->config['hereClass'])) {
+			$classes[] = $this->pdoTools->config['hereClass'];
 		}
-		if ($row['id'] == $this->config['hereId'] && !empty($this->config['selfClass'])) {
-			$classes[] = $this->config['selfClass'];
+		if ($row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['selfClass'])) {
+			$classes[] = $this->pdoTools->config['selfClass'];
 		}
-		if (!empty($row['class_key']) && $row['class_key'] == 'modWebLink' && !empty($this->config['weblinkClass'])) {
-			$classes[] = $this->config['weblinkClass'];
+		if (!empty($row['class_key']) && $row['class_key'] == 'modWebLink' && !empty($this->pdoTools->config['weblinkClass'])) {
+			$classes[] = $this->pdoTools->config['weblinkClass'];
 		}
 
 		return implode(' ', $classes);
@@ -226,35 +236,35 @@ class pdoMenu extends pdoFetch {
 	 * @return mixed
 	 */
 	public function getTpl($row = array()) {
-		if ( $row['level'] == 1 && !empty($this->config['tplStart']) && !empty($this->config['displayStart'])) {
+		if ( $row['level'] == 1 && !empty($this->pdoTools->config['tplStart']) && !empty($this->pdoTools->config['displayStart'])) {
 			$tpl = 'tplStart';
 		}
-		elseif ($row['children'] && $row['id'] == $this->config['hereId'] && !empty($this->config['tplParentRowHere'])) {
+		elseif ($row['children'] && $row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplParentRowHere'])) {
 			$tpl = 'tplParentRowHere';
 		}
-		elseif ($row['level'] > 1 && $row['id'] == $this->config['hereId'] && !empty($this->config['tplInnerHere'])) {
+		elseif ($row['level'] > 1 && $row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplInnerHere'])) {
 			$tpl = 'tplInnerHere';
 		}
-		elseif ($row['id'] == $this->config['hereId'] && !empty($this->config['tplHere'])) {
+		elseif ($row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplHere'])) {
 			$tpl = 'tplHere';
 		}
-		elseif ($row['children'] && $this->isHere($row['id']) && !empty($this->config['tplParentRowActive'])) {
+		elseif ($row['children'] && $this->isHere($row['id']) && !empty($this->pdoTools->config['tplParentRowActive'])) {
 			$tpl = 'tplParentRowActive';
 		}
-		elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->config['tplCategoryFolders'])) {
+		elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolders'])) {
 			$tpl = 'tplCategoryFolders';
 		}
-		elseif ($row['children'] && !empty($this->config['tplParentRow'])) {
+		elseif ($row['children'] && !empty($this->pdoTools->config['tplParentRow'])) {
 			$tpl = 'tplParentRow';
 		}
-		elseif ($row['level'] > 1 && !empty($this->config['tplInnerRow'])) {
+		elseif ($row['level'] > 1 && !empty($this->pdoTools->config['tplInnerRow'])) {
 			$tpl = 'tplInnerRow';
 		}
 		else {
 			$tpl = 'tpl';
 		}
 
-		return $this->config[$tpl];
+		return $this->pdoTools->config[$tpl];
 	}
 
 
@@ -266,12 +276,12 @@ class pdoMenu extends pdoFetch {
 	 * @return array
 	 */
 	public function addWayFinderPlaceholders($row = array()) {
-		$pl = $this->config['plPrefix'];
+		$pl = $this->pdoTools->config['plPrefix'];
 		foreach ($row as $k => $v) {
 			switch ($k) {
 				case 'id':
-					if (!empty($this->config['rowIdPrefix'])) {
-						$row[$pl.'id'] = ' id="'.$this->config['rowIdPrefix'].$v.'"';
+					if (!empty($this->pdoTools->config['rowIdPrefix'])) {
+						$row[$pl.'id'] = ' id="'.$this->pdoTools->config['rowIdPrefix'].$v.'"';
 					}
 					$row[$pl.'docid'] = $v;
 					break;
@@ -304,13 +314,13 @@ class pdoMenu extends pdoFetch {
 	 */
 	public function checkResource($id = 0) {
 		$tmp = array();
-		if (empty($this->config['showHidden'])) {
+		if (empty($this->pdoTools->config['showHidden'])) {
 			$tmp['hidemenu'] = 0;
 		}
-		if (empty($this->config['showUnpublished'])) {
+		if (empty($this->pdoTools->config['showUnpublished'])) {
 			$tmp['published'] = 1;
 		}
-		if (!empty($this->config['hideUnsearchable'])) {
+		if (!empty($this->pdoTools->config['hideUnsearchable'])) {
 			$tmp['searchable'] = 1;
 		}
 

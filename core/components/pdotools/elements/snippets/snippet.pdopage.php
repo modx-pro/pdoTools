@@ -3,7 +3,7 @@
 /** @var pdoPage $pdoPage */
 if (!$modx->loadClass('pdoPage', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
 $pdoPage = new pdoPage($modx, $scriptProperties);
-$pdoPage->addTime('pdoTools loaded');
+$pdoPage->pdoTools->addTime('pdoTools loaded');
 
 // Default variables
 if (empty($pageVarKey)) {$pageVarKey = 'page';}
@@ -67,7 +67,7 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
-if (!$data = $pdoPage->getCache($scriptProperties)) {
+if (!$data = $pdoPage->pdoTools->getCache($scriptProperties)) {
 	if ($object = $modx->getObject('modSnippet', array('name' => $scriptProperties['element']))) {
 		$object->setCacheable(false);
 
@@ -113,14 +113,14 @@ if (!$data = $pdoPage->getCache($scriptProperties)) {
 			foreach (array('first','prev','next','last') as $v) {
 				$tpl = 'tplPage'.ucfirst($v).'Empty';
 				if (!empty(${$tpl}) && empty($pagination[$v])) {
-					$pagination[$v] = $pdoPage->getChunk(${$tpl});
+					$pagination[$v] = $pdoPage->pdoTools->getChunk(${$tpl});
 				}
 			}
 		}
 
 		$pagination = !empty($tplPageWrapper)
-			? $pdoPage->getChunk($tplPageWrapper, $pagination)
-			: $pdoPage->parseChunk('', $pagination);
+			? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
+			: $pdoPage->pdoTools->parseChunk('', $pagination);
 	}
 
 	$data = array(
@@ -130,7 +130,7 @@ if (!$data = $pdoPage->getCache($scriptProperties)) {
 		$pageNavVar => $pagination,
 		$totalVar => $total,
 	);
-	$pdoPage->setCache($data, $scriptProperties);
+	$pdoPage->pdoTools->setCache($data, $scriptProperties);
 }
 
 $modx->setPlaceholders($data, $plPrefix);

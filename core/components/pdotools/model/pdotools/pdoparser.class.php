@@ -5,22 +5,14 @@ if (!class_exists('modParser')) {
 }
 
 class pdoParser extends modParser {
-	/** @var pdoFetch|pdoTools $pdoTools */
-	public $pdoTools;
-
-	/**
-	 * @param xPDO $modx A reference to the modX|xPDO instance
-	 */
-	function __construct(xPDO &$modx) {
-		parent::__construct($modx);
-
-		/** @var pdoFetch $pdoTools */
-		if (!$pdoTools = $modx->getService('pdoFetch')) {
-			@session_write_close();
-			exit('Fatal error: could not load pdoTools!');
-		}
-		$this->pdoTools =& $pdoTools;
-	}
+	/** @var array $store Array for cache elements and user data */
+	public $store = array(
+		'chunk' => array(),
+		'snippet' => array(),
+		'tv' => array(),
+		'data' => array(),
+		'resource' => array(),
+	);
 
 	/**
 	 * Quickly processes a simple tag and returns the result.
@@ -108,9 +100,9 @@ class pdoParser extends modParser {
 					// Resource tag
 					if (is_numeric($tmp[0])) {
 						/** @var modResource $resource */
-						if (!$resource = $this->pdoTools->getStore($tmp[0], 'resource')) {
+						if (!$resource = $this->getStore($tmp[0], 'resource')) {
 							$resource = $this->modx->getObject('modResource', $tmp[0]);
-							$this->pdoTools->setStore($tmp[0], $resource, 'resource');
+							$this->setStore($tmp[0], $resource, 'resource');
 						}
 						$output = '';
 						if (!empty($resource)) {
@@ -204,6 +196,33 @@ class pdoParser extends modParser {
 		}
 
 		return $output;
+	}
+
+
+	/**
+	 * Set data to cache
+	 *
+	 * @param $name
+	 * @param $object
+	 * @param string $type
+	 */
+	public function setStore($name, $object, $type = 'data') {
+		$this->store[$type][$name] = $object;
+	}
+
+
+	/**
+	 * Get data from cache
+	 *
+	 * @param $name
+	 * @param string $type
+	 *
+	 * @return mixed|null
+	 */
+	public function getStore($name, $type = 'data') {
+		return isset($this->store[$type][$name])
+			? $this->store[$type][$name]
+			: null;
 	}
 
 }

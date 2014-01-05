@@ -102,11 +102,11 @@ foreach ($wfTemplates as $k => $v) {
 /** @var pdoMenu $pdoMenu */
 if (!$modx->loadClass('pdoMenu', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
 $pdoMenu = new pdoMenu($modx, $scriptProperties);
-$pdoMenu->addTime('pdoTools loaded');
+$pdoMenu->pdoTools->addTime('pdoTools loaded');
 
-if (!$output = $pdoMenu->getCache($scriptProperties)) {
-	$rows = $pdoMenu->run();
-	$tmp = $pdoMenu->buildTree($rows);
+if (!$output = $pdoMenu->pdoTools->getCache($scriptProperties)) {
+	$rows = $pdoMenu->pdoTools->run();
+	$tmp = $pdoMenu->pdoTools->buildTree($rows);
 	$tree = array();
 	foreach ($tmp as $k => $v) {
 		if (empty($v['id'])) {
@@ -123,11 +123,11 @@ if (!$output = $pdoMenu->getCache($scriptProperties)) {
 	}
 
 	$output = $pdoMenu->templateTree($tree);
-	$pdoMenu->setCache($output, $scriptProperties);
+	$pdoMenu->pdoTools->setCache($output, $scriptProperties);
 }
 
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-	$output .= '<pre class="pdoMenuLog">' . print_r($pdoMenu->getTime(), 1) . '</pre>';
+	$output .= '<pre class="pdoMenuLog">' . print_r($pdoMenu->pdoTools->getTime(), 1) . '</pre>';
 }
 
 if (!empty($toPlaceholder)) {

@@ -1,9 +1,10 @@
 Changelog for pdoTools.
 
-1.9.0 rc1
+1.9.0 rc2
 ==============
 - [pdoMenu] Chunks of parents and categories are now depends on the descendants and ignores parameter isfolder.
 - [pdoNeighbors] Speed improvements.
+- [#27] Ability to specify custom pdoFetch and pdoTools classes through FQN system settings.
 
 1.9.0 rc
 ==============

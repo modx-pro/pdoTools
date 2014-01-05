@@ -1,17 +1,31 @@
 <?php
-require_once 'pdotools.class.php';
 
-class pdoPage extends pdoTools {
+class pdoPage {
+	/** @var modX $modx */
+	public $modx;
+	/** @var pdoTools $pdoTools */
+	public $pdoTools;
+	/** @var string $req_var */
 	protected $req_var = '';
+
 
 	/**
 	 * @param modX $modx
 	 * @param array $config
 	 */
 	public function __construct(modX & $modx, $config = array()) {
-		$modx->lexicon->load('pdotools:pdopage');
+		$this->modx = &$modx;
 
-		return parent::__construct($modx, $config);
+		$fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
+		if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
+			$this->pdoTools = new $pdoClass($modx, $config);
+		}
+		else {
+			@session_write_close();
+			exit('Fatal error: could not load pdoTools!');
+		}
+
+		$modx->lexicon->load('pdotools:pdopage');
 	}
 
 
@@ -21,7 +35,7 @@ class pdoPage extends pdoTools {
 	 * @return string
 	 */
 	public function redirectToFirst() {
-		unset($_GET[$this->config['pageVarKey']]);
+		unset($_GET[$this->pdoTools->config['pageVarKey']]);
 		unset($_GET[$this->modx->getOption('request_param_alias', null, 'q')]);
 		$this->modx->sendRedirect(
 			$this->modx->makeUrl(
@@ -49,7 +63,7 @@ class pdoPage extends pdoTools {
 			$this->req_var = $q_var;
 
 			$host = '';
-			switch ($this->config['scheme']) {
+			switch ($this->pdoTools->config['scheme']) {
 				case 'full':
 					$host = $this->modx->getOption('site_url');
 					break;
@@ -59,7 +73,7 @@ class pdoPage extends pdoTools {
 					break;
 				case 'https':
 				case 'http':
-					$host = $this->config['scheme'] . '://' . $this->modx->getOption('http_host') . $this->modx->getOption('base_url');
+					$host = $this->pdoTools->config['scheme'] . '://' . $this->modx->getOption('http_host') . $this->modx->getOption('base_url');
 					break;
 			}
 			$url = $host . $q_val;
@@ -71,7 +85,7 @@ class pdoPage extends pdoTools {
 				: $this->modx->getOption('site_start');
 			$this->req_var = $id_var;
 
-			$url = $this->modx->makeUrl($id_val, '', '', $this->config['scheme']);
+			$url = $this->modx->makeUrl($id_val, '', '', $this->pdoTools->config['scheme']);
 		}
 
 		return $url;
@@ -97,12 +111,12 @@ class pdoPage extends pdoTools {
 			$href .= strpos($href, '?') !== false
 				? '&'
 				: '?';
-			$href .= $this->config['pageVarKey'] . '=' . $page;
+			$href .= $this->pdoTools->config['pageVarKey'] . '=' . $page;
 		}
 		if (!empty($_GET)) {
 			$request = $_GET;
 			unset($request[$this->req_var]);
-			unset($request[$this->config['pageVarKey']]);
+			unset($request[$this->pdoTools->config['pageVarKey']]);
 
 			if (!empty($request)) {
 				$href .= strpos($href, '?') !== false
@@ -123,7 +137,7 @@ class pdoPage extends pdoTools {
 		);
 
 		return !empty($tpl)
-			? $this->getChunk($tpl, $data)
+			? $this->pdoTools->getChunk($tpl, $data)
 			: '';
 	}
 
@@ -138,7 +152,7 @@ class pdoPage extends pdoTools {
 	 * @return string
 	 */
 	public function buildClassicPagination($page = 1, $pages = 5, $url = '') {
-		$pageLimit = $this->config['pageLimit'];
+		$pageLimit = $this->pdoTools->config['pageLimit'];
 
 		if ($pageLimit > $pages) {$pageLimit = 0;}
 		else {
@@ -177,11 +191,11 @@ class pdoPage extends pdoTools {
 				break;
 			}
 
-			if ($page == $i && !empty($this->config['tplPageActive'])) {
-				$tpl = $this->config['tplPageActive'];
+			if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {
+				$tpl = $this->pdoTools->config['tplPageActive'];
 			}
-			elseif (!empty($this->config['tplPage'])) {
-				$tpl = $this->config['tplPage'];
+			elseif (!empty($this->pdoTools->config['tplPage'])) {
+				$tpl = $this->pdoTools->config['tplPage'];
 			}
 
 			$pagination .= !empty($tpl)
@@ -205,7 +219,7 @@ class pdoPage extends pdoTools {
 	 * @return string
 	 */
 	public function buildModernPagination($page = 1, $pages = 5, $url = '') {
-		$pageLimit = $this->config['pageLimit'];
+		$pageLimit = $this->pdoTools->config['pageLimit'];
 
 		if ($pageLimit >= $pages || $pageLimit < 7) {
 			return $this->buildClassicPagination($page, $pages, $url);
@@ -219,11 +233,11 @@ class pdoPage extends pdoTools {
 		$pagination = array();
 		// Left
 		for ($i = 1; $i <= $left; $i++) {
-			if ($page == $i && !empty($this->config['tplPageActive'])) {
-				$tpl = $this->config['tplPageActive'];
+			if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {
+				$tpl = $this->pdoTools->config['tplPageActive'];
 			}
-			elseif (!empty($this->config['tplPage'])) {
-				$tpl = $this->config['tplPage'];
+			elseif (!empty($this->pdoTools->config['tplPage'])) {
+				$tpl = $this->pdoTools->config['tplPage'];
 			}
 			$pagination[$i] = !empty($tpl)
 				? $this->makePageLink($url, $i, $tpl)
@@ -232,11 +246,11 @@ class pdoPage extends pdoTools {
 
 		// Right
 		for ($i = $pages - $right + 1; $i <= $pages; $i++) {
-			if ($page == $i && !empty($this->config['tplPageActive'])) {
-				$tpl = $this->config['tplPageActive'];
+			if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {
+				$tpl = $this->pdoTools->config['tplPageActive'];
 			}
-			elseif (!empty($this->config['tplPage'])) {
-				$tpl = $this->config['tplPage'];
+			elseif (!empty($this->pdoTools->config['tplPage'])) {
+				$tpl = $this->pdoTools->config['tplPage'];
 			}
 			$pagination[$i] = !empty($tpl)
 				? $this->makePageLink($url, $i, $tpl)
@@ -247,11 +261,11 @@ class pdoPage extends pdoTools {
 		if ($page <= $left) {
 			$i = $left + 1;
 			while ($i <= $center + $left) {
-				if ($i == $center + $left && !empty($this->config['tplPageSkip'])) {
-					$tpl = $this->config['tplPageSkip'];
+				if ($i == $center + $left && !empty($this->pdoTools->config['tplPageSkip'])) {
+					$tpl = $this->pdoTools->config['tplPageSkip'];
 				}
 				else {
-					$tpl = $this->config['tplPage'];
+					$tpl = $this->pdoTools->config['tplPage'];
 				}
 
 				$pagination[$i] = !empty($tpl)
@@ -263,11 +277,11 @@ class pdoPage extends pdoTools {
 		elseif ($page > $pages - $right) {
 			$i = $pages - $right - $center + 1;
 			while ($i <= $pages - $right) {
-				if ($i == $pages - $right - $center + 1 && !empty($this->config['tplPageSkip'])) {
-					$tpl = $this->config['tplPageSkip'];
+				if ($i == $pages - $right - $center + 1 && !empty($this->pdoTools->config['tplPageSkip'])) {
+					$tpl = $this->pdoTools->config['tplPageSkip'];
 				}
 				else {
-					$tpl = $this->config['tplPage'];
+					$tpl = $this->pdoTools->config['tplPage'];
 				}
 
 				$pagination[$i] = !empty($tpl)
@@ -280,62 +294,62 @@ class pdoPage extends pdoTools {
 			if ($page - $center < $left) {
 				$i = $left + 1;
 				while ($i <= $center + $left) {
-					if ($page == $i && !empty($this->config['tplPageActive'])) {
-						$tpl = $this->config['tplPageActive'];
+					if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {
+						$tpl = $this->pdoTools->config['tplPageActive'];
 					}
-					elseif (!empty($this->config['tplPage'])) {
-						$tpl = $this->config['tplPage'];
+					elseif (!empty($this->pdoTools->config['tplPage'])) {
+						$tpl = $this->pdoTools->config['tplPage'];
 					}
 					$pagination[$i] = !empty($tpl)
 						? $this->makePageLink($url, $i, $tpl)
 						: '';
 					$i++;
 				}
-				if (!empty($this->config['tplPageSkip'])) {
+				if (!empty($this->pdoTools->config['tplPageSkip'])) {
 					$key = ($page + 1 == $left + $center)
 						? $pages - $right + 1
 						: $left + $center;
-					$pagination[$key] = $this->getChunk($this->config['tplPageSkip']);
+					$pagination[$key] = $this->pdoTools->getChunk($this->pdoTools->config['tplPageSkip']);
 				}
 			}
 			elseif ($page + $center - 1 > $pages - $right) {
 				$i = $pages - $right - $center + 1;
 				while ($i <= $pages - $right) {
-					if ($page == $i && !empty($this->config['tplPageActive'])) {
-						$tpl = $this->config['tplPageActive'];
+					if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {
+						$tpl = $this->pdoTools->config['tplPageActive'];
 					}
-					elseif (!empty($this->config['tplPage'])) {
-						$tpl = $this->config['tplPage'];
+					elseif (!empty($this->pdoTools->config['tplPage'])) {
+						$tpl = $this->pdoTools->config['tplPage'];
 					}
 					$pagination[$i] = !empty($tpl)
 						? $this->makePageLink($url, $i, $tpl)
 						: '';
 					$i++;
 				}
-				if (!empty($this->config['tplPageSkip'])) {
+				if (!empty($this->pdoTools->config['tplPageSkip'])) {
 					$key = ($page - 1 == $pages - $right - $center + 1)
 						? $left
 						: $pages - $right - $center + 1;
-					$pagination[$key] = $this->getChunk($this->config['tplPageSkip']);
+					$pagination[$key] = $this->pdoTools->getChunk($this->pdoTools->config['tplPageSkip']);
 				}
 			}
 			else {
 				$tmp = (integer) floor(($center - 1) / 2);
 				$i = $page - $tmp;
 				while ($i < $page - $tmp + $center) {
-					if ($page == $i && !empty($this->config['tplPageActive'])) {
-						$tpl = $this->config['tplPageActive'];
+					if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {
+						$tpl = $this->pdoTools->config['tplPageActive'];
 					}
-					elseif (!empty($this->config['tplPage'])) {
-						$tpl = $this->config['tplPage'];
+					elseif (!empty($this->pdoTools->config['tplPage'])) {
+						$tpl = $this->pdoTools->config['tplPage'];
 					}
 					$pagination[$i] = !empty($tpl)
 						? $this->makePageLink($url, $i, $tpl)
 						: '';
 					$i++;
 				}
-				if (!empty($this->config['tplPageSkip'])) {
-					$pagination[$left] = $pagination[$pages - $right + 1] = $this->getChunk($this->config['tplPageSkip']);
+				if (!empty($this->pdoTools->config['tplPageSkip'])) {
+					$pagination[$left] = $pagination[$pages - $right + 1] = $this->pdoTools->getChunk($this->pdoTools->config['tplPageSkip']);
 				}
 			}
 		}
