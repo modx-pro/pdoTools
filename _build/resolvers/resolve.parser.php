@@ -18,7 +18,8 @@ if ($object->xpdo) {
 					$tmp = $modx->newObject('modSystemSetting');
 				}
 				$tmp->fromArray(array(
-					'namespace' => 'core',
+					'namespace' => 'pdotools',
+					'area' => 'pdotools_main',
 					'xtype' => 'textfield',
 					'value' => 'pdoParser',
 					'key' => 'parser_class',
@@ -30,7 +31,8 @@ if ($object->xpdo) {
 					$tmp = $modx->newObject('modSystemSetting');
 				}
 				$tmp->fromArray(array(
-					'namespace' => 'core',
+					'namespace' => 'pdotools',
+					'area' => 'pdotools_main',
 					'xtype' => 'textfield',
 					'value' => '{core_path}components/pdotools/model/pdotools/',
 					'key' => 'parser_class_path',
