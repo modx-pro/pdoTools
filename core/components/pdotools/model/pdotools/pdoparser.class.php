@@ -26,7 +26,7 @@ class pdoParser extends modParser {
 		$outerTag = $tag[0];
 		$innerTag = $tag[1];
 		$processed = false;
-		$output = '';
+		$output = $token = '';
 
 		// Disabled tag
 		if ($innerTag[0] == '-') {
@@ -38,13 +38,14 @@ class pdoParser extends modParser {
 			$outerTag = '[['.$innerTag.']]';
 			return $outerTag;
 		}
-		// We processing only certain types of tags without filters and parameters
-		elseif (strpos($innerTag, ':') == false && strpos($innerTag, '`') === false && preg_match('/^(?:!|)[-|%|~|+|*|#]+/', $innerTag, $matches)) {
+		// We processing only certain types of tags without parameters
+		elseif (strpos($innerTag, '?') === false && preg_match('/^(?:!|)[-|%|~|+|*|#]+/', $innerTag, $matches)) {
 			if (strpos($innerTag, '[[') !== false) {
 				$this->processElementTags($outerTag, $innerTag, $processUncacheable);
 				$outerTag = '[['.$innerTag.']]';
 			}
-			$innerTag = ltrim($innerTag, '!');
+
+			$innerTag = ltrim($this->realname($innerTag), '!');
 			$token = $innerTag[0];
 			$innerTag = substr($innerTag, 1);
 			switch ($token) {
@@ -74,22 +75,19 @@ class pdoParser extends modParser {
 						$processed = true;
 					}
 					break;
-				// Resource tag
+				// Resource tag and TVs
 				case '*':
 					if (is_object($this->modx->resource) && $this->modx->resource instanceof modResource) {
 						if ($innerTag == 'content') {
 							$output = $this->modx->resource->getContent();
-							$processed = true;
 						}
 						elseif (is_array($this->modx->resource->_fieldMeta) && isset($this->modx->resource->_fieldMeta[$innerTag])) {
-							if (isset($this->modx->resource->_fields[$innerTag])) {
-								$output = $this->modx->resource->_fields[$innerTag];
-							}
-							else {
-								$output = $this->modx->resource->get($innerTag);
-							}
-							$processed = true;
+							$output = $this->modx->resource->get($innerTag);
 						}
+						else {
+							$output = $this->modx->resource->getTVValue($innerTag);
+						}
+						$processed = true;
 					}
 					break;
 				// FastField tag
@@ -171,24 +169,35 @@ class pdoParser extends modParser {
 						else {
 							$output = $array;
 						}
-
 						if (is_string($output)) {
 							$output = $this->modx->stripTags($output);
 						}
-					}
-
-					// Additional process of output
-					if (is_array($output)) {
-						$output = htmlentities(print_r($output, true), ENT_QUOTES, 'UTF-8');
 					}
 					$processed = true;
 					break;
 			}
 		}
 
+		// Processing output filters
 		if ($processed) {
+			if (strpos($outerTag, ':') !== false) {
+				/** @var pdoTag $object */
+				$tag = new pdoTag($this->modx);
+				$tag->_content = $output;
+				$tag->setTag($outerTag);
+				$tag->setToken($token);
+				$tag->setContent(ltrim(rtrim($outerTag,']'), '[!'.$token));
+				$tag->setCacheable(!$processUncacheable);
+				$tag->process();
+				$output = $tag->_output;
+			}
 			if ($this->modx->getDebug() === true) {
 				$this->modx->log(xPDO::LOG_LEVEL_DEBUG, "Processing {$outerTag} as {$innerTag}:\n" . print_r($output, 1) . "\n\n");
+			}
+
+			// Print array
+			if (is_array($output)) {
+				$output = htmlentities(print_r($output, true), ENT_QUOTES, 'UTF-8');
 			}
 		}
 		else {
@@ -223,6 +232,43 @@ class pdoParser extends modParser {
 		return isset($this->store[$type][$name])
 			? $this->store[$type][$name]
 			: null;
+	}
+
+}
+
+
+
+class pdoTag extends modTag {
+
+
+	/**
+	 * @param null $properties
+	 * @param null $content
+	 *
+	 * @return bool
+	 */
+	public function process($properties = null, $content = null) {
+		$this->filterInput();
+
+		if ($this->modx->getDebug() === true) $this->modx->log(xPDO::LOG_LEVEL_DEBUG, "Processing Element: " . $this->get('name') . ($this->_tag ? "\nTag: {$this->_tag}" : "\n") . "\nProperties: " . print_r($this->_properties, true));
+		if ($this->isCacheable() && isset($this->modx->elementCache[$this->_tag])) {
+			$this->_output = $this->modx->elementCache[$this->_tag];
+		}
+		else {
+			$this->_output = $this->_content;
+			$this->filterOutput();
+		}
+
+		$this->_processed = true;
+		return $this->_result;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getTag() {
+		return $this->_tag;
 	}
 
 }
