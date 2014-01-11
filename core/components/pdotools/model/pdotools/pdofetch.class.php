@@ -62,6 +62,7 @@ class pdoFetch extends pdoTools {
 	public function run() {
 		$this->loadModels();
 		$this->makeQuery();
+		$this->addTVFilters();
 		$this->addTVs();
 		$this->addJoins();
 		$this->addGrouping();
@@ -174,8 +175,6 @@ class pdoFetch extends pdoTools {
 	 * Adds where and having conditions
 	 */
 	public function addWhere() {
-		$this->addTVFilters();
-
 		$time = microtime(true);
 		$where = array();
 		if (!empty($this->config['where'])) {
@@ -738,15 +737,25 @@ class pdoFetch extends pdoTools {
 			'>=' => '>=',
 			'=>' => '=>'
 		);
+
+		$includeTVs = !empty($this->config['includeTVs'])
+			? array_map('trim', explode(',', $this->config['includeTVs']))
+			: array();
+		$where = array();
+		if (!empty($this->config['where'])) {
+			$tmp = $this->config['where'];
+			if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+				$where = $this->modx->fromJSON($tmp);
+			}
+			if (!is_array($where)) {
+				$where = array($where);
+			}
+		}
+
 		$conditions = array();
-
-		$tmplVarTbl = $this->modx->getTableName('modTemplateVar');
-		$tmplVarResourceTbl = $this->modx->getTableName('modTemplateVarResource');
-
 		foreach ($tvFilters as $tvFilter) {
-			$filterGroup = array();
+			$condition = array();
 			$filters = explode($tvFiltersAndDelimiter, $tvFilter);
-			$multiple = count($filters) > 0;
 			foreach ($filters as $filter) {
 				$operator = '==';
 				$sqlOperator = 'LIKE';
@@ -757,67 +766,24 @@ class pdoFetch extends pdoTools {
 						break;
 					}
 				}
-				$tvValueField = 'tvr.value';
-				$tvDefaultField = 'tv.default_text';
-				$f = explode($operator, $filter);
-				if (count($f) == 2) {
-					$tvName = $this->modx->quote($f[0]);
-					if (is_numeric($f[1]) && !in_array($sqlOperator, array('LIKE', 'NOT LIKE'))) {
-						$tvValue = $f[1];
-						if ($f[1] == (integer)$f[1]) {
-							$tvValueField = "CAST({$tvValueField} AS SIGNED INTEGER)";
-							$tvDefaultField = "CAST({$tvDefaultField} AS SIGNED INTEGER)";
-						} else {
-							$tvValueField = "CAST({$tvValueField} AS DECIMAL)";
-							$tvDefaultField = "CAST({$tvDefaultField} AS DECIMAL)";
-						}
-					} else {
-						$tvValue = $this->modx->quote($f[1]);
-					}
-					if ($multiple) {
-						$filterGroup[] =
-							"(EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.name = {$tvName} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id) " .
-							"OR EXISTS (SELECT 1 FROM {$tmplVarTbl} tv WHERE tv.name = {$tvName} AND {$tvDefaultField} {$sqlOperator} {$tvValue} AND tv.id NOT IN (SELECT tmplvarid FROM {$tmplVarResourceTbl} WHERE contentid = modResource.id)) " .
-							")";
-					} else {
-						$filterGroup =
-							"(EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.name = {$tvName} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id) " .
-							"OR EXISTS (SELECT 1 FROM {$tmplVarTbl} tv WHERE tv.name = {$tvName} AND {$tvDefaultField} {$sqlOperator} {$tvValue} AND tv.id NOT IN (SELECT tmplvarid FROM {$tmplVarResourceTbl} WHERE contentid = modResource.id)) " .
-							")";
-					}
-				} elseif (count($f) == 1) {
-					$tvValue = $this->modx->quote($f[0]);
-					if ($multiple) {
-						$filterGroup[] = "EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id)";
-					} else {
-						$filterGroup = "EXISTS (SELECT 1 FROM {$tmplVarResourceTbl} tvr JOIN {$tmplVarTbl} tv ON {$tvValueField} {$sqlOperator} {$tvValue} AND tv.id = tvr.tmplvarid WHERE tvr.contentid = modResource.id)";
-					}
+				$filter = array_map('trim', explode($operator, $filter));
+				if (!in_array($filter[0], $includeTVs)) {
+					$includeTVs[] = $filter[0];
 				}
+				$condition[] = $filter[0] . ' ' . $sqlOperator . ' ' . $this->modx->quote($filter[1]);
 			}
-			$conditions[] = $filterGroup;
+			$conditions[] = implode(' AND ', $condition);
+		}
+		if (count($conditions) > 1) {
+			$where[] = '(('. implode(') OR (', $conditions) . '))';
+		}
+		else {
+			$where[] = $conditions[0];
 		}
 
-		if (!empty($conditions)) {
-			$firstGroup = true;
-			foreach ($conditions as $cGroup => $c) {
-				if (is_array($c)) {
-					$first = true;
-					foreach ($c as $cond) {
-						if ($first && !$firstGroup) {
-							$this->query->condition($this->query->query['where'][0][1], $cond, xPDOQuery::SQL_OR, null, $cGroup);
-						} else {
-							$this->query->condition($this->query->query['where'][0][1], $cond, xPDOQuery::SQL_AND, null, $cGroup);
-						}
-						$first = false;
-					}
-				} else {
-					$this->query->condition($this->query->query['where'][0][1], $c, $firstGroup ? xPDOQuery::SQL_AND : xPDOQuery::SQL_OR, null, $cGroup);
-				}
-				$firstGroup = false;
-			}
-
-			$this->addTime('Added TVs filters', microtime(true) - $time);
-		}
+		$this->config['includeTVs'] = implode(',', $includeTVs);
+		$this->config['where'] = $where;
+		$this->addTime('Added TVs filters', microtime(true) - $time);
 	}
 
 
@@ -838,8 +804,14 @@ class pdoFetch extends pdoTools {
 		$sorts = array();
 		foreach ($array as $k => $v) {
 			$callback = create_function('$matches', 'return \'`TV\'.strtolower($matches[1]).\'`.`value`\';');
-			$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $k);
-			$sorts[$tmp] = $v;
+			if (is_numeric($k)) {
+				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $v);
+				$sorts[$k] = $tmp;
+			}
+			else {
+				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $k);
+				$sorts[$tmp] = $v;
+			}
 		}
 
 		$this->addTime('Replaced TV conditions', microtime(true) - $time);
@@ -880,6 +852,7 @@ class pdoFetch extends pdoTools {
 
 		$instance->setConfig($config, true);
 		$instance->makeQuery();
+		$instance->addTVFilters();
 		$instance->addTVs();
 		$instance->addJoins();
 		$instance->addGrouping();
@@ -947,6 +920,7 @@ class pdoFetch extends pdoTools {
 
 		$instance->setConfig($config, true);
 		$instance->makeQuery();
+		$instance->addTVFilters();
 		$instance->addTVs();
 		$instance->addJoins();
 		$instance->addGrouping();

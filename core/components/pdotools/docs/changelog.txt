@@ -7,6 +7,7 @@ Changelog for pdoTools.
 - [#27] Ability to specify custom pdoFetch and pdoTools classes through FQN system settings.
 - [pdoParser] Handles TVs in resource tags.
 - [pdoParser] Handles output filters.
+- [pdoFetch] Improved method "addTVFilters", that used by "tvFilters" parameter in pdoResources.
 
 1.9.0 rc
 ==============
