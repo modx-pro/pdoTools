@@ -56,7 +56,7 @@ class pdoMenu {
 			exit('Fatal error: could not load pdoTools!');
 		}
 
-		if ($currentResource = $this->pdoTools->getObject('modResource', $config['hereId'])) {
+		if ($config['hereId'] && $currentResource = $this->pdoTools->getObject('modResource', $config['hereId'])) {
 			$tmp = $modx->getParentIds($currentResource['id'], 100, array('context' => $currentResource['context_key']));
 			$tmp[] = $config['hereId'];
 			$this->parentTree = array_flip($tmp);

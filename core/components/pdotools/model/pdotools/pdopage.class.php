@@ -16,6 +16,8 @@ class pdoPage {
 	public function __construct(modX & $modx, $config = array()) {
 		$this->modx = &$modx;
 
+		if (!isset($config['scheme'])) {$config['scheme'] = 'abs';}
+
 		$fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
 		if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
 			$this->pdoTools = new $pdoClass($modx, $config);
