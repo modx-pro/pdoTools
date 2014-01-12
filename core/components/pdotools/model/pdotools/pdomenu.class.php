@@ -44,7 +44,7 @@ class pdoMenu {
 			$config['tplInner'] = $config['tplOuter'];
 		}
 		if (empty($config['hereId'])) {
-			$config['hereId'] = $modx->resource->id;
+			$config['hereId'] = ((trim($modx->resource->id))=='')?'1':$modx->resource->id;
 		}
 
 		$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
