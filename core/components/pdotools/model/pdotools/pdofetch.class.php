@@ -804,7 +804,7 @@ class pdoFetch extends pdoTools {
 		$sorts = array();
 		foreach ($array as $k => $v) {
 			$callback = create_function('$matches', 'return \'`TV\'.strtolower($matches[1]).\'`.`value`\';');
-			if (is_numeric($k)) {
+			if (is_numeric($k) && is_string($v)) {
 				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $v);
 				$sorts[$k] = $tmp;
 			}
