@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.9.0 pl1
+1.9.0 pl2
 ==============
 - [pdoMenu] Chunks of parents and categories are now depends on the descendants and ignores parameter isfolder.
 - [pdoNeighbors] Speed improvements.
@@ -8,6 +8,7 @@ Changelog for pdoTools.
 - [pdoParser] Handles TVs in resource tags.
 - [pdoParser] Handles output filters.
 - [pdoFetch] Improved method "addTVFilters", that used by "tvFilters" parameter in pdoResources.
+- [pdoSitemap] Pass the whole row so we can use more columns.
 
 1.9.0 rc
 ==============

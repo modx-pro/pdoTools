@@ -114,43 +114,39 @@ $now = time();
 $output = array();
 foreach ($rows as $row) {
 	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
-		$url = is_numeric(trim($row['content'], '[]~ '))
+		$row['url'] = is_numeric(trim($row['content'], '[]~ '))
 			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
 			: $row['content'];
 	}
 	else {
-		$url = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+		$row['url'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
 	}
-    $row['url'] = $url;
 
 	$time = !empty($row['editedon'])
 		? $row['editedon']
 		: $row['createdon'];
-	$date = date('Y-m-d', $time);
-    $row['date'] = $date;
+	$row['date'] = date('Y-m-d', $time);
 
 	$datediff = floor(($now - $time) / 86400);
 	if ($datediff <= 1) {
-		$priority = '1.0';
-		$update = 'daily';
+		$row['priority'] = '1.0';
+		$row['update'] = 'daily';
 	} elseif (($datediff > 1) && ($datediff <= 7)) {
-		$priority = '0.75';
-		$update = 'weekly';
+		$row['priority'] = '0.75';
+		$row['update'] = 'weekly';
 	} elseif (($datediff > 7) && ($datediff <= 30)) {
-		$priority = '0.50';
-		$update = 'weekly';
+		$row['priority'] = '0.50';
+		$row['update'] = 'weekly';
 	} else {
-		$priority = '0.25';
-		$update = 'monthly';
+		$row['priority'] = '0.25';
+		$row['update'] = 'monthly';
 	}
-    $row['priority'] = $priority;
-    $row['update'] = $update;
 
 	if (!empty($priorityTV) && !empty($row[$priorityTV])) {
 		$row['priority'] = $row[$priorityTV];
 	}
 	/* add item to output */
-	$output[] = $pdoFetch->parseChunk($tpl, $row);
+	$output[] = preg_replace('/\[\[.*?\]\]/', '', $pdoFetch->parseChunk($tpl, $row));
 }
 $pdoFetch->addTime('Rows processed');
 
