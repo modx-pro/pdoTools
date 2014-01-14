@@ -121,11 +121,13 @@ foreach ($rows as $row) {
 	else {
 		$url = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
 	}
+    $row['url'] = $url;
 
 	$time = !empty($row['editedon'])
 		? $row['editedon']
 		: $row['createdon'];
 	$date = date('Y-m-d', $time);
+    $row['date'] = $date;
 
 	$datediff = floor(($now - $time) / 86400);
 	if ($datediff <= 1) {
@@ -141,19 +143,14 @@ foreach ($rows as $row) {
 		$priority = '0.25';
 		$update = 'monthly';
 	}
+    $row['priority'] = $priority;
+    $row['update'] = $update;
 
 	if (!empty($priorityTV) && !empty($row[$priorityTV])) {
 		$row['priority'] = $row[$priorityTV];
 	}
 	/* add item to output */
-	$output[] = $pdoFetch->parseChunk($tpl,
-		array(
-			'url' => $url,
-			'date' => $date,
-			'update' => $update,
-			'priority' => $priority,
-		)
-	);
+	$output[] = $pdoFetch->parseChunk($tpl, $row);
 }
 $pdoFetch->addTime('Rows processed');
 
