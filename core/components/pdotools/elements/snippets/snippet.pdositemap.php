@@ -113,7 +113,7 @@ $rows = $pdoFetch->run();
 $now = time();
 $output = array();
 foreach ($rows as $row) {
-	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['url'] = is_numeric(trim($row['content'], '[]~ '))
 			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
 			: $row['content'];

@@ -115,7 +115,7 @@ class pdoFetch extends pdoTools {
 						if (!empty($this->config['useWeblinkUrl'])) {
 							if ($this->config['scheme'] === '-1') {$this->config['scheme'] = -1;}
 							if (!isset($row['context_key'])) {$row['context_key'] = '';}
-							if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink')) {
+							if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink')) {
 								if (!isset($row['content'])) {$row['content'] = '';}
 								$row['link'] = is_numeric(trim($row['content'], '[]~ '))
 									? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $this->config['scheme'])

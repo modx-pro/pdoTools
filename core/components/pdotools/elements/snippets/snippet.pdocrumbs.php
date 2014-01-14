@@ -108,7 +108,7 @@ if (!empty($rows) && is_array($rows)) {
 	}
 
 	foreach ($rows as $row) {
-		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
 				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
 				: $row['content'];

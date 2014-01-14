@@ -92,7 +92,7 @@ $next = array_flip($next);
 $output = array('prev' => array(), 'up' => array(), 'next' => array());
 foreach ($rows as $row) {
 	if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
-	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink' || $row['class_key'] == 'modSymLink') {
+	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['link'] = is_numeric(trim($row['content'], '[]~ '))
 			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $scheme)
 			: $row['content'];

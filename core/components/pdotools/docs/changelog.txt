@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.1 beta
+==============
+- [#34] Fixed processing of "modSymLink" documents.
+
 1.9.0 pl2
 ==============
 - [pdoMenu] Chunks of parents and categories are now depends on the descendants and ignores parameter isfolder.
