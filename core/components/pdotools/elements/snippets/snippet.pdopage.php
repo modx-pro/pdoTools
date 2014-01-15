@@ -67,7 +67,11 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
-if (!$data = $pdoPage->pdoTools->getCache($scriptProperties)) {
+$data = !empty($cache)
+	? $pdoPage->pdoTools->getCache($scriptProperties)
+	: array();
+
+if (empty($data)) {
 	if ($object = $modx->getObject('modSnippet', array('name' => $scriptProperties['element']))) {
 		$object->setCacheable(false);
 
@@ -130,7 +134,9 @@ if (!$data = $pdoPage->pdoTools->getCache($scriptProperties)) {
 		$pageNavVar => $pagination,
 		$totalVar => $total,
 	);
-	$pdoPage->pdoTools->setCache($data, $scriptProperties);
+	if (!empty($cache)) {
+		$pdoPage->pdoTools->setCache($data, $scriptProperties);
+	}
 }
 
 $modx->setPlaceholders($data, $plPrefix);

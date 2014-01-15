@@ -3,6 +3,7 @@ Changelog for pdoTools.
 1.9.1 beta
 ==============
 - [#34] Fixed processing of "modSymLink" documents.
+- [#32] Improved cache methods.
 
 1.9.0 pl2
 ==============

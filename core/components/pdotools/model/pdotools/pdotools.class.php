@@ -808,7 +808,7 @@ class pdoTools {
 	 *
 	 * @return mixed
 	 */
-	public function getCache($options = '') {
+	public function getCache($options = array()) {
 		$cacheKey = $this->getCacheKey($options);
 		$cacheOptions = $this->getCacheOptions();
 
@@ -833,7 +833,7 @@ class pdoTools {
 	 *
 	 * @return void
 	 */
-	public function setCache($data = array(), $options = '') {
+	public function setCache($data = array(), $options = array()) {
 		$cacheKey = $this->getCacheKey($options);
 		$cacheOptions = $this->getCacheOptions();
 
@@ -882,15 +882,17 @@ class pdoTools {
 	 *
 	 * @return bool|string
 	 */
-	protected function getCacheKey($options = '') {
-		if (empty($this->config['cache'])) {return false;}
+	protected function getCacheKey($options = array()) {
 		if (empty($options)) {$options = $this->config;}
 
 		$key = !empty($this->modx->resource)
 			? $this->modx->resource->getCacheKey() . '/'
 			: '';
+		$options['cache_user'] = isset($options['cache_user'])
+			? (integer) $options['cache_user']
+			: $options['cache_user'] = $this->modx->user->id;
 
-		return $key . $this->modx->user->id . '/' . sha1(serialize($options));
+		return $key . '/' . sha1(serialize($options));
 	}
 
 }
