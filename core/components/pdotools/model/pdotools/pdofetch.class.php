@@ -830,7 +830,16 @@ class pdoFetch extends pdoTools {
 	 */
 	public function getObject($class, $where = '', $config = array()) {
 		/** @var pdoFetch $instance */
-		$instance = new pdoFetch($this->modx, $config);
+		//$instance = new pdoFetch($this->modx, $config);
+        
+		$fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
+		if ($pdoClass = $this->modx->loadClass($fqn, '', false, true)) {
+			$instance = new $pdoClass($this->modx, $config);
+		}
+		else {
+			@session_write_close();
+			exit('Fatal error: could not load pdoTools!');
+		}        
 		
 		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
 		$instance->loadModels();
@@ -898,7 +907,16 @@ class pdoFetch extends pdoTools {
 	 */
 	public function getCollection($class, $where = '', $config = array()) {
 		/** @var pdoFetch $instance */
-		$instance = new pdoFetch($this->modx, $config);
+		//$instance = new pdoFetch($this->modx, $config);
+        
+		$fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
+		if ($pdoClass = $this->modx->loadClass($fqn, '', false, true)) {
+			$instance = new $pdoClass($this->modx, $config);
+		}
+		else {
+			@session_write_close();
+			exit('Fatal error: could not load pdoTools!');
+		}        
 
 		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
 		$instance->loadModels();
