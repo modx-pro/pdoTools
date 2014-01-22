@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [#34] Fixed processing of "modSymLink" documents.
 - [#32] Improved cache methods.
+- pdoTools::setCache() now returns cacheKey.
 
 1.9.0 pl2
 ==============

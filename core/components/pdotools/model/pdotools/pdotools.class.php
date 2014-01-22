@@ -831,7 +831,7 @@ class pdoTools {
 	 * @param array $data
 	 * @param mixed $options
 	 *
-	 * @return void
+	 * @return string $cacheKey
 	 */
 	public function setCache($data = array(), $options = array()) {
 		$cacheKey = $this->getCacheKey($options);
@@ -846,6 +846,8 @@ class pdoTools {
 			);
 			$this->addTime('Saved data to cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . '/' . $cacheKey . '"');
 		}
+
+		return $cacheKey;
 	}
 
 
@@ -890,7 +892,7 @@ class pdoTools {
 			: '';
 		$options['cache_user'] = isset($options['cache_user'])
 			? (integer) $options['cache_user']
-			: $options['cache_user'] = $this->modx->user->id;
+			: $this->modx->user->id;
 
 		return $key . '/' . sha1(serialize($options));
 	}
