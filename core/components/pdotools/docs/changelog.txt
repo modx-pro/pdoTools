@@ -5,6 +5,9 @@ Changelog for pdoTools.
 - [#34] Fixed processing of "modSymLink" documents.
 - [#32] Improved cache methods.
 - pdoTools::setCache() now returns cacheKey.
+- Improved pdoFetch::getCollection().
+- Renamed pdoFetch::getObject() to getArray(). Now it uses getCollection for retrieve results.
+- pdoFetch::getObject() is now alias of pdoFetch::getArray().
 
 1.9.0 pl2
 ==============

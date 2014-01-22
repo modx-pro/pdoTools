@@ -820,7 +820,7 @@ class pdoFetch extends pdoTools {
 
 
 	/**
-	 * PDO replacement for modX::getObject()
+	 * Alias for getArray method
 	 *
 	 * @param $class
 	 * @param string $where
@@ -829,70 +829,27 @@ class pdoFetch extends pdoTools {
 	 * @return array
 	 */
 	public function getObject($class, $where = '', $config = array()) {
-		/** @var pdoFetch $instance */
-		//$instance = new pdoFetch($this->modx, $config);
-        
-		$fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-		if ($pdoClass = $this->modx->loadClass($fqn, '', false, true)) {
-			$instance = new $pdoClass($this->modx, $config);
-		}
-		else {
-			@session_write_close();
-			exit('Fatal error: could not load pdoTools!');
-		}        
-		
-		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
-		$instance->loadModels();
+		return $this->getArray($class, $where, $config);
+	}
 
-		$config['class'] = $class;
+
+	/**
+	 * PDO replacement for modX::getObject()
+	 * Returns array instead of object
+	 *
+	 * @param $class
+	 * @param string $where
+	 * @param array $config
+	 *
+	 * @return array
+	 */
+	public function getArray($class, $where = '', $config = array()) {
 		$config['limit'] = 1;
-		if (!empty($where)) {
-			unset($config['where']);
-			if (is_numeric($where)) {
-				$where = array($instance->modx->getPK($class) => (integer) $where);
-			}
-			elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
-				$where = $instance->modx->fromJSON($where);
-			}
-			if (is_array($where)) {
-				$config['where'] = $where;
-			}
-		}
+		$rows = $this->getCollection($class, $where, $config);
 
-		$instance->setConfig($config, true);
-		$instance->makeQuery();
-		$instance->addTVFilters();
-		$instance->addTVs();
-		$instance->addJoins();
-		$instance->addGrouping();
-		$instance->addSelects();
-		$instance->addWhere();
-
-		$instance->query->prepare();
-		$instance->addTime('SQL prepared <small>"'.$instance->query->toSql().'"</small>');
-
-		$row = array();
-		$tstart = microtime(true);
-		if ($instance->query->stmt->execute()) {
-			$instance->modx->queryTime += microtime(true) - $tstart;
-			$instance->modx->executedQueries++;
-			if (!$row = $instance->query->stmt->fetch(PDO::FETCH_ASSOC)) {
-				$row = array();
-			}
-			else {
-				$tmp = $instance->prepareRows(array($row));
-				$row = $tmp[0];
-			}
-		}
-		else {
-			$errors = $instance->query->stmt->errorInfo();
-			$instance->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Could not load object "'.$class.'": Error '.$errors[0].': '.$errors[2]);
-			$instance->addTime('Could not process query, error #'.$errors[1].': ' .$errors[2]);
-
-		}
-
-		$this->modx->setPlaceholder('pdoTools.log', $instance->getTime());
-		return $row;
+		return !empty($rows[0])
+			? $rows[0]
+			: array();
 	}
 
 
@@ -907,8 +864,6 @@ class pdoFetch extends pdoTools {
 	 */
 	public function getCollection($class, $where = '', $config = array()) {
 		/** @var pdoFetch $instance */
-		//$instance = new pdoFetch($this->modx, $config);
-        
 		$fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
 		if ($pdoClass = $this->modx->loadClass($fqn, '', false, true)) {
 			$instance = new $pdoClass($this->modx, $config);
@@ -916,13 +871,15 @@ class pdoFetch extends pdoTools {
 		else {
 			@session_write_close();
 			exit('Fatal error: could not load pdoTools!');
-		}        
+		}
 
 		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
 		$instance->loadModels();
 
 		$config['class'] = $class;
-		$config['limit'] = !isset($config['limit']) ? 0 : (integer) $config['limit'];
+		$config['limit'] = !isset($config['limit'])
+			? 0
+			: (integer) $config['limit'];
 		if (!empty($where)) {
 			unset($config['where']);
 			if (is_numeric($where)) {
