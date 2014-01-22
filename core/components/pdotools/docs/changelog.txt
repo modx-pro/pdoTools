@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 1.9.1 beta
 ==============
+- [#37] [pdoField] get the default, only if the field was empty.
 - [#34] Fixed processing of "modSymLink" documents.
 - [#32] Improved cache methods.
 - pdoTools::setCache() now returns cacheKey.

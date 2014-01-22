@@ -107,23 +107,21 @@ if (!empty($default)) {
 
 $scriptProperties['disableConditions'] = true;
 if ($row = $pdoFetch->getObject($class, $where, $scriptProperties)) {
-    foreach ($row as $k => $v) {
-        $k = strtolower($k);
-        if ($k == $field && $v != '') {
-            $output = $v;
-            break;
-        }
-    }
+	foreach ($row as $k => $v) {
+		if (strtolower($k) == $field && $v != '') {
+			$output = $v;
+			break;
+		}
+	}
 
-    if (empty($output) && !empty($default)) {
-        foreach ($row as $k => $v) {
-            $k = strtolower($k);
-            if ($k == $default && $v != '') {
-                $output = $v;
-                break;
-            }
-        }
-    }
+	if (empty($output) && !empty($default)) {
+		foreach ($row as $k => $v) {
+			if (strtolower($k) == $default && $v != '') {
+				$output = $v;
+				break;
+			}
+		}
+	}
 }
 
 if (!empty($toPlaceholder)) {
