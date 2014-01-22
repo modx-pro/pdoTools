@@ -357,7 +357,7 @@ class pdoFetch extends pdoTools {
 			$resources = $this->config['class'].'.'.$this->pk.':IN';
 			if (!empty($this->config['where'][$resources])) {
 				$tmp = array(
-					'find_in_set(`'.$this->config['class'].'`.`'.$this->pk.'`,\''.implode(',', $this->config['where'][$resources]).'\')' => ''
+					'FIELD(`'.$this->config['class'].'`.`'.$this->pk.'`,\''.implode('\',\'', $this->config['where'][$resources]).'\')' => ''
 				);
 			}
 			else {

@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - [#37] [pdoField] get the default, only if the field was empty.
 - [#34] Fixed processing of "modSymLink" documents.
 - [#32] Improved cache methods.
+- [#26] Replaced FIND_IN_SET() to FIELD().
 - pdoTools::setCache() now returns cacheKey.
 - Improved pdoFetch::getCollection().
 - Renamed pdoFetch::getObject() to getArray(). Now it uses getCollection for retrieve results.
