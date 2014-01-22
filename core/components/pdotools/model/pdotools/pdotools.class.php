@@ -888,7 +888,7 @@ class pdoTools {
 		if (empty($options)) {$options = $this->config;}
 
 		$key = !empty($this->modx->resource)
-			? $this->modx->resource->getCacheKey() . '/'
+			? $this->modx->resource->getCacheKey()
 			: '';
 		$options['cache_user'] = isset($options['cache_user'])
 			? (integer) $options['cache_user']
