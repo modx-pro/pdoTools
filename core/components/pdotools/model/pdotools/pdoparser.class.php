@@ -239,8 +239,6 @@ class pdoParser extends modParser {
 
 
 class pdoTag extends modTag {
-
-
 	/**
 	 * @param null $properties
 	 * @param null $content

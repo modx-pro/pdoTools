@@ -2,11 +2,11 @@
 require_once 'pdotools.class.php';
 
 class pdoFetch extends pdoTools {
-	/* @var string $pk Primary key of class */
+	/** @var string $pk Primary key of class */
 	protected $pk;
-	/* @var array $ancestry Array with ancestors of class */
+	/** @var array $ancestry Array with ancestors of class */
 	protected $ancestry = array();
-	/* @var xPDOQuery $query */
+	/** @var xPDOQuery $query */
 	protected $query;
 
 
