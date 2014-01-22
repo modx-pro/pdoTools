@@ -890,9 +890,11 @@ class pdoTools {
 		$key = !empty($this->modx->resource)
 			? $this->modx->resource->getCacheKey()
 			: '';
-		$options['cache_user'] = isset($options['cache_user'])
-			? (integer) $options['cache_user']
-			: $this->modx->user->id;
+		if (is_array($options)) {
+			$options['cache_user'] = isset($options['cache_user'])
+				? (integer) $options['cache_user']
+				: $this->modx->user->id;
+		}
 
 		return $key . '/' . sha1(serialize($options));
 	}
