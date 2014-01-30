@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+1.9.1 rc
+==============
+- [pdoPage] New parameter &cacheAnonymous.
+- [pdoMenu] New parameter &cacheAnonymous.
+
 1.9.1 beta
 ==============
 - [#37] [pdoField] get the default, only if the field was empty.

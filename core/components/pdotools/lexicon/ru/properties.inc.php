@@ -90,6 +90,7 @@ $_lang['pdotools_prop_field_output'] = 'Указанная здесь строк
 $_lang['pdotools_prop_cache'] = 'Кэширование результатов работы сниппета.';
 $_lang['pdotools_prop_cachePageKey'] = 'Имя ключа кэширования.';
 $_lang['pdotools_prop_cacheTime'] = 'Время актуальности кэша, в секундах.';
+$_lang['pdotools_prop_cacheAnonymous'] = 'Включить кэширование только для неавторизованных посетителей.';
 $_lang['pdotools_prop_element'] = 'Имя сниппета для запуска.';
 $_lang['pdotools_prop_maxLimit'] = 'Максимально возможный лимит выборки. Перекрывает лимит, указанный пользователем через url.';
 $_lang['pdotools_prop_page'] = 'Номер страницы для вывода. Перекрывается номером, указанным пользователем через url.';

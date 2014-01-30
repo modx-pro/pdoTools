@@ -109,6 +109,10 @@ $tmp = array(
 		'type' => 'numberfield',
 		'value' => 3600,
 	),
+	'cacheAnonymous' => array(
+		'type' => 'combo-boolean',
+		'value' => false,
+	),
 
 	'toPlaceholder' => array(
 		'type' => 'textfield',

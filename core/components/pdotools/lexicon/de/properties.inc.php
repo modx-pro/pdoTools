@@ -94,6 +94,7 @@ $_lang['pdotools_prop_field_output'] = 'Der hier eingegebene Text wird zurückge
 $_lang['pdotools_prop_cache'] = 'Ergebnisse der Snippet-Ausführung cachen.';
 $_lang['pdotools_prop_cachePageKey'] = 'The name of the key cache.';
 $_lang['pdotools_prop_cacheTime'] = 'Zeit, bis der Cache ungültig wird, in Sekunden.';
+$_lang['pdotools_prop_cacheAnonymous'] = 'Aktivieren Sie das Zwischenspeichern nur für nicht autorisierte Besucher.';
 $_lang['pdotools_prop_element'] = 'Der Name des auszuführenden Snippets.';
 $_lang['pdotools_prop_maxLimit'] = 'The maximum limit of the query. Overrides the limit specified by the user via a url.';
 $_lang['pdotools_prop_page'] = 'Number of page for output. Overlaps number specified user via the url.';

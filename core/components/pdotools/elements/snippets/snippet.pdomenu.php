@@ -104,7 +104,7 @@ if (!$modx->loadClass('pdoMenu', MODX_CORE_PATH . 'components/pdotools/model/pdo
 $pdoMenu = new pdoMenu($modx, $scriptProperties);
 $pdoMenu->pdoTools->addTime('pdoTools loaded');
 
-$output = !empty($cache)
+$output = !empty($cache) || !$modx->user->id && !empty($cacheAnonymous)
 	? $output = $pdoMenu->pdoTools->getCache($scriptProperties)
 	: '';
 
@@ -127,7 +127,7 @@ if (empty($output)) {
 	}
 
 	$output = $pdoMenu->templateTree($tree);
-	if (!empty($cache)) {
+	if (!empty($cache) || !$modx->user->id && !empty($cacheAnonymous)) {
 		$pdoMenu->pdoTools->setCache($output, $scriptProperties);
 	}
 }

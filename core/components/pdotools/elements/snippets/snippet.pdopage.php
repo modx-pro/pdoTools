@@ -67,7 +67,7 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
-$data = !empty($cache)
+$data = !empty($cache) || !$modx->user->id && !empty($cacheAnonymous)
 	? $pdoPage->pdoTools->getCache($scriptProperties)
 	: array();
 
@@ -134,7 +134,7 @@ if (empty($data)) {
 		$pageNavVar => $pagination,
 		$totalVar => $total,
 	);
-	if (!empty($cache)) {
+	if (!empty($cache) || !$modx->user->id && !empty($cacheAnonymous)) {
 		$pdoPage->pdoTools->setCache($data, $scriptProperties);
 	}
 }

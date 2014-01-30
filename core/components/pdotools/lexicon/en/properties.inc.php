@@ -92,6 +92,7 @@ $_lang['pdotools_prop_field_output'] = 'This string will be returned if the the 
 $_lang['pdotools_prop_cache'] = 'Caching the results of the snippet.';
 $_lang['pdotools_prop_cachePageKey'] = 'The name of the key cache.';
 $_lang['pdotools_prop_cacheTime'] = 'Time until the cache expires, in seconds.';
+$_lang['pdotools_prop_cacheAnonymous'] = 'Enable caching only for unauthorized visitors.';
 $_lang['pdotools_prop_element'] = 'The name of the snippet to run.';
 $_lang['pdotools_prop_maxLimit'] = 'The maximum limit of the query. Overrides the limit specified by the user via a url.';
 $_lang['pdotools_prop_page'] = 'Number of page for output. Overlaps number specified user via the url.';
