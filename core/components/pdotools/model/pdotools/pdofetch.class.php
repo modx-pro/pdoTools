@@ -301,6 +301,7 @@ class pdoFetch extends pdoTools {
 					? $this->modx->fromJSON($tmp)
 					: array($this->config['class'] => $tmp);
 			}
+			if (!is_array($tmp)) {$tmp = array();}
 			$tmp = array_merge($tmp, $this->config['tvsSelect']);
 			$i = 0;
 			foreach ($tmp as $k => $v) {
@@ -373,6 +374,7 @@ class pdoFetch extends pdoTools {
 				? $this->modx->fromJSON($this->config['sortby'])
 				: array($this->config['sortby'] => $this->config['sortdir']);
 		}
+		if (!is_array($tmp)) {$tmp = array();}
 		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp['sortby'])) {
 			$tmp2[$this->config['sortbyTV']] = !empty($this->config['sortdirTV'])
 				? $this->config['sortdirTV']
