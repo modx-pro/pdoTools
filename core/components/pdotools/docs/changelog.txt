@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [pdoPage] New parameter &cacheAnonymous.
 - [pdoMenu] New parameter &cacheAnonymous.
+- [#44] [pdoMenu] Improved handling of Wayfinder parameters "includeDocs" ans "excludeDocs".
 
 1.9.1 beta
 ==============

@@ -8,22 +8,22 @@ if (isset($startId)) {
 if (!empty($includeDocs)) {
 	$tmp = array_map('trim', explode(',', $includeDocs));
 	foreach ($tmp as $v) {
-		if (!empty($scriptProperties['parents'])) {
-			$scriptProperties['parents'] .= ','.$v;
+		if (!empty($scriptProperties['resources'])) {
+			$scriptProperties['resources'] .= ','.$v;
 		}
 		else {
-			$scriptProperties['parents'] = $v;
+			$scriptProperties['resources'] = $v;
 		}
 	}
 }
 if (!empty($excludeDocs)) {
 	$tmp = array_map('trim', explode(',', $excludeDocs));
 	foreach ($tmp as $v) {
-		if (!empty($scriptProperties['parents'])) {
-			$scriptProperties['parents'] .= ',-'.$v;
+		if (!empty($scriptProperties['resources'])) {
+			$scriptProperties['resources'] .= ',-'.$v;
 		}
 		else {
-			$scriptProperties['parents'] = '-'.$v;
+			$scriptProperties['resources'] = '-'.$v;
 		}
 	}
 }
