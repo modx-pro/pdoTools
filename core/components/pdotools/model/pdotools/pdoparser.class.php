@@ -126,9 +126,9 @@ class pdoParser extends modParser {
 								}
 								// Template variable
 								elseif ($field === null) {
-									$output = $length > 2 && strtolower($tmp[1]) == 'tv'
-										? $resource->getTVValue($tmp[2])
-										: $resource->getTVValue($tmp[1]);
+									unset($tmp[0]);
+									$tmp = preg_replace('/^tv\./', '', implode('.', $tmp));
+									$output = $resource->getTVValue($tmp);
 								}
 							}
 							// No field specified - print the whole resource

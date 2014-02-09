@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [pdoPage] New parameter &cacheAnonymous.
 - [pdoMenu] New parameter &cacheAnonymous.
+- [#46] [pdoParser] Fixed processing of TVs with dots in name.
 - [#44] [pdoMenu] Improved handling of Wayfinder parameters "includeDocs" and "excludeDocs".
 
 1.9.1 beta
