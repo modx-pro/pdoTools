@@ -916,14 +916,6 @@ class pdoFetch extends pdoTools {
 				$rows = array();
 			}
 			else {
-				$q = $instance->modx->prepare("SELECT FOUND_ROWS();");
-				$tstart = microtime(true);
-				$q->execute();
-				$instance->modx->queryTime += microtime(true) - $tstart;
-				$instance->modx->executedQueries++;
-				$total = $q->fetch(PDO::FETCH_COLUMN);
-				$instance->addTime('Total rows: <b>'.$total.'</b>');
-
 				$rows = $instance->checkPermissions($rows);
 				$rows = $instance->prepareRows($rows);
 			}
