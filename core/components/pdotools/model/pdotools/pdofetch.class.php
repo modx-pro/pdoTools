@@ -271,7 +271,7 @@ class pdoFetch extends pdoTools {
 					$alias = !empty($v['alias']) ? $v['alias'] : $k;
 					if (!is_numeric($alias) && !is_numeric($class)) {
 						$this->query->$join($class, $alias, $v['on']);
-						$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$v['alias'].'</b>', microtime(true) - $time);
+						$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$alias.'</b>', microtime(true) - $time);
 					}
 					else {
 						$this->addTime('Could not '.$join.' <i>'.$class.'</i> as <b>'.$alias.'</b>', microtime(true) - $time);
