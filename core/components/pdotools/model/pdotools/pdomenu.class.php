@@ -33,6 +33,7 @@ class pdoMenu {
 				'selfClass' => '',
 				'webLinkClass' => '',
 				'limit' => 0,
+				'hereId' => 0,
 			),
 			$config,
 			array(
@@ -43,7 +44,7 @@ class pdoMenu {
 		if (empty($config['tplInner']) && !empty($config['tplOuter'])) {
 			$config['tplInner'] = $config['tplOuter'];
 		}
-		if (empty($config['hereId'])) {
+		if (empty($config['hereId']) && !empty($modx->resource)) {
 			$config['hereId'] = $modx->resource->id;
 		}
 
@@ -90,16 +91,19 @@ class pdoMenu {
 		}
 		$this->pdoTools->addTime('End template tree');
 
-		$row = $this->addWayFinderPlaceholders(
-			array(
-				'wrapper' => $output,
-				'classes' => ' class="'.$this->pdoTools->config['outerClass'].'"',
-				'classNames' => $this->pdoTools->config['outerClass'],
-				'classnames' => $this->pdoTools->config['outerClass'],
-			)
-		);
+		if (!empty($output)) {
+			$pls = $this->addWayFinderPlaceholders(
+				array(
+					'wrapper' => $output,
+					'classes' => ' class="'.$this->pdoTools->config['outerClass'].'"',
+					'classNames' => $this->pdoTools->config['outerClass'],
+					'classnames' => $this->pdoTools->config['outerClass'],
+				)
+			);
+			$output = $this->pdoTools->parseChunk($this->pdoTools->config['tplOuter'], $pls);
+		}
 
-		return $this->pdoTools->parseChunk($this->pdoTools->config['tplOuter'], $row);
+		return $output;
 	}
 
 
