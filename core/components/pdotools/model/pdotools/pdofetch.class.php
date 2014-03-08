@@ -45,8 +45,11 @@ class pdoFetch extends pdoTools {
 		, $clean_timings);
 
 		if (empty($this->config['class'])) {$this->config['class'] = 'modResource';}
-		$this->pk = $this->modx->getPK($this->config['class']);
 		$this->ancestry = $this->modx->getAncestry($this->config['class']);
+		$pk = $this->modx->getPK($this->config['class']);
+		$this->pk = is_array($pk)
+			? implode(',', $pk)
+			: $pk;
 		$this->idx = !empty($this->config['offset'])
 			? (integer) $this->config['offset'] + 1
 			: 1;
@@ -354,7 +357,7 @@ class pdoFetch extends pdoTools {
 	public function addSort() {
 		$time = microtime(true);
 		$tmp = $this->config['sortby'];
-		if (empty($tmp)) {
+		if (empty($tmp) || strtolower($tmp) == 'resources' || strtolower($tmp) == 'ids') {
 			$resources = $this->config['class'].'.'.$this->pk.':IN';
 			if (!empty($this->config['where'][$resources])) {
 				$tmp = array(
