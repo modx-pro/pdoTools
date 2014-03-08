@@ -2,24 +2,21 @@ Changelog for pdoTools.
 
 1.9.1 pl
 ==============
-- [pdoPage] New parameter &cacheAnonymous.
-- [pdoMenu] New parameter &cacheAnonymous.
 - [#47] [pdoMenu] Fixed processing &tplOuter when output is empty.
 - [#46] [pdoParser] Fixed processing of TVs with dots in name.
 - [#44] [pdoMenu] Improved handling of Wayfinder parameters "includeDocs" and "excludeDocs".
-- Removed unnecessary query in pdoFetch::getCollection().
-- [pdoFetch] Ability to work with objects, that has multiple primary keys.
-- Added aliases for sort query in order of specified &resources: "ids" or "resources".
-
-1.9.1 beta
-==============
 - [#37] [pdoField] get the default, only if the field was empty.
 - [#34] Fixed processing of "modSymLink" documents.
 - [#32] Improved cache methods.
 - [#26] Replaced FIND_IN_SET() to FIELD().
-- pdoTools::setCache() now returns cacheKey.
+- [pdoFetch] Ability to work with objects, that has multiple primary keys.
+- [pdoPage] New parameter &cacheAnonymous.
+- [pdoMenu] New parameter &cacheAnonymous.
+- Added aliases for sort query in order of specified &resources: "ids" or "resources".
+- Removed unnecessary query in pdoFetch::getCollection().
 - Improved pdoFetch::getCollection().
 - Renamed pdoFetch::getObject() to getArray(). Now it uses getCollection for retrieve results.
+- pdoTools::setCache() now returns cacheKey.
 - pdoFetch::getObject() is now alias of pdoFetch::getArray().
 
 1.9.0 pl2
