@@ -36,17 +36,19 @@ if ((!empty($top) || !empty($topLevel)) && $isResource) {
 		}
 	}
 	// Gets the parent from root of context, if specified
-	if (!empty($topLevel)) {
-		$pids = $modx->getChildIds(0, $topLevel, array('context' => $context));
-		$pid = $id;
-		while (true) {
-			$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
-			if (!$pid = current($tmp)) {
-				break;
-			}
-			elseif (in_array($pid, $pids)) {
-				$id = $pid;
-				break;
+	if (!empty($topLevel)&&$topLevel>0) {
+		$pids = $modx->getChildIds(0, $topLevel-1, array('context' => $context));
+		if (!in_array($id, $pids)) {
+			$pid = $id;
+			while (true) {
+				$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+				if (!$pid = current($tmp)) {
+					break;
+				}
+				elseif (in_array($pid, $pids)) {
+					$id = $pid;
+					break;
+				}
 			}
 		}
 	}
