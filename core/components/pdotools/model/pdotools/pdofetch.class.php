@@ -8,6 +8,8 @@ class pdoFetch extends pdoTools {
 	protected $ancestry = array();
 	/** @var xPDOQuery $query */
 	protected $query;
+	/** @var array $aliases Array with aliases of classes */
+	public $aliases;
 
 
 	/**
@@ -276,6 +278,7 @@ class pdoFetch extends pdoTools {
 					if (!is_numeric($alias) && !is_numeric($class)) {
 						$this->query->$join($class, $alias, $v['on']);
 						$this->addTime($join.'ed <i>'.$class.'</i> as <b>'.$alias.'</b>', microtime(true) - $time);
+						$this->aliases[$alias] = $class;
 					}
 					else {
 						$this->addTime('Could not '.$join.' <i>'.$class.'</i> as <b>'.$alias.'</b>', microtime(true) - $time);
@@ -308,23 +311,33 @@ class pdoFetch extends pdoTools {
 			if (!is_array($tmp)) {$tmp = array();}
 			$tmp = array_merge($tmp, $this->config['tvsSelect']);
 			$i = 0;
-			foreach ($tmp as $k => $v) {
-				if (is_numeric($k)) {$k = $this->config['class'];}
-				if (strpos($k, 'TV') !== 0 && strpos($v, $k) === false && isset($this->modx->map[$k])) {
-					if ($v == 'all' || $v == '*') {
-						$v = $this->modx->getSelectColumns($k, $k);
+			foreach ($tmp as $class => $fields) {
+				if (is_numeric($class)) {
+					$class = $this->config['class'];
+				}
+				elseif (isset($this->aliases[$class])) {
+					$alias = $class;
+					$class = $this->aliases[$alias];
+				}
+				if (empty($alias)) {$alias = $class;}
+				if (strpos($class, 'TV') !== 0 && strpos($fields, $class) === false && isset($this->modx->map[$class])) {
+					if ($fields == 'all' || $fields == '*' || empty($fields)) {
+						$fields = $this->modx->getSelectColumns($class, $alias);
 					}
 					else {
-						$v = $this->modx->getSelectColumns($k, $k, '', array_map('trim', explode(',', $v)));
+						$fields = $this->modx->getSelectColumns($class, $alias, '', array_map('trim', explode(',', $fields)));
 					}
 				}
-				if ($i == 0) {$v = 'SQL_CALC_FOUND_ROWS '.$v;}
-				$this->query->select($v);
-				if (is_array($v)) {
-					$v = current($v) . ' AS ' . current(array_flip($v));
+				if ($i == 0) {
+					$fields = 'SQL_CALC_FOUND_ROWS '.$fields;
 				}
+				$this->query->select($fields);
 				$i++;
-				$this->addTime('Added selection of <b>'.$k.'</b>: <small>' . str_replace('`'.$k.'`.', '', $v) . '</small>', microtime(true) - $time);
+
+				if (is_array($fields)) {
+					$fields = current($fields) . ' AS ' . current(array_flip($fields));
+				}
+				$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$alias.'`.', '', $fields) . '</small>', microtime(true) - $time);
 				$time = microtime(true);
 			}
 		}
