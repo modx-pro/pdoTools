@@ -71,6 +71,7 @@ class pdoFetch extends pdoTools {
 		$this->addGrouping();
 		$this->addSelects();
 		$this->addWhere();
+		$this->addSort();
 		$this->prepareQuery();
 
 		$output = '';
@@ -403,6 +404,9 @@ class pdoFetch extends pdoTools {
 						}
 					}
 				}
+				elseif (strpos($sortby, '.') === false && strpos($sortby, '`') === false && strpos($sortby, $this->config['class']) === false) {
+					$sortby = $this->config['class'].'.'.$sortby;
+				}
 				$this->query->sortby($sortby, $sortdir);
 
 				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>', microtime(true) - $time);
@@ -418,8 +422,6 @@ class pdoFetch extends pdoTools {
 	 * @return PDOStatement
 	 */
 	public function prepareQuery() {
-		$this->addSort();
-
 		if (!empty($this->config['limit'])) {
 			$time = microtime(true);
 			$this->query->limit($this->config['limit'], $this->config['offset']);
@@ -906,6 +908,7 @@ class pdoFetch extends pdoTools {
 		$instance->addGrouping();
 		$instance->addSelects();
 		$instance->addWhere();
+		$instance->addSort();
 		$instance->prepareQuery();
 
 		$instance->addTime('SQL prepared <small>"'.$instance->query->toSql().'"</small>');

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.1 pl1
+==============
+- Adding alias of main class of query to "sortby" if no alias exists.
+
 1.9.1 pl
 ==============
 - [#47] [pdoMenu] Fixed processing &tplOuter when output is empty.
