@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [pdoFetch] Adding alias of main class of query to "sortby" if no alias exists.
 - [pdoFetch] Improved selecting of all fields of class with specified alias.
+- [pdoField] Parameters "top" and "topLevel" works exactly as in UltimateParent.
 
 1.9.1 pl
 ==============

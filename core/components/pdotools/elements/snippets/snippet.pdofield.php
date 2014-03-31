@@ -7,6 +7,8 @@ $class = $modx->getOption('class', $scriptProperties, 'modResource', true);
 $isResource = $class == 'modResource' || in_array($class, $modx->getDescendants('modResource'));
 
 if (empty($field)) {$field = 'pagetitle';}
+if (!isset($topLevel)) {$topLevel = '';}
+if (!isset($top)) {$top = '';}
 if (!empty($options)) {
 	$options = trim($options);
 	if ($options[0] == '{') {
@@ -23,7 +25,7 @@ if (!empty($options)) {
 if (empty($id)) {$id = $modx->resource->id;}
 if (!isset($context)) {$context = '';}
 
-if ((!empty($top) || !empty($topLevel)) && $isResource) {
+if (($top !== '' || $topLevel !== '') && $isResource) {
 	// Select needed context for parents functionality
 	if (empty($context)) {
 		$q = $modx->newQuery($class, $id);
@@ -35,33 +37,28 @@ if ((!empty($top) || !empty($topLevel)) && $isResource) {
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}
-	// Gets the parent from root of context, if specified
-	if (!empty($topLevel)&&$topLevel>0) {
-		$pids = $modx->getChildIds(0, $topLevel-1, array('context' => $context));
-		if (!in_array($id, $pids)) {
-			$pid = $id;
-			while (true) {
-				$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
-				if (!$pid = current($tmp)) {
-					break;
-				}
-				elseif (in_array($pid, $pids)) {
-					$id = $pid;
-					break;
-				}
-			}
-		}
-	}
-	elseif (!empty($top)) {
+	// This logic taken from snippet UltimateParent
+	// Thanks to its authors!
+	$top = intval($top) ? intval($top) : 0;
+	$topLevel = intval($topLevel) ? intval($topLevel) : 0;
+	if ($id && $id != $top) {
 		$pid = $id;
-		for ($i = 1; $i <= $top; $i++) {
-			$tmp = $modx->getParentIds($pid, 1, array('context' => $context)); 
-			if (!$pid = current($tmp)) {
-				break;
+		$pids = $modx->getParentIds($id, 10, array('context' => $context));
+		if (!$topLevel || count($pids) >= $topLevel) {
+			while ($parentIds = $modx->getParentIds($id, 1, array('context' => $context))) {
+				$pid = array_pop($parentIds);
+				if ($pid == $top) {
+					break;
+				}
+				$id = $pid;
+				$parentIds = $modx->getParentIds($id, 10, array('context' => $context));
+				if ($topLevel && count($parentIds) < $topLevel) {
+					break;
+				}
 			}
-			$id = $pid;
 		}
 	}
+	// --
 }
 
 /* @var pdoFetch $pdoFetch */
