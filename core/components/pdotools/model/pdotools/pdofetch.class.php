@@ -313,14 +313,16 @@ class pdoFetch extends pdoTools {
 			$i = 0;
 			foreach ($tmp as $class => $fields) {
 				if (is_numeric($class)) {
-					$class = $this->config['class'];
+					$class = $alias = $this->config['class'];
 				}
 				elseif (isset($this->aliases[$class])) {
 					$alias = $class;
 					$class = $this->aliases[$alias];
 				}
-				if (empty($alias)) {$alias = $class;}
-				if (strpos($class, 'TV') !== 0 && strpos($fields, $class) === false && isset($this->modx->map[$class])) {
+				else {
+					$alias = $class;
+				}
+				if (strpos($class, 'TV') !== 0 && strpos($fields, $alias) === false && isset($this->modx->map[$class])) {
 					if ($fields == 'all' || $fields == '*' || empty($fields)) {
 						$fields = $this->modx->getSelectColumns($class, $alias);
 					}
@@ -328,6 +330,7 @@ class pdoFetch extends pdoTools {
 						$fields = $this->modx->getSelectColumns($class, $alias, '', array_map('trim', explode(',', $fields)));
 					}
 				}
+
 				if ($i == 0) {
 					$fields = 'SQL_CALC_FOUND_ROWS '.$fields;
 				}
@@ -351,6 +354,7 @@ class pdoFetch extends pdoTools {
 			$this->addSelects();
 		}
 	}
+
 
 	/**
 	 * Group query by given field
