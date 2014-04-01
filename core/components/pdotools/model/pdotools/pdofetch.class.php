@@ -322,7 +322,7 @@ class pdoFetch extends pdoTools {
 				else {
 					$alias = $class;
 				}
-				if (strpos($class, 'TV') !== 0 && strpos($fields, $alias) === false && isset($this->modx->map[$class])) {
+				if (strpos($alias, 'TV') !== 0 && strpos($fields, $alias) === false && isset($this->modx->map[$class])) {
 					if ($fields == 'all' || $fields == '*' || empty($fields)) {
 						$fields = $this->modx->getSelectColumns($class, $alias);
 					}

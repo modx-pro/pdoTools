@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.9.1 pl2
+1.9.1 pl3
 ==============
 - [pdoFetch] Adding alias of main class of query to "sortby" if no alias exists.
 - [pdoFetch] Improved selecting of all fields of class with specified alias.
