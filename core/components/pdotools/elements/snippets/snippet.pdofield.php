@@ -37,11 +37,21 @@ if (($top !== '' || $topLevel !== '') && $isResource) {
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}
-	// This logic taken from snippet UltimateParent
-	// Thanks to its authors!
 	$top = intval($top) ? intval($top) : 0;
 	$topLevel = intval($topLevel) ? intval($topLevel) : 0;
-	if ($id && $id != $top) {
+	if ($top && !$topLevel) {
+		$pid = $id;
+		for ($i = 1; $i <= $top; $i++) {
+			$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+			if (!$pid = current($tmp)) {
+				break;
+			}
+			$id = $pid;
+		}
+	}
+	// This logic taken from snippet UltimateParent
+	// Thanks to its authors!
+	elseif ($id != $top) {
 		$pid = $id;
 		$pids = $modx->getParentIds($id, 10, array('context' => $context));
 		if (!$topLevel || count($pids) >= $topLevel) {
