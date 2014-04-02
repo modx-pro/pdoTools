@@ -403,6 +403,7 @@ class pdoFetch extends pdoTools {
 			$tmp = array_merge($tmp2, $tmp);
 		}
 
+		$fields = $this->modx->getFields($this->config['class']);
 		$sorts = $this->replaceTVCondition($tmp);
 		if (is_array($sorts)) {
 			while (list($sortby, $sortdir) = each($sorts)) {
@@ -421,7 +422,7 @@ class pdoFetch extends pdoTools {
 						}
 					}
 				}
-				elseif (strpos($sortby, '.') === false && strpos($sortby, '`') === false && strpos($sortby, $this->config['class']) === false) {
+				elseif (!preg_match('/[\(\)\.\`]/', $sortby) && strpos($sortby, $this->config['class']) === false && array_key_exists($sortby, $fields)) {
 					$sortby = $this->config['class'].'.'.$sortby;
 				}
 				$this->query->sortby($sortby, $sortdir);
