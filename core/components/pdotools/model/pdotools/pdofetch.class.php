@@ -322,7 +322,7 @@ class pdoFetch extends pdoTools {
 				else {
 					$alias = $class;
 				}
-				if (strpos($alias, 'TV') !== 0 && strpos($fields, $alias) === false && isset($this->modx->map[$class])) {
+				if (is_string($fields) && !preg_match('/\b'.$alias.'\b|\bAS\b|\(|`/i', $fields) && isset($this->modx->map[$class])) {
 					if ($fields == 'all' || $fields == '*' || empty($fields)) {
 						$fields = $this->modx->getSelectColumns($class, $alias);
 					}
@@ -422,7 +422,7 @@ class pdoFetch extends pdoTools {
 						}
 					}
 				}
-				elseif (!preg_match('/[\(\)\.\`]/', $sortby) && strpos($sortby, $this->config['class']) === false && array_key_exists($sortby, $fields)) {
+				elseif (array_key_exists($sortby, $fields)) {
 					$sortby = $this->config['class'].'.'.$sortby;
 				}
 				$this->query->sortby($sortby, $sortdir);
