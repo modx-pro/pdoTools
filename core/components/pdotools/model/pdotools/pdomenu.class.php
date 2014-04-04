@@ -52,9 +52,12 @@ class pdoMenu {
 		if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
 			$this->pdoTools = new $pdoClass($modx, $config);
 		}
+		elseif ($pdoClass = $modx->loadClass($fqn, MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+			$this->pdoTools = new $pdoClass($modx, $config);
+		}
 		else {
-			@session_write_close();
-			exit('Fatal error: could not load pdoTools!');
+			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoFetch from "MODX_CORE_PATH/components/pdotools/model/".');
+			return false;
 		}
 
 		if ($config['hereId'] && $currentResource = $this->pdoTools->getObject('modResource', $config['hereId'])) {
@@ -64,6 +67,7 @@ class pdoMenu {
 		}
 
 		$modx->lexicon->load('pdotools:pdomenu');
+		return true;
 	}
 
 

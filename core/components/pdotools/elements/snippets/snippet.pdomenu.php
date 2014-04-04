@@ -100,7 +100,10 @@ foreach ($wfTemplates as $k => $v) {
 //---
 
 /** @var pdoMenu $pdoMenu */
-if (!$modx->loadClass('pdoMenu', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
+if (!$modx->loadClass('pdotools.pdoMenu', MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoMenu from "MODX_CORE_PATH/components/pdotools/model/".');
+	return false;
+}
 $pdoMenu = new pdoMenu($modx, $scriptProperties);
 $pdoMenu->pdoTools->addTime('pdoTools loaded');
 

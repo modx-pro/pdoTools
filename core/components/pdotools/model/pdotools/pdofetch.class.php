@@ -893,9 +893,12 @@ class pdoFetch extends pdoTools {
 		if ($pdoClass = $this->modx->loadClass($fqn, '', false, true)) {
 			$instance = new $pdoClass($this->modx, $config);
 		}
+		elseif ($pdoClass = $this->modx->loadClass($fqn, MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+			$instance = new $pdoClass($this->modx, $config);
+		}
 		else {
-			@session_write_close();
-			exit('Fatal error: could not load pdoTools!');
+			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoFetch from "MODX_CORE_PATH/components/pdotools/model/".');
+			return false;
 		}
 
 		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}

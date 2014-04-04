@@ -1,7 +1,10 @@
 <?php
 /** @var array $scriptProperties */
 /** @var pdoPage $pdoPage */
-if (!$modx->loadClass('pdoPage', MODX_CORE_PATH . 'components/pdotools/model/pdotools/', false, true)) {return false;}
+if (!$modx->loadClass('pdotools.pdoPage', MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoPage from "MODX_CORE_PATH/components/pdotools/model/".');
+	return false;
+}
 $pdoPage = new pdoPage($modx, $scriptProperties);
 $pdoPage->pdoTools->addTime('pdoTools loaded');
 
