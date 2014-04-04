@@ -889,8 +889,11 @@ class pdoFetch extends pdoTools {
 	 */
 	public function getCollection($class, $where = '', $config = array()) {
 		/** @var pdoFetch $instance */
-		$fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-		if ($pdoClass = $this->modx->loadClass($fqn, '', false, true)) {
+
+        $fqn_ar = explode(':',$this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true));
+        $fqn = isset($fqn_ar[0]) ? $fqn_ar[0] : 'pdotools.pdofetch';
+        $classPath = isset($fqn_ar[1]) ? str_replace('{core_path}',$this->modx->getOption('core_path'),$fqn_ar[1]) : '';        
+		if ($pdoClass = $this->modx->loadClass($fqn, $classPath, false, true)) {
 			$instance = new $pdoClass($this->modx, $config);
 		}
 		else {

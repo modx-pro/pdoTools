@@ -72,8 +72,10 @@ if (($top !== '' || $topLevel !== '') && $isResource) {
 }
 
 /* @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-if (!$pdoClass = $modx->loadClass($fqn, '', false, true)) {return false;}
+$fqn_ar = explode(':',$modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true));
+$fqn = isset($fqn_ar[0]) ? $fqn_ar[0] : 'pdotools.pdofetch';
+$classPath = isset($fqn_ar[1]) ? str_replace('{core_path}',$modx->getOption('core_path'),$fqn_ar[1]) : '';
+if (!$pdoClass = $modx->loadClass($fqn, $classPath, false, true)) {return false;}
 $pdoFetch = new $pdoClass($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 
