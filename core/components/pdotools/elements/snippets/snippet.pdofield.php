@@ -7,8 +7,8 @@ $class = $modx->getOption('class', $scriptProperties, 'modResource', true);
 $isResource = $class == 'modResource' || in_array($class, $modx->getDescendants('modResource'));
 
 if (empty($field)) {$field = 'pagetitle';}
-if (!isset($topLevel)) {$topLevel = '';}
-if (!isset($top)) {$top = '';}
+$top = isset($top) ? intval($top) : 0;
+$topLevel = isset($topLevel) ? intval($topLevel) : 0;
 if (!empty($options)) {
 	$options = trim($options);
 	if ($options[0] == '{') {
@@ -22,10 +22,18 @@ if (!empty($options)) {
 		$field = $options;
 	}
 }
-if (empty($id)) {$id = $modx->resource->id;}
+if (empty($id)) {
+	if (!empty($modx->resource)) {
+		$id = $modx->resource->id;
+	}
+	else {
+		return 'You must specify an id of '.$class;
+	}
+}
 if (!isset($context)) {$context = '';}
 
-if (($top !== '' || $topLevel !== '') && $isResource) {
+// Gets the parent from root of context, if specified
+if ($isResource && $id && ($top || $topLevel)) {
 	// Select needed context for parents functionality
 	if (empty($context)) {
 		$q = $modx->newQuery($class, $id);
@@ -37,25 +45,40 @@ if (($top !== '' || $topLevel !== '') && $isResource) {
 			$context = $q->stmt->fetch(PDO::FETCH_COLUMN);
 		}
 	}
-	$top = intval($top) ? intval($top) : 0;
-	$topLevel = intval($topLevel) ? intval($topLevel) : 0;
-	if ($top && !$topLevel) {
-		$pid = $id;
-		for ($i = 1; $i <= $top; $i++) {
-			$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
-			if (!$pid = current($tmp)) {
-				break;
+	// Original pdoField logic
+	if (empty($ultimate)) {
+		if ($topLevel) {
+			$pids = $modx->getChildIds(0, $topLevel, array('context' => $context));
+			$pid = $id;
+			while (true) {
+				$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+				if (!$pid = current($tmp)) {
+					break;
+				}
+				elseif (in_array($pid, $pids)) {
+					$id = $pid;
+					break;
+				}
 			}
-			$id = $pid;
+		}
+		elseif ($top) {
+			$pid = $id;
+			for ($i = 1; $i <= $top; $i++) {
+				$tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+				if (!$pid = current($tmp)) {
+					break;
+				}
+				$id = $pid;
+			}
 		}
 	}
-	// This logic taken from snippet UltimateParent
-	// Thanks to its authors!
+	// UltimateParent logic
+	// https://github.com/splittingred/UltimateParent/blob/develop/core/components/ultimateparent/snippet.ultimateparent.php
 	elseif ($id != $top) {
 		$pid = $id;
 		$pids = $modx->getParentIds($id, 10, array('context' => $context));
 		if (!$topLevel || count($pids) >= $topLevel) {
-			while ($parentIds = $modx->getParentIds($id, 1, array('context' => $context))) {
+			while ($parentIds= $modx->getParentIds($id, 1, array('context' => $context))) {
 				$pid = array_pop($parentIds);
 				if ($pid == $top) {
 					break;
@@ -68,7 +91,6 @@ if (($top !== '' || $topLevel !== '') && $isResource) {
 			}
 		}
 	}
-	// --
 }
 
 /* @var pdoFetch $pdoFetch */

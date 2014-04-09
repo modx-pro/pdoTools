@@ -145,3 +145,5 @@ $_lang['pdotools_prop_tplParentRow'] = 'Name of the chunk containing the templat
 $_lang['pdotools_prop_tplParentRowActive'] = 'Name of the chunk containing the template for items that are containers, have children and are currently active in the tree.';
 $_lang['pdotools_prop_tplParentRowHere'] = 'Name of the chunk containing the template for the current Resource if it is a container and has children. Remember the [[+wf.wrapper]] placeholder to output the children documents.';
 $_lang['pdotools_prop_tplStart'] = 'Name of the chunk containing the template for the start item, if enabled via the &displayStart parameter. Note: the default template shows the start item but does not link it. If you do not need a link, a class can be applied to the default template using the parameter &firstClass=`className`.';
+
+$_lang['pdotools_prop_ultimate'] = 'Parameters &top and &topLevel works as in snippet UltimateParent.';

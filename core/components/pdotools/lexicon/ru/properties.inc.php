@@ -143,3 +143,5 @@ $_lang['pdotools_prop_tplParentRow'] = 'Чанк оформления конте
 $_lang['pdotools_prop_tplParentRowActive'] = 'Чанк оформления активного контейнера с потомками.';
 $_lang['pdotools_prop_tplParentRowHere'] = 'Чанк оформления текущего контейнера с потомками.';
 $_lang['pdotools_prop_tplStart'] = 'Чанк оформления корневого пункта, при условии, что включен "displayStart".';
+
+$_lang['pdotools_prop_ultimate'] = 'Параметры &top и &topLevel работают как в сниппете UltimateParent.';

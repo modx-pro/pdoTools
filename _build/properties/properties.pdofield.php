@@ -50,6 +50,10 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => ''
 	)
+	,'ultimate' => array(
+		'type' => 'combo-boolean'
+		,'value' => false
+	)
 
 );
 
