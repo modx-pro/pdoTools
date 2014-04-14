@@ -60,7 +60,7 @@ class pdoParser extends modParser {
 				// Link tag
 				case '~':
 					if (is_numeric($innerTag)) {
-						if ($tmp = $this->modx->makeUrl($innerTag, '', '', $this->modx->getOption('link_tag_scheme', -1, true))) {
+						if ($tmp = $this->modx->makeUrl($innerTag, '', '', $this->modx->getOption('link_tag_scheme', null, -1, true))) {
 							$output = $tmp;
 							$processed = true;
 						}
