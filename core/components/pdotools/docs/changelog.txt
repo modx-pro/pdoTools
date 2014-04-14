@@ -1,7 +1,8 @@
 Changelog for pdoTools.
 
-1.9.2 pl
+1.9.2 pl2
 ==============
+- [#56] [pdoParser] Fixed wrong links processing.
 - [#53] Improved loading of classes.
 - [pdoField] Rolled back to original logic of "top" and "topLevel" parameters due to issues.
 - [pdoField] Added parameter "ultimate" to emulate logic of UltimateParent.
