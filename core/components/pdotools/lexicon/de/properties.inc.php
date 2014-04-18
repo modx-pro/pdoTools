@@ -64,11 +64,11 @@ $_lang['pdotools_prop_tplOdd'] = 'Name eines Chunks, der als Ressourcen-Template
 $_lang['pdotools_prop_tplWrapper'] = 'Name eines Chunks, der als äußeres Template für die Ausgabe dient (und diese quasi umschließt). Dies funktioniert nicht zusammen mit "toSeparatePlaceholders" (dieser Hinweis gilt natürlich nur für die Snippets, die die Eigenschaft "toSeparatePlaceholders" verwenden).';
 $_lang['pdotools_prop_neighbors_tplWrapper'] = 'Name eines Chunks, der als äußeres Template für die Ausgabe dient (und diese quasi umschließt). Dies funktioniert nicht zusammen mit "toSeparatePlaceholders".';
 $_lang['pdotools_prop_tvPrefix'] = 'Das Präfix für Template-Variablen-Eigenschaften.';
-$_lang['pdotools_prop_where'] = 'A JSON-style expression of criteria to build any additional where clauses from.';
+$_lang['pdotools_prop_where'] = 'Ein Ausdruck im JSON-Stil mit Kriterien, aus denen zusätzliche WHERE-Bedingungen erstellt werden können.';
 $_lang['pdotools_prop_wrapIfEmpty'] = 'Wenn diese Einstellung auf "Ja" gesetzt wird, wird der Inhalt des in "tplWrapper" angegebenen Chunks auch dann ausgegeben, wenn die Ausgabe leer ist.';
 $_lang['pdotools_prop_tplOperator'] = 'Ein optionaler Operator der für den Vergleich der "tplCondition" mit den in "conditionalTpls" definierten Operanden verwendet wird. Standardwert ist == (ist gleich).';
-$_lang['pdotools_prop_tplCondition'] = 'A condition to compare against the conditionalTpls property to map Resources to different tpls based on custom conditional logic.';
-$_lang['pdotools_prop_conditionalTpls'] = 'A JSON map of conditional operands and tpls to compare against the tplCondition property using the specified tplOperator.';
+$_lang['pdotools_prop_tplCondition'] = 'Eine Bedingung zum Vergleich mit der Eigenschaft conditionalTpls, um Ressourcen verschiedenen Templates zuzuordnen, basierend auf benutzerdefinierten Bedingungen.';
+$_lang['pdotools_prop_conditionalTpls'] = 'Eine JSON-Map von Bedingungs-Operanden und Templates zum Vergleich mit der tplCondition-Eigenschaft unter Verwendung des angegebenen tplOperator.';
 $_lang['pdotools_prop_tplCurrent'] = 'Сhunk für das aktuelle Dokument in der Navigation.';
 $_lang['pdotools_prop_tplHome'] = 'Сhunk für den Link zur Startseite der Site.';
 $_lang['pdotools_prop_tplMax'] = 'Сhunk, der am Anfang der Breadcrumb-Navigation eingefügt wird, wenn es mehr Elemente gibt, als durch "limit" zugelassen werden.';
@@ -92,17 +92,17 @@ $_lang['pdotools_prop_field_default'] = 'Geben Sie ein zusätzliches Ressourcen-
 $_lang['pdotools_prop_field_output'] = 'Der hier eingegebene Text wird zurückgegeben, wenn die in "default" und "field" definierten Felder der Ressource leer sind.';
 
 $_lang['pdotools_prop_cache'] = 'Ergebnisse der Snippet-Ausführung cachen.';
-$_lang['pdotools_prop_cachePageKey'] = 'The name of the key cache.';
+$_lang['pdotools_prop_cachePageKey'] = 'Der Name des Schlüssel-Caches.';
 $_lang['pdotools_prop_cacheTime'] = 'Zeit, bis der Cache ungültig wird, in Sekunden.';
-$_lang['pdotools_prop_cacheAnonymous'] = 'Aktivieren Sie das Zwischenspeichern nur für nicht autorisierte Besucher.';
+$_lang['pdotools_prop_cacheAnonymous'] = 'Aktivieren Sie das Caching nur für nicht autorisierte Besucher.';
 $_lang['pdotools_prop_element'] = 'Der Name des auszuführenden Snippets.';
-$_lang['pdotools_prop_maxLimit'] = 'The maximum limit of the query. Overrides the limit specified by the user via a url.';
-$_lang['pdotools_prop_page'] = 'Number of page for output. Overlaps number specified user via the url.';
+$_lang['pdotools_prop_maxLimit'] = 'Das maximale Limit der Abfrage. Hat Vorrang vor dem Limit, das der Benutzer in einer URL angibt.';
+$_lang['pdotools_prop_page'] = 'Die Nummer der Seite für die Ausgabe. Hat Vorrang vor der Nummer, die der Benutzer in der URL angegeben hat.';
 $_lang['pdotools_prop_pageLimit'] = 'Anzahl der Links zu anderen Seiten. Ist dieser Wert größer oder gleich 7, wird der erweiterte Modus eingeschaltet.';
 $_lang['pdotools_prop_pageNavVar'] = 'Name des Platzhalters für die Ausgabe der Paginierung (Links zu anderen Seiten).';
 $_lang['pdotools_prop_pageCountVar'] = 'Name des Platzhalters für die Ausgabe der Anzahl der Seiten.';
 $_lang['pdotools_prop_pageVarKey'] = 'Der Name des Parameters, der in der URL die Seitennummer angibt.';
-$_lang['pdotools_prop_plPrefix'] = 'Präfix für Platzhalter; dieses Feld ist standardmäßig leer.';  // It is not empty in pdoMenu... issuance = output???
+$_lang['pdotools_prop_plPrefix'] = 'Präfix für Platzhalter; Standard ist "wf.".';
 
 $_lang['pdotools_prop_tplPage'] = 'Chunk für einen normalen Link zu einer Seite.';
 $_lang['pdotools_prop_tplPageActive'] = 'Chunk für den Link zur aktuellen Seite.';
@@ -119,7 +119,7 @@ $_lang['pdotools_prop_tplPageWrapper'] = 'Chunk, der den gesamten Paginierungs-B
 
 $_lang['pdotools_prop_previewUnpublished'] = 'Optional. Wenn diese Einstellung auf "Ja" gesetzt wird, Sie in den Manager eingeloggt sind und die Berechtigung "view_unpublished" besitzen, so können Sie in der Vorschau Ihrer Site auch unveröffentlichte Ressourcen im Menü sehen.';
 $_lang['pdotools_prop_checkPermissions'] = 'Kommaseparierte Liste von beim Erstellen des Menüs zu prüfenden Berechtigungen.';
-$_lang['pdotools_prop_displayStart'] = 'Show the document as referenced by startId in the menu.';  // What is startId?
+$_lang['pdotools_prop_displayStart'] = 'Dokument wie von der startId im Menu angegeben anzeigen.';  // What is startId?
 $_lang['pdotools_prop_hideSubMenus'] = 'Wenn diese Eigenschaft auf "Ja" gesetzt wird, werden alle nicht-aktiven Untermenüs aus der Snippet-Ausgabe entfernt. Dieser Parameter wirkt sich nur aus, wenn mehrere Ebenen angezeigt werden.';
 $_lang['pdotools_prop_useWeblinkUrl'] = 'Wenn WebLinks in der Ausgabe verwendet werden und diese Einstellung auf "Ja" gesetzt wird, gibt das Snippet den Link aus, der im Weblink definiert ist, anstatt des normalen MODX-Links. Um die Standard-Anzeige von Weblinks zu nutzen (wie bei jeder anderen Ressource), setzen Sie diese Einstellung auf "Nein".';
 $_lang['pdotools_prop_rowIdPrefix'] = 'Wenn hier etwas eingegeben wird, ersetzt das Skript den Platzhalter "id" durch eine eindeutige ID, die aus dem hier angegebenen Präfix, gefolgt von der Ressourcen-ID, besteht.';
@@ -146,4 +146,6 @@ $_lang['pdotools_prop_tplOuter'] = 'Name des Chunks, der das Template für den �
 $_lang['pdotools_prop_tplParentRow'] = 'Name des Chunks, der das Template für Ressourcen enthält, die Container sind und Kindelemente besitzen. Denken Sie an den Platzhalter [[+wrapper]], um die untergeordneten Dokumente (Kindelemente) auszugeben.';
 $_lang['pdotools_prop_tplParentRowActive'] = 'Name des Chunks, der das Template enthält für Elemente, die Container sind, Kindelemente besitzen und gerade im Ressourcenbaum aktiv sind.';
 $_lang['pdotools_prop_tplParentRowHere'] = 'Name des Chunks, der das Template für die aktuelle Ressource enthält, wenn diese ein Container ist und Kindelemente besitzt. Denken Sie an den Platzhalter [[+wf.wrapper]], um die untergeordneten Dokumente (Kindelemente) auszugeben.';
-$_lang['pdotools_prop_tplStart'] = 'Name of the chunk containing the template for the start item, if enabled via the &displayStart parameter. Note: the default template shows the start item but does not link it. If you do not need a link, a class can be applied to the default template using the parameter &firstClass=`className`.';
+$_lang['pdotools_prop_tplStart'] = 'Name des Chunks, der das Template für das Startelement enthält, falls dies mittels des &displayStart-Parameters aktiviert wurde. Hinweis: Das Standard-Template zeigt das Startelement an, verlinkt es aber nicht. Wenn Sie keinen Link benötigen, kann dem Standard-Template eine Klasse zugeordnet werden, indem man den Parameter &firstClass=`className` verwendet.';
+
+$_lang['pdotools_prop_ultimate'] = 'Die Parameter &top und &topLevel funktionieren wie im Snippet UltimateParent.';
