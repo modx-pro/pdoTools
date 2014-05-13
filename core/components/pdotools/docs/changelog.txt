@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.3 pl
+==============
+- [pdoTools] Ability to specify value for empty quick placeholders.
+
 1.9.2 pl2
 ==============
 - [#56] [pdoParser] Fixed wrong links processing.

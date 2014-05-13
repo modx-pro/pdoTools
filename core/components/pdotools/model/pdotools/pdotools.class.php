@@ -267,7 +267,13 @@ class pdoTools {
 		if (!empty($chunk['placeholders'])) {
 			$pl = $chunk['placeholders'];
 			foreach ($pl as $k => $v) {
-				if (empty($properties[$k])) {
+				if ($k[0] == '!') {
+					if (empty($properties[substr($k, 1)])) {
+						$pl[substr($k, 1)] = $v;
+					}
+					unset($pl[$k]);
+				}
+				elseif (empty($properties[$k])) {
 					$pl[$k] = '';
 				}
 			}
