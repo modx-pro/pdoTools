@@ -491,6 +491,7 @@ class pdoTools {
 			$content = substr($name, strlen($binding) + 1);
 		}
 		$content = ltrim($content, ' :');
+		$content = str_replace(array('{{','}}'), array('[[',']]'), $content);
 
 		// Change name for empty TEMPLATE binding so will be used template of given row
 		if ($binding == 'TEMPLATE' && empty($content) && isset($row['template'])) {
