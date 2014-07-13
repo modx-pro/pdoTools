@@ -47,6 +47,7 @@ class pdoFetch extends pdoTools {
 		, $clean_timings);
 
 		if (empty($this->config['class'])) {$this->config['class'] = 'modResource';}
+		$this->loadModels();
 		$this->ancestry = $this->modx->getAncestry($this->config['class']);
 		$pk = $this->modx->getPK($this->config['class']);
 		$this->pk = is_array($pk)
@@ -65,7 +66,6 @@ class pdoFetch extends pdoTools {
 	 * @return array|bool|string
 	 */
 	public function run() {
-		$this->loadModels();
 		$this->makeQuery();
 		$this->addTVFilters();
 		$this->addTVs();
@@ -900,9 +900,6 @@ class pdoFetch extends pdoTools {
 			$this->modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoFetch from "MODX_CORE_PATH/components/pdotools/model/".');
 			return false;
 		}
-
-		if (!empty($config['loadModels'])) {$instance->config['loadModels'] = $config['loadModels'];}
-		$instance->loadModels();
 
 		$config['class'] = $class;
 		$config['limit'] = !isset($config['limit'])

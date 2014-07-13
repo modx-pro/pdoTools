@@ -201,6 +201,8 @@ class pdoTools {
 				$time = microtime(true);
 			}
 		}
+
+		$this->config['loadModels'] = '';
 	}
 
 
