@@ -3,6 +3,7 @@ Changelog for pdoTools.
 1.9.3 pl
 ==============
 - [pdoTools] Ability to specify value for empty quick placeholders.
+- [pdoTools] Ability to use INLINE snippets and filters.
 
 1.9.2 pl2
 ==============
