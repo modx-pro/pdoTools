@@ -632,7 +632,7 @@ class pdoFetch extends pdoTools {
 					}
 					break;
 				case 'parents':
-					if (!empty($value)) {
+					if (!empty($value) || $value == '0') {
 						$parents = array_map('trim', explode(',', $value));
 						$parents_in = $parents_out = array();
 						foreach ($parents as $v) {
