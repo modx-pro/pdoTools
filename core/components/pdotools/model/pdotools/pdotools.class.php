@@ -823,11 +823,15 @@ class pdoTools {
 
 		$cached = '';
 		if (!empty($cacheOptions) && !empty($cacheKey) && $this->modx->getCacheManager()) {
-			$cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions);
-			$this->addTime('Retrieved data from cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . '/' . $cacheKey .'"');
+			if ($cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions)) {
+				$this->addTime('Retrieved data from cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
+			}
+			else {
+				$this->addTime('No cached data for key "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
+			}
 		}
 		else {
-			$this->addTime('No cached data for key "' . $cacheKey .'"');
+			$this->addTime('Could not check cached data for key "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
 		}
 
 		return $cached;
@@ -853,7 +857,7 @@ class pdoTools {
 				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
 				$cacheOptions
 			);
-			$this->addTime('Saved data to cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . '/' . $cacheKey . '"');
+			$this->addTime('Saved data to cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
 		}
 
 		return $cacheKey;
