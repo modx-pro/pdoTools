@@ -91,7 +91,9 @@ if (empty($data)) {
 	}
 	/** Pagination */
 	$total = $modx->getPlaceholder($totalVar);
-	$pageCount = ceil($total / $scriptProperties['limit']);
+	$pageCount = !empty($scriptProperties['limit'])
+		? ceil($total / $scriptProperties['limit'])
+		: 0;
 
 	// Redirect to start if somebody specified incorrect page
 	if ($page > 1 && $page > $pageCount) {
