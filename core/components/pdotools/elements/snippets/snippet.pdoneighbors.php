@@ -49,6 +49,16 @@ foreach ($ids as $v) {
 	}
 }
 $prev = array_splice($prev, $limit * -1);
+if(isset($wrap)&&$wrap==1){
+    if(!count($prev)){
+        $v=end($ids);
+        $prev[]=$v['id'];
+    }
+    else if(!count($next)){
+        $v=reset($ids);
+        $next[]=$v['id'];
+    }
+}
 $ids = array_merge($prev, $next, array($resource->parent));
 $pdoFetch->addTime('Found ids of neighbors: ' . implode(',', $ids));
 
