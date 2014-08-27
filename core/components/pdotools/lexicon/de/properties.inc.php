@@ -149,3 +149,4 @@ $_lang['pdotools_prop_tplParentRowHere'] = 'Name des Chunks, der das Template f�
 $_lang['pdotools_prop_tplStart'] = 'Name des Chunks, der das Template für das Startelement enthält, falls dies mittels des &displayStart-Parameters aktiviert wurde. Hinweis: Das Standard-Template zeigt das Startelement an, verlinkt es aber nicht. Wenn Sie keinen Link benötigen, kann dem Standard-Template eine Klasse zugeordnet werden, indem man den Parameter &firstClass=`className` verwendet.';
 
 $_lang['pdotools_prop_ultimate'] = 'Die Parameter &top und &topLevel funktionieren wie im Snippet UltimateParent.';
+$_lang['pdotools_prop_loop'] = 'Schleife links. Wenn es keinen link zu der nächsten Seite, den link auf der ersten Seite und Umgekehrt.';

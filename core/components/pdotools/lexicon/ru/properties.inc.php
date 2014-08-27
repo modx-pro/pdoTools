@@ -145,3 +145,4 @@ $_lang['pdotools_prop_tplParentRowHere'] = 'Чанк оформления тек
 $_lang['pdotools_prop_tplStart'] = 'Чанк оформления корневого пункта, при условии, что включен "displayStart".';
 
 $_lang['pdotools_prop_ultimate'] = 'Параметры &top и &topLevel работают как в сниппете UltimateParent.';
+$_lang['pdotools_prop_loop'] = 'Закольцевать выводимые страницы. Если нет ссылки на следующую страницу, выводить ссылку на первую и наоборот.';

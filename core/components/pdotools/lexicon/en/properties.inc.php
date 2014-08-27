@@ -147,3 +147,4 @@ $_lang['pdotools_prop_tplParentRowHere'] = 'Name of the chunk containing the tem
 $_lang['pdotools_prop_tplStart'] = 'Name of the chunk containing the template for the start item, if enabled via the &displayStart parameter. Note: the default template shows the start item but does not link it. If you do not need a link, a class can be applied to the default template using the parameter &firstClass=`className`.';
 
 $_lang['pdotools_prop_ultimate'] = 'Parameters &top and &topLevel works as in snippet UltimateParent.';
+$_lang['pdotools_prop_loop'] = 'Loop the links. If there no link to the next page, make the link to the first page and vice versa';

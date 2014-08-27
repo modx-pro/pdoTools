@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.4 pl
+==============
+- [#78] [pdoNeighbors] Added parameter &loop=`1` for looping links.
+
 1.9.3 pl1
 ==============
 - [pdoTools] Ability to specify value for empty quick placeholders.

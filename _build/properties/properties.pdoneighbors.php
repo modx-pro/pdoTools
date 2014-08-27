@@ -123,6 +123,10 @@ $tmp = array(
 		'type' => 'combo-boolean',
 		'value' => true,
 	),
+	'loop' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
 
 );
 
