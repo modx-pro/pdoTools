@@ -173,6 +173,7 @@ if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 if (!empty($forceXML)) {
 	header("Content-Type:text/xml");
 	echo $output;
+	@session_write_close();
 	exit();
 }
 else {

@@ -1,8 +1,9 @@
 Changelog for pdoTools.
 
-1.9.4 pl
+1.9.4 pl1
 ==============
 - [#78] [pdoNeighbors] Added parameter &loop=`1` for looping links.
+- [pdoSitemap] Fixed possible E_FATAL php-apc.
 
 1.9.3 pl1
 ==============
