@@ -102,6 +102,7 @@ class pdoMenu {
 					'classes' => ' class="'.$this->pdoTools->config['outerClass'].'"',
 					'classNames' => $this->pdoTools->config['outerClass'],
 					'classnames' => $this->pdoTools->config['outerClass'],
+					'level' => $this->level,
 				)
 			);
 			$output = $this->pdoTools->parseChunk($this->pdoTools->config['tplOuter'], $pls);
@@ -145,6 +146,7 @@ class pdoMenu {
 				'classes' => ' class="'.$this->pdoTools->config['innerClass'].'"',
 				'classNames' => $this->pdoTools->config['innerClass'],
 				'classnames' => $this->pdoTools->config['innerClass'],
+				'level' => $this->level,
 			));
 			$row['wrapper'] = $this->pdoTools->parseChunk($this->pdoTools->config['tplInner'], $pls);
 		}
