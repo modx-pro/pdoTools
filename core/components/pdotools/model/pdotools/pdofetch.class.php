@@ -841,10 +841,12 @@ class pdoFetch extends pdoTools {
 			if (is_numeric($k) && is_string($v)) {
 				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $v);
 				$sorts[$k] = $tmp;
-			} elseif(is_numeric($k) && is_array($v)) {
-				$sorts[$k]=$this->replaceTVCondition($v);
-			} else {
-				$tmp = preg_replace_callback('/\b('.$tvs.')\b/i', $callback, $k);
+			}
+			elseif (is_numeric($k) && is_array($v)) {
+				$sorts[$k] = $this->replaceTVCondition($v);
+			}
+			else {
+				$tmp = preg_replace_callback('/\b(' . $tvs . ')\b/i', $callback, $k);
 				$sorts[$tmp] = $v;
 			}
 		}

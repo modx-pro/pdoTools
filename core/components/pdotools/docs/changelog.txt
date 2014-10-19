@@ -3,7 +3,8 @@ Changelog for pdoTools.
 1.9.5 pl
 ==============
 - Added ability to return JSON or serialized string from pdoFetch::run().
-- [#83] [pdoMenu] Add level placeholder to outer templates.
+- [#83] [pdoMenu] Added level placeholder to outer templates.
+- [#82] [pdoFetch] Added support for complex &where parameter.
 - [#81] [pdoPage] Improved handling of arrays in url.
 - [#77] Fixed making of url for modWebLink to another context.
 - [#72] [pdoTools] Fixed order for children of excluded parents in buildTree.
