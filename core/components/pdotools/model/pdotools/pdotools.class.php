@@ -616,7 +616,7 @@ class pdoTools {
 			}
 
 			foreach ($rows as $id => &$row) {
-				if (empty($row[$parent])) {
+				if (empty($row[$parent]) || empty($rows[$row[$parent]])) {
 					$tree[$id] = &$row;
 				}
 				else{
