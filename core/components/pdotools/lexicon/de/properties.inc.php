@@ -150,3 +150,5 @@ $_lang['pdotools_prop_tplStart'] = 'Name des Chunks, der das Template für das S
 
 $_lang['pdotools_prop_ultimate'] = 'Die Parameter &top und &topLevel funktionieren wie im Snippet UltimateParent.';
 $_lang['pdotools_prop_loop'] = 'Schleife links. Wenn es keinen link zu der nächsten Seite, den link auf der ersten Seite und Umgekehrt.';
+
+$_lang['pdotools_prop_countChildren'] = 'Bringen die genaue Anzahl der aktiven Nachkommen des Dokumentes in плейсхолдер [[+children]].';

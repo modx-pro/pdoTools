@@ -146,3 +146,5 @@ $_lang['pdotools_prop_tplStart'] = 'Чанк оформления корнево
 
 $_lang['pdotools_prop_ultimate'] = 'Параметры &top и &topLevel работают как в сниппете UltimateParent.';
 $_lang['pdotools_prop_loop'] = 'Закольцевать выводимые страницы. Если нет ссылки на следующую страницу, выводить ссылку на первую и наоборот.';
+
+$_lang['pdotools_prop_countChildren'] = 'Вывести точное количество активных потомков документа в плейсхолдер [[+children]].';

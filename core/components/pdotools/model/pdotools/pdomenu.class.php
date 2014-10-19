@@ -139,6 +139,21 @@ class pdoMenu {
 			$row['children'] = count($row['children']);
 		}
 
+		if (!empty($this->pdoTools->config['countChildren'])) {
+			$ids = $this->modx->getChildIds($row['id']);
+			$ids[] = $row['id'];
+			$tstart = microtime(true);
+			$count = $this->modx->getCount('modResource', array(
+				'id:IN' => $ids,
+				'published' => true,
+				'deleted' => false,
+			));
+			$this->modx->queryTime += microtime(true) - $tstart;
+			$this->modx->executedQueries++;
+			$this->pdoTools->addTime('Got the number of active children for resource "'.$row['id'].'": ' . $count);
+			$row['children'] = $count;
+		}
+
 		if (!empty($children)) {
 			$pls = $this->addWayFinderPlaceholders(array(
 				'wrapper' => $children,

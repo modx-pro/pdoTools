@@ -249,6 +249,11 @@ $tmp = array(
 		'value' => '',
 	),
 
+	'countChildren' => array(
+		'type' => 'combo-boolean',
+		'value' => false,
+	),
+
 );
 
 foreach ($tmp as $k => $v) {

@@ -148,3 +148,5 @@ $_lang['pdotools_prop_tplStart'] = 'Name of the chunk containing the template fo
 
 $_lang['pdotools_prop_ultimate'] = 'Parameters &top and &topLevel works as in snippet UltimateParent.';
 $_lang['pdotools_prop_loop'] = 'Loop the links. If there no link to the next page, make the link to the first page and vice versa';
+
+$_lang['pdotools_prop_countChildren'] = 'Display the exact number of active descendants of the document in placeholder [[+children]].';

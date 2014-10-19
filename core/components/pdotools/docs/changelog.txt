@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - Added ability to return JSON or serialized string from pdoFetch::run().
 - [#57] [pdoMenu] Improved placeholder [[+children]].
+- [#57] [pdoMenu] Added parameter &countChildren.
 
 1.9.4 pl1
 ==============
