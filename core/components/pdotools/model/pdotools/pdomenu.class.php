@@ -261,7 +261,7 @@ class pdoMenu {
 	 * @return mixed
 	 */
 	public function getTpl($row = array()) {
-		if ( $row['level'] == 1 && !empty($this->pdoTools->config['tplStart']) && !empty($this->pdoTools->config['displayStart'])) {
+		if ($row['level'] == 1 && !empty($this->pdoTools->config['tplStart']) && !empty($this->pdoTools->config['displayStart'])) {
 			$tpl = 'tplStart';
 		}
 		elseif ($row['children'] && $row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplParentRowHere'])) {
