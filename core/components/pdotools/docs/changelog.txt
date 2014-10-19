@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.5 pl
+==============
+- Added ability to return JSON or serialized string from pdoFetch::run().
+
 1.9.4 pl1
 ==============
 - [#78] [pdoNeighbors] Added parameter &loop=`1` for looping links.

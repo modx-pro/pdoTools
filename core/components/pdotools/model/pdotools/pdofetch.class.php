@@ -107,6 +107,16 @@ class pdoFetch extends pdoTools {
 					$this->addTime('Returning raw data');
 					$output = & $rows;
 				}
+				elseif (strtolower($this->config['return']) == 'json') {
+					$rows = $this->prepareRows($rows);
+					$this->addTime('Returning raw data as JSON string');
+					$output = $this->modx->toJSON($rows);
+				}
+				elseif (strtolower($this->config['return']) == 'serialize') {
+					$rows = $this->prepareRows($rows);
+					$this->addTime('Returning raw data as serialized string');
+					$output = serialize($rows);
+				}
 				else {
 					$rows = $this->prepareRows($rows);
 
