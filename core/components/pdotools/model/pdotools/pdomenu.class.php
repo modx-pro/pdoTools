@@ -136,7 +136,7 @@ class pdoMenu {
 			$row['children'] = $count;
 		}
 		else {
-			$row['children'] = 0;
+			$row['children'] = count($row['children']);
 		}
 
 		if (!empty($children)) {
