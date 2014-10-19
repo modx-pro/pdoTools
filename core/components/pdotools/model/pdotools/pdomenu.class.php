@@ -182,7 +182,7 @@ class pdoMenu {
 
 		if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink') {
 			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), $row['context_key'], '', $this->pdoTools->config['scheme'])
+				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $this->pdoTools->config['scheme'])
 				: $row['content'];
 		}
 		else {
