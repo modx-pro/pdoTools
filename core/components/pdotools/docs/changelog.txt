@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.5 pl1
+==============
+- Rolled back #72 due to issues in pdoMenu.
+
 1.9.5 pl
 ==============
 - Added ability to return JSON or serialized string from pdoFetch::run().
