@@ -1,13 +1,5 @@
 <?php
 /** @var array $scriptProperties */
-/** @var pdoPage $pdoPage */
-if (!$modx->loadClass('pdotools.pdoPage', MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
-	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoPage from "MODX_CORE_PATH/components/pdotools/model/".');
-	return false;
-}
-$pdoPage = new pdoPage($modx, $scriptProperties);
-$pdoPage->pdoTools->addTime('pdoTools loaded');
-
 // Default variables
 if (empty($pageVarKey)) {$pageVarKey = 'page';}
 if (empty($pageNavVar)) {$pageNavVar = 'page.nav';}
@@ -18,7 +10,7 @@ if (empty($scheme)) {$scheme = -1;} elseif (is_numeric($scheme)) {$scheme = (int
 if (empty($pageLimit)) {$pageLimit = 5;} else {$pageLimit = (integer) $pageLimit;}
 if (!isset($plPrefix)) {$plPrefix = '';}
 
-// Convert parameters from GetPage if exists
+// Convert parameters from getPage if exists
 if (!empty($namespace)) {$plPrefix = $namespace;}
 if (!empty($pageNavTpl)) {$scriptProperties['tplPage'] = $pageNavTpl;}
 if (!empty($pageNavOuterTpl)) {$scriptProperties['tplPageWrapper'] = $pageNavOuterTpl;}
@@ -32,10 +24,22 @@ if (!empty($pageNavScheme)) {$scriptProperties['scheme'] = $pageNavScheme;}
 if (!empty($cache_expires)) {$scriptProperties['cacheTime'] = $cache_expires;}
 //---
 
+$isAjax = !empty($ajax) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+if ($isAjax && !isset($_REQUEST[$pageVarKey])) {
+	return;
+}
+
+/** @var pdoPage $pdoPage */
+if (!$modx->loadClass('pdotools.pdoPage', MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoPage from "MODX_CORE_PATH/components/pdotools/model/".');
+	return false;
+}
+$pdoPage = new pdoPage($modx, $scriptProperties);
+$pdoPage->pdoTools->addTime('pdoTools loaded');
 
 // Page
-if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || $_REQUEST[$pageVarKey] <= 1)) {
-	return $pdoPage->redirectToFirst();
+if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] <= 1 && !$isAjax))) {
+	return $pdoPage->redirectToFirst($isAjax);
 }
 elseif (!empty($_REQUEST[$pageVarKey])) {
 	$page = (integer) $_REQUEST[$pageVarKey];
@@ -50,7 +54,7 @@ if (isset($_REQUEST['limit'])) {
 	}
 	else {
 		unset($_GET['limit']);
-		return $pdoPage->redirectToFirst();
+		return $pdoPage->redirectToFirst($isAjax);
 	}
 }
 if (!empty($maxLimit) && !empty($scriptProperties['limit']) && $scriptProperties['limit'] > $maxLimit) {
@@ -97,7 +101,7 @@ if (empty($data)) {
 
 	// Redirect to start if somebody specified incorrect page
 	if ($page > 1 && $page > $pageCount) {
-		return $pdoPage->redirectToFirst();
+		return $pdoPage->redirectToFirst($isAjax);
 	}
 	elseif (!empty($pageCount) && $pageCount > 1) {
 		$pagination = array(
@@ -144,11 +148,33 @@ if (empty($data)) {
 	}
 }
 
-$modx->setPlaceholders($data, $plPrefix);
+if ($isAjax) {
+	if ($pageNavVar != 'pagination') {
+		$data['pagination'] = $data[$pageNavVar];
+		unset($data[$pageNavVar]);
+	}
+	if ($pageCountVar != 'pages') {
+		$data['pages'] = (int)$data[$pageCountVar];
+		unset($data[$pageCountVar]);
+	}
+	if ($pageVarKey != 'page') {
+		$data['page'] = (int)$data[$pageVarKey];
+		unset($data[$pageVarKey]);
+	}
+	if ($totalVar != 'total') {
+		$data['total'] = (int)$data[$totalVar];
+		unset($data[$totalVar]);
+	}
 
-if (!empty($toPlaceholder)) {
-	$modx->setPlaceholder($toPlaceholder, $data['output']);
+	@session_write_close();
+	exit($modx->toJSON($data));
 }
 else {
-	return $data['output'];
+	$modx->setPlaceholders($data, $plPrefix);
+	if (!empty($toPlaceholder)) {
+		$modx->setPlaceholder($toPlaceholder, $data['output']);
+	}
+	else {
+		return $data['output'];
+	}
 }

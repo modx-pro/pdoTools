@@ -150,3 +150,5 @@ $_lang['pdotools_prop_ultimate'] = 'Parameters &top and &topLevel works as in sn
 $_lang['pdotools_prop_loop'] = 'Loop the links. If there no link to the next page, make the link to the first page and vice versa';
 
 $_lang['pdotools_prop_countChildren'] = 'Display the exact number of active descendants of the document in placeholder [[+children]].';
+
+$_lang['pdotools_prop_ajax'] = 'Enable support of ajax requests.';

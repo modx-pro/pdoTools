@@ -152,3 +152,5 @@ $_lang['pdotools_prop_ultimate'] = 'Die Parameter &top und &topLevel funktionier
 $_lang['pdotools_prop_loop'] = 'Schleife links. Wenn es keinen link zu der nächsten Seite, den link auf der ersten Seite und Umgekehrt.';
 
 $_lang['pdotools_prop_countChildren'] = 'Bringen die genaue Anzahl der aktiven Nachkommen des Dokumentes in плейсхолдер [[+children]].';
+
+$_lang['pdotools_prop_ajax'] = 'Aktivieren Sie die Unterstützung von ajax-Anfragen.';

@@ -40,18 +40,25 @@ class pdoPage {
 	 *
 	 * @return string
 	 */
-	public function redirectToFirst() {
+	public function redirectToFirst($isAjax = false) {
 		unset($_GET[$this->pdoTools->config['pageVarKey']]);
 		unset($_GET[$this->modx->getOption('request_param_alias', null, 'q')]);
-		$this->modx->sendRedirect(
-			$this->modx->makeUrl(
-				$this->modx->resource->id,
-				$this->modx->context->key,
-				$_GET,
-				'full'
-			)
-		);
-		return '';
+		if (!$isAjax) {
+			$this->modx->sendRedirect(
+				$this->modx->makeUrl(
+					$this->modx->resource->id,
+					$this->modx->context->key,
+					$_GET,
+					'full'
+				)
+			);
+			return '';
+		}
+		else {
+			$_GET[$this->pdoTools->config['pageVarKey']] = 1;
+			$_REQUEST = $_GET;
+			return $this->modx->runSnippet('pdoPage', $this->pdoTools->config);
+		}
 	}
 
 
@@ -113,7 +120,7 @@ class pdoPage {
 		}
 
 		$href = $url;
-		if ($page > 1) {
+		if ($page > 1 || ($page == 1 && !empty($this->pdoTools->config['ajax']))) {
 			$href .= strpos($href, '?') !== false
 				? '&'
 				: '?';
