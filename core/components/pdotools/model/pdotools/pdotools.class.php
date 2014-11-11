@@ -457,7 +457,7 @@ class pdoTools {
 							$tplCon = ($subject >= min($operand) && $subject <= max($operand)) ? $conditionalTpl : $tplCon;
 							break;
 						case 'contains': 
-							$tplCon = ((strpos($subject,$operand) !== false) ? $conditionalTpl : $tplCon);
+							$tplCon = (is_string($subject) && (strpos($subject,$operand) !== false) ? $conditionalTpl : $tplCon);
 							break;
 						case '==': case '=': case 'eq': case 'is': case 'equal': case 'equals': case 'equalto':
 						default:
