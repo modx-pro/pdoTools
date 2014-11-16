@@ -357,7 +357,9 @@ class pdoFetch extends pdoTools {
 			$columns = array_keys($this->modx->getFieldMeta($this->config['class']));
 			if (isset($this->config['includeContent']) && empty($this->config['includeContent']) && empty($this->config['useWeblinkUrl'])) {
 				$key = array_search('content', $columns);
-				unset($columns[$key]);
+				if ($key !== false) {
+					unset($columns[$key]);
+				}
 			}
 			$this->config['select'] = array($this->config['class'] => implode(',', $columns));
 			$this->addSelects();

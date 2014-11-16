@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.6 pl
+==============
+- [pdoFetch] Fixed exclusion of field "id" in custom classes.
+
 1.9.6 rc
 ==============
 - Added execution of SQL_BIG_SELECTS = 1 before query.
