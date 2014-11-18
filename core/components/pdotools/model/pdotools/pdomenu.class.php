@@ -137,7 +137,7 @@ class pdoMenu {
 			$row['children'] = $count;
 		}
 		else {
-			$row['children'] = count($row['children']);
+			$row['children'] = isset($row['children']) ? count($row['children']) : 0;
 		}
 
 		if (!empty($this->pdoTools->config['countChildren'])) {
