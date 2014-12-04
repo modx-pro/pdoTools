@@ -3,6 +3,8 @@ Changelog for pdoTools.
 1.9.7 pl
 ==============
 - [#97] [pdoTools] Fixed default tplPath for @FILE chunks.
+- [#85] [pdoFetch] Added function getChildIds().
+- [pdoFetch] Disabled "total" placeholder for &return=`ids`.
 
 1.9.6 pl1
 ==============

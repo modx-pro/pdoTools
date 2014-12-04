@@ -244,7 +244,7 @@ class pdoFetch extends pdoTools {
 	 * Set "total" placeholder for pagination
 	 */
 	public function setTotal() {
-		if ($this->config['return'] != 'sql') {
+		if (!in_array($this->config['return'], array('sql', 'ids'))) {
 			$time = microtime(true);
 
 			$q = $this->modx->prepare("SELECT FOUND_ROWS();");
@@ -306,9 +306,7 @@ class pdoFetch extends pdoTools {
 		$time = microtime(true);
 
 		if ($this->config['return'] == 'ids') {
-			$this->query->select('
-				SQL_CALC_FOUND_ROWS `'.$this->config['class'].'`.`'.$this->pk.'`
-			');
+			$this->query->select('`'.$this->config['class'].'`.`'.$this->pk.'`');
 			$this->addTime('Parameter "return" set to "ids", so we select only primary key', microtime(true) - $time);
 		}
 		elseif ($tmp = $this->config['select']) {
@@ -966,6 +964,46 @@ class pdoFetch extends pdoTools {
 
 		$this->modx->setPlaceholder('pdoTools.log', $instance->getTime());
 		return $rows;
+	}
+
+
+	/**
+	 * Gets all of the child objects ids for a given object.
+	 *
+	 * @param string $class Object class
+	 * @param integer $id The object parent id for the starting node.
+	 * @param integer $depth How many levels max to search for children (default 10).
+	 * @param array $options An array of options, such as 'where','parent_field','depth', 'sortby' etc.
+	 * @return array
+	 */
+	public function getChildIds($class, $id, $depth = 10, array $options = array()) {
+		$ids = array();
+		$where = isset($options['where']) && is_array($options['where'])
+			? $options['where']
+			: array();
+		$id_field = !empty($options['id_field'])
+			? $options['id_field']
+			: 'id';
+		$parent_field = !empty($options['parent_field'])
+			? $options['parent_field']
+			: 'parent';
+		if (empty($options['select'])) {
+			$options['select'] = $id_field;
+		}
+		$options['return'] = 'ids';
+
+		if ($id !== null && intval($depth) >= 1) {
+			$where[$parent_field] = (integer) $id;
+			$children = $this->getCollection($class, $where, $options);
+			foreach ($children as $child) {
+				$ids[] = $child[$id_field];
+				if ($tmp = $this->getChildIds($class, $child['id'], $depth - 1, $options)) {
+					$ids = array_merge($ids, $tmp);
+				}
+			}
+		}
+
+		return $ids;
 	}
 
 }
