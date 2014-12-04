@@ -519,8 +519,8 @@ class pdoTools {
 				$path = !empty($this->config['tplPath'])
 					? $this->config['tplPath'] . '/'
 					: MODX_ASSETS_PATH . 'elements/chunks/';
-				$path = (strpos($content, MODX_BASE_PATH) === false)
-					? MODX_BASE_PATH . ltrim($path, '/') . $content
+				$path = strpos($content, MODX_BASE_PATH) === false
+					? $path . $content
 					: $content;
 				$path = preg_replace('#/+#', '/', $path);
 

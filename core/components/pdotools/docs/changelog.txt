@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.9.7 pl
+==============
+- [#97] [pdoTools] Fixed default tplPath for @FILE chunks.
+
 1.9.6 pl1
 ==============
 - [pdoFetch] Fixed exclusion of field "id" in custom classes.
