@@ -86,7 +86,7 @@ class pdoFetch extends pdoTools {
 				if (strtolower($this->config['return']) == 'ids') {
 					$ids = array();
 					foreach ($rows as $row) {
-						$ids[] = $row['id'];
+						$ids[] = $row[$this->pk];
 					}
 					$output = implode(',', $ids);
 				}
