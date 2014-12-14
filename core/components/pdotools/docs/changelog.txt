@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 1.9.7 pl
 ==============
+- [#99] [pdoFetch] Fixed returning of primary key in "ids" mode.
 - [#97] [pdoTools] Fixed default tplPath for @FILE chunks.
 - [#85] [pdoFetch] Added function getChildIds().
 - [pdoFetch] Disabled "total" placeholder for &return=`ids`.

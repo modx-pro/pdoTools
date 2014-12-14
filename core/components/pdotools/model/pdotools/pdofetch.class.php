@@ -99,7 +99,7 @@ class pdoFetch extends pdoTools {
 				if (strtolower($this->config['return']) == 'ids') {
 					$ids = array();
 					foreach ($rows as $row) {
-						$ids[] = $row['id'];
+						$ids[] = $row[$this->pk];
 					}
 					$output = implode(',', $ids);
 				}
@@ -997,7 +997,7 @@ class pdoFetch extends pdoTools {
 			$children = $this->getCollection($class, $where, $options);
 			foreach ($children as $child) {
 				$ids[] = $child[$id_field];
-				if ($tmp = $this->getChildIds($class, $child['id'], $depth - 1, $options)) {
+				if ($tmp = $this->getChildIds($class, $child[$id_field], $depth - 1, $options)) {
 					$ids = array_merge($ids, $tmp);
 				}
 			}
