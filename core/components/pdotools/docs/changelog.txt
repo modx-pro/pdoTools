@@ -7,10 +7,11 @@ Changelog for pdoTools.
 - [#85] [pdoFetch] Added function getChildIds().
 - [pdoFetch] Disabled "total" placeholder for &return=`ids`.
 
-1.9.6 pl1
+1.9.6 pl2
 ==============
 - [pdoFetch] Fixed exclusion of field "id" in custom classes.
 - [pdoMenu] Improved parameter &countChildren.
+- [#100] [pdoMenu] Removed parameter &showDeleted because it not working.
 
 1.9.6 rc
 ==============
