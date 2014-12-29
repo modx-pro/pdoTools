@@ -22,6 +22,7 @@ $sources = array(
 	'snippets' => $root.'core/components/'.PKG_NAME_LOWER.'/elements/snippets/',
 	'lexicon' => $root . 'core/components/'.PKG_NAME_LOWER.'/lexicon/',
 	'docs' => $root.'core/components/'.PKG_NAME_LOWER.'/docs/',
+	'source_assets' => $root.'assets/components/'.PKG_NAME_LOWER,
 	'source_core' => $root.'core/components/'.PKG_NAME_LOWER,
 	'source_model' => $root.'core/model/modx/'.PKG_NAME_LOWER,
 	'resolvers' => $root . '_build/resolvers/',
@@ -98,6 +99,10 @@ $attr = array(
 $vehicle = $builder->createVehicle($category,$attr);
 
 /* now pack in resolvers */
+$vehicle->resolve('file',array(
+	'source' => $sources['source_assets'],
+	'target' => "return MODX_ASSETS_PATH . 'components/';",
+));
 $vehicle->resolve('file',array(
 	'source' => $sources['source_core'],
 	'target' => "return MODX_CORE_PATH . 'components/';",

@@ -8,3 +8,4 @@
  */
 $_lang['pdopage_first'] = 'First';
 $_lang['pdopage_last'] = 'Last';
+$_lang['pdopage_more'] = 'Load more';

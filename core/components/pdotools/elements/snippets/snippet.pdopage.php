@@ -9,6 +9,7 @@ if (empty($page)) {$page = 1;}
 if (empty($scheme)) {$scheme = -1;} elseif (is_numeric($scheme)) {$scheme = (integer) $scheme;}
 if (empty($pageLimit)) {$pageLimit = 5;} else {$pageLimit = (integer) $pageLimit;}
 if (!isset($plPrefix)) {$plPrefix = '';}
+if (!empty($scriptProperties['ajaxMode'])) {$scriptProperties['ajax'] = 1;}
 
 // Convert parameters from getPage if exists
 if (!empty($namespace)) {$plPrefix = $namespace;}
@@ -24,7 +25,7 @@ if (!empty($pageNavScheme)) {$scriptProperties['scheme'] = $pageNavScheme;}
 if (!empty($cache_expires)) {$scriptProperties['cacheTime'] = $cache_expires;}
 //---
 
-$isAjax = !empty($ajax) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+$isAjax = !empty($scriptProperties['ajax']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
 if ($isAjax && !isset($_REQUEST[$pageVarKey])) {
 	return;
 }
@@ -36,6 +37,11 @@ if (!$modx->loadClass('pdotools.pdoPage', MODX_CORE_PATH . 'components/pdotools/
 }
 $pdoPage = new pdoPage($modx, $scriptProperties);
 $pdoPage->pdoTools->addTime('pdoTools loaded');
+
+// Script and styles
+if (!$isAjax && !empty($scriptProperties['ajaxMode'])) {
+	$pdoPage->loadJsCss();
+}
 
 // Page
 if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] <= 1 && !$isAjax))) {

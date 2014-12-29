@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.10.0 beta
+==============
+- [pdoPage] Ajax pagination out from the box.
+
 1.9.7 pl
 ==============
 - [#99] [pdoFetch] Fixed returning of primary key in "ids" mode.

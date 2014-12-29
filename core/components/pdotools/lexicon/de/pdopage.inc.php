@@ -10,3 +10,4 @@
  */
 $_lang['pdopage_first'] = 'Erste';
 $_lang['pdopage_last'] = 'Letzte';
+$_lang['pdopage_more'] = 'Laden';

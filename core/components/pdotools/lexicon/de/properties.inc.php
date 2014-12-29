@@ -154,3 +154,13 @@ $_lang['pdotools_prop_loop'] = 'Schleife links. Wenn es keinen link zu der näch
 $_lang['pdotools_prop_countChildren'] = 'Bringen die genaue Anzahl der aktiven Nachkommen des Dokumentes in плейсхолдер [[+children]].';
 
 $_lang['pdotools_prop_ajax'] = 'Aktivieren Sie die Unterstützung von ajax-Anfragen.';
+$_lang['pdotools_prop_ajaxMode'] = 'Ajax Paginierung aus der box. Erhältlich in 3 Modi: "Standard", "button" und "Blättern".';
+$_lang['pdotools_prop_ajaxElemWrapper'] = 'jQuery selector für die wrapper-element mit den Ergebnissen und Seitenzählung.';
+$_lang['pdotools_prop_ajaxElemRows'] = 'jQuery selector für das element mit den Ergebnissen.';
+$_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery selector für element mit Paginierung.';
+$_lang['pdotools_prop_ajaxElemLink'] = 'jQuery selector für die Paginierung links.';
+$_lang['pdotools_prop_ajaxElemMore'] = 'jQuery selector für "laden" - button in ajaxMode = button.';
+$_lang['pdotools_prop_ajaxTplMore'] = 'Stück für templating "mehr Schaltfläche" wenn ajaxMode = button. Muss eine Selektor angegeben in "ajaxElemMore".';
+
+$_lang['pdotools_prop_frontend_js'] = 'Link auf javascript für die Belastung durch das snippet.';
+$_lang['pdotools_prop_frontend_css'] = 'Link auf css-Stile für das laden der snippet.';

@@ -36,7 +36,54 @@ class pdoPage {
 
 
 	/**
+	 * Loads javascript and styles for ajax pagination
+	 *
+	 */
+	public function loadJsCss() {
+		$assetsUrl = !empty($this->pdoTools->config['assetsUrl'])
+			? $this->pdoTools->config['assetsUrl']
+			: MODX_ASSETS_URL . 'components/pdotools/';
+		if ($css = trim($this->pdoTools->config['frontend_css'])) {
+			$this->modx->regClientCSS(str_replace('[[+assetsUrl]]', $assetsUrl, $css));
+		}
+		if ($js = trim($this->pdoTools->config['frontend_js'])) {
+			$this->modx->regClientScript(str_replace('[[+assetsUrl]]', $assetsUrl, $js));
+		}
+		$limit = $this->pdoTools->config['limit'] > $this->pdoTools->config['maxLimit']
+			? $this->pdoTools->config['maxLimit']
+			:  $this->pdoTools->config['limit'];
+		$moreChunk = $this->modx->getOption('ajaxTplMore', $this->pdoTools->config, '@INLINE <button class="btn btn-default btn-more">[[%pdopage_more]]</button>');
+		$moreTpl = str_replace('"', '\"', $this->pdoTools->getChunk($moreChunk, array('limit' => $limit)));
+
+		$config = '{
+			wrapper: "' . $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage') . '",
+			rows: "' . $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows') . '",
+			pagination: "' . $this->modx->getOption('ajaxElemPagination', $this->pdoTools->config, '#pdopage .pagination') . '",
+			link: "' . $this->modx->getOption('ajaxElemLink', $this->pdoTools->config, '#pdopage .pagination a') . '",
+			more: "' . $this->modx->getOption('ajaxElemMore', $this->pdoTools->config, '#pdopage .btn-more') . '",
+			moreTpl: "' . $moreTpl . '",
+			mode: "' . $this->pdoTools->config['ajaxMode'] . '",
+			pageVarKey: "' . $this->pdoTools->config['pageVarKey'] . '",
+			pageLimit: ' . $limit . ',
+			assetsUrl: "' . $assetsUrl . '"
+		}';
+		$this->modx->regClientStartupScript(preg_replace(array('/\n/', '/\t/'), '', '
+			<script type="text/javascript">
+				pdoPage = {callbacks: {}, keys: {}};
+			</script>
+		'), true);
+		$this->modx->regClientScript(preg_replace(array('/\n/', '/\t/'), '', '
+			<script type="text/javascript">
+				pdoPage.initialize(' . $config . ');
+			</script>
+		'), true);
+	}
+
+
+	/**
 	 * Redirect user to the first page of pagination
+	 *
+	 * @param $isAjax
 	 *
 	 * @return string
 	 */

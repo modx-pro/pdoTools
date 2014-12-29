@@ -152,3 +152,13 @@ $_lang['pdotools_prop_loop'] = 'Loop the links. If there no link to the next pag
 $_lang['pdotools_prop_countChildren'] = 'Display the exact number of active descendants of the document in placeholder [[+children]].';
 
 $_lang['pdotools_prop_ajax'] = 'Enable support of ajax requests.';
+$_lang['pdotools_prop_ajaxMode'] = 'Ajax pagination out of the box. Available in 3 modes: "default", "button" and "scroll".';
+$_lang['pdotools_prop_ajaxElemWrapper'] = 'jQuery selector for wrapper element with the results and pagination.';
+$_lang['pdotools_prop_ajaxElemRows'] = 'jQuery selector for element with results.';
+$_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery selector for element with pagination.';
+$_lang['pdotools_prop_ajaxElemLink'] = 'jQuery selector for pagination links.';
+$_lang['pdotools_prop_ajaxElemMore'] = 'jQuery selector for "load more" button in ajaxMode = button.';
+$_lang['pdotools_prop_ajaxTplMore'] = 'Chunk for templating "more button" when ajaxMode = button. Must include a selector specified in "ajaxElemMore".';
+
+$_lang['pdotools_prop_frontend_js'] = 'Link on javascript for loading by the snippet.';
+$_lang['pdotools_prop_frontend_css'] = 'Link on css styles for loading by the snippet.';

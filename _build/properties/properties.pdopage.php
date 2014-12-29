@@ -123,6 +123,48 @@ $tmp = array(
 		'type' => 'combo-boolean',
 		'value' => false,
 	),
+	'ajaxMode' => array(
+		'type' => 'list',
+		'value' => '',
+		'options' => array(
+			array('text' => 'None', 'value' => ''),
+			array('text' => 'Default', 'value' => 'default'),
+			array('text' => 'Scroll', 'value' => 'scroll'),
+			array('text' => 'Button', 'value' => 'button'),
+		),
+	),
+	'ajaxElemWrapper' => array(
+		'type' => 'textfield',
+		'value' => '#pdopage',
+	),
+	'ajaxElemRows' => array(
+		'type' => 'textfield',
+		'value' => '#pdopage .rows',
+	),
+	'ajaxElemPagination' => array(
+		'type' => 'textfield',
+		'value' => '#pdopage .pagination',
+	),
+	'ajaxElemLink' => array(
+		'type' => 'textfield',
+		'value' => '#pdopage .pagination a',
+	),
+	'ajaxElemMore' => array(
+		'type' => 'textfield',
+		'value' => '#pdopage .btn-more',
+	),
+	'ajaxTplMore' => array(
+		'type' => 'textfield',
+		'value' => '@INLINE <button class="btn btn-default btn-more">[[%pdopage_more]]</button>',
+	),
+	'frontend_js' => array(
+		'type' => 'textfield',
+		'value' => '[[+assetsUrl]]js/pdopage.js',
+	),
+	'frontend_css' => array(
+		'type' => 'textfield',
+		'value' => '[[+assetsUrl]]css/pdopage.css',
+	),
 
 );
 

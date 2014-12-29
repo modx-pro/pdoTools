@@ -150,3 +150,13 @@ $_lang['pdotools_prop_loop'] = 'Закольцевать выводимые ст
 $_lang['pdotools_prop_countChildren'] = 'Вывести точное количество активных потомков документа в плейсхолдер [[+children]].';
 
 $_lang['pdotools_prop_ajax'] = 'Включить поддержку ajax запросов.';
+$_lang['pdotools_prop_ajaxMode'] = 'Ajax пагинация "из коробки". Доступны 3 режима: "default", "button" и "scroll".';
+$_lang['pdotools_prop_ajaxElemWrapper'] = 'jQuery селектор элемента-обёртки с результатами и пагинацией.';
+$_lang['pdotools_prop_ajaxElemRows'] = 'jQuery селектор элемента с результатами.';
+$_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery селектор элемента с пагинацией.';
+$_lang['pdotools_prop_ajaxElemLink'] = 'jQuery селектор ссылки на страницу.';
+$_lang['pdotools_prop_ajaxElemMore'] = 'jQuery селектор кнопки загрузки результатов при ajaxMode = button.';
+$_lang['pdotools_prop_ajaxTplMore'] = 'Шаблон кнопки для загрузки новых результатов при ajaxMode = button. Должен включать селектор, указанный в "ajaxElemMore".';
+
+$_lang['pdotools_prop_frontend_js'] = 'Ссылка на javascript для подключения сниппетом.';
+$_lang['pdotools_prop_frontend_css'] = 'Ссылка на css стили оформления для подключения сниппетом.';
