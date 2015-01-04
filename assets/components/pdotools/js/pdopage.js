@@ -93,11 +93,13 @@ pdoPage.initialize = function(config) {
 
 pdoPage.addPage = function(config) {
 	var key = config['pageVarKey'];
+	var params = pdoHash.get();
+	var current = params[key] || 1;
 	$(config['link']).each(function() {
 		var href = $(this).prop('href');
 		var match = href.match(new RegExp(key + '=(\\d+)'));
 		var page = !match ? 1 : match[1];
-		if (page > pdoPage.keys[key]) {
+		if (page > current) {
 			pdoHash.add(key, page);
 			pdoPage.loadPage(href, config, 'append');
 			return false;
@@ -153,7 +155,7 @@ pdoPage.loadPage = function(href, config, mode) {
 			}
 
 			if (pdoPage.callbacks['after'] && typeof(pdoPage.callbacks['after']) == 'function') {
-				pdoPage.callbacks['after'].apply(this, [config]);
+				pdoPage.callbacks['after'].apply(this, [config, response]);
 			}
 			else if (config['mode'] != 'scroll') {
 				wrapper.css({opacity: 1});
