@@ -59,15 +59,20 @@ pdoPage.initialize = function(config) {
 
 			if (config['mode'] == 'button') {
 				// Add more button
+				$(config['rows']).after(config['moreTpl']);
+				var has_results = false;
 				$(config['link']).each(function() {
 					var href = $(this).prop('href');
 					var match = href.match(new RegExp(key + '=(\\d+)'));
 					var page = !match ? 1 : match[1];
 					if (page > pdoPage.keys[key]) {
-						$(config['rows']).after(config['moreTpl']);
+						has_results = true;
 						return false;
 					}
 				});
+				if (!has_results) {
+					$(config['more']).hide();
+				}
 
 				$(document).on('click', config['more'], function(e) {
 					e.preventDefault();
@@ -101,6 +106,7 @@ pdoPage.addPage = function(config) {
 		var page = !match ? 1 : match[1];
 		if (page > current) {
 			pdoHash.add(key, page);
+			pdoPage.keys[key] = current;
 			pdoPage.loadPage(href, config, 'append');
 			return false;
 		}
