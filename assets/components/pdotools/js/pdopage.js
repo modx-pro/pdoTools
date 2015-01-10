@@ -104,7 +104,7 @@ pdoPage.addPage = function(config) {
 		var href = $(this).prop('href');
 		var match = href.match(new RegExp(key + '=(\\d+)'));
 		var page = !match ? 1 : match[1];
-		if (page > current) {
+		if (1.0 * page > 1.0 * current) {
 			pdoHash.add(key, page);
 			pdoPage.keys[key] = current;
 			pdoPage.loadPage(href, config, 'append');
