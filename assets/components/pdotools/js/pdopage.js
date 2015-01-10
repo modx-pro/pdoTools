@@ -103,8 +103,8 @@ pdoPage.addPage = function(config) {
 	$(config['link']).each(function() {
 		var href = $(this).prop('href');
 		var match = href.match(new RegExp(key + '=(\\d+)'));
-		var page = !match ? 1 : match[1];
-		if (1.0 * page > 1.0 * current) {
+		var page = !match ? 1 : Number(match[1]);
+		if (page > current) {
 			pdoHash.add(key, page);
 			pdoPage.keys[key] = current;
 			pdoPage.loadPage(href, config, 'append');
@@ -119,7 +119,7 @@ pdoPage.loadPage = function(href, config, mode) {
 	var pagination = $(config['pagination']);
 	var key = config['pageVarKey'];
 	var match = href.match(new RegExp(key + '=(\\d+)'));
-	var page = !match ? 1 : match[1];
+	var page = !match ? 1 : Number(match[1]);
 	if (!mode) {mode = 'replace';}
 
 	if (pdoPage.keys[key] == page) {
@@ -138,7 +138,7 @@ pdoPage.loadPage = function(href, config, mode) {
 			delete(params[i]);
 		}
 	}
-	params[key] = pdoPage.keys[key] = Number(page);
+	params[key] = pdoPage.keys[key] = page;
 	$.get(document.location.pathname, params, function(response) {
 		if (response && response['total']) {
 			wrapper.find(pagination).html(response['pagination']);
