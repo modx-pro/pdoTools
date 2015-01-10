@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [pdoPage] Ajax pagination out from the box.
 - [pdoFetch] Improved log of getCollection.
+- [pdoTools] Added tplOperator "contains".
 
 1.9.7 pl
 ==============
