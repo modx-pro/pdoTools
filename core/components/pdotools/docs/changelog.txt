@@ -1,8 +1,9 @@
 Changelog for pdoTools.
 
-1.10.0 beta3
+1.10.0 beta4
 ==============
 - [pdoPage] Ajax pagination out from the box.
+- [pdoFetch] Improved log of getCollection.
 
 1.9.7 pl
 ==============
