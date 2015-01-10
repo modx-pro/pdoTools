@@ -946,8 +946,10 @@ class pdoFetch extends pdoTools {
 		$rows = array();
 		$tstart = microtime(true);
 		if ($instance->query->stmt->execute()) {
+			$instance->addTime('SQL executed', microtime(TRUE) - $tstart);
 			$instance->modx->queryTime += microtime(true) - $tstart;
 			$instance->modx->executedQueries++;
+			$tstart = microtime(true);
 			if (!$rows = $instance->query->stmt->fetchAll(PDO::FETCH_ASSOC)) {
 				$rows = array();
 			}
@@ -955,6 +957,8 @@ class pdoFetch extends pdoTools {
 				$rows = $instance->checkPermissions($rows);
 				$rows = $instance->prepareRows($rows);
 			}
+			$instance->addTime('Total rows: '.count($rows));
+			$instance->addTime('Rows are fetched', microtime(TRUE) - $tstart);
 		}
 		else {
 			$errors = $instance->query->stmt->errorInfo();
