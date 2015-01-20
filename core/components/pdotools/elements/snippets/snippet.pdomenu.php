@@ -46,8 +46,16 @@ elseif ($scriptProperties['parents'] === 0 || $scriptProperties['parents'] === '
 	if ($scriptProperties['depth'] !== '' && $scriptProperties['depth'] !== 100) {
 		$contexts = array_map('trim', explode(',', $scriptProperties['context']));
 		$parents = array();
-		foreach ($contexts as $ctx) {
-			$parents = array_merge($parents, $modx->getChildIds(0, $scriptProperties['depth'], array('context' => $ctx)));
+		if (!empty($scriptProperties['showDeleted'])) {
+			$pdoFetch = $modx->getService('pdoFetch');
+			foreach ($contexts as $ctx) {
+				$parents = array_merge($parents, $pdoFetch->getChildIds('modResource', 0, $scriptProperties['depth'], array('context' => $ctx)));
+			}
+		}
+		else {
+			foreach ($contexts as $ctx) {
+				$parents = array_merge($parents, $modx->getChildIds(0, $scriptProperties['depth'], array('context' => $ctx)));
+			}
 		}
 		$scriptProperties['parents'] = !empty($parents) ? implode(',', $parents) : '+0';
 		$scriptProperties['depth'] = 0;

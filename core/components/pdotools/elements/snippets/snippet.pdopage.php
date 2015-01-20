@@ -42,6 +42,16 @@ $pdoPage->pdoTools->addTime('pdoTools loaded');
 if (!$isAjax && !empty($scriptProperties['ajaxMode'])) {
 	$pdoPage->loadJsCss();
 }
+else {
+	// Removing default scripts and styles if they do not need
+	$properties = unserialize($this->properties);
+	if ($scriptProperties['frontend_js'] == $properties['frontend_js']['value']) {
+		unset($scriptProperties['frontend_js']);
+	}
+	if ($scriptProperties['frontend_css'] == $properties['frontend_css']['value']) {
+		unset($scriptProperties['frontend_css']);
+	}
+}
 
 // Page
 if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] <= 1 && !$isAjax))) {

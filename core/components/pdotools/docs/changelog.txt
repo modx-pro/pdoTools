@@ -1,5 +1,11 @@
 Changelog for pdoTools.
 
+1.10.0 rc
+==============
+- [pdoMenu] Returned and fixed parameter &showDeleted.
+- [pdoPage] Improved default javascript.
+- [pdoPage] Fixed overwriting &frontend_js and &frontend_css parameters when &ajax is disabled.
+
 1.10.0 beta4
 ==============
 - [pdoPage] Ajax pagination out from the box.

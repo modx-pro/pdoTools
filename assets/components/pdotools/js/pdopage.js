@@ -2,7 +2,6 @@ if (typeof(pdoPage) == 'undefined') {
 	pdoPage = {callbacks: {}, keys: {}};
 }
 
-pdoPage.justLoaded = true;
 pdoPage.Reached = false;
 
 pdoPage.initialize = function(config) {
@@ -31,14 +30,12 @@ pdoPage.initialize = function(config) {
 				if (pdoPage.keys[key] != page) {
 					pdoHash.add(key, page);
 					$this.loadPage(href, config);
-					$this.justLoaded = false;
 				}
 			});
 
 			$(window).on('popstate', function(e) {
-				if (!$this.justLoaded && e.originalEvent.state && e.originalEvent.state['pdoPage']) {
+				if (e.originalEvent.state && e.originalEvent.state['pdoPage']) {
 					$this.loadPage(e.originalEvent.state['pdoPage'], config);
-					$this.justLoaded = false;
 				}
 			});
 

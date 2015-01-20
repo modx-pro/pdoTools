@@ -10,12 +10,10 @@ if (!empty($returnIds)) {
 // Adding extra parameters into special place so we can put them in results
 /** @var modSnippet $snippet */
 $additionalPlaceholders = array();
-if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
-	$properties = unserialize($snippet->properties);
-	foreach ($scriptProperties as $k => $v) {
-		if (!isset($properties[$k])) {
-			$additionalPlaceholders[$k] = $v;
-		}
+$properties = unserialize($this->properties);
+foreach ($scriptProperties as $k => $v) {
+	if (!isset($properties[$k])) {
+		$additionalPlaceholders[$k] = $v;
 	}
 }
 $scriptProperties['additionalPlaceholders'] = $additionalPlaceholders;

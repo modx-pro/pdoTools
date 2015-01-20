@@ -62,12 +62,10 @@ $tmp = array(
 		'type' => 'combo-boolean',
 		'value' => false,
 	),
-	/*
 	'showDeleted' => array(
 		'type' => 'combo-boolean',
 		'value' => false,
 	),
-	*/
 	'previewUnpublished' => array(
 		'type' => 'combo-boolean',
 		'value' => false,
