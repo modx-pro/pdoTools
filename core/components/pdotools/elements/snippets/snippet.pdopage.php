@@ -44,7 +44,7 @@ if (!$isAjax && !empty($scriptProperties['ajaxMode'])) {
 }
 elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
 	// Removing default scripts and styles if they don`t need
-	$properties = unserialize($snippet->get('properties'));
+	$properties = $snippet->get('properties');
 	if ($scriptProperties['frontend_js'] == $properties['frontend_js']['value']) {
 		unset($scriptProperties['frontend_js']);
 	}

@@ -11,7 +11,7 @@ if (!empty($returnIds)) {
 /** @var modSnippet $snippet */
 $additionalPlaceholders = array();
 if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
-	$properties = unserialize($snippet->get('properties'));
+	$properties = $snippet->get('properties');
 	foreach ($scriptProperties as $k => $v) {
 		if (!isset($properties[$k])) {
 			$additionalPlaceholders[$k] = $v;

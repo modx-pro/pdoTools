@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.10.0 rc1
+1.10.0 rc2
 ==============
 - [pdoMenu] Returned and fixed parameter &showDeleted.
 - [pdoPage] Improved default javascript.
