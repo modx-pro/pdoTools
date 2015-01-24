@@ -29,7 +29,7 @@ class pdoParser extends modParser {
 		$output = $token = '';
 
 		// Disabled tag
-		if ($innerTag[0] == '-') {
+		if (empty($innerTag[0]) || $innerTag[0] == '-') {
 			return '';
 		}
 		// Uncacheable tag
