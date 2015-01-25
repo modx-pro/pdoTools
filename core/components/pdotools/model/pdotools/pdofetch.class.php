@@ -341,13 +341,28 @@ class pdoFetch extends pdoTools {
 				if ($i == 0) {
 					$fields = 'SQL_CALC_FOUND_ROWS '.$fields;
 				}
-				$this->query->select($fields);
-				$i++;
 
-				if (is_array($fields)) {
-					$fields = current($fields) . ' AS ' . current(array_flip($fields));
+				if (is_string($fields) && strpos($fields, '(') !== false) {
+					// Commas in functions
+					$fields = preg_replace_callback('/\(.*?\)/', function($matches) {
+							return str_replace(',', '|', $matches[0]);
+						}, $fields);
+					$fields = explode(',', $fields);
+					foreach ($fields as &$field) {
+						$field = str_replace('|', ',', $field);
+					}
+					$this->query->select($fields);
+					$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$alias.'`.', '', implode(',', $fields)) . '</small>', microtime(true) - $time);
 				}
-				$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$alias.'`.', '', $fields) . '</small>', microtime(true) - $time);
+				else {
+					$this->query->select($fields);
+					if (is_array($fields)) {
+						$fields = current($fields) . ' AS ' . current(array_flip($fields));
+					}
+					$this->addTime('Added selection of <b>'.$class.'</b>: <small>' . str_replace('`'.$alias.'`.', '', $fields) . '</small>', microtime(true) - $time);
+				}
+
+				$i++;
 				$time = microtime(true);
 			}
 		}

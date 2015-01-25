@@ -1,10 +1,11 @@
 Changelog for pdoTools.
 
-1.10.0 rc2
+1.10.0 rc3
 ==============
 - [pdoMenu] Returned and fixed parameter &showDeleted.
 - [pdoPage] Improved default javascript.
 - [pdoPage] Fixed overwriting &frontend_js and &frontend_css parameters when &ajax is disabled.
+- [pdFetch] Ability to specify functions in select fields.
 
 1.10.0 beta4
 ==============
