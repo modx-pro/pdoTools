@@ -172,10 +172,6 @@ class pdoMenu {
 			$row['wrapper'] = '';
 		}
 
-		if (empty($row['menutitle']) && !empty($row['pagetitle'])) {
-			$row['menutitle'] = $row['pagetitle'];
-		}
-
 		$classes = $this->getClasses($row);
 		if (!empty($classes)) {
 			$row['classNames'] = $row['classnames'] = $classes;
