@@ -159,7 +159,7 @@ $tmp = array(
 	),
 	'tpl' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li[[+classes]]><a href="[[+link]]" [[+attributes]]>[[+menutitle]]</a>[[+wrapper]]</li>',
+		'value' => '@INLINE <li[[+classes]]><a href="[[+link]]" [[+attributes]]>[[+menutitle:ifempty=`[[+pagetitle]]`]]</a>[[+wrapper]]</li>',
 	),
 	'tplParentRow' => array(
 		'type' => 'textfield',
@@ -195,7 +195,7 @@ $tmp = array(
 	),
 	'tplStart' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <h2[[+classes]]>[[+menutitle]]</h2>[[+wrapper]]',
+		'value' => '@INLINE <h2[[+classes]]>[[+menutitle:ifempty=`[[+pagetitle]]`]]</h2>[[+wrapper]]',
 	),
 
 	'checkPermissions' => array(
