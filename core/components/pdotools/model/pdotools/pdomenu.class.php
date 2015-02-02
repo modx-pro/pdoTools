@@ -196,7 +196,7 @@ class pdoMenu {
 
 		$row['title'] = !empty($this->pdoTools->config['titleOfLinks'])
 			? $row[$this->pdoTools->config['titleOfLinks']]
-			: '';
+			: 'pagetitle';
 
 		$tpl = $this->getTpl($row);
 		$row = $this->addWayFinderPlaceholders($row);
