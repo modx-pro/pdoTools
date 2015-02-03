@@ -344,9 +344,10 @@ class pdoFetch extends pdoTools {
 
 				if (is_string($fields) && strpos($fields, '(') !== false) {
 					// Commas in functions
-					$fields = preg_replace_callback('/\(.*?\)/', function($matches) {
-							return str_replace(',', '|', $matches[0]);
-						}, $fields);
+					$fields = preg_replace_callback('/\(.*?\)/', create_function(
+						'$matches',
+						'return str_replace(",", "|", $matches[0]);'
+					), $fields);
 					$fields = explode(',', $fields);
 					foreach ($fields as &$field) {
 						$field = str_replace('|', ',', $field);
