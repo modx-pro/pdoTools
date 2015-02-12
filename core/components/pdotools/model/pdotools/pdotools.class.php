@@ -267,6 +267,7 @@ class pdoTools {
 
 		// Processing quick placeholders
 		if (!empty($chunk['placeholders'])) {
+			$properties = $this->flattenArray($properties);
 			$pl = $chunk['placeholders'];
 			foreach ($pl as $k => $v) {
 				if ($k[0] == '!') {
@@ -913,6 +914,30 @@ class pdoTools {
 		}
 
 		return $key . '/' . sha1(serialize($options));
+	}
+
+
+	/**
+	 * Flatten array of placeholders with nested arrays
+	 *
+	 * @param $array
+	 * @param string $plPrefix
+	 *
+	 * @return array
+	 */
+	protected function flattenArray($array, $plPrefix = '') {
+		$result = array();
+
+		foreach ($array as $k => $v) {
+			if (is_array($v)) {
+				$result = array_merge($result, $this->flattenArray($v, $plPrefix.$k.'.'));
+			}
+			else {
+				$result[$plPrefix.$k] = $v;
+			}
+		}
+
+		return $result;
 	}
 
 }
