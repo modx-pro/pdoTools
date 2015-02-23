@@ -242,10 +242,15 @@ class pdoMenu {
 		if ($row['children'] && !empty($this->pdoTools->config['parentClass']) && ($row['level'] < $this->pdoTools->config['level'] || empty($this->pdoTools->config['level']))) {
 			$classes[] = $this->pdoTools->config['parentClass'];
 		}
-		if ($this->isHere($row['id']) && !empty($this->pdoTools->config['hereClass'])) {
+		if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' && is_numeric(trim($row['content'], '[]~ '))) {
+            		$row_id = intval(trim($row['content'], '[]~ '));
+		}else{
+		    	$row_id = $row['id'];
+		}
+		if ($this->isHere($row_id) && !empty($this->pdoTools->config['hereClass'])) {
 			$classes[] = $this->pdoTools->config['hereClass'];
 		}
-		if ($row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['selfClass'])) {
+		if ($row_id == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['selfClass'])) {
 			$classes[] = $this->pdoTools->config['selfClass'];
 		}
 		if (!empty($row['class_key']) && $row['class_key'] == 'modWebLink' && !empty($this->pdoTools->config['weblinkClass'])) {
