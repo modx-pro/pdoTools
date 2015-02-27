@@ -51,6 +51,7 @@ $_lang['pdotools_prop_showCurrent'] = 'Aktuelles Dokument in der Navigation anze
 $_lang['pdotools_prop_hideSingle'] = 'Ergebnis nicht anzeigen, wenn es nur ein einziges Element enthält.';
 $_lang['pdotools_prop_hideUnsearchable'] = 'Keine Ressourcen anzeigen, die nicht durchsuchbar sind.';
 
+$_lang['pdotools_prop_sortby'] = 'Ein beliebiges Ressourcen-Feld (einschließlich Template-Variablen, wenn diese über die Eigenschaft "includeTVs" einbezogen wurden), nach dem sortiert werden soll. Einige Felder, nach denen üblicherweise sortiert wird, sind publishedon, menuindex, pagetitle etc.; eine Liste aller Ressourcen-Felder finden Sie in der MODX-Dokumentation. Geben Sie nur die Namen der Felder ein, keine MODX-Tags. Bitte beachten Sie, dass bei Verwendung von Feldern wie template, publishedby und ähnlichen für die Sortierung nach den "rohen" Werten sortiert wird, also nach Template- oder Benutzer-IDs und NICHT den zugehörigen Namen. Sie können auch eine zufällige Sortierung wählen, indem Sie "RAND()" eingeben.';
 $_lang['pdotools_prop_sortbyTV'] = 'Sortieren nach dem TV. Wenn es nicht angegeben ist, in &includeTVs, es wird uncluded automatisch.';
 $_lang['pdotools_prop_sortbyTVType'] = 'Sortieren nach TV. Die Optionen sind: string, integer, decimal, und "datetime". Wenn leer, dann die TV werden sortiert, je nach type: text, Zahl oder Datum.';
 $_lang['pdotools_prop_sortdir'] = 'Um die Sortierung: absteigend oder aufsteigend';
