@@ -50,7 +50,10 @@ $_lang['pdotools_prop_hideSingle'] = 'Do not display the result if it consists o
 $_lang['pdotools_prop_hideUnsearchable'] = 'Do not display resources that are not searchable.';
 
 $_lang['pdotools_prop_sortby'] = 'Any Resource Field (including Template Variables if they have been included) to sort by. Some common fields to sort on are publishedon, menuindex, pagetitle etc., but see the Resources documentation for all fields. Specify fields with the name only, not using the tag syntax. Note that when using fields like template, publishedby and the likes for sorting, it will be sorted on the raw values, so the template or user ID, and NOT their names. You can also sort randomly by specifying RAND().';
-$_lang['pdotools_prop_sortdir'] = 'Order which to sort by.';
+$_lang['pdotools_prop_sortbyTV'] = 'Sort by the TV. If it is not specified in &includeTVs, it will be uncluded automatically.';
+$_lang['pdotools_prop_sortbyTVType'] = 'Sort by TV. The options are: string, integer, decimal, and datetime. If empty, then the TV will be sorted depending on its type: text, number or date.';
+$_lang['pdotools_prop_sortdir'] = 'Order which to sort by: descending or ascending';
+$_lang['pdotools_prop_sortdirTV'] = 'Sort direction of TV: descending or ascending. If not specified, it will be equal to the parameter &sortdir.';
 $_lang['pdotools_prop_toPlaceholder'] = 'If set, will assign the result to this placeholder instead of outputting it directly.';
 $_lang['pdotools_prop_toSeparatePlaceholders'] = 'If set, will assign EACH result to a separate placeholder named by this param suffixed with a sequential number (starting from 0).';
 $_lang['pdotools_prop_totalVar'] = 'Define the key of a placeholder set by getResources indicating the total number of Resources that would be selected not considering the limit value.';  // getResources???

@@ -1,5 +1,11 @@
 Changelog for pdoTools.
 
+1.10.1 pl
+==============
+- [#108] [pdoFetch] Fixed E_ERROR when using &sortbyTV.
+- [pdoFetch] Added new parameter &sortbyTVType.
+- [pdoFetch] If &sortdirTV is not set it will be equal to &sortdir.
+
 1.10.0 pl
 ==============
 - [pdoMenu] Returned and fixed parameter &showDeleted.
