@@ -198,7 +198,7 @@ class pdoPage {
 
 		return !empty($tpl)
 			? $this->pdoTools->getChunk($tpl, $data)
-			: '';
+			: $href;
 	}
 
 
