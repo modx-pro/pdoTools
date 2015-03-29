@@ -243,9 +243,10 @@ class pdoMenu {
 			$classes[] = $this->pdoTools->config['parentClass'];
 		}
 		if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' && is_numeric(trim($row['content'], '[]~ '))) {
-            		$row_id = intval(trim($row['content'], '[]~ '));
-		}else{
-		    	$row_id = $row['id'];
+			$row_id = intval(trim($row['content'], '[]~ '));
+		}
+		else {
+			$row_id = $row['id'];
 		}
 		if ($this->isHere($row_id) && !empty($this->pdoTools->config['hereClass'])) {
 			$classes[] = $this->pdoTools->config['hereClass'];
