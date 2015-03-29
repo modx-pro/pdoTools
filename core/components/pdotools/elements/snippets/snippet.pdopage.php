@@ -146,11 +146,11 @@ if (empty($data)) {
 			}
 		}
 
-		if (!empty($scriptProperties['setMeta']) && !$isAjax) {
-			if ($page > 1 && !empty($tplPagePrev)) {
+		if (!empty($setMeta) && !$isAjax) {
+			if ($page > 1) {
 				$modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url, $page - 1) . '"/>');
 			}
-			if ($page < $pageCount && !empty($tplPageNext)) {
+			if ($page < $pageCount) {
 				$modx->regClientStartupHTMLBlock('<link rel="next" href="' . $pdoPage->makePageLink($url, $page + 1) . '"/>');
 			}
 		}
