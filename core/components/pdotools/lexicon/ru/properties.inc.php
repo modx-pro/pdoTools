@@ -163,3 +163,5 @@ $_lang['pdotools_prop_ajaxTplMore'] = 'Шаблон кнопки для загр
 
 $_lang['pdotools_prop_frontend_js'] = 'Ссылка на javascript для подключения сниппетом.';
 $_lang['pdotools_prop_frontend_css'] = 'Ссылка на css стили оформления для подключения сниппетом.';
+
+$_lang['pdotools_prop_setMeta'] = 'Регистрация мета-тегов со ссылками на предыдущую и следующую страницу.';

@@ -167,3 +167,5 @@ $_lang['pdotools_prop_ajaxTplMore'] = 'Stück für templating "mehr Schaltfläch
 
 $_lang['pdotools_prop_frontend_js'] = 'Link auf javascript für die Belastung durch das snippet.';
 $_lang['pdotools_prop_frontend_css'] = 'Link auf css-Stile für das laden der snippet.';
+
+$_lang['pdotools_prop_setMeta'] = 'Anmeldung von meta-tags mit links zu den vorherigen und nächsten Seite.';

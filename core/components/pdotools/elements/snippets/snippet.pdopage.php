@@ -147,7 +147,7 @@ if (empty($data)) {
 			}
 		}
 
-		if ($scriptProperties['setMeta']) {
+		if (!empty($scriptProperties['setMeta']) && !$isAjax) {
 			if ($page > 1 && !empty($tplPagePrev)) {
 				$modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url, $page - 1) . '"/>');
 			}

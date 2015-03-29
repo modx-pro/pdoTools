@@ -165,3 +165,5 @@ $_lang['pdotools_prop_ajaxTplMore'] = 'Chunk for templating "more button" when a
 
 $_lang['pdotools_prop_frontend_js'] = 'Link on javascript for loading by the snippet.';
 $_lang['pdotools_prop_frontend_css'] = 'Link on css styles for loading by the snippet.';
+
+$_lang['pdotools_prop_setMeta'] = 'Registration of meta tags with links to previous and next page.';
