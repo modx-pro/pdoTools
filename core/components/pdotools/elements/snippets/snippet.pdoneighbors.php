@@ -29,7 +29,23 @@ if (!$resource) {return '';}
 $params = $scriptProperties;
 $params['select'] = 'id';
 $params['limit'] = 0;
-$ids = $pdoFetch->getCollection('modResource', array('parent' => $resource->parent), $params);
+if (!empty($parents)) {
+	$parents = array_map('trim', explode(',', $parents));
+	if (!in_array($resource->parent, $parents)) {
+		$parents[] = $resource->parent;
+	}
+	$key = array_search($resource->parent * -1, $parents);
+	if ($key !== false) {
+		unset($parents[$key]);
+	}
+	$params['parents'] = implode(',', $parents);
+	$ids = $pdoFetch->getCollection('modResource', array(), $params);
+	unset($scriptProperties['parents']);
+}
+else {
+	$ids = $pdoFetch->getCollection('modResource', array('parent' => $resource->parent), $params);
+}
+
 $found = false;
 $prev = $next = array();
 foreach ($ids as $v) {

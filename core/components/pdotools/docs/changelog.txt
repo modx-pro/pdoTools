@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [#112] Parameter &scheme was set to system default in all snippets.
 - [#111] [pdoPage] Added ability to set "prev" & "next" meta tags.
+- [#107] [pdoNeighbors] Added ability to specify &parents for work.
 
 1.10.1 pl
 ==============

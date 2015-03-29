@@ -20,6 +20,10 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'asc',
 	),
+	'depth' => array(
+		'type' => 'numberfield',
+		'value' => 0,
+	),
 
 	'tplPrev' => array(
 		'type' => 'textfield',
@@ -61,6 +65,10 @@ $tmp = array(
 		'value' => '',
 	),
 	'toPlaceholder' => array(
+		'type' => 'textfield',
+		'value' => '',
+	),
+	'parents' => array(
 		'type' => 'textfield',
 		'value' => '',
 	),
