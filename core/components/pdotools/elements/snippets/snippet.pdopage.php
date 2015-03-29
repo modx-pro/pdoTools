@@ -147,6 +147,15 @@ if (empty($data)) {
 			}
 		}
 
+		if ($scriptProperties['setMeta']) {
+			if ($page > 1 && !empty($tplPagePrev)) {
+				$modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url, $page - 1) . '"/>');
+			}
+			if ($page < $pageCount && !empty($tplPageNext)) {
+				$modx->regClientStartupHTMLBlock('<link rel="next" href="' . $pdoPage->makePageLink($url, $page + 1) . '"/>');
+			}
+		}
+
 		$pagination = !empty($tplPageWrapper)
 			? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
 			: $pdoPage->pdoTools->parseChunk('', $pagination);

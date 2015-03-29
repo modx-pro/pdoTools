@@ -165,6 +165,10 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => '[[+assetsUrl]]css/pdopage.css',
 	),
+	'setMeta' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
 
 );
 
