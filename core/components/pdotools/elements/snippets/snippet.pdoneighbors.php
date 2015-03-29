@@ -16,7 +16,6 @@ $pdoFetch->addTime('pdoTools loaded');
 
 if (empty($id)) {$id = $modx->resource->id;}
 if (empty($limit)) {$limit = 1;}
-if (empty($scheme)) {$scheme = $modx->getOption('link_tag_scheme');}
 if (!isset($outputSeparator)) {$outputSeparator = "\n";}
 $fastMode = !empty($fastMode);
 
@@ -114,11 +113,11 @@ foreach ($rows as $row) {
 	if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
 	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $scheme)
+			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
 			: $row['content'];
 	}
 	else {
-		$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+		$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
 	}
 
 	if (isset($prev[$row['id']])) {

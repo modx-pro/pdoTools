@@ -123,11 +123,11 @@ $output = array();
 foreach ($rows as $row) {
 	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['url'] = is_numeric(trim($row['content'], '[]~ '))
-			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $scheme)
+			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
 			: $row['content'];
 	}
 	else {
-		$row['url'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+		$row['url'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
 	}
 
 	$time = !empty($row['editedon'])

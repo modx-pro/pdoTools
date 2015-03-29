@@ -42,7 +42,6 @@ class pdoFetch extends pdoTools {
 
 				'additionalPlaceholders' => '',
 				'useWeblinkUrl' => false,
-				'scheme' => -1,
 			), $config)
 		, $clean_timings);
 
@@ -129,7 +128,6 @@ class pdoFetch extends pdoTools {
 
 						// Add placeholder [[+link]] if specified
 						if (!empty($this->config['useWeblinkUrl'])) {
-							if ($this->config['scheme'] === '-1') {$this->config['scheme'] = -1;}
 							if (!isset($row['context_key'])) {$row['context_key'] = '';}
 							if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink')) {
 								$row['link'] = isset($row['content']) && is_numeric(trim($row['content'], '[]~ '))

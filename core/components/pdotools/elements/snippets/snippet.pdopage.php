@@ -6,7 +6,6 @@ if (empty($pageNavVar)) {$pageNavVar = 'page.nav';}
 if (empty($pageCountVar)) {$pageCountVar = 'pageCount';}
 if (empty($totalVar)) {$totalVar = 'total';}
 if (empty($page)) {$page = 1;}
-if (empty($scheme)) {$scheme = -1;} elseif (is_numeric($scheme)) {$scheme = (integer) $scheme;}
 if (empty($pageLimit)) {$pageLimit = 5;} else {$pageLimit = (integer) $pageLimit;}
 if (!isset($plPrefix)) {$plPrefix = '';}
 if (!empty($scriptProperties['ajaxMode'])) {$scriptProperties['ajax'] = 1;}

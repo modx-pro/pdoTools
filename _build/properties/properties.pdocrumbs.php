@@ -133,6 +133,10 @@ $tmp = array(
 		'type' => 'list'
 		,'options' => array(
 			array(
+				'name' => 'System default'
+				,'value' => ''
+			),
+			array(
 				'name' => '-1 (relative to site_url)'
 				,'value' => -1
 			)
@@ -153,7 +157,7 @@ $tmp = array(
 				,'value' => 'https'
 			)
 		)
-		,'value' => -1
+		,'value' => ''
 	),
 	'useWeblinkUrl' => array(
 		'type' => 'combo-boolean',

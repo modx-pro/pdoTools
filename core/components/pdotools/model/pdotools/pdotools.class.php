@@ -78,10 +78,18 @@ class pdoTools {
 
 			'outputSeparator' => "\n",
 			'decodeJSON' => true,
+			'scheme' => '',
 		), $config);
 
 		if ($clean_timings) {
 			$this->timings = array();
+		}
+
+		if ($this->config['scheme'] === '-1') {
+			$this->config['scheme'] = -1;
+		}
+		elseif (empty($this->config['scheme'])) {
+			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
 		}
 	}
 
