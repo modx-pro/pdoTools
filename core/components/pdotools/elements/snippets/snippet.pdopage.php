@@ -41,8 +41,8 @@ $pdoPage->pdoTools->addTime('pdoTools loaded');
 if (!$isAjax && !empty($scriptProperties['ajaxMode'])) {
 	$pdoPage->loadJsCss();
 }
-elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
-	// Removing default scripts and styles if they don`t need
+// Removing of default scripts and styles so they do not overwrote nested snippet parameters
+if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
 	$properties = $snippet->get('properties');
 	if ($scriptProperties['frontend_js'] == $properties['frontend_js']['value']) {
 		unset($scriptProperties['frontend_js']);
