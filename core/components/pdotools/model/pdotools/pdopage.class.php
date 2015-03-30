@@ -65,16 +65,8 @@ class pdoPage {
 			pageLimit: ' . $limit . ',
 			assetsUrl: "' . $assetsUrl . '"
 		}';
-		$this->modx->regClientStartupScript(preg_replace(array('/\n/', '/\t/'), '', '
-			<script type="text/javascript">
-				pdoPage = {callbacks: {}, keys: {}};
-			</script>
-		'), true);
-		$this->modx->regClientScript(preg_replace(array('/\n/', '/\t/'), '', '
-			<script type="text/javascript">
-				pdoPage.initialize(' . $config . ');
-			</script>
-		'), true);
+		$this->modx->regClientStartupScript('<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}};</script>', true);
+		$this->modx->regClientScript('<script type="text/javascript">pdoPage.initialize(' . $config . ');</script>', true);
 	}
 
 

@@ -169,3 +169,13 @@ $_lang['pdotools_prop_frontend_js'] = 'Link auf javascript für die Belastung du
 $_lang['pdotools_prop_frontend_css'] = 'Link auf css-Stile für das laden der snippet.';
 
 $_lang['pdotools_prop_setMeta'] = 'Anmeldung von meta-tags mit links zu den vorherigen und nächsten Seite.';
+
+$_lang['pdotools_prop_title_limit'] = 'Die Grenze von einer Abfrage für die Eltern der Ressource.';
+$_lang['pdotools_prop_title_cache'] = 'Aktivieren cache Ressource Eltern für den Titel der Seite.';
+$_lang['pdotools_prop_title_outputSeparator'] = 'String separate Elemente in den Titel der Seite.';
+$_lang['pdotools_prop_registerJs'] = 'Insert zur Seite, die javascript-Variablen für die Unterstützung &ajaxMode von snippet pdoPage.';
+$_lang['pdotools_prop_tplPages'] = 'Template der Paginierung in den Titel der Seite.';
+$_lang['pdotools_prop_tplSearch'] = 'Template für die Suche im Titel der Seite.';
+$_lang['pdotools_prop_minQuery'] = 'Die minimale Länge der Suchanfrage angezeigt in den Titel der Seite.';
+$_lang['pdotools_prop_queryVarKey'] = 'Der name der variable für den Suchbegriff in der url.';
+$_lang['pdotools_prop_titleField'] = 'Feld der aktuellen Ressource angezeigt in den Titel der Seite.';

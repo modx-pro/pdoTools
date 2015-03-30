@@ -11,3 +11,5 @@
 $_lang['pdopage_first'] = 'Erste';
 $_lang['pdopage_last'] = 'Letzte';
 $_lang['pdopage_more'] = 'Laden';
+$_lang['pdopage_page'] = 'seite';
+$_lang['pdopage_from'] = 'aus';

@@ -167,3 +167,13 @@ $_lang['pdotools_prop_frontend_js'] = 'Link on javascript for loading by the sni
 $_lang['pdotools_prop_frontend_css'] = 'Link on css styles for loading by the snippet.';
 
 $_lang['pdotools_prop_setMeta'] = 'Registration of meta tags with links to previous and next page.';
+
+$_lang['pdotools_prop_title_limit'] = 'The limit of a query for parents of the resource.';
+$_lang['pdotools_prop_title_cache'] = 'Enable cache of resource parents for the page title.';
+$_lang['pdotools_prop_title_outputSeparator'] = 'String to separate elements in the page title.';
+$_lang['pdotools_prop_registerJs'] = 'Insert to page the javascript variables for support &ajaxMode of snippet pdoPage.';
+$_lang['pdotools_prop_tplPages'] = 'Template of pagination in the page title.';
+$_lang['pdotools_prop_tplSearch'] = 'Template of search query in the page title.';
+$_lang['pdotools_prop_minQuery'] = 'The minimum length of the search query to be displayed in the page title.';
+$_lang['pdotools_prop_queryVarKey'] = 'The name of variable for the search query in the url.';
+$_lang['pdotools_prop_titleField'] = 'Field of the current resource to be displayed in the page title.';

@@ -10,3 +10,5 @@
 $_lang['pdopage_first'] = 'Первая';
 $_lang['pdopage_last'] = 'Последняя';
 $_lang['pdopage_more'] = 'Загрузить еще';
+$_lang['pdopage_page'] = 'стр.';
+$_lang['pdopage_from'] = 'из';

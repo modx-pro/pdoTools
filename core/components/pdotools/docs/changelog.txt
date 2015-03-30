@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+1.11.0 pl
+==============
+- [pdoTitle] Added new snippet.
+- [pdoPage] Added support of snippet pdoTitle when &ajaxMode is enabled.
+- [pdoPage] Prevent overwriting of scripts and styles of nested &element by default parameters.
+- [pdoPage] Added triggering javascript event "pdopage_load".
+
 1.10.2 pl1
 ==============
 - [#112] Parameter &scheme was set to system default in all snippets.
