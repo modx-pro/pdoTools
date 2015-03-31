@@ -1,6 +1,6 @@
 Changelog for pdoTools.
 
-1.11.0 pl
+1.11.0 pl1
 ==============
 - [pdoTitle] Added new snippet.
 - [pdoPage] Added support of snippet pdoTitle when &ajaxMode is enabled.

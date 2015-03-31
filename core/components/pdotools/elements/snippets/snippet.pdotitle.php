@@ -57,8 +57,9 @@ if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOption
 		'direction' => 'rtl',
 		'tpl' => '@INLINE [[+menutitle]]',
 		'tplCurrent' => '@INLINE [[+menutitle]]',
+		'tplMax' => '',
+		'tplHome' => '',
 		'tplWrapper' => '@INLINE [[+output]]',
-		'tplMax' => ''
 	));
 }
 if (!empty($crumbs)) {
