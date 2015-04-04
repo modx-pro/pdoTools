@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.11.1 pl
+==============
+- [pdoSitemap] Fixed default url scheme after last update.
+
 1.11.0 pl1
 ==============
 - [pdoTitle] Added new snippet.

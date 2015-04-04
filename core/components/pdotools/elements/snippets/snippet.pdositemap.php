@@ -19,7 +19,6 @@ if (empty($tpl)) {$tpl = "@INLINE \n<url>\n\t<loc>[[+url]]</loc>\n\t<lastmod>[[+
 if (empty($tplWrapper)) {$tplWrapper = "@INLINE <?xml version=\"1.0\" encoding=\"[[++modx_charset]]\"?>\n<urlset xmlns=\"[[+schema]]\">\n[[+output]]\n</urlset>";}
 if (empty($sitemapSchema)) {$sitemapSchema = 'http://www.sitemaps.org/schemas/sitemap/0.9';}
 if (empty($outputSeparator)) {$outputSeparator = "\n";}
-$scheme = 'full';
 
 // Convert parameters from GoogleSiteMap if exists
 if (!empty($itemTpl)) {$tpl = $itemTpl;}
@@ -108,6 +107,7 @@ $default = array(
 	'sortby' => $class.'.menuindex',
 	'sortdir' => 'ASC',
 	'return' => 'data',
+	'scheme' => 'full',
 	'limit' => 0,
 	//'checkPermissions' => 'load',
 	'fastMode' => true
