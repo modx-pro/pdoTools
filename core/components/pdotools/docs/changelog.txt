@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+1.11.2 pl
+==============
+- [#116] [pdoTitle] Disabled &register_js by default.
+
 1.11.1 pl
 ==============
 - [pdoSitemap] Fixed default url scheme after last update.

@@ -56,8 +56,8 @@ $tmp = array(
 		'desc' => 'pdotools_prop_title_outputSeparator'
 	),
 	'registerJs' => array(
-		'type' => 'numberfield',
-		'value' => true,
+		'type' => 'combo-boolean',
+		'value' => false,
 	),
 );
 
