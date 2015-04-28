@@ -66,7 +66,8 @@ class pdoPage {
 			assetsUrl: "' . $assetsUrl . '"
 		}';
 		$this->modx->regClientStartupScript('<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}};</script>', true);
-		$this->modx->regClientScript('<script type="text/javascript">pdoPage.initialize(' . $config . ');</script>', true);
+		$this->modx->regClientScript('<script type="text/javascript">pdoPage.config = ' . $config . ';</script>', true);
+		$this->modx->regClientScript('<script type="text/javascript">pdoPage.initialize(pdoPage.config);</script>', true);
 	}
 
 
