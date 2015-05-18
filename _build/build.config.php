@@ -4,8 +4,8 @@
 define('PKG_NAME','pdoTools');
 define('PKG_NAME_LOWER',strtolower(PKG_NAME));
 
-define('PKG_VERSION','1.11.2');
-define('PKG_RELEASE','pl');
+define('PKG_VERSION','2.0.0');
+define('PKG_RELEASE','beta');
 define('PKG_AUTO_INSTALL', true);
 
 
@@ -39,7 +39,7 @@ define('BUILD_SETTING_UPDATE', false);
 //define('BUILD_CHUNK_UPDATE', false);
 
 define('BUILD_SNIPPET_UPDATE', true);
-//define('BUILD_PLUGIN_UPDATE', true);
+define('BUILD_PLUGIN_UPDATE', true);
 //define('BUILD_EVENT_UPDATE', true);
 //define('BUILD_POLICY_UPDATE', true);
 //define('BUILD_POLICY_TEMPLATE_UPDATE', true);
@@ -47,7 +47,7 @@ define('BUILD_SNIPPET_UPDATE', true);
 
 //define('BUILD_CHUNK_STATIC', false);
 define('BUILD_SNIPPET_STATIC', false);
-//define('BUILD_PLUGIN_STATIC', false);
+define('BUILD_PLUGIN_STATIC', false);
 
 $BUILD_RESOLVERS = array(
 	'parser'

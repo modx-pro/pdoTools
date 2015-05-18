@@ -26,6 +26,8 @@ class pdoTools {
 	protected $start = 0;
 	/** @var pdoParser $parser */
 	public $parser;
+	/** @var Fenom $fenom */
+	public $fenom;
 
 
 	/**
@@ -59,6 +61,39 @@ class pdoTools {
 
 
 	/**
+	 * Loads template engine
+	 *
+	 * @return bool|Fenom
+	 */
+	public function getFenom() {
+		if (!$this->fenom) {
+			try {
+				if (!class_exists('Fenom')) {
+					require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
+					Fenom::registerAutoload();
+				}
+				if (!file_exists(MODX_CORE_PATH . 'cache/')) {
+					mkdir(MODX_CORE_PATH . 'cache/');
+				}
+				if (!file_exists($this->config['fenomCache'])) {
+					mkdir($this->config['fenomCache']);
+				}
+				$options = !empty($this->config['fenomOptions']) && is_array($this->config['fenomOptions'])
+					? $this->config['fenomOptions']
+					: array();
+				$this->fenom = Fenom::factory($this->config['fenomCache'], $this->config['fenomCache'], $options);
+			}
+			catch (Exception $e) {
+				$this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());
+				return false;
+			}
+		}
+
+		return $this->fenom;
+	}
+
+
+	/**
 	 * Set config from default values and given array.
 	 *
 	 * @param array $config
@@ -79,6 +114,10 @@ class pdoTools {
 			'outputSeparator' => "\n",
 			'decodeJSON' => true,
 			'scheme' => '',
+
+			'useFenom' => false,
+			'fenomCache' => MODX_CORE_PATH . 'cache/fenom/',
+			'fenomOptions' => array(),
 		), $config);
 
 		if ($clean_timings) {
@@ -90,6 +129,9 @@ class pdoTools {
 		}
 		elseif (empty($this->config['scheme'])) {
 			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
+		}
+		if (!empty($this->config['fenomOptions']) && !is_array($this->config['fenomOptions'])) {
+			$this->config['fenomOptions'] = $this->modx->fromJSON($this->config['fenomOptions']);
 		}
 	}
 
@@ -271,33 +313,36 @@ class pdoTools {
 				: '';
 		}
 
-		$content = $chunk['content'];
+		// Trying to process template with Fenom
+		$content = $this->fenom(trim($chunk['content']), $properties);
 
-		// Processing quick placeholders
-		if (!empty($chunk['placeholders'])) {
-			$properties = $this->flattenArray($properties);
-			$pl = $chunk['placeholders'];
-			foreach ($pl as $k => $v) {
-				if ($k[0] == '!') {
-					if (empty($properties[substr($k, 1)])) {
-						$pl[substr($k, 1)] = $v;
+		if (strpos($content, '[[') !== false) {
+			// Processing quick placeholders
+			if (!empty($chunk['placeholders'])) {
+				$properties = $this->flattenArray($properties);
+				$pl = $chunk['placeholders'];
+				foreach ($pl as $k => $v) {
+					if ($k[0] == '!') {
+						if (empty($properties[substr($k, 1)])) {
+							$pl[substr($k, 1)] = $v;
+						}
+						unset($pl[$k]);
 					}
-					unset($pl[$k]);
+					elseif (empty($properties[$k])) {
+						$pl[$k] = '';
+					}
 				}
-				elseif (empty($properties[$k])) {
-					$pl[$k] = '';
+				if (!empty($pl)) {
+					$pl = $this->makePlaceholders($pl);
+					$content = str_replace($pl['pl'], $pl['vl'], $content);
 				}
 			}
-			if (!empty($pl)) {
-				$pl = $this->makePlaceholders($pl);
+
+			// Processing given placeholders
+			if (!empty($properties)) {
+				$pl = $this->makePlaceholders($properties);
 				$content = str_replace($pl['pl'], $pl['vl'], $content);
 			}
-		}
-
-		// Processing given placeholders
-		if (!empty($properties)) {
-			$pl = $this->makePlaceholders($properties);
-			$content = str_replace($pl['pl'], $pl['vl'], $content);
 		}
 
 		// Processing other placeholders
@@ -340,10 +385,49 @@ class pdoTools {
 				: '';
 		}
 
-		$pl = $this->makePlaceholders($properties, '', $prefix, $suffix);
-		$output = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
+		// Trying to process template with Fenom
+		$content = $this->fenom(trim($chunk['content']), $properties);
 
-		return $output;
+		if (strpos($content, '[[') !== false) {
+			$pl = $this->makePlaceholders($properties, '', $prefix, $suffix);
+			$content = str_replace($pl['pl'], $pl['vl'], $content);
+		}
+
+		return $content;
+	}
+
+
+	/**
+	 * @param string $content Raw html template with Fenom variables
+	 * @param array $properties
+	 *
+	 * @return mixed|string
+	 */
+	public function fenom($content = '', array $properties = array()) {
+		if (!empty($this->config['useFenom']) && (strpos($content, '{$') !== false || strpos($content, '{/') !== false)) {
+			$tpl = md5($content) . '.fenom.tpl';
+			$file = $this->config['fenomCache'] . $tpl;
+			if (!$this->getStore($tpl, 'fenom')) {
+				if (!file_exists($file)) {
+					file_put_contents($file, $content);
+				}
+				$this->setStore($tpl, file_exists($file), 'fenom');
+			}
+			try {
+				$tmp = array();
+				foreach ($properties as $k => $v) {
+					$tmp[str_replace('.', '_', $k)] = $v;
+				}
+				$tmp['modx'] = $this->modx;
+				$tmp['pdoTools'] = $this;
+				$content = $this->getFenom()->fetch($tpl, $tmp);
+			}
+			catch (Exception $e) {
+				$this->modx->log(xPDO::LOG_LEVEL_ERROR, print_r($e->getMessage(), true));
+			}
+		}
+
+		return $content;
 	}
 
 
@@ -946,6 +1030,26 @@ class pdoTools {
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * Removes cache files
+	 *
+	 * @return bool
+	 */
+	public function clearCache() {
+		if (!empty($this->config['fenomCache'])) {
+			$dir = $this->config['fenomCache'];
+			$files = @scandir($dir);
+			foreach ($files as $file) {
+				if (strpos($file, '.fenom.') !== false) {
+					unlink(str_replace('//', '/', $dir . '/' . $file));
+				}
+			}
+		}
+
+		return true;
 	}
 
 }

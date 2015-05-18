@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.0.0 beta
+==============
+- Added Fenom template engine.
+
 1.11.2 pl
 ==============
 - [#116] [pdoTitle] Disabled &register_js by default.
