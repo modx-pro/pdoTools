@@ -405,25 +405,27 @@ class pdoTools {
 	 */
 	public function fenom($content = '', array $properties = array()) {
 		if (!empty($this->config['useFenom']) && (strpos($content, '{$') !== false || strpos($content, '{/') !== false)) {
-			$tpl = md5($content) . '.fenom.tpl';
-			$file = $this->config['fenomCache'] . $tpl;
-			if (!$this->getStore($tpl, 'fenom')) {
-				if (!file_exists($file)) {
-					file_put_contents($file, $content);
+			if ($fenom = $this->getFenom()) {
+				$tpl = md5($content) . '.fenom.tpl';
+				$file = $this->config['fenomCache'] . $tpl;
+				if (!$this->getStore($tpl, 'fenom')) {
+					if (!file_exists($file)) {
+						file_put_contents($file, $content);
+					}
+					$this->setStore($tpl, file_exists($file), 'fenom');
 				}
-				$this->setStore($tpl, file_exists($file), 'fenom');
-			}
-			try {
-				$tmp = array();
-				foreach ($properties as $k => $v) {
-					$tmp[str_replace('.', '_', $k)] = $v;
+				try {
+					$tmp = array();
+					foreach ($properties as $k => $v) {
+						$tmp[str_replace('.', '_', $k)] = $v;
+					}
+					$tmp['modx'] = $this->modx;
+					$tmp['pdoTools'] = $this;
+					$content = $fenom->fetch($tpl, $tmp);
 				}
-				$tmp['modx'] = $this->modx;
-				$tmp['pdoTools'] = $this;
-				$content = $this->getFenom()->fetch($tpl, $tmp);
-			}
-			catch (Exception $e) {
-				$this->modx->log(xPDO::LOG_LEVEL_ERROR, print_r($e->getMessage(), true));
+				catch (Exception $e) {
+					$this->modx->log(xPDO::LOG_LEVEL_ERROR, print_r($e->getMessage(), true));
+				}
 			}
 		}
 
@@ -1041,10 +1043,11 @@ class pdoTools {
 	public function clearCache() {
 		if (!empty($this->config['fenomCache'])) {
 			$dir = $this->config['fenomCache'];
-			$files = @scandir($dir);
-			foreach ($files as $file) {
-				if (strpos($file, '.fenom.') !== false) {
-					unlink(str_replace('//', '/', $dir . '/' . $file));
+			if ($files = @scandir($dir)) {
+				foreach ($files as $file) {
+					if (strpos($file, '.fenom.') !== false) {
+						unlink(str_replace('//', '/', $dir . '/' . $file));
+					}
 				}
 			}
 		}
