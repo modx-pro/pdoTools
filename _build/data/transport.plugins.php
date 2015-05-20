@@ -3,6 +3,7 @@
 $plugins = array();
 
 $tmp = array(
+	/*
 	'pdoTools' => array(
 		'file' => 'pdotools',
 		'description' => '',
@@ -10,6 +11,7 @@ $tmp = array(
 			'OnSiteRefresh' => array(),
 		),
 	)
+	*/
 );
 
 foreach ($tmp as $k => $v) {

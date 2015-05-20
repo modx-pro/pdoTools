@@ -44,11 +44,8 @@ class pdoParser extends modParser {
 	 */
 	public function processElementTags($parentTag, & $content, $processUncacheable = false, $removeUnprocessed = false, $prefix = "[[", $suffix = "]]", $tokens = array(), $depth = 0) {
 
-		if ($processUncacheable && $removeUnprocessed) {
-			$tpl_name = !empty($this->modx->resource)
-				? $this->modx->resource->getCacheKey() . '/'
-				: '';
-			$content = $this->pdoTools->fenom($content, $this->modx->placeholders, $tpl_name);
+		if ($processUncacheable && $removeUnprocessed && is_string($content)) {
+			$content = $this->pdoTools->fenom($content, $this->modx->placeholders);
 		}
 
 		return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix, $suffix, $tokens, $depth);
