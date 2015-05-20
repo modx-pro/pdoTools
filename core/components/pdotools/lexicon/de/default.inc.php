@@ -20,3 +20,6 @@ $_lang['setting_parser_class'] = 'Parser-Klasse';
 $_lang['setting_parser_class_desc'] = 'Die Parser-Klasse, die verwendet wird, um die MODX-Tags zu verarbeiten.';
 $_lang['setting_parser_class_path'] = 'Der Pfad zum Parser';
 $_lang['setting_parser_class_path_desc'] = 'Der Pfad, der die Datei mit dem Parser enthält.';
+
+$_lang['setting_useFenom'] = 'Verwenden Sie Fenom';
+$_lang['setting_useFenom_desc'] = 'Wenn aktiviert, pdoTools verwenden die Fenom template-engine zum Rendern Brocken.';

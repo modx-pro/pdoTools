@@ -18,3 +18,6 @@ $_lang['setting_parser_class'] = 'Используемый парсер';
 $_lang['setting_parser_class_desc'] = 'Класс парсера, который используется для разбора тегов MODX.';
 $_lang['setting_parser_class_path'] = 'Путь до парсера';
 $_lang['setting_parser_class_path_desc'] = 'Путь до директории с классом парсера.';
+
+$_lang['setting_useFenom'] = 'Использовать Fenom';
+$_lang['setting_useFenom_desc'] = 'Если включено, то pdoTools будет использовать шаблонизатор Fenom для обработки чанков.';

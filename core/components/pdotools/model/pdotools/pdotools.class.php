@@ -115,9 +115,9 @@ class pdoTools {
 			'decodeJSON' => true,
 			'scheme' => '',
 
-			'useFenom' => false,
-			'fenomCache' => MODX_CORE_PATH . 'cache/fenom/',
-			'fenomOptions' => array(),
+			'useFenom' => $this->modx->getOption('pdotools_useFenom', null, true),
+			'fenomCache' => $this->modx->getOption('pdotools_fenomCache', null, MODX_CORE_PATH . 'cache/fenom/'),
+			'fenomOptions' => $this->modx->getOption('pdotools_fenomOptions', null),
 		), $config);
 
 		if ($clean_timings) {
@@ -131,7 +131,10 @@ class pdoTools {
 			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
 		}
 		if (!empty($this->config['fenomOptions']) && !is_array($this->config['fenomOptions'])) {
-			$this->config['fenomOptions'] = $this->modx->fromJSON($this->config['fenomOptions']);
+			$tmp = $this->modx->fromJSON($this->config['fenomOptions']);
+			if (is_array($tmp)) {
+				$this->config['fenomOptions'] = $tmp;
+			}
 		}
 	}
 
@@ -400,28 +403,33 @@ class pdoTools {
 	/**
 	 * @param string $content Raw html template with Fenom variables
 	 * @param array $properties
+	 * @param string $prefix
 	 *
 	 * @return mixed|string
 	 */
-	public function fenom($content = '', array $properties = array()) {
-		if (!empty($this->config['useFenom']) && (strpos($content, '{$') !== false || strpos($content, '{/') !== false)) {
+	public function fenom($content = '', array $properties = array(), $prefix = '') {
+		if (!is_string($content) || empty($this->config['useFenom'])) {
+			return $content;
+		}
+		elseif (strpos($content, '{$') !== false || strpos($content, '{/') !== false) {
 			if ($fenom = $this->getFenom()) {
-				$tpl = md5($content) . '.fenom.tpl';
-				$file = $this->config['fenomCache'] . $tpl;
-				if (!$this->getStore($tpl, 'fenom')) {
+				$tpl_name = $prefix . md5($content) . '.fenom.tpl';
+				$file = $this->config['fenomCache'] . $tpl_name;
+				if (!$this->getStore($tpl_name, 'fenom')) {
 					if (!file_exists($file)) {
-						file_put_contents($file, $content);
+						$this->saveTemplate($file, $content);
 					}
-					$this->setStore($tpl, file_exists($file), 'fenom');
+					$this->setStore($tpl_name, file_exists($file), 'fenom');
 				}
 				try {
+					$fenom->setCompileDir(pathinfo($file, PATHINFO_DIRNAME));
 					$tmp = array();
 					foreach ($properties as $k => $v) {
 						$tmp[str_replace('.', '_', $k)] = $v;
 					}
 					$tmp['modx'] = $this->modx;
 					$tmp['pdoTools'] = $this;
-					$content = $fenom->fetch($tpl, $tmp);
+					$content = $fenom->fetch($tpl_name, $tmp);
 				}
 				catch (Exception $e) {
 					$this->modx->log(xPDO::LOG_LEVEL_ERROR, print_r($e->getMessage(), true));
@@ -1037,22 +1045,61 @@ class pdoTools {
 
 	/**
 	 * Removes cache files
-	 *
-	 * @return bool
 	 */
 	public function clearCache() {
-		if (!empty($this->config['fenomCache'])) {
-			$dir = $this->config['fenomCache'];
-			if ($files = @scandir($dir)) {
-				foreach ($files as $file) {
-					if (strpos($file, '.fenom.') !== false) {
-						unlink(str_replace('//', '/', $dir . '/' . $file));
+		$this->rmDir($this->config['fenomCache']);
+	}
+
+
+	/**
+	 * Recursive remove directory
+	 *
+	 * @param $dir
+	 */
+	public function rmDir($dir) {
+		$dir = rtrim($dir, '/');
+		if (is_dir($dir)) {
+			$objects = scandir($dir);
+			foreach ($objects as $object) {
+				if ($object != '.' && $object != '..') {
+					if (is_dir($dir . '/' . $object)) {
+						$this->rmDir($dir . '/' . $object);
+					}
+					else {
+						unlink($dir . '/' . $object);
 					}
 				}
 			}
+			rmdir($dir);
+		}
+	}
+
+
+	/**
+	 * Save file with directories creation
+	 *
+	 * @param $path
+	 * @param $content
+	 *
+	 * @return bool|int
+	 */
+	public function saveTemplate($path, $content) {
+		if (strpos($path, MODX_CORE_PATH) !== false) {
+			$path = str_replace(MODX_CORE_PATH, '', $path);
 		}
 
-		return true;
+		$dirs = explode('/', str_replace('//', '/', $path));
+		$file = array_pop($dirs);
+		$path = rtrim(MODX_CORE_PATH, '/');
+		foreach ($dirs as $dir) {
+			if (!$dir) {continue;}
+			$path .= '/' . $dir;
+			if (!file_exists($path)) {
+				mkdir($path);
+			}
+		}
+
+		return file_put_contents($path . '/' . $file, $content);
 	}
 
 }

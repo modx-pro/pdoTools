@@ -13,6 +13,10 @@ $tmp = array(
 		'value' => 'pdotools.pdofetch',
 		'key' => 'pdoFetch.class'
 	),
+	'useFenom' => array(
+		'xtype' => 'combo-boolean',
+		'value' => true,
+	),
 	/*
 	'parser_class' => array(
 		'xtype' => 'textfield',

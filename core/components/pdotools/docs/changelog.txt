@@ -1,8 +1,10 @@
 Changelog for pdoTools.
 
-2.0.0 beta1
+2.0.0 rc1
 ==============
 - Added Fenom template engine.
+- Fenom enabled by default.
+- pdoParser uses Fenom to process pages.
 
 1.11.2 pl
 ==============

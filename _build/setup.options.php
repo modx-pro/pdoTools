@@ -19,6 +19,7 @@ if (!$exists) {
 		$text = 'Вы можете включить <b>эксперементальный</b> парсер pdoTools, который работает немного быстрее оригинального и обрабатывает дополнительные плейсхолдеры <b>FastField</b>.
 			<br/>Тогда вы сможете:
 			<ul>
+				<li><b>Использовать шаблонизатор Fenom прямо в контенте документов и в шаблонах</b></li>
 				<li>Выводить поля ресурсов: <em>[[#15.pagetitle]], [[#20.content]]</em></li>
 				<li>Выводить ТВ параметры ресурсов: <em>[[#15.date]], [[#20.some_tv]]</em></li>
 				<li>Выводить поля товаров miniShop2: <em>[[#21.price]], [[#22.article]]</em></li>
@@ -38,6 +39,7 @@ if (!$exists) {
 		$text = 'You can enable <b>experimental</b> parser of pdoTools, that works a little faster than the original, and processes additional <b>FastField</b> placeholders.
 			<br/>Then you will can:
 			<ul>
+				<li><b>Use a Fenom template engine directly in the content of resources and templates</b></li>
 				<li>Display resource fields: <em>[[#15.pagetitle]], [[#20.content]]</em></li>
 				<li>Display TVs: <em>[[#15.date]], [[#20.some_tv]]</em></li>
 				<li>Display fields of miniShop2 products: <em>[[#21.price]], [[#22.article]]</em></li>
