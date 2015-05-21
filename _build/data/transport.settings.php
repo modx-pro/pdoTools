@@ -25,7 +25,7 @@ $tmp = array(
 	),
 	'fenom_parser' => array(
 		'xtype' => 'combo-boolean',
-		'value' => true,
+		'value' => false,
 	),
 	'fenom_php' => array(
 		'xtype' => 'combo-boolean',
@@ -34,6 +34,10 @@ $tmp = array(
 	'fenom_options' => array(
 		'xtype' => 'textarea',
 		'value' => '',
+	),
+	'fenom_cache' => array(
+		'xtype' => 'combo-boolean',
+		'value' => false,
 	),
 );
 

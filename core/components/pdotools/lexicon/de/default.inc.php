@@ -31,3 +31,5 @@ $_lang['setting_pdotools_fenom_php'] = 'PHP in Fenom';
 $_lang['setting_pdotools_fenom_php_desc'] = 'Wenn aktiviert, können Sie PHP-Funktionen, die in den Vorlagen und Stücke, zum Beispiel {$.php.phpinfo()}.';
 $_lang['setting_pdotools_fenom_options'] = 'Fenom Optionen';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON-string-array mit der beschriebenen Einstellungen auf <a href="https://github.com/fenom-Vorlage/fenom/blob/master/docs/de/Konfiguration.md" target="_blank">offiziellen Dokumentation</a>. Beispiel: {"auto_escape":true,"force_include":true}';
+$_lang['setting_pdotools_fenom_cache'] = 'Caching zusammengestellt Brocken';
+$_lang['setting_pdotools_fenom_cache_desc'] = 'Wenn Sie große und komplexe Fenom Brocken, können Sie die Zwischenspeicherung aktivieren der die kompilierten Versionen. Sie wird nur aktualisiert werden, wenn Sie die system-cache. Nicht empfohlen für die Entwicklung der Website.';

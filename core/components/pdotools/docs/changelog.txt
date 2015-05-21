@@ -3,6 +3,8 @@ Changelog for pdoTools.
 2.0.0 rc3
 ==============
 - New system settings to control the Fenom.
+- Ability to enable caching of Fenom compiled chunks.
+- Improved handling of parameter "cache_key".
 
 2.0.0 rc2
 ==============
