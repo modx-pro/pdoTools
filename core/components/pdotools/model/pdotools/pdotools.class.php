@@ -63,9 +63,6 @@ class pdoTools {
 			'outputSeparator' => "\n",
 			'decodeJSON' => true,
 			'scheme' => '',
-
-			'useFenom' => $this->modx->getOption('pdotools_useFenom', null, true),
-			'fenomOptions' => $this->modx->getOption('pdotools_fenomOptions', null),
 		), $config);
 
 		if ($clean_timings) {
@@ -78,12 +75,7 @@ class pdoTools {
 		elseif (empty($this->config['scheme'])) {
 			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
 		}
-		if (!empty($this->config['fenomOptions']) && !is_array($this->config['fenomOptions'])) {
-			$tmp = $this->modx->fromJSON($this->config['fenomOptions']);
-			if (is_array($tmp)) {
-				$this->config['fenomOptions'] = $tmp;
-			}
-		}
+		$this->config['useFenom'] = $this->modx->getOption('pdotools_fenom_default', null, true);
 	}
 
 
@@ -121,10 +113,16 @@ class pdoTools {
 				if (!file_exists($cache)) {
 					mkdir($cache);
 				}
-				$options = !empty($this->config['fenomOptions']) && is_array($this->config['fenomOptions'])
-					? $this->config['fenomOptions']
-					: array();
-				$this->fenom = Fenom::factory($cache, $cache, $options);
+				$this->fenom = Fenom::factory($cache, $cache);
+
+				if (!$this->modx->getOption('pdotools_fenom_php', null, false)) {
+					$this->fenom->removeAccessor('php');
+				}
+				if ($options = $this->modx->getOption('pdotools_fenom_options')) {
+					if (is_numeric($options) || $options = $this->modx->fromJSON($options)) {
+						$this->fenom->setOptions($options);
+					}
+				}
 			}
 			catch (Exception $e) {
 				$this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());
@@ -313,8 +311,11 @@ class pdoTools {
 				: '';
 		}
 
+		$content = $chunk['content'];
 		// Trying to process template with Fenom
-		$content = $this->fenom($chunk['content'], $properties);
+		if ($this->config['useFenom']) {
+			$content = $this->fenom($content, $properties);
+		}
 
 		if (strpos($content, '[[') !== false) {
 			// Processing quick placeholders
@@ -385,8 +386,11 @@ class pdoTools {
 				: '';
 		}
 
+		$content = $chunk['content'];
 		// Trying to process template with Fenom
-		$content = $this->fenom($chunk['content'], $properties);
+		if ($this->config['useFenom']) {
+			$content = $this->fenom($content, $properties);
+		}
 
 		if (strpos($content, '[[') !== false) {
 			$pl = $this->makePlaceholders($properties, '', $prefix, $suffix);

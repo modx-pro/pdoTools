@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.0.0 rc3
+==============
+- New system settings to control the Fenom.
+
 2.0.0 rc2
 ==============
 - Compiled Fenom templates cached to RAM instead of HDD.

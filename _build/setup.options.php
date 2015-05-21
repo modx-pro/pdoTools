@@ -8,7 +8,7 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
 	case xPDOTransport::ACTION_INSTALL:
 
 	case xPDOTransport::ACTION_UPGRADE:
-		$exists = $modx->getCount('modSystemSetting', array('key' => 'parser_class', 'value' => 'pdoParser'));
+		$exists = $modx->getCount('modSystemSetting', array('key' => 'parser_class', 'value:LIKE' => '%pdoParser'));
 		break;
 
 	case xPDOTransport::ACTION_UNINSTALL: break;
@@ -16,16 +16,20 @@ switch ($options[xPDOTransport::PACKAGE_ACTION]) {
 
 if (!$exists) {
 	if ($modx->getOption('manager_language') == 'ru') {
-		$text = 'Вы можете включить <b>эксперементальный</b> парсер pdoTools, который работает немного быстрее оригинального и обрабатывает дополнительные плейсхолдеры <b>FastField</b>.
+		$text = 'Вы можете включить <b>эксперементальный</b> парсер pdoTools, который работает немного быстрее оригинального и позволяет использовать шаблонизатор <b>Fenom</b> на страницах сайта.
 			<br/>Тогда вы сможете:
 			<ul>
-				<li><b>Использовать шаблонизатор Fenom прямо в контенте документов и в шаблонах</b></li>
-				<li>Выводить поля ресурсов: <em>[[#15.pagetitle]], [[#20.content]]</em></li>
-				<li>Выводить ТВ параметры ресурсов: <em>[[#15.date]], [[#20.some_tv]]</em></li>
-				<li>Выводить поля товаров miniShop2: <em>[[#21.price]], [[#22.article]]</em></li>
-				<li>Выводить массивы ресурсов и товаров: <em>[[#12.properties.somefield]], [[#15.size.1]]</em></li>
-				<li>Выводить глобальные массивы: <em>[[#POST.key]], [[#SESSION.another_key]]</em></li>
-				<li>Распечатывать массивы для отладки: <em>[[#15.colors]], [[#GET]], [[#12.properties]]</em></li>
+				<li><b>Использовать <a href="https://github.com/fenom-template/fenom/tree/master/docs/ru/" target="_blank">синтаксис Fenom</a> прямо в контенте ресурсов и в шаблонах</b></li>
+				<li>Использовать дополнительные плейсхолдеры <b>FastField</b>:
+					<ul>
+						<li>Выводить поля ресурсов: <em>[[#15.pagetitle]], [[#20.content]]</em></li>
+						<li>Выводить ТВ параметры ресурсов: <em>[[#15.date]], [[#20.some_tv]]</em></li>
+						<li>Выводить поля товаров miniShop2: <em>[[#21.price]], [[#22.article]]</em></li>
+						<li>Выводить массивы ресурсов и товаров: <em>[[#12.properties.somefield]], [[#15.size.1]]</em></li>
+						<li>Выводить глобальные массивы: <em>[[#POST.key]], [[#SESSION.another_key]]</em></li>
+						<li>Распечатывать массивы для отладки: <em>[[#15.colors]], [[#GET]], [[#12.properties]]</em></li>
+					</ul>
+				</li>
 			</ul>
 			<br/>
 			<label id="pdoParser">
@@ -36,16 +40,20 @@ if (!$exists) {
 			<small>Если что-то пойдёт не так - просто удалите системные настройки<br/><b>parser_class</b> и <b>parser_class_path</b>.</small>';
 	}
 	else {
-		$text = 'You can enable <b>experimental</b> parser of pdoTools, that works a little faster than the original, and processes additional <b>FastField</b> placeholders.
+		$text = 'You can enable <b>experimental</b> parser of pdoTools, that works a little faster than the original, and allows to use <b>Fenom</b> template engine.
 			<br/>Then you will can:
 			<ul>
-				<li><b>Use a Fenom template engine directly in the content of resources and templates</b></li>
-				<li>Display resource fields: <em>[[#15.pagetitle]], [[#20.content]]</em></li>
-				<li>Display TVs: <em>[[#15.date]], [[#20.some_tv]]</em></li>
-				<li>Display fields of miniShop2 products: <em>[[#21.price]], [[#22.article]]</em></li>
-				<li>Display array fields of resources and products: <em>[[#12.properties.somefield]], [[#15.size.1]]</em></li>
-				<li>Display values from global arrays: <em>[[#POST.key]], [[#SESSION.another_key]]</em></li>
-				<li>Print the entire array for debugging: <em>[[#15.colors]], [[#GET]], [[#12.properties]]</em></li>
+				<li><b>Use a <a href="https://github.com/fenom-template/fenom/tree/master/docs/en/" target="_blank">Fenom syntax</a> directly in the content of resources and templates</b></li>
+				<li>Use additional <b>FastField</b> placeholders:
+					<ul>
+						<li>Display resource fields: <em>[[#15.pagetitle]], [[#20.content]]</em></li>
+						<li>Display TVs: <em>[[#15.date]], [[#20.some_tv]]</em></li>
+						<li>Display fields of miniShop2 products: <em>[[#21.price]], [[#22.article]]</em></li>
+						<li>Display array fields of resources and products: <em>[[#12.properties.somefield]], [[#15.size.1]]</em></li>
+						<li>Display values from global arrays: <em>[[#POST.key]], [[#SESSION.another_key]]</em></li>
+						<li>Print the entire array for debugging: <em>[[#15.colors]], [[#GET]], [[#12.properties]]</em></li>
+					</ul>
+				</li>
 			</ul>
 			<br/>
 			<label id="pdoParser">
