@@ -22,7 +22,7 @@ $_lang['setting_parser_class_path'] = 'Путь до парсера';
 $_lang['setting_parser_class_path_desc'] = 'Путь до директории с классом парсера.';
 
 $_lang['setting_pdotools_fenom_default'] = 'Использовать Fenom в чанках';
-$_lang['setting_pdotools_fenom_default_desc'] = 'Сниппеты pdoTools будет использовать шаблонизатор Fenom для обработки чанков.';
+$_lang['setting_pdotools_fenom_default_desc'] = 'Сниппеты pdoTools будут использовать шаблонизатор Fenom для обработки чанков.';
 $_lang['setting_pdotools_fenom_parser'] = 'Использовать Fenom на страницах';
 $_lang['setting_pdotools_fenom_parser_desc'] = 'Эксперементальный pdoParser будет использовать шаблонизатор Fenom для обработки страниц и шаблонов сайта. Конечно, он сам должен быть активирован.';
 $_lang['setting_pdotools_fenom_php'] = 'Разрешить PHP в Fenom';
