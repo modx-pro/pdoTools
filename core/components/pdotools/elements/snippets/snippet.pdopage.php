@@ -86,10 +86,11 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 	$scriptProperties['limit'] = 10000000;
 }
 
+$cache = !empty($cache) || (!$modx->user->id && !empty($cacheAnonymous));
 $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
-$data = !empty($cache) || !$modx->user->id && !empty($cacheAnonymous)
+$data = $cache
 	? $pdoPage->pdoTools->getCache($scriptProperties)
 	: array();
 
@@ -100,7 +101,8 @@ if (empty($data)) {
 		if (!empty($toPlaceholder)) {
 			$object->process($scriptProperties);
 			$output = $modx->getPlaceholder($toPlaceholder);
-		} else {
+		}
+		else {
 			$output = $object->process($scriptProperties);
 		}
 	}
@@ -167,7 +169,7 @@ if (empty($data)) {
 		$pageNavVar => $pagination,
 		$totalVar => $total,
 	);
-	if (!empty($cache) || !$modx->user->id && !empty($cacheAnonymous)) {
+	if ($cache) {
 		$pdoPage->pdoTools->setCache($data, $scriptProperties);
 	}
 }

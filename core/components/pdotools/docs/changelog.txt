@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - New system settings to control the Fenom.
 - Ability to enable caching of Fenom compiled chunks.
 - Improved handling of parameter "cache_key".
+- [pdoMenu] Improved work when &cache is enabled.
 
 2.0.0 rc2
 ==============
