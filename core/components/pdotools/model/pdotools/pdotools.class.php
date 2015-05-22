@@ -464,8 +464,10 @@ class pdoTools {
 
 			if ($tpl instanceof Fenom\Render) {
 				$properties['_pls'] = $properties;
-				$properties['modx'] = $this->modx;
-				$properties['pdoTools'] = $this;
+				if ($this->modx->getOption('pdotools_fenom_modx', null, true)) {
+					$properties['modx'] = $this->modx;
+					$properties['pdoTools'] = $this;
+				}
 				try {
 					$content = $tpl->fetch($properties);
 				}

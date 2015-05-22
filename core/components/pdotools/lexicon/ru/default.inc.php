@@ -27,6 +27,8 @@ $_lang['setting_pdotools_fenom_parser'] = 'Использовать Fenom на �
 $_lang['setting_pdotools_fenom_parser_desc'] = 'Эксперементальный pdoParser будет использовать шаблонизатор Fenom для обработки страниц и шаблонов сайта. Конечно, он сам должен быть активирован.';
 $_lang['setting_pdotools_fenom_php'] = 'Разрешить PHP в Fenom';
 $_lang['setting_pdotools_fenom_php_desc'] = 'В чанках и на страницах сайта можно использовать функции PHP для оформления, например {$.php.phpinfo()}.';
+$_lang['setting_pdotools_fenom_modx'] = 'Разрешить MODX в Fenom';
+$_lang['setting_pdotools_fenom_modx_desc'] = 'Эта опция разрешает доступ к объектам MODX и pdoTools из Fenom через переменные {$modx} и {$pdoTools}.';
 $_lang['setting_pdotools_fenom_options'] = 'Настройки Fenom';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON строка с массивом настроек согласно <a href="https://github.com/fenom-template/fenom/blob/master/docs/ru/configuration.md" target="_blank">официальной документации</a>. Например: {"auto_escape":true,"force_include":true}';
 $_lang['setting_pdotools_fenom_cache'] = 'Кэширование скомпилированных чанков';

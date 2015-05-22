@@ -27,6 +27,8 @@ $_lang['setting_pdotools_fenom_parser'] = 'Use Fenom for pages';
 $_lang['setting_pdotools_fenom_parser_desc'] = 'Experimental pdoParser will use the templating engine Fenom when processing pages and site templates. Of course, it must be activated.';
 $_lang['setting_pdotools_fenom_php'] = 'Allow PHP in Fenom';
 $_lang['setting_pdotools_fenom_php_desc'] = 'If enabled, you can use PHP functions in templates and chunks, for example {$.php.phpinfo()}.';
+$_lang['setting_pdotools_fenom_modx'] = 'Allow MODX in Fenom';
+$_lang['setting_pdotools_fenom_modx_desc'] = 'This options allows you to use MODX and pdoTools in Fenom via {$modx} and {$pdoTools} variables.';
 $_lang['setting_pdotools_fenom_options'] = 'Fenom options';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON string with array of settings described on <a href="https://github.com/fenom-template/fenom/blob/master/docs/en/configuration.md" target="_blank">official documentation</a>. For example: {"auto_escape":true,"force_include":true}';
 $_lang['setting_pdotools_fenom_cache'] = 'Caching compiled chunks';

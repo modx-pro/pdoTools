@@ -31,6 +31,10 @@ $tmp = array(
 		'xtype' => 'combo-boolean',
 		'value' => false,
 	),
+	'fenom_modx' => array(
+		'xtype' => 'combo-boolean',
+		'value' => true,
+	),
 	'fenom_options' => array(
 		'xtype' => 'textarea',
 		'value' => '',

@@ -29,6 +29,8 @@ $_lang['setting_pdotools_fenom_parser'] = 'Verwenden Sie Fenom für Seiten';
 $_lang['setting_pdotools_fenom_parser_desc'] = 'Experimentelle pdoParser verwenden Sie die Template-engine Fenom bei der Verarbeitung Seiten und Website-Vorlagen. Es muss natürlich aktiviert sein.';
 $_lang['setting_pdotools_fenom_php'] = 'PHP in Fenom';
 $_lang['setting_pdotools_fenom_php_desc'] = 'Wenn aktiviert, können Sie PHP-Funktionen, die in den Vorlagen und Stücke, zum Beispiel {$.php.phpinfo()}.';
+$_lang['setting_pdotools_fenom_modx'] = 'Erlaube MODX in Fenom';
+$_lang['setting_pdotools_fenom_modx_desc'] = 'Diese Option ermöglicht die Verwendung von MODX und pdoTools in Fenom über {$modx} und {$pdoTools} Variablen.';
 $_lang['setting_pdotools_fenom_options'] = 'Fenom Optionen';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON-string-array mit der beschriebenen Einstellungen auf <a href="https://github.com/fenom-Vorlage/fenom/blob/master/docs/de/Konfiguration.md" target="_blank">offiziellen Dokumentation</a>. Beispiel: {"auto_escape":true,"force_include":true}';
 $_lang['setting_pdotools_fenom_cache'] = 'Caching zusammengestellt Brocken';
