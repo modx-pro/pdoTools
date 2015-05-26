@@ -13,18 +13,36 @@ $tmp = array(
 		'value' => 'pdotools.pdofetch',
 		'key' => 'pdoFetch.class'
 	),
-	/*
-	'parser_class' => array(
+	'pdoParser.class' => array(
 		'xtype' => 'textfield',
-		'value' => 'pdoParser',
-		'key' => 'parser_class'
+		'value' => 'pdotools.pdoparser',
+		'key' => 'pdoParser.class'
 	),
-	'parser_class_path' => array(
-		'xtype' => 'textfield',
-		'value' => '{core_path}components/pdotools/model/pdotools/',
-		'key' => 'parser_class_path'
+
+	'fenom_default' => array(
+		'xtype' => 'combo-boolean',
+		'value' => true,
 	),
-	*/
+	'fenom_parser' => array(
+		'xtype' => 'combo-boolean',
+		'value' => false,
+	),
+	'fenom_php' => array(
+		'xtype' => 'combo-boolean',
+		'value' => false,
+	),
+	'fenom_modx' => array(
+		'xtype' => 'combo-boolean',
+		'value' => true,
+	),
+	'fenom_options' => array(
+		'xtype' => 'textarea',
+		'value' => '',
+	),
+	'fenom_cache' => array(
+		'xtype' => 'combo-boolean',
+		'value' => false,
+	),
 );
 
 foreach ($tmp as $k => $v) {

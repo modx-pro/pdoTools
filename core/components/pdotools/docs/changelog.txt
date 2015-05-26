@@ -1,5 +1,52 @@
 Changelog for pdoTools.
 
+2.0.0 pl
+==============
+- New system settings to control the Fenom.
+- Ability to enable caching of Fenom compiled chunks.
+- Improved handling of parameter "cache_key".
+- [pdoMenu] Improved work when &cache is enabled.
+
+2.0.0 rc2
+==============
+- Compiled Fenom templates cached to RAM instead of HDD.
+- Removed plugin pdoTools.
+
+2.0.0 rc1
+==============
+- Added Fenom template engine.
+- Fenom enabled by default.
+- pdoParser uses Fenom to process pages.
+
+1.11.2 pl
+==============
+- [#116] [pdoTitle] Disabled &register_js by default.
+
+1.11.1 pl
+==============
+- [pdoSitemap] Fixed default url scheme after last update.
+
+1.11.0 pl1
+==============
+- [pdoTitle] Added new snippet.
+- [pdoPage] Added support of snippet pdoTitle when &ajaxMode is enabled.
+- [pdoPage] Prevent overwriting of scripts and styles of nested &element by default parameters.
+- [pdoPage] Added triggering javascript event "pdopage_load".
+
+1.10.2 pl1
+==============
+- [#112] Parameter &scheme was set to system default in all snippets.
+- [#111] [pdoPage] Added ability to set "prev" & "next" meta tags.
+- [#107] [pdoNeighbors] Added ability to specify &parents for work.
+- [#106] [pdoMenu] Fixed "hereClass" and "selfClass" enabled &useWeblinkUrl parameter.
+- [#104] [pdoMenu] Snippet now using "pagetitle" for link titles if "titleOfLinks" is empty.
+
+1.10.1 pl
+==============
+- [#108] [pdoFetch] Fixed E_ERROR when using &sortbyTV.
+- [pdoFetch] Added new parameter &sortbyTVType.
+- [pdoFetch] If &sortdirTV is not set it will be equal to &sortdir.
+
 1.10.0 pl
 ==============
 - [pdoMenu] Returned and fixed parameter &showDeleted.

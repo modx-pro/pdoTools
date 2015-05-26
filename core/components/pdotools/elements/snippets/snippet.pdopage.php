@@ -6,7 +6,6 @@ if (empty($pageNavVar)) {$pageNavVar = 'page.nav';}
 if (empty($pageCountVar)) {$pageCountVar = 'pageCount';}
 if (empty($totalVar)) {$totalVar = 'total';}
 if (empty($page)) {$page = 1;}
-if (empty($scheme)) {$scheme = -1;} elseif (is_numeric($scheme)) {$scheme = (integer) $scheme;}
 if (empty($pageLimit)) {$pageLimit = 5;} else {$pageLimit = (integer) $pageLimit;}
 if (!isset($plPrefix)) {$plPrefix = '';}
 if (!empty($scriptProperties['ajaxMode'])) {$scriptProperties['ajax'] = 1;}
@@ -42,8 +41,8 @@ $pdoPage->pdoTools->addTime('pdoTools loaded');
 if (!$isAjax && !empty($scriptProperties['ajaxMode'])) {
 	$pdoPage->loadJsCss();
 }
-elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
-	// Removing default scripts and styles if they don`t need
+// Removing of default scripts and styles so they do not overwrote nested snippet parameters
+if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
 	$properties = $snippet->get('properties');
 	if ($scriptProperties['frontend_js'] == $properties['frontend_js']['value']) {
 		unset($scriptProperties['frontend_js']);
@@ -87,10 +86,11 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 	$scriptProperties['limit'] = 10000000;
 }
 
+$cache = !empty($cache) || (!$modx->user->id && !empty($cacheAnonymous));
 $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
-$data = !empty($cache) || !$modx->user->id && !empty($cacheAnonymous)
+$data = $cache
 	? $pdoPage->pdoTools->getCache($scriptProperties)
 	: array();
 
@@ -101,7 +101,8 @@ if (empty($data)) {
 		if (!empty($toPlaceholder)) {
 			$object->process($scriptProperties);
 			$output = $modx->getPlaceholder($toPlaceholder);
-		} else {
+		}
+		else {
 			$output = $object->process($scriptProperties);
 		}
 	}
@@ -147,6 +148,15 @@ if (empty($data)) {
 			}
 		}
 
+		if (!empty($setMeta) && !$isAjax) {
+			if ($page > 1) {
+				$modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url, $page - 1) . '"/>');
+			}
+			if ($page < $pageCount) {
+				$modx->regClientStartupHTMLBlock('<link rel="next" href="' . $pdoPage->makePageLink($url, $page + 1) . '"/>');
+			}
+		}
+
 		$pagination = !empty($tplPageWrapper)
 			? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
 			: $pdoPage->pdoTools->parseChunk('', $pagination);
@@ -159,7 +169,7 @@ if (empty($data)) {
 		$pageNavVar => $pagination,
 		$totalVar => $total,
 	);
-	if (!empty($cache) || !$modx->user->id && !empty($cacheAnonymous)) {
+	if ($cache) {
 		$pdoPage->pdoTools->setCache($data, $scriptProperties);
 	}
 }

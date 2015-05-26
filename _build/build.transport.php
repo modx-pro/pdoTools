@@ -96,6 +96,27 @@ $attr = array(
 	),
 );
 
+/* add plugins */
+if (defined('BUILD_PLUGIN_UPDATE')) {
+	$attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['Plugins'] = array (
+		xPDOTransport::PRESERVE_KEYS => false,
+		xPDOTransport::UPDATE_OBJECT => BUILD_PLUGIN_UPDATE,
+		xPDOTransport::UNIQUE_KEY => 'name',
+	);
+	$attr[xPDOTransport::RELATED_OBJECT_ATTRIBUTES]['PluginEvents'] = array (
+		xPDOTransport::PRESERVE_KEYS => true,
+		xPDOTransport::UPDATE_OBJECT => BUILD_PLUGIN_UPDATE,
+		xPDOTransport::UNIQUE_KEY => array('pluginid','event'),
+	);
+	$plugins = include $sources['data'].'transport.plugins.php';
+	if (!is_array($plugins)) {
+		$modx->log(modX::LOG_LEVEL_ERROR,'Could not package in plugins.');
+	} else {
+		$category->addMany($plugins);
+		$modx->log(modX::LOG_LEVEL_INFO,'Packaged in '.count($plugins).' plugins.');
+	}
+}
+
 $vehicle = $builder->createVehicle($category,$attr);
 
 /* now pack in resolvers */

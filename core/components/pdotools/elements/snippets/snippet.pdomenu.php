@@ -104,7 +104,6 @@ foreach ($wfTemplates as $k => $v) {
 		$scriptProperties[$v] = ${$k};
 	}
 }
-
 //---
 
 /** @var pdoMenu $pdoMenu */
@@ -115,15 +114,21 @@ if (!$modx->loadClass('pdotools.pdoMenu', MODX_CORE_PATH . 'components/pdotools/
 $pdoMenu = new pdoMenu($modx, $scriptProperties);
 $pdoMenu->pdoTools->addTime('pdoTools loaded');
 
-$output = !empty($cache) || !$modx->user->id && !empty($cacheAnonymous)
-	? $output = $pdoMenu->pdoTools->getCache($scriptProperties)
-	: '';
+$cache = !empty($cache) || (!$modx->user->id && !empty($cacheAnonymous));
+if (empty($scriptProperties['cache_key'])) {
+	$scriptProperties['cache_key'] = 'pdomenu/' . sha1(serialize($scriptProperties));
+}
 
-if (empty($output)) {
-	$rows = $pdoMenu->pdoTools->run();
-	$tmp = $pdoMenu->pdoTools->buildTree($rows);
+$output = '';
+$tree = array();
+if ($cache) {
+	$tree = $pdoMenu->pdoTools->getCache($scriptProperties);
+}
+if (empty($tree)) {
+	$data = $pdoMenu->pdoTools->run();
+	$data = $pdoMenu->pdoTools->buildTree($data);
 	$tree = array();
-	foreach ($tmp as $k => $v) {
+	foreach ($data as $k => $v) {
 		if (empty($v['id'])) {
 			if (!in_array($k, $specified_parents) && !$pdoMenu->checkResource($k)) {
 				continue;
@@ -136,11 +141,12 @@ if (empty($output)) {
 			$tree[$k] = $v;
 		}
 	}
-
-	$output = $pdoMenu->templateTree($tree);
-	if (!empty($cache) || !$modx->user->id && !empty($cacheAnonymous)) {
-		$pdoMenu->pdoTools->setCache($output, $scriptProperties);
+	if ($cache) {
+		$pdoMenu->pdoTools->setCache($tree, $scriptProperties);
 	}
+}
+if (!empty($tree)) {
+	$output = $pdoMenu->templateTree($tree);
 }
 
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {

@@ -26,6 +26,8 @@ class pdoTools {
 	protected $start = 0;
 	/** @var pdoParser $parser */
 	public $parser;
+	/** @var Fenom $fenom */
+	public $fenom;
 
 
 	/**
@@ -37,24 +39,6 @@ class pdoTools {
 		$this->time = $this->start = microtime(true);
 
 		$this->setConfig($config);
-	}
-
-
-	/**
-	 * Loads pdoTools parser
-	 *
-	 * @return pdoParser
-	 */
-	protected function getParser() {
-		$this->parser = $this->modx->getParser();
-		if (!($this->parser instanceof pdoParser)) {
-			if (!class_exists('pdoParser')) {
-				require_once dirname(__FILE__) . '/pdoparser.class.php';
-			}
-			$this->parser = new pdoParser($this->modx);
-		}
-
-		return $this->parser;
 	}
 
 
@@ -78,11 +62,76 @@ class pdoTools {
 
 			'outputSeparator' => "\n",
 			'decodeJSON' => true,
+			'scheme' => '',
 		), $config);
 
 		if ($clean_timings) {
 			$this->timings = array();
 		}
+
+		if ($this->config['scheme'] === '-1') {
+			$this->config['scheme'] = -1;
+		}
+		elseif (empty($this->config['scheme'])) {
+			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
+		}
+		$this->config['useFenom'] = $this->modx->getOption('pdotools_fenom_default', null, true);
+		$this->config['useFenomCache'] = $this->modx->getOption('pdotools_fenom_cache', null, false);
+	}
+
+
+	/**
+	 * Loads pdoTools parser
+	 *
+	 * @return pdoParser
+	 */
+	protected function getParser() {
+		$this->parser = $this->modx->getParser();
+		if (!($this->parser instanceof pdoParser)) {
+			if (!class_exists('pdoParser')) {
+				require_once dirname(__FILE__) . '/pdoparser.class.php';
+			}
+			$this->parser = new pdoParser($this->modx);
+		}
+
+		return $this->parser;
+	}
+
+
+	/**
+	 * Loads template engine
+	 *
+	 * @return bool|Fenom
+	 */
+	public function getFenom() {
+		if (!$this->fenom) {
+			try {
+				if (!class_exists('Fenom')) {
+					require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
+					Fenom::registerAutoload();
+				}
+				$cache = MODX_CORE_PATH . 'cache/';
+				if (!file_exists($cache)) {
+					mkdir($cache);
+				}
+				$this->fenom = Fenom::factory($cache, $cache);
+
+				if (!$this->modx->getOption('pdotools_fenom_php', null, false)) {
+					$this->fenom->removeAccessor('php');
+				}
+				if ($options = $this->modx->getOption('pdotools_fenom_options')) {
+					if (is_numeric($options) || $options = $this->modx->fromJSON($options)) {
+						$this->fenom->setOptions($options);
+					}
+				}
+			}
+			catch (Exception $e) {
+				$this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());
+				return false;
+			}
+		}
+
+		return $this->fenom;
 	}
 
 
@@ -101,8 +150,8 @@ class pdoTools {
 		}
 
 		$this->timings[] = array(
-			'time' =>  number_format(round(($delta), 7), 7)
-			,'message' => $message
+			'time' =>  number_format(round(($delta), 7), 7),
+			'message' => $message,
 		);
 		$this->time = $time;
 	}
@@ -263,33 +312,37 @@ class pdoTools {
 				: '';
 		}
 
-		$content = $chunk['content'];
+		$content = $this->config['useFenom']
+			? $this->fenom($chunk, $properties)
+			: $content = $chunk['content'];
 
-		// Processing quick placeholders
-		if (!empty($chunk['placeholders'])) {
-			$properties = $this->flattenArray($properties);
-			$pl = $chunk['placeholders'];
-			foreach ($pl as $k => $v) {
-				if ($k[0] == '!') {
-					if (empty($properties[substr($k, 1)])) {
-						$pl[substr($k, 1)] = $v;
+		if (strpos($content, '[[') !== false) {
+			// Processing quick placeholders
+			if (!empty($chunk['placeholders'])) {
+				$properties = $this->flattenArray($properties);
+				$pl = $chunk['placeholders'];
+				foreach ($pl as $k => $v) {
+					if ($k[0] == '!') {
+						if (empty($properties[substr($k, 1)])) {
+							$pl[substr($k, 1)] = $v;
+						}
+						unset($pl[$k]);
 					}
-					unset($pl[$k]);
+					elseif (empty($properties[$k])) {
+						$pl[$k] = '';
+					}
 				}
-				elseif (empty($properties[$k])) {
-					$pl[$k] = '';
+				if (!empty($pl)) {
+					$pl = $this->makePlaceholders($pl);
+					$content = str_replace($pl['pl'], $pl['vl'], $content);
 				}
 			}
-			if (!empty($pl)) {
-				$pl = $this->makePlaceholders($pl);
+
+			// Processing given placeholders
+			if (!empty($properties)) {
+				$pl = $this->makePlaceholders($properties);
 				$content = str_replace($pl['pl'], $pl['vl'], $content);
 			}
-		}
-
-		// Processing given placeholders
-		if (!empty($properties)) {
-			$pl = $this->makePlaceholders($properties);
-			$content = str_replace($pl['pl'], $pl['vl'], $content);
 		}
 
 		// Processing other placeholders
@@ -332,10 +385,100 @@ class pdoTools {
 				: '';
 		}
 
-		$pl = $this->makePlaceholders($properties, '', $prefix, $suffix);
-		$output = str_replace($pl['pl'], $pl['vl'], $chunk['content']);
+		$content = $this->config['useFenom']
+			? $this->fenom($chunk, $properties)
+			: $content = $chunk['content'];
 
-		return $output;
+		if (strpos($content, '[[') !== false) {
+			$pl = $this->makePlaceholders($properties, '', $prefix, $suffix);
+			$content = str_replace($pl['pl'], $pl['vl'], $content);
+		}
+
+		return $content;
+	}
+
+
+	/**
+	 * @param string|array $chunk
+	 * @param array $properties
+	 *
+	 * @return mixed|string
+	 */
+	public function fenom($chunk, array $properties = array()) {
+		if (is_array($chunk)) {
+			if (empty($chunk['content'])) {
+				return $chunk;
+			}
+			else {
+				$content = trim($chunk['content']);
+			}
+		}
+		else {
+			$content = $chunk;
+		}
+		if (empty($this->config['useFenom']) || (strpos($content, '{$') === false && strpos($content, '{/') === false)) {
+			return $content;
+		}
+
+		if ($fenom = $this->getFenom()) {
+			$name = '';
+			if (is_array($chunk)) {
+				if (!empty($chunk['binding'])) {
+					$name = $chunk['binding'] . '/';
+				}
+				if (!empty($chunk['id'])) {
+					$name .= $chunk['id'];
+				}
+				elseif (!empty($chunk['name'])) {
+					$name .= $chunk['name'];
+				}
+				else {
+					$name .= md5($content);
+				}
+			}
+			else {
+				$name = md5($content);
+			}
+			/** @var Fenom\Template $tpl */
+			if (!$tpl = $this->getStore($name, 'fenom')) {
+				if (is_array($chunk) && !empty($this->config['useFenomCache'])) {
+					$cache_options = array(
+						'cache_key' => 'fenom/' . $name,
+					);
+					if (!$cache = $this->getCache($cache_options)) {
+						$tpl = $this->_compileChunk($content, $name);
+						$this->setCache($tpl->getTemplateCode(), $cache_options);
+					}
+					else {
+						$cache = preg_replace('#^<\?php#', '', $cache);
+						$tpl = eval($cache);
+					}
+				}
+				else {
+					$tpl = $this->_compileChunk($content, $name);
+				}
+				if ($tpl) {
+					$this->setStore($name, $tpl, 'fenom');
+				}
+			}
+
+			if ($tpl instanceof Fenom\Render) {
+				$properties['_pls'] = $properties;
+				if ($this->modx->getOption('pdotools_fenom_modx', null, true)) {
+					$properties['modx'] = $this->modx;
+					$properties['pdoTools'] = $this;
+				}
+				try {
+					$content = $tpl->fetch($properties);
+				}
+				catch (Exception $e) {
+					$this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
+					$this->modx->log(modX::LOG_LEVEL_INFO, $tpl->getTemplateCode());
+				}
+			}
+		}
+
+		return $content;
 	}
 
 
@@ -457,7 +600,7 @@ class pdoTools {
 							$operand = explode(',', $operand);
 							$tplCon = ($subject >= min($operand) && $subject <= max($operand)) ? $conditionalTpl : $tplCon;
 							break;
-						case 'contains': 
+						case 'contains':
 							$tplCon = (is_string($subject) && (strpos($subject,$operand) !== false) ? $conditionalTpl : $tplCon);
 							break;
 						case '==': case '=': case 'eq': case 'is': case 'equal': case 'equals': case 'equalto':
@@ -511,13 +654,14 @@ class pdoTools {
 			return $chunk;
 		}
 
+		$id = 0;
 		/** @var modChunk $element */
 		switch ($binding) {
 			case 'CODE':
 			case 'INLINE':
-				$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
+				$element = $this->modx->newObject('modChunk', array('name' => $cache_name));
 				$element->setContent($content);
-				$this->addTime('Created inline chunk');
+				$this->addTime('Created inline chunk with name "'.$cache_name.'"');
 				break;
 			case 'FILE':
 				$path = !empty($this->config['tplPath'])
@@ -532,7 +676,7 @@ class pdoTools {
 					$this->addTime('Allowed extensions for @FILE chunks is "html" and "tpl"');
 				}
 				elseif ($content = file_get_contents($path)) {
-					$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
+					$element = $this->modx->newObject('modChunk', array('name' => $cache_name));
 					$element->setContent($content);
 					$this->addTime('Loaded chunk from "'.str_replace(MODX_BASE_PATH, '', $path).'"');
 				}
@@ -541,22 +685,26 @@ class pdoTools {
 				/** @var modTemplate $template */
 				if ($template = $this->modx->getObject('modTemplate', array('id' => $content, 'OR:templatename:=' => $content))) {
 					$content = $template->getContent();
-					$element = $this->modx->newObject('modChunk', array('name' => md5($name)));
+					$element = $this->modx->newObject('modChunk', array('name' => $cache_name));
 					$element->setContent($content);
 					$this->addTime('Created chunk from template "'.$template->templatename.'"');
+					$id = $template->get('id');
 				}
 				break;
 			case 'CHUNK':
-				$name = $content;
-				if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
+				$cache_name = $content;
+				if ($element = $this->modx->getObject('modChunk', array('name' => $cache_name))) {
 					$content = $element->getContent();
-					$this->addTime('Loaded chunk "'.$name.'"');
+					$this->addTime('Loaded chunk "'.$cache_name.'"');
+					$id = $element->get('id');
 				}
 				break;
 			default:
-				if ($element = $this->modx->getObject('modChunk', array('name' => $name))) {
+				if ($element = $this->modx->getObject('modChunk', array('name' => $cache_name))) {
 					$content = $element->getContent();
-					$this->addTime('Loaded chunk "'.$name.'"');
+					$this->addTime('Loaded chunk "'.$cache_name.'"');
+					$binding = 'CHUNK';
+					$id = $element->get('id');
 				}
 		}
 
@@ -566,25 +714,61 @@ class pdoTools {
 		}
 
 		// Preparing special tags
-		preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
-		$src = $dst = $placeholders = array();
-		foreach ($matches[1] as $k => $v) {
-			$src[] = $matches[0][$k];
-			$dst[] = '';
-			$placeholders[$v] = $matches[2][$k];
+		if (strpos($content, '<!--'.$this->config['nestedChunkPrefix']) !== false) {
+			preg_match_all('/\<!--'.$this->config['nestedChunkPrefix'].'(.*?)[\s|\n|\r\n](.*?)-->/s', $content, $matches);
+			$src = $dst = $placeholders = array();
+			foreach ($matches[1] as $k => $v) {
+				$src[] = $matches[0][$k];
+				$dst[] = '';
+				$placeholders[$v] = $matches[2][$k];
+			}
+			if (!empty($src) && !empty($dst)) {
+				$content = str_replace($src, $dst, $content);
+			}
 		}
-		if (!empty($src) && !empty($dst)) {
-			$content = str_replace($src, $dst, $content);
+		else {
+			$placeholders = array();
 		}
 
 		$chunk = array(
-			'object' => $element
-			,'content' => $content
-			,'placeholders' => $placeholders
+			'object' => $element,
+			'content' => $content,
+			'placeholders' => $placeholders,
+			'name' => $cache_name,
+			'id' => $id,
+			'binding' => strtolower($binding),
 		);
 
 		$this->setStore($cache_name, $chunk, 'chunk');
 		return $chunk;
+	}
+
+
+	/**
+	 * Compiles Fenom chunk
+	 *
+	 * @param $content
+	 * @param string $name
+	 *
+	 * @return bool|\Fenom\Template
+	 */
+	protected function _compileChunk($content, $name = '') {
+		$tpl = false;
+		if ($fenom = $this->getFenom()) {
+			if (empty($name)) {
+				$name = md5($content);
+			}
+			try {
+				$tpl = $fenom->getRawTemplate()->source($name, $content, true);
+			}
+			catch (Exception $e) {
+				$this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
+				$this->modx->log(modX::LOG_LEVEL_INFO, $content);
+			}
+		}
+		$this->addTime('Compiled Fenom chunk with name "'.$name.'"');
+
+		return $tpl;
 	}
 
 
@@ -823,19 +1007,19 @@ class pdoTools {
 	 */
 	public function getCache($options = array()) {
 		$cacheKey = $this->getCacheKey($options);
-		$cacheOptions = $this->getCacheOptions();
+		$cacheOptions = $this->getCacheOptions($options);
 
 		$cached = '';
 		if (!empty($cacheOptions) && !empty($cacheKey) && $this->modx->getCacheManager()) {
 			if ($cached = $this->modx->cacheManager->get($cacheKey, $cacheOptions)) {
-				$this->addTime('Retrieved data from cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
+				$this->addTime('Retrieved data from cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] .'/'. $cacheKey . '"');
 			}
 			else {
-				$this->addTime('No cached data for key "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
+				$this->addTime('No cached data for key "' . $cacheOptions[xPDO::OPT_CACHE_KEY] .'/'. $cacheKey . '"');
 			}
 		}
 		else {
-			$this->addTime('Could not check cached data for key "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
+			$this->addTime('Could not check cached data for key "' . $cacheOptions[xPDO::OPT_CACHE_KEY] .'/'. $cacheKey . '"');
 		}
 
 		return $cached;
@@ -845,14 +1029,14 @@ class pdoTools {
 	/**
 	 * Sets data to cache
 	 *
-	 * @param array $data
+	 * @param mixed $data
 	 * @param mixed $options
 	 *
 	 * @return string $cacheKey
 	 */
 	public function setCache($data = array(), $options = array()) {
 		$cacheKey = $this->getCacheKey($options);
-		$cacheOptions = $this->getCacheOptions();
+		$cacheOptions = $this->getCacheOptions($options);
 
 		if (!empty($cacheKey) && !empty($cacheOptions) && $this->modx->getCacheManager()) {
 			$this->modx->cacheManager->set(
@@ -861,7 +1045,7 @@ class pdoTools {
 				$cacheOptions[xPDO::OPT_CACHE_EXPIRES],
 				$cacheOptions
 			);
-			$this->addTime('Saved data to cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] . $cacheKey . '"');
+			$this->addTime('Saved data to cache "' . $cacheOptions[xPDO::OPT_CACHE_KEY] .'/'. $cacheKey . '"');
 		}
 
 		return $cacheKey;
@@ -871,22 +1055,26 @@ class pdoTools {
 	/**
 	 * Returns array with options for cache
 	 *
+	 * @param $options
+	 *
 	 * @return array
 	 */
-	protected function getCacheOptions() {
+	protected function getCacheOptions($options = array()) {
+		if (empty($options)) {$options = $this->config;}
+
 		$cacheOptions = array(
-			xPDO::OPT_CACHE_KEY => !empty($this->config['cache_key'])
-				? $this->config['cache_key']
+			xPDO::OPT_CACHE_KEY => !empty($options['cache_key'])
+				? 'default'
 				: (!empty($this->modx->resource)
 					? $this->modx->getOption('cache_resource_key', null, 'resource')
 					: 'default'),
 
-			xPDO::OPT_CACHE_HANDLER => !empty($this->config['cache_handler'])
-				? $this->config['cache_handler']
+			xPDO::OPT_CACHE_HANDLER => !empty($options['cache_handler'])
+				? $options['cache_handler']
 				: $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
 
-			xPDO::OPT_CACHE_EXPIRES => $this->config['cacheTime'] !== ''
-				? (integer) $this->config['cacheTime']
+			xPDO::OPT_CACHE_EXPIRES => $options['cacheTime'] !== ''
+				? (integer) $options['cacheTime']
 				: (integer) $this-> modx->getOption('cache_resource_expires', null, 0),
 		);
 
@@ -903,6 +1091,10 @@ class pdoTools {
 	 */
 	protected function getCacheKey($options = array()) {
 		if (empty($options)) {$options = $this->config;}
+
+		if (!empty($options['cache_key'])) {
+			return $options['cache_key'];
+		}
 
 		$key = !empty($this->modx->resource)
 			? $this->modx->resource->getCacheKey()
@@ -938,6 +1130,16 @@ class pdoTools {
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * Removes cache files
+	 * @deprecated
+	 */
+	public function clearCache() {
+		//$this->getFenom()->clearAllCompiles();
+		return true;
 	}
 
 }

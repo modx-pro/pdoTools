@@ -42,7 +42,6 @@ class pdoFetch extends pdoTools {
 
 				'additionalPlaceholders' => '',
 				'useWeblinkUrl' => false,
-				'scheme' => -1,
 			), $config)
 		, $clean_timings);
 
@@ -129,7 +128,6 @@ class pdoFetch extends pdoTools {
 
 						// Add placeholder [[+link]] if specified
 						if (!empty($this->config['useWeblinkUrl'])) {
-							if ($this->config['scheme'] === '-1') {$this->config['scheme'] = -1;}
 							if (!isset($row['context_key'])) {$row['context_key'] = '';}
 							if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink')) {
 								$row['link'] = isset($row['content']) && is_numeric(trim($row['content'], '[]~ '))
@@ -420,12 +418,22 @@ class pdoFetch extends pdoTools {
 				? $this->modx->fromJSON($this->config['sortby'])
 				: array($this->config['sortby'] => $this->config['sortdir']);
 		}
-		if (!is_array($tmp)) {$tmp = array();}
-		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp['sortby'])) {
+		if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
 			$tmp2[$this->config['sortbyTV']] = !empty($this->config['sortdirTV'])
 				? $this->config['sortdirTV']
-				: 'ASC';
+				: (!empty($this->config['sortdir'])
+					? $this->config['sortdir']
+					: 'ASC'
+				);
 			$tmp = array_merge($tmp2, $tmp);
+			if (!empty($this->config['sortbyTVType'])) {
+				$tv = strtolower($this->config['sortbyTV']);
+				if (array_key_exists($tv,$this->config['tvsJoin'])) {
+					if (!empty($this->config['tvsJoin'][$tv]['tv'])) {
+						$this->config['tvsJoin'][$tv]['tv']['type'] = $this->config['sortbyTVType'];
+					}
+				}
+			}
 		}
 
 		$fields = $this->modx->getFields($this->config['class']);
@@ -438,9 +446,14 @@ class pdoFetch extends pdoTools {
 							$params = $this->config['tvsJoin'][$tv]['tv'];
 							switch ($params['type']) {
 								case 'number':
+								case 'decimal':
 									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DECIMAL(13,3))', $sortby);
 									break;
+								case 'integer':
+									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS SIGNED INTEGER)', $sortby);
+									break;
 								case 'date':
+								case 'datetime':
 									$sortby = preg_replace('/(TV'.$tv.'\.value|`TV'.$tv.'`\.`value`)/', 'CAST($1 AS DATETIME)', $sortby);
 									break;
 							}

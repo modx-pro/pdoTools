@@ -16,11 +16,9 @@ $pdoFetch->addTime('pdoTools loaded');
 
 if (!isset($from) || $from == '') {$from = 0;}
 if (empty($to)) {$to = $modx->resource->id;}
-if (empty($scheme)) {$scheme = $modx->getOption('link_tag_scheme');}
 if (empty($direction)) {$direction = 'ltr';}
 if ($outputSeparator == '&nbsp;&rarr;&nbsp;' && $direction == 'rtl') {$outputSeparator = '&nbsp;&larr;&nbsp;';}
 if ($limit == '') {$limit = 10;}
-if (isset($scheme) && is_numeric($scheme)) {$scheme = (integer) $scheme;}
 // For compatibility with BreadCrumb
 if (!empty($maxCrumbs)) {$limit = $maxCrumbs;}
 if (!empty($containerTpl)) {$tplWrapper = $containerTpl;}
@@ -118,11 +116,11 @@ if (!empty($rows) && is_array($rows)) {
 	foreach ($rows as $row) {
 		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $scheme)
+				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
 				: $row['content'];
 		}
 		else {
-			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
 		}
 
 		$row = array_merge(

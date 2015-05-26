@@ -16,7 +16,6 @@ $pdoFetch->addTime('pdoTools loaded');
 
 if (empty($id)) {$id = $modx->resource->id;}
 if (empty($limit)) {$limit = 1;}
-if (empty($scheme)) {$scheme = $modx->getOption('link_tag_scheme');}
 if (!isset($outputSeparator)) {$outputSeparator = "\n";}
 $fastMode = !empty($fastMode);
 
@@ -30,7 +29,23 @@ if (!$resource) {return '';}
 $params = $scriptProperties;
 $params['select'] = 'id';
 $params['limit'] = 0;
-$ids = $pdoFetch->getCollection('modResource', array('parent' => $resource->parent), $params);
+if (!empty($parents)) {
+	$parents = array_map('trim', explode(',', $parents));
+	if (!in_array($resource->parent, $parents)) {
+		$parents[] = $resource->parent;
+	}
+	$key = array_search($resource->parent * -1, $parents);
+	if ($key !== false) {
+		unset($parents[$key]);
+	}
+	$params['parents'] = implode(',', $parents);
+	$ids = $pdoFetch->getCollection('modResource', array(), $params);
+	unset($scriptProperties['parents']);
+}
+else {
+	$ids = $pdoFetch->getCollection('modResource', array('parent' => $resource->parent), $params);
+}
+
 $found = false;
 $prev = $next = array();
 foreach ($ids as $v) {
@@ -114,11 +129,11 @@ foreach ($rows as $row) {
 	if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
 	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $scheme)
+			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
 			: $row['content'];
 	}
 	else {
-		$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $scheme);
+		$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
 	}
 
 	if (isset($prev[$row['id']])) {

@@ -5,14 +5,52 @@ if (!class_exists('modParser')) {
 }
 
 class pdoParser extends modParser {
-	/** @var array $store Array for cache elements and user data */
-	public $store = array(
-		'chunk' => array(),
-		'snippet' => array(),
-		'tv' => array(),
-		'data' => array(),
-		'resource' => array(),
-	);
+	/** @var pdoTools $pdoTools */
+	public $pdoTools;
+
+
+	/**
+	 * @param xPDO $modx
+	 */
+	function __construct(xPDO &$modx) {
+		parent::__construct($modx);
+
+		$fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
+		if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
+			$this->pdoTools = new $pdoClass($modx);
+		}
+		elseif ($pdoClass = $modx->loadClass($fqn, MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+			$this->pdoTools = new $pdoClass($modx);
+		}
+		else {
+			$modx->log(modX::LOG_LEVEL_ERROR, '[pdoParser] Could not load pdoTools from "MODX_CORE_PATH/components/pdotools/model/".');
+		}
+	}
+
+
+	/**
+	 * Trying to process MODX pages with Fenom template engine
+	 *
+	 * @param string $parentTag
+	 * @param string $content
+	 * @param bool $processUncacheable
+	 * @param bool $removeUnprocessed
+	 * @param string $prefix
+	 * @param string $suffix
+	 * @param array $tokens
+	 * @param int $depth
+	 *
+	 * @return int
+	 */
+	public function processElementTags($parentTag, & $content, $processUncacheable = false, $removeUnprocessed = false, $prefix = "[[", $suffix = "]]", $tokens = array(), $depth = 0) {
+
+		if (is_string($content) && empty($parentTag) && $processUncacheable && $this->modx->getOption('pdotools_fenom_parser', null, true)) {
+			$content = $this->pdoTools->fenom($content, $this->modx->placeholders);
+		}
+
+		return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix, $suffix, $tokens, $depth);
+	}
+
 
 	/**
 	 * Quickly processes a simple tag and returns the result.
@@ -98,9 +136,9 @@ class pdoParser extends modParser {
 					// Resource tag
 					if (is_numeric($tmp[0])) {
 						/** @var modResource $resource */
-						if (!$resource = $this->getStore($tmp[0], 'resource')) {
+						if (!$resource = $this->pdoTools->getStore($tmp[0], 'resource')) {
 							$resource = $this->modx->getObject('modResource', $tmp[0]);
-							$this->setStore($tmp[0], $resource, 'resource');
+							$this->pdoTools->setStore($tmp[0], $resource, 'resource');
 						}
 						$output = '';
 						if (!empty($resource)) {
@@ -205,33 +243,6 @@ class pdoParser extends modParser {
 		}
 
 		return $output;
-	}
-
-
-	/**
-	 * Set data to cache
-	 *
-	 * @param $name
-	 * @param $object
-	 * @param string $type
-	 */
-	public function setStore($name, $object, $type = 'data') {
-		$this->store[$type][$name] = $object;
-	}
-
-
-	/**
-	 * Get data from cache
-	 *
-	 * @param $name
-	 * @param string $type
-	 *
-	 * @return mixed|null
-	 */
-	public function getStore($name, $type = 'data') {
-		return isset($this->store[$type][$name])
-			? $this->store[$type][$name]
-			: null;
 	}
 
 }

@@ -23,6 +23,14 @@ $tmp = array(
 		'type' => 'textfield'
 		,'value' => 'publishedon'
 	)
+	,'sortbyTV' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
+	,'sortbyTVType' => array(
+		'type' => 'textfield'
+		,'value' => ''
+	)
 	,'sortdir' => array(
 		'type' => 'list'
 		,'options' => array(
@@ -30,6 +38,14 @@ $tmp = array(
 			,array('text' => 'DESC','value' => 'DESC')
 		)
 		,'value' => 'DESC',
+	)
+	,'sortdirTV' => array(
+		'type' => 'list'
+		,'options' => array(
+			array('text' => 'ASC','value' => 'ASC')
+			,array('text' => 'DESC','value' => 'DESC')
+		)
+		,'value' => 'ASC',
 	)
 	,'limit' => array(
 		'type' => 'numberfield'
@@ -194,6 +210,10 @@ $tmp = array(
 		'type' => 'list'
 		,'options' => array(
 			array(
+				'name' => 'System default'
+				,'value' => '',
+			),
+			array(
 				'name' => '-1 (relative to site_url)'
 				,'value' => -1
 			)
@@ -214,7 +234,7 @@ $tmp = array(
 				,'value' => 'https'
 			)
 		)
-		,'value' => -1
+		,'value' => ''
 	),
 	'useWeblinkUrl' => array(
 		'type' => 'combo-boolean',

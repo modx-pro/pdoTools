@@ -39,6 +39,11 @@ if ($object->xpdo) {
 				), '', true, true);
 				$tmp->save();
 			}
+
+			// Remove old settings
+			if ($tmp = $modx->getObject('modSystemSetting', array('key' => 'pdotools_useFenom'))) {
+				$tmp->remove();
+			}
 			break;
 
 		case xPDOTransport::ACTION_UNINSTALL:

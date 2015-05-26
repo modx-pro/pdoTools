@@ -52,7 +52,10 @@ $_lang['pdotools_prop_hideSingle'] = 'Ergebnis nicht anzeigen, wenn es nur ein e
 $_lang['pdotools_prop_hideUnsearchable'] = 'Keine Ressourcen anzeigen, die nicht durchsuchbar sind.';
 
 $_lang['pdotools_prop_sortby'] = 'Ein beliebiges Ressourcen-Feld (einschließlich Template-Variablen, wenn diese über die Eigenschaft "includeTVs" einbezogen wurden), nach dem sortiert werden soll. Einige Felder, nach denen üblicherweise sortiert wird, sind publishedon, menuindex, pagetitle etc.; eine Liste aller Ressourcen-Felder finden Sie in der MODX-Dokumentation. Geben Sie nur die Namen der Felder ein, keine MODX-Tags. Bitte beachten Sie, dass bei Verwendung von Feldern wie template, publishedby und ähnlichen für die Sortierung nach den "rohen" Werten sortiert wird, also nach Template- oder Benutzer-IDs und NICHT den zugehörigen Namen. Sie können auch eine zufällige Sortierung wählen, indem Sie "RAND()" eingeben.';
-$_lang['pdotools_prop_sortdir'] = 'Sortierrichtung (ASC = aufsteigend, DESC = absteigend).';
+$_lang['pdotools_prop_sortbyTV'] = 'Sortieren nach dem TV. Wenn es nicht angegeben ist, in &includeTVs, es wird uncluded automatisch.';
+$_lang['pdotools_prop_sortbyTVType'] = 'Sortieren nach TV. Die Optionen sind: string, integer, decimal, und "datetime". Wenn leer, dann die TV werden sortiert, je nach type: text, Zahl oder Datum.';
+$_lang['pdotools_prop_sortdir'] = 'Um die Sortierung: absteigend oder aufsteigend';
+$_lang['pdotools_prop_sortdirTV'] = 'Sortieren Richtung TV: aufsteigend bzw. absteigend sortiert. Wenn nicht angegeben, es wird gleich dem parameter &sortdir.';
 $_lang['pdotools_prop_toPlaceholder'] = 'Wenn hier etwas eingegeben wird, wird das Ergebnis an den hier angegebenen Platzhalter übergeben, anstatt direkt ausgegeben zu werden.';
 $_lang['pdotools_prop_toSeparatePlaceholders'] = 'Wenn hier etwas eingegeben wird, wird JEDES Ergebnis einem eigenen Platzhalter zugeordnet, der die hier eingegebene Bezeichnung hat, gefolgt von einer aufsteigenden Nummer (beginnend bei 0).';
 $_lang['pdotools_prop_totalVar'] = 'Der Schlüssel (bzw. Name) eines Platzhalters, der die Gesamtzahl der Ressourcen enthält, die ausgegeben würden, wenn der Wert der Eigenschaft "limit" nicht berücksichtigt würde.';  // getResources???
@@ -164,3 +167,15 @@ $_lang['pdotools_prop_ajaxTplMore'] = 'Stück für templating "mehr Schaltfläch
 
 $_lang['pdotools_prop_frontend_js'] = 'Link auf javascript für die Belastung durch das snippet.';
 $_lang['pdotools_prop_frontend_css'] = 'Link auf css-Stile für das laden der snippet.';
+
+$_lang['pdotools_prop_setMeta'] = 'Anmeldung von meta-tags mit links zu den vorherigen und nächsten Seite.';
+
+$_lang['pdotools_prop_title_limit'] = 'Die Grenze von einer Abfrage für die Eltern der Ressource.';
+$_lang['pdotools_prop_title_cache'] = 'Aktivieren cache Ressource Eltern für den Titel der Seite.';
+$_lang['pdotools_prop_title_outputSeparator'] = 'String separate Elemente in den Titel der Seite.';
+$_lang['pdotools_prop_registerJs'] = 'Insert zur Seite, die javascript-Variablen für die Unterstützung &ajaxMode von snippet pdoPage.';
+$_lang['pdotools_prop_tplPages'] = 'Template der Paginierung in den Titel der Seite.';
+$_lang['pdotools_prop_tplSearch'] = 'Template für die Suche im Titel der Seite.';
+$_lang['pdotools_prop_minQuery'] = 'Die minimale Länge der Suchanfrage angezeigt in den Titel der Seite.';
+$_lang['pdotools_prop_queryVarKey'] = 'Der name der variable für den Suchbegriff in der url.';
+$_lang['pdotools_prop_titleField'] = 'Feld der aktuellen Ressource angezeigt in den Titel der Seite.';

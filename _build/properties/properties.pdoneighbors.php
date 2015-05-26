@@ -20,6 +20,10 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'asc',
 	),
+	'depth' => array(
+		'type' => 'numberfield',
+		'value' => 0,
+	),
 
 	'tplPrev' => array(
 		'type' => 'textfield',
@@ -64,6 +68,10 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => '',
 	),
+	'parents' => array(
+		'type' => 'textfield',
+		'value' => '',
+	),
 	'outputSeparator' => array(
 		'type' => 'textfield',
 		'value' => "\n",
@@ -97,6 +105,10 @@ $tmp = array(
 		'type' => 'list',
 		'options' => array(
 			array(
+				'name' => 'System default',
+				'value' => '',
+			),
+			array(
 				'name' => '-1 (relative to site_url)',
 				'value' => -1,
 			),
@@ -117,7 +129,7 @@ $tmp = array(
 				'value' => 'https',
 			),
 		),
-		'value' => -1,
+		'value' => '',
 	),
 	'useWeblinkUrl' => array(
 		'type' => 'combo-boolean',
