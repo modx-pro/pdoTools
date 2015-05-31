@@ -76,7 +76,9 @@ class pdoTools {
 			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
 		}
 		$this->config['useFenom'] = $this->modx->getOption('pdotools_fenom_default', null, true);
+		$this->config['useFenomParser'] = $this->modx->getOption('pdotools_fenom_parser', null, false);
 		$this->config['useFenomCache'] = $this->modx->getOption('pdotools_fenom_cache', null, false);
+		$this->config['useFenomMODX'] = $this->modx->getOption('pdotools_fenom_modx', null, false);
 	}
 
 
@@ -313,8 +315,8 @@ class pdoTools {
 		}
 
 		$content = $this->config['useFenom']
-			? $this->fenom($chunk, $properties)
-			: $content = $chunk['content'];
+			? $this->fenom($chunk['content'], $properties)
+			: $chunk['content'];
 
 		if (strpos($content, '[[') !== false) {
 			// Processing quick placeholders
@@ -386,8 +388,8 @@ class pdoTools {
 		}
 
 		$content = $this->config['useFenom']
-			? $this->fenom($chunk, $properties)
-			: $content = $chunk['content'];
+			? $this->fenom($chunk['content'], $properties)
+			: $chunk['content'];
 
 		if (strpos($content, '[[') !== false) {
 			$pl = $this->makePlaceholders($properties, '', $prefix, $suffix);
@@ -464,7 +466,7 @@ class pdoTools {
 
 			if ($tpl instanceof Fenom\Render) {
 				$properties['_pls'] = $properties;
-				if ($this->modx->getOption('pdotools_fenom_modx', null, true)) {
+				if (!empty($this->config['useFenomMODX'])) {
 					$properties['modx'] = $this->modx;
 					$properties['pdoTools'] = $this;
 				}

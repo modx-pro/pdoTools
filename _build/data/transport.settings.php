@@ -33,7 +33,7 @@ $tmp = array(
 	),
 	'fenom_modx' => array(
 		'xtype' => 'combo-boolean',
-		'value' => true,
+		'value' => false,
 	),
 	'fenom_options' => array(
 		'xtype' => 'textarea',
