@@ -666,16 +666,19 @@ class pdoTools {
 				$this->addTime('Created inline chunk with name "'.$cache_name.'"');
 				break;
 			case 'FILE':
-				$path = !empty($this->config['tplPath'])
+				$path = isset($this->config['tplPath'])
 					? $this->config['tplPath'] . '/'
 					: MODX_ASSETS_PATH . 'elements/chunks/';
-				$path = strpos($content, MODX_BASE_PATH) === false
-					? $path . $content
-					: $content;
-				$path = preg_replace('#/+#', '/', $path);
-
+				if (strpos($path, MODX_BASE_PATH) === false) {
+					$path = MODX_BASE_PATH . $path;
+				}
+				$path = preg_replace('#/+#', '/', $path . $content);
 				if (!preg_match('/(.html|.tpl)$/i', $path)) {
 					$this->addTime('Allowed extensions for @FILE chunks is "html" and "tpl"');
+				}
+				elseif (!file_exists($path)) {
+					$this->addTime('Could not find tpl file at "'.str_replace(MODX_BASE_PATH, '', $path).'".');
+					return false;
 				}
 				elseif ($content = file_get_contents($path)) {
 					$element = $this->modx->newObject('modChunk', array('name' => $cache_name));

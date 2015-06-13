@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.0.2 pl
+==============
+- Improved processing of @FILE binding.
+
 2.0.1 pl
 ==============
 - Fixed possible E_WARNING on line 319 and 349 of pdoTools class.
