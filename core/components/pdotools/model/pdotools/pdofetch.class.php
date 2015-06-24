@@ -463,6 +463,9 @@ class pdoFetch extends pdoTools {
 				elseif (array_key_exists($sortby, $fields)) {
 					$sortby = $this->config['class'].'.'.$sortby;
 				}
+				if (strpos($sortby, ' ')){
+				    $sortby = '\''.$sortby.'\'';
+				}
 				$this->query->sortby($sortby, $sortdir);
 
 				$this->addTime('Sorted by <b>'.$sortby.'</b>, <b>'.$sortdir.'</b>', microtime(true) - $time);
