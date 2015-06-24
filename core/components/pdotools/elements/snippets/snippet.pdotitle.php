@@ -12,19 +12,29 @@ if (empty($minQuery)) {$minQuery = 3;}
 if (empty($id)) {$id = $modx->resource->id;}
 if (empty($cacheKey)) {$cacheKey = 'title_crumbs';}
 if (!isset($cacheTime)) {$cacheTime = 0;}
-$pdoTools = $modx->getService('pdoTools');
+$fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
+if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
+	$pdoTools = new $pdoClass($modx, $scriptProperties);
+}
+elseif ($pdoClass = $modx->loadClass($fqn, MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+	$pdoTools = new $pdoClass($modx, $scriptProperties);
+}
+else {
+	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoTools from "MODX_CORE_PATH/components/pdotools/model/".');
+	return false;
+}
 $modx->lexicon->load('pdotools:pdopage');
 
 /** @var modResource $resource */
 $resource = ($id == $modx->resource->id)
 	? $modx->resource
-	: $modx->getObject($class, $id);
+	: $modx->getObject('modResource', $id);
 if (!$resource) {return '';}
 
 $title = array();
-$pagetitle = trim($modx->resource->get($titleField));
+$pagetitle = trim($resource->get($titleField));
 if (empty($pagetitle)) {
-	$pagetitle = $modx->resource->get('pagetitle');
+	$pagetitle = $resource->get('pagetitle');
 }
 
 // Add search request if exists

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.0.3 pl
+==============
+- [#125] [pdoTitle] Fixed parameter &id.
+
 2.0.2 pl
 ==============
 - Improved processing of @FILE binding.
