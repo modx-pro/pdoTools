@@ -315,7 +315,7 @@ class pdoTools {
 		}
 
 		$content = $this->config['useFenom']
-			? $this->fenom($chunk['content'], $properties)
+			? $this->fenom($chunk, $properties)
 			: $chunk['content'];
 
 		if (strpos($content, '[[') !== false) {
@@ -388,7 +388,7 @@ class pdoTools {
 		}
 
 		$content = $this->config['useFenom']
-			? $this->fenom($chunk['content'], $properties)
+			? $this->fenom($chunk, $properties)
 			: $chunk['content'];
 
 		if (strpos($content, '[[') !== false) {
@@ -443,13 +443,14 @@ class pdoTools {
 			}
 			/** @var Fenom\Template $tpl */
 			if (!$tpl = $this->getStore($name, 'fenom')) {
-				if (is_array($chunk) && !empty($this->config['useFenomCache'])) {
+				if (!empty($this->config['useFenomCache'])) {
 					$cache_options = array(
 						'cache_key' => 'fenom/' . $name,
 					);
 					if (!$cache = $this->getCache($cache_options)) {
-						$tpl = $this->_compileChunk($content, $name);
-						$this->setCache($tpl->getTemplateCode(), $cache_options);
+						if ($tpl = $this->_compileChunk($content, $name)) {
+							$this->setCache($tpl->getTemplateCode(), $cache_options);
+						}
 					}
 					else {
 						$cache = preg_replace('#^<\?php#', '', $cache);

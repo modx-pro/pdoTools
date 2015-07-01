@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.0.4 pl
+==============
+- Fixed processing of "pdotools_fenom_cache" system setting.
+
 2.0.3 pl
 ==============
 - [#125] [pdoTitle] Fixed parameter &id.
