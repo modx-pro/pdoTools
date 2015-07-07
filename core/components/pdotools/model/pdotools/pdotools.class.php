@@ -409,7 +409,7 @@ class pdoTools {
 	public function fenom($chunk, array $properties = array()) {
 		if (is_array($chunk)) {
 			if (empty($chunk['content'])) {
-				return $chunk;
+				return $chunk['content'];
 			}
 			else {
 				$content = trim($chunk['content']);
