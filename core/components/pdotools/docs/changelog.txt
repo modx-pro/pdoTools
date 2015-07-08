@@ -3,6 +3,8 @@ Changelog for pdoTools.
 2.0.5 pl
 ==============
 - [#132] Fixed possible E_WARNING on empty chunks.
+- [#118] [pdoPage] Fixed parameter &offset.
+- [pdoPage] Fixed default CSS classes in "empty" chunks.
 
 2.0.4 pl
 ==============

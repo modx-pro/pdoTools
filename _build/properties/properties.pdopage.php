@@ -86,11 +86,11 @@ $tmp = array(
 
 	'tplPageFirstEmpty' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><span>[[%pdopage_first]]</span></li>',
+		'value' => '@INLINE <li class="disabled"><span>[[%pdopage_first]]</span></li>',
 	),
 	'tplPageLastEmpty' => array(
 		'type' => 'textfield',
-		'value' => '@INLINE <li class="control"><span>[[%pdopage_last]]</span></li>',
+		'value' => '@INLINE <li class="disabled"><span>[[%pdopage_last]]</span></li>',
 	),
 	'tplPagePrevEmpty' => array(
 		'type' => 'textfield',

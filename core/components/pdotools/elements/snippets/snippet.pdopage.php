@@ -77,11 +77,12 @@ if (!empty($maxLimit) && !empty($scriptProperties['limit']) && $scriptProperties
 }
 
 // Offset
-if ($page > 1) {
-	$scriptProperties['offset'] = empty($offset)
-		? $scriptProperties['limit'] * $page - $scriptProperties['limit']
-		: $scriptProperties['limit'] * $page - $scriptProperties['limit'] + $offset;
-}
+$offset = !empty($scriptProperties['offset']) && $scriptProperties['offset'] > 0
+	? (int)$scriptProperties['offset']
+	: 0;
+$scriptProperties['offset'] = $page > 1
+	? $scriptProperties['limit'] * ($page - 1) + $offset
+	: $offset;
 if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 	$scriptProperties['limit'] = 10000000;
 }
@@ -111,9 +112,9 @@ if (empty($data)) {
 		return '';
 	}
 	/** Pagination */
-	$total = $modx->getPlaceholder($totalVar);
-	$pageCount = !empty($scriptProperties['limit'])
-		? ceil($total / $scriptProperties['limit'])
+	$total = (int)$modx->getPlaceholder($totalVar);
+	$pageCount = !empty($scriptProperties['limit']) && $total > $offset
+		? ceil(($total - $offset) / $scriptProperties['limit'])
 		: 0;
 
 	// Redirect to start if somebody specified incorrect page
