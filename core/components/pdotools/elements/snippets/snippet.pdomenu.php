@@ -107,11 +107,17 @@ foreach ($wfTemplates as $k => $v) {
 //---
 
 /** @var pdoMenu $pdoMenu */
-if (!$modx->loadClass('pdotools.pdoMenu', MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+$fqn = $modx->getOption('pdoMenu.class', null, 'pdotools.pdomenu', true);
+if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
+	$pdoMenu = new $pdoClass($modx, $scriptProperties);
+}
+elseif ($pdoClass = $modx->loadClass($fqn, MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+	$pdoMenu = new $pdoClass($modx, $scriptProperties);
+}
+else {
 	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoMenu from "MODX_CORE_PATH/components/pdotools/model/".');
 	return false;
 }
-$pdoMenu = new pdoMenu($modx, $scriptProperties);
 $pdoMenu->pdoTools->addTime('pdoTools loaded');
 
 $cache = !empty($cache) || (!$modx->user->id && !empty($cacheAnonymous));

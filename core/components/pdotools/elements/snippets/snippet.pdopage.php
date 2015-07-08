@@ -30,11 +30,17 @@ if ($isAjax && !isset($_REQUEST[$pageVarKey])) {
 }
 
 /** @var pdoPage $pdoPage */
-if (!$modx->loadClass('pdotools.pdoPage', MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+$fqn = $modx->getOption('pdoPage.class', null, 'pdotools.pdopage', true);
+if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
+	$pdoPage = new $pdoClass($modx, $scriptProperties);
+}
+elseif ($pdoClass = $modx->loadClass($fqn, MODX_CORE_PATH . 'components/pdotools/model/', false, true)) {
+	$pdoPage = new $pdoClass($modx, $scriptProperties);
+}
+else {
 	$modx->log(modX::LOG_LEVEL_ERROR, 'Could not load pdoPage from "MODX_CORE_PATH/components/pdotools/model/".');
 	return false;
 }
-$pdoPage = new pdoPage($modx, $scriptProperties);
 $pdoPage->pdoTools->addTime('pdoTools loaded');
 
 // Script and styles

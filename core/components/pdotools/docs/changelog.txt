@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.0.5 pl
 ==============
 - [#132] Fixed possible E_WARNING on empty chunks.
+- [#122] Ability to use 3rd party pdoPage and pdoMenu classes.
 - [#118] [pdoPage] Fixed parameter &offset.
 - [pdoPage] Fixed default CSS classes in "empty" chunks.
 
