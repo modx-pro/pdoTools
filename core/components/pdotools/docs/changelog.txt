@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.0.5 pl
+==============
+- [#132] Fixed possible E_WARNING on empty chunks.
+
 2.0.4 pl
 ==============
 - Fixed processing of "pdotools_fenom_cache" system setting.

@@ -407,17 +407,9 @@ class pdoTools {
 	 * @return mixed|string
 	 */
 	public function fenom($chunk, array $properties = array()) {
-		if (is_array($chunk)) {
-			if (empty($chunk['content'])) {
-				return $chunk['content'];
-			}
-			else {
-				$content = trim($chunk['content']);
-			}
-		}
-		else {
-			$content = $chunk;
-		}
+		$content = is_array($chunk)
+			? trim($chunk['content'])
+			: trim($chunk);
 		if (empty($this->config['useFenom']) || (strpos($content, '{$') === false && strpos($content, '{/') === false)) {
 			return $content;
 		}
@@ -744,8 +736,8 @@ class pdoTools {
 			'id' => $id,
 			'binding' => strtolower($binding),
 		);
-
 		$this->setStore($cache_name, $chunk, 'chunk');
+
 		return $chunk;
 	}
 
