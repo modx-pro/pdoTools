@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.0 pl
+==============
+- Updated Fenom to version 2.7.1.
+
 2.0.5 pl
 ==============
 - [#132] Fixed possible E_WARNING on empty chunks.

@@ -18,7 +18,8 @@ use Fenom\Template;
  */
 class Fenom
 {
-    const VERSION = '2.6';
+    const VERSION = '2.7';
+    const REV = 1;
     /* Actions */
     const INLINE_COMPILER = 1;
     const BLOCK_COMPILER  = 5;
@@ -52,6 +53,12 @@ class Fenom
     const SMART_FUNC_PARSER      = 'Fenom\Compiler::smartFuncParser';
 
     const MAX_MACRO_RECURSIVE = 32;
+
+    const ACCESSOR_CUSTOM = null;
+    const ACCESSOR_VAR    = 'Fenom\Accessor::parserVar';
+    const ACCESSOR_CALL   = 'Fenom\Accessor::parserCall';
+
+    public static $charset = "UTF-8";
 
     /**
      * @var int[] of possible options, as associative array
@@ -107,6 +114,11 @@ class Fenom
      * @var string compile directory
      */
     protected $_compile_dir = "/tmp";
+
+    /**
+     * @var string compile prefix ID template
+     */
+    protected $_compile_id;
 
     /**
      * @var string[] compile directory for custom provider
@@ -418,6 +430,18 @@ class Fenom
             throw new LogicException("Cache directory $dir is not writable");
         }
         $this->_compile_dir = $dir;
+        return $this;
+    }
+
+    /**
+     * Set compile prefix ID template
+     *
+     * @param string $id prefix ID to store compiled templates
+     * @return Fenom
+     */
+    public function setCompileId($id)
+    {
+        $this->_compile_id = $id;
         return $this;
     }
 
@@ -806,6 +830,21 @@ class Fenom
     }
 
     /**
+     * Add global accessor ($.)
+     * @param string $name
+     * @param callable|string $accessor
+     * @param string $parser
+     * @return Fenom
+     */
+    public function addAccessorSmart($name, $accessor, $parser) {
+        $this->_accessors[$name] = array(
+            "accessor" => $accessor,
+            "parser" => $parser
+        );
+        return $this;
+    }
+
+    /**
      * Remove accessor
      * @param string $name
      * @return Fenom
@@ -998,10 +1037,10 @@ class Fenom
             foreach ($tpl as &$t) {
                 $t = str_replace(":", "_", basename($t));
             }
-            return implode("~", $tpl) . "." . sprintf("%x.%x.php", crc32($hash), strlen($hash));
+            return $this->_compile_id . implode("~", $tpl) . "." . sprintf("%x.%x.php", crc32($hash), strlen($hash));
         } else {
             $hash = $tpl . ":" . $options;
-            return sprintf("%s.%x.%x.php", str_replace(":", "_", basename($tpl)), crc32($hash), strlen($hash));
+            return sprintf($this->_compile_id . "%s.%x.%x.php", str_replace(":", "_", basename($tpl)), crc32($hash), strlen($hash));
         }
     }
 
