@@ -110,21 +110,31 @@ class pdoTools {
 			try {
 				if (!class_exists('Fenom')) {
 					require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
+					require dirname(dirname(__FILE__)) . '/fenom/Fenom/ProviderInterface.php';
+					require dirname(dirname(__FILE__)) . '/fenom/Providers/ModChunk.php';
+					require dirname(dirname(__FILE__)) . '/fenom/Providers/ModTemplate.php';
 					Fenom::registerAutoload();
 				}
 				$cache = MODX_CORE_PATH . 'cache/';
 				if (!file_exists($cache)) {
 					mkdir($cache);
 				}
-				$this->fenom = Fenom::factory($cache, $cache);
-
+				$this->fenom = Fenom::factory(new modChunkProvider($this->modx), $cache);
+				$this->fenom->addProvider('template', new modTemplateProvider($this->modx));
+				$default_options = array(
+					'force_compile' => true,
+					'disable_cache' => true,
+					'force_include' => true,
+				);
+				if ($options = $this->modx->fromJSON($this->modx->getOption('pdotools_fenom_options'))) {
+					$options = array_merge($options, $default_options);
+				}
+				else {
+					$options = $default_options;
+				}
+				$this->fenom->setOptions($options);
 				if (!$this->modx->getOption('pdotools_fenom_php', null, false)) {
 					$this->fenom->removeAccessor('php');
-				}
-				if ($options = $this->modx->getOption('pdotools_fenom_options')) {
-					if (is_numeric($options) || $options = $this->modx->fromJSON($options)) {
-						$this->fenom->setOptions($options);
-					}
 				}
 			}
 			catch (Exception $e) {
@@ -458,7 +468,18 @@ class pdoTools {
 			}
 
 			if ($tpl instanceof Fenom\Render) {
+				// Add system variables
+				if (!$microMODX = $this->getStore('microMODX')) {
+					if (!class_exists('microMODX')) {
+						require '_micromodx.php';
+					}
+					$microMODX = new microMODX($this);
+					$this->setStore('microMODX', $microMODX);
+				}
+				$properties['_modx'] = $microMODX;
 				$properties['_pls'] = $properties;
+
+				// Add system objects
 				if (!empty($this->config['useFenomMODX'])) {
 					$properties['modx'] = $this->modx;
 					$properties['pdoTools'] = $this;
@@ -882,7 +903,7 @@ class pdoTools {
 						$row[$key] = $templateVar->renderOutput($row['id']);
 					}
 					elseif (isset($prepare[$tv]) && is_string($row[$key]) && strpos($row[$key],'://') === false && method_exists($templateVar, 'prepareOutput')) {
-						if ($source = $templateVar->sourceCache) {
+						if (isset($templateVar->sourceCache) && $source = $templateVar->sourceCache) {
 							if ($source['class_key'] == 'modFileMediaSource') {
 								if (!empty($source['baseUrl']) && !empty($row[$key])) {
 									$row[$key] = $source['baseUrl'].$row[$key];

@@ -2,7 +2,9 @@ Changelog for pdoTools.
 
 2.1.0 pl
 ==============
-- Updated Fenom to version 2.7.1.
+- [Fenom] Updated Fenom to version 2.7.1.
+- [Fenom] Added safe system variable {$_modx}.
+- [Fenom] Added MODX template provider for chunks and templates.
 
 2.0.5 pl
 ==============
