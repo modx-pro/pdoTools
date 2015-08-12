@@ -58,7 +58,7 @@ else {
 	$output .= $log;
 
 	if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-		$output = $pdoFetch->getChunk($tplWrapper, array('output' => $output), $pdoFetch->config['fastMode']);
+		$output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, array('output' => $output)), $pdoFetch->config['fastMode']);
 	}
 
 	if (!empty($toPlaceholder)) {
