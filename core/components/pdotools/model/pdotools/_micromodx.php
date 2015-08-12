@@ -2,13 +2,13 @@
 
 class microMODX {
 	public $config;
-	public $placeholders = array();
 	public $context = array();
 	public $resource = array();
 	public $user = array();
 	public $lexicon = null;
 	public $cacheManager = null;
 	protected $pdoTools;
+	/** @var modX $modx */
 	protected $modx;
 
 
@@ -19,7 +19,6 @@ class microMODX {
 		$this->modx = $modx = $pdoTools->modx;
 		$this->pdoTools = $pdoTools;
 		$this->config = $modx->config;
-		$this->placeholders = $modx->placeholders;
 
 		if ($modx->context) {
 			$this->context = $modx->context->toArray();
@@ -245,7 +244,7 @@ class microMODX {
 	 * @param array $options
 	 */
 	public function sendError($type = '', $options = array()) {
-		return $this->modx->sendError($type, $options);
+		$this->modx->sendError($type, $options);
 	}
 
 
@@ -256,7 +255,7 @@ class microMODX {
 	 * @param string $responseCode
 	 */
 	public function sendRedirect($url, $options = false, $type = '', $responseCode = '') {
-		return $this->modx->sendRedirect($url, $options, $type, $responseCode);
+		$this->modx->sendRedirect($url, $options, $type, $responseCode);
 	}
 
 
@@ -265,6 +264,77 @@ class microMODX {
 	 * @param null $options
 	 */
 	public function sendForward($id, $options = null) {
-		return $this->modx->sendForward($id, $options);
+		$this->modx->sendForward($id, $options);
+	}
+
+
+	/**
+	 * @param $key
+	 * @param $value
+	 */
+	public function setPlaceholder($key, $value) {
+		$this->modx->setPlaceholder($key, $value);
+	}
+
+
+	/**
+	 * @param $placeholders
+	 * @param string $namespace
+	 */
+	public function setPlaceholders($placeholders, $namespace = '') {
+		$this->modx->setPlaceholders($placeholders, $namespace);
+	}
+
+
+	/**
+	 * @param $subject
+	 * @param string $prefix
+	 * @param string $separator
+	 * @param bool|false $restore
+	 *
+	 * @return array
+	 */
+	public function toPlaceholders($subject, $prefix = '', $separator = '.', $restore = false) {
+		return $this->modx->toPlaceholders($subject, $prefix, $separator, $restore);
+	}
+
+
+	/**
+	 * @param $key
+	 * @param $value
+	 * @param string $prefix
+	 * @param string $separator
+	 * @param bool|false $restore
+	 *
+	 * @return array
+	 */
+	public function toPlaceholder($key, $value, $prefix = '', $separator = '.', $restore = false) {
+		return $this->modx->toPlaceholder($key, $value, $prefix, $separator, $restore);
+	}
+
+
+	/**
+	 * @param $key
+	 *
+	 * @return mixed
+	 */
+	public function getPlaceholder($key) {
+		return $this->modx->getPlaceholder($key);
+	}
+
+
+	/**
+	 * @param $key
+	 */
+	public function unsetPlaceholder($key) {
+		$this->modx->unsetPlaceholder($key);
+	}
+
+
+	/**
+	 * @param $keys
+	 */
+	public function unsetPlaceholders($keys) {
+		$this->modx->unsetPlaceholders($keys);
 	}
 }

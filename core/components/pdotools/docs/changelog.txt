@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.2 pl
+==============
+- [Fenom] Replaced {$_modx->placeholders} to functions.
+
 2.1.1 pl
 ==============
 - pdoParser enabled by default.
