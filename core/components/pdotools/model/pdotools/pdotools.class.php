@@ -119,8 +119,8 @@ class pdoTools {
 				if (!file_exists($cache)) {
 					mkdir($cache);
 				}
-				$this->fenom = Fenom::factory(new modChunkProvider($this->modx), $cache);
-				$this->fenom->addProvider('template', new modTemplateProvider($this->modx));
+				$this->fenom = Fenom::factory(new modChunkProvider($this), $cache);
+				$this->fenom->addProvider('template', new modTemplateProvider($this));
 				$default_options = array(
 					'force_compile' => true,
 					'disable_cache' => true,
@@ -314,7 +314,7 @@ class pdoTools {
 		$properties = $this->prepareRow($properties);
 		$name = trim($name);
 
-		/* @var $chunk modChunk[] */
+		/** @var array $chunk */
 		if (!empty($name)) {
 			$chunk = $this->_loadChunk($name, $properties);
 		}
@@ -324,6 +324,7 @@ class pdoTools {
 				: '';
 		}
 
+		$properties = array_merge($chunk['properties'], $properties);
 		$content = $this->config['useFenom']
 			? $this->fenom($chunk, $properties)
 			: $chunk['content'];
@@ -366,6 +367,7 @@ class pdoTools {
 				$chunk['object']->_cacheable = false;
 				$chunk['object']->_processed = false;
 				$chunk['object']->_content = '';
+				/** @var $chunk modChunk[] */
 				$content = $chunk['object']->process($properties, $content);
 			}
 		}
@@ -388,6 +390,7 @@ class pdoTools {
 		$properties = $this->prepareRow($properties);
 		$name = trim($name);
 
+		/** @var array $chunk */
 		if (!empty($name)) {
 			$chunk = $this->_loadChunk($name, $properties);
 		}
@@ -397,6 +400,7 @@ class pdoTools {
 				: '';
 		}
 
+		$properties = array_merge($chunk['properties'], $properties);
 		$content = $this->config['useFenom']
 			? $this->fenom($chunk, $properties)
 			: $chunk['content'];
@@ -648,14 +652,24 @@ class pdoTools {
 	 * @return array
 	 */
 	protected function _loadChunk($name, $row = array()) {
-		$binding = $content = '';
+		$binding = $content = $propertySet = '';
 
 		$name = trim($name);
 		if (preg_match('/^@([A-Z]+)/', $name, $matches)) {
 			$binding = $matches[1];
 			$content = substr($name, strlen($binding) + 1);
+			$content = ltrim($content, ' :');
 		}
-		$content = ltrim($content, ' :');
+		// Get property set
+		if (!$binding && $pos = strpos($name, '@')) {
+			$propertySet = substr($name, $pos + 1);
+			$name = substr($name, 0, $pos);
+		}
+		elseif (in_array($binding, array('CHUNK', 'TEMPLATE')) && $pos = strpos($content, '@')) {
+			$propertySet = substr($content, $pos + 1);
+			$content = substr($content, 0, $pos);
+		}
+		// Replace inline tags
 		$content = str_replace(array('{{','}}'), array('[[',']]'), $content);
 
 		// Change name for empty TEMPLATE binding so will be used template of given row
@@ -665,12 +679,13 @@ class pdoTools {
 		}
 
 		// Load from cache
-		$cache_name = (strpos($name, '@') === 0) ? md5($name) : $name;
+		$cache_name = !empty($binding) && $binding != 'CHUNK' ? md5($name) : $name;
 		if ($chunk = $this->getStore($cache_name, 'chunk')) {
 			return $chunk;
 		}
 
 		$id = 0;
+		$properties = array();
 		/** @var modChunk $element */
 		switch ($binding) {
 			case 'CODE':
@@ -704,6 +719,14 @@ class pdoTools {
 				/** @var modTemplate $template */
 				if ($template = $this->modx->getObject('modTemplate', array('id' => $content, 'OR:templatename:=' => $content))) {
 					$content = $template->getContent();
+					if (!empty($propertySet)) {
+						if ($tmp = $template->getPropertySet($propertySet)) {
+							$properties = $tmp;
+						}
+					}
+					else {
+						$properties = $template->getProperties();
+					}
 					$element = $this->modx->newObject('modChunk', array('name' => $cache_name));
 					$element->setContent($content);
 					$this->addTime('Created chunk from template "'.$template->templatename.'"');
@@ -714,6 +737,14 @@ class pdoTools {
 				$cache_name = $content;
 				if ($element = $this->modx->getObject('modChunk', array('name' => $cache_name))) {
 					$content = $element->getContent();
+					if (!empty($propertySet)) {
+						if ($tmp = $element->getPropertySet($propertySet)) {
+							$properties = $tmp;
+						}
+					}
+					else {
+						$properties = $element->getProperties();
+					}
 					$this->addTime('Loaded chunk "'.$cache_name.'"');
 					$id = $element->get('id');
 				}
@@ -721,6 +752,14 @@ class pdoTools {
 			default:
 				if ($element = $this->modx->getObject('modChunk', array('name' => $cache_name))) {
 					$content = $element->getContent();
+					if (!empty($propertySet)) {
+						if ($tmp = $element->getPropertySet($propertySet)) {
+							$properties = $tmp;
+						}
+					}
+					else {
+						$properties = $element->getProperties();
+					}
 					$this->addTime('Loaded chunk "'.$cache_name.'"');
 					$binding = 'CHUNK';
 					$id = $element->get('id');
@@ -753,6 +792,7 @@ class pdoTools {
 			'object' => $element,
 			'content' => $content,
 			'placeholders' => $placeholders,
+			'properties' => $properties,
 			'name' => $cache_name,
 			'id' => $id,
 			'binding' => strtolower($binding),

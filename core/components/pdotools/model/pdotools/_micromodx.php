@@ -59,9 +59,11 @@ class microMODX {
 	/**
 	 * @param $chunkName
 	 * @param array $properties
+	 *
+	 * @return string
 	 */
 	public function getChunk($chunkName, array $properties = array()) {
-		$this->pdoTools->getChunk($chunkName, $properties);
+		return $this->pdoTools->getChunk($chunkName, $properties);
 	}
 
 

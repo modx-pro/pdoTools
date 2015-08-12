@@ -3,10 +3,13 @@
 class modTemplateProvider implements \Fenom\ProviderInterface {
 	/** @var modX $modx */
 	public $modx;
+	/** @var pdoTools $pdoTools */
+	public $pdoTools;
 
 
-	function __construct(modX $modx) {
-		$this->modx = $modx;
+	function __construct(pdoTools $pdoTools) {
+		$this->pdoTools = $pdoTools;
+		$this->modx = $pdoTools->modx;
 	}
 
 
@@ -27,12 +30,30 @@ class modTemplateProvider implements \Fenom\ProviderInterface {
 	 * @return string
 	 */
 	public function getSource($tpl, &$time) {
+		$content = '';
+		if ($pos = strpos($tpl, '@')) {
+			$propertySet = substr($tpl, $pos + 1);
+			$tpl = substr($tpl, 0, $pos);
+		}
 		/** @var modChunk $chunk */
-		if ($chunk = $this->modx->getObject('modTemplate', array('templatename' => $tpl))) {
-			return $chunk->getContent();
+		if ($element = $this->modx->getObject('modTemplate', array('templatename' => $tpl))) {
+			$content = $element->getContent();
+
+			$properties = array();
+			if (!empty($propertySet)) {
+				if ($tmp = $element->getPropertySet($propertySet)) {
+					$properties = $tmp;
+				}
+			}
+			else {
+				$properties = $element->getProperties();
+			}
+			if (!empty($content) && !empty($properties)) {
+				$content = $this->pdoTools->parseChunk('@INLINE ' . $content, $properties);
+			}
 		}
 
-		return '';
+		return $content;
 	}
 
 
@@ -43,7 +64,7 @@ class modTemplateProvider implements \Fenom\ProviderInterface {
 	 */
 	public function getLastModified($tpl) {
 		/** @var modChunk $chunk */
-		if ($chunk = $this->modx->getObject('modTemplate', array('name' => $tpl))) {
+		if ($chunk = $this->modx->getObject('modTemplate', array('templatename' => $tpl))) {
 			if ($chunk->isStatic() && $file = $chunk->getSourceFile()) {
 				return filemtime($file);
 			}
