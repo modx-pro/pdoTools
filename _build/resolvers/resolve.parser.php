@@ -12,7 +12,7 @@ if ($object->xpdo) {
 	switch ($options[xPDOTransport::PACKAGE_ACTION]) {
 		case xPDOTransport::ACTION_INSTALL:
 		case xPDOTransport::ACTION_UPGRADE:
-			if (!empty($options['pdoParser'])) {
+			//if (!empty($options['pdoParser'])) {
 				/** @var modSystemSetting $tmp */
 				if (!$tmp = $modx->getObject('modSystemSetting', array('key' => 'parser_class'))) {
 					$tmp = $modx->newObject('modSystemSetting');
@@ -38,7 +38,7 @@ if ($object->xpdo) {
 					'key' => 'parser_class_path',
 				), '', true, true);
 				$tmp->save();
-			}
+			//}
 
 			// Remove old settings
 			if ($tmp = $modx->getObject('modSystemSetting', array('key' => 'pdotools_useFenom'))) {
