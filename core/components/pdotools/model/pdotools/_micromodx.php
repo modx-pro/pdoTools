@@ -63,6 +63,10 @@ class microMODX {
 	 * @return string
 	 */
 	public function getChunk($chunkName, array $properties = array()) {
+		if (strpos($chunkName, '!') === 0) {
+			$chunkName = substr($chunkName, 1);
+		}
+
 		return $this->pdoTools->getChunk($chunkName, $properties);
 	}
 
@@ -76,6 +80,10 @@ class microMODX {
 	 * @return string
 	 */
 	public function parseChunk($chunkName, $chunkArr, $prefix = '[[+', $suffix = ']]') {
+		if (strpos($chunkName, '!') === 0) {
+			$chunkName = substr($chunkName, 1);
+		}
+
 		return $this->pdoTools->parseChunk($chunkName, $chunkArr, $prefix, $suffix);
 	}
 
@@ -87,7 +95,21 @@ class microMODX {
 	 * @return string
 	 */
 	public function runSnippet($snippetName, array $params = array()) {
-		return $this->modx->runSnippet($snippetName, $params);
+		$output = '';
+		$cacheable = true;
+		if (strpos($snippetName, '!') === 0) {
+			$snippetName = substr($snippetName, 1);
+			$cacheable = false;
+		}
+		if ($this->modx->getParser()) {
+			$snippet = $this->modx->parser->getElement('modSnippet', $snippetName);
+			if ($snippet instanceof modSnippet) {
+				$snippet->setCacheable($cacheable);
+				$output = $snippet->process($params);
+			}
+		}
+
+		return $output;
 	}
 
 

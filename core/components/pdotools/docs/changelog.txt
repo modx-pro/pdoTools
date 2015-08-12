@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - pdoParser enabled by default.
 - [Fenom] Fixed return content in {$_modx->getChunk}.
+- [Fenom] Added cache for snippets called through {$_modx->runSnippet}.
 - [pdoTools] Added processing of property sets for chunks.
 - [pdoResources] Set additionalPlaceholders in &tplWrapper
 
