@@ -126,6 +126,10 @@ class pdoTools {
 					'disable_cache' => true,
 					'force_include' => true,
 				);
+				if (!$this->modx->getOption('pdotools_fenom_php', null, false)) {
+					$this->fenom->removeAccessor('php');
+					$default_options['disable_native_funcs'] = true;
+				}
 				if ($options = $this->modx->fromJSON($this->modx->getOption('pdotools_fenom_options'))) {
 					$options = array_merge($options, $default_options);
 				}
@@ -133,9 +137,6 @@ class pdoTools {
 					$options = $default_options;
 				}
 				$this->fenom->setOptions($options);
-				if (!$this->modx->getOption('pdotools_fenom_php', null, false)) {
-					$this->fenom->removeAccessor('php');
-				}
 			}
 			catch (Exception $e) {
 				$this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());

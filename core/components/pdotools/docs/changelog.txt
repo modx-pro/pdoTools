@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.3 pl
+==============
+- Improved work of system setting "pdotools_fenom_php".
+
 2.1.2 pl
 ==============
 - [Fenom] Replaced {$_modx->placeholders} to functions.
