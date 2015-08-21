@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.1.4 pl
+==============
+- [Fenom] Fixed TVs in {$_modx->resource}
+- [Fenom] Added new method {$_modx->getInfo()}
+
 2.1.3 pl
 ==============
 - Improved work of system setting "pdotools_fenom_php".

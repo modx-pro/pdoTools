@@ -25,6 +25,12 @@ class microMODX {
 		}
 		if ($modx->resource) {
 			$this->resource = $modx->resource->toArray();
+			// TV parameters
+			foreach ($this->resource as $k => $v) {
+				if (is_array($v) && isset($v[1])) {
+					$this->resource[$k] = $v[1];
+				}
+			}
 		}
 		if ($modx->user) {
 			$this->user = $modx->user->toArray();
@@ -336,5 +342,46 @@ class microMODX {
 	 */
 	public function unsetPlaceholders($keys) {
 		$this->modx->unsetPlaceholders($keys);
+	}
+
+
+	/**
+	 * @param string $key
+	 * @param bool $string
+	 * @param string $tpl
+	 *
+	 * @return array|string
+	 */
+	public function getInfo($key = '', $string = true, $tpl = '@INLINE {$key}: {$value}') {
+		$totalTime = microtime(true) - $this->modx->startTime;
+		$queryTime = sprintf("%2.4f s", $this->modx->queryTime);
+		$totalTime = sprintf("%2.4f s", $totalTime);
+		$phpTime = sprintf("%2.4f s", $totalTime - $queryTime);
+		$queries = isset($this->modx->executedQueries) ? $this->modx->executedQueries : 0;
+		$source = $this->modx->resourceGenerated ? 'database' : 'cache';
+
+		$info = array(
+			'queries' => $queries,
+			'totalTime' => $totalTime,
+			'queryTime' => $queryTime,
+			'phpTime' => $phpTime,
+			'source' => $source,
+		);
+
+		if (empty($key) && !empty($string)) {
+			$output = array();
+			foreach ($info as $key => $value) {
+				$output[] = $this->pdoTools->parseChunk($tpl, array(
+					'key' => $key,
+					'value' => $value
+				));
+			}
+			return implode("\n", $output);
+		}
+		else {
+			return !empty($key) && isset($info[$key])
+				? $info[$key]
+				: $info;
+		}
 	}
 }
