@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.5 pl
+==============
+- [Fenom] Fixed register of scripts and styles by cached snippets.
+
 2.1.4 pl
 ==============
 - [Fenom] Fixed TVs in {$_modx->resource}
