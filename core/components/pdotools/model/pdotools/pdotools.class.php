@@ -69,11 +69,11 @@ class pdoTools {
 			$this->timings = array();
 		}
 
-		if ($this->config['scheme'] === '-1') {
-			$this->config['scheme'] = -1;
-		}
-		elseif (empty($this->config['scheme'])) {
+		if (empty($this->config['scheme'])) {
 			$this->config['scheme'] = $this->modx->getOption('link_tag_scheme');
+		}
+		if (is_numeric($this->config['scheme'])) {
+			$this->config['scheme'] = (int)$this->config['scheme'];
 		}
 		$this->config['useFenom'] = $this->modx->getOption('pdotools_fenom_default', null, true);
 		$this->config['useFenomParser'] = $this->modx->getOption('pdotools_fenom_parser', null, false);
