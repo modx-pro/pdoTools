@@ -3,6 +3,8 @@ Changelog for pdoTools.
 2.1.6 pl
 ==============
 - [Fenom] Updated to version 2.8.0.
+- [Fenom] Improved check of syntax to process content of chunks.
+- [pdoParser] Fixed E_WARNING on line 50 introduced in previous version.
 
 2.1.5 pl
 ==============

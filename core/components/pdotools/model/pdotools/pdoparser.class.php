@@ -47,9 +47,11 @@ class pdoParser extends modParser {
 		if (is_string($content) && empty($parentTag) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
 			$content = $this->pdoTools->fenom($content, $this->modx->placeholders);
 
-			$this->modx->resource->_jscripts = $this->modx->jscripts;
-			$this->modx->resource->_sjscripts = $this->modx->sjscripts;
-			$this->modx->resource->_loadedjscripts = $this->modx->loadedjscripts;
+			if (!empty($this->modx->resource) && is_object($this->modx->resource)) {
+				$this->modx->resource->_jscripts = $this->modx->jscripts;
+				$this->modx->resource->_sjscripts = $this->modx->sjscripts;
+				$this->modx->resource->_loadedjscripts = $this->modx->loadedjscripts;
+			}
 		}
 
 		return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix, $suffix, $tokens, $depth);

@@ -425,7 +425,7 @@ class pdoTools {
 		$content = is_array($chunk)
 			? trim($chunk['content'])
 			: trim($chunk);
-		if (empty($this->config['useFenom']) || (strpos($content, '{$') === false && strpos($content, '{/') === false)) {
+		if (empty($this->config['useFenom']) || !preg_match('#\{(\$|\/|\w+\s)#', $content)) {
 			return $content;
 		}
 
