@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.8 pl
+==============
+- [Fenom] Ability to use id of chunks and templates in {include} and {extends}.
+
 2.1.7 pl
 ==============
 - Fixed work with integer values from system setting "link_tag_scheme".

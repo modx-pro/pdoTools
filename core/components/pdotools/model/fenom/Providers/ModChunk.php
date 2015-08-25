@@ -19,7 +19,10 @@ class modChunkProvider implements \Fenom\ProviderInterface {
 	 * @return bool
 	 */
 	public function templateExists($tpl) {
-		return (bool)$this->modx->getCount('modChunk', array('name' => $tpl));
+		$c = is_numeric($tpl) && $tpl > 0
+			? $tpl
+			: array('name' => $tpl);
+		return (bool)$this->modx->getCount('modChunk', $c);
 	}
 
 
@@ -35,8 +38,11 @@ class modChunkProvider implements \Fenom\ProviderInterface {
 			$propertySet = substr($tpl, $pos + 1);
 			$tpl = substr($tpl, 0, $pos);
 		}
+		$c = is_numeric($tpl) && $tpl > 0
+			? $tpl
+			: array('name' => $tpl);
 		/** @var modChunk $chunk */
-		if ($element = $this->modx->getObject('modChunk', array('name' => $tpl))) {
+		if ($element = $this->modx->getObject('modChunk', $c)) {
 			$content = $element->getContent();
 
 			$properties = array();
@@ -63,8 +69,11 @@ class modChunkProvider implements \Fenom\ProviderInterface {
 	 * @return int
 	 */
 	public function getLastModified($tpl) {
+		$c = is_numeric($tpl) && $tpl > 0
+			? $tpl
+			: array('name' => $tpl);
 		/** @var modChunk $chunk */
-		if ($chunk = $this->modx->getObject('modChunk', array('name' => $tpl))) {
+		if ($chunk = $this->modx->getObject('modChunk', $c)) {
 			if ($chunk->isStatic() && $file = $chunk->getSourceFile()) {
 				return filemtime($file);
 			}
