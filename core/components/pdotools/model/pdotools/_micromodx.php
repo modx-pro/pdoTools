@@ -365,6 +365,30 @@ class microMODX {
 
 
 	/**
+	 * @param null $id
+	 * @param int $depth
+	 * @param array $options
+	 *
+	 * @return array
+	 */
+	public function getChildIds($id = null, $depth = 10, array $options = array()) {
+		return $this->modx->getChildIds($id, $depth, $options);
+	}
+
+
+	/**
+	 * @param null $id
+	 * @param int $height
+	 * @param array $options
+	 *
+	 * @return array
+	 */
+	public function getParentIds($id = null, $height = 10, array $options = array()) {
+		return $this->modx->getParentIds($id, $height, $options);
+	}
+
+
+	/**
 	 * @param string $key
 	 * @param bool $string
 	 * @param string $tpl
@@ -392,9 +416,10 @@ class microMODX {
 			foreach ($info as $key => $value) {
 				$output[] = $this->pdoTools->parseChunk($tpl, array(
 					'key' => $key,
-					'value' => $value
+					'value' => $value,
 				));
 			}
+
 			return implode("\n", $output);
 		}
 		else {

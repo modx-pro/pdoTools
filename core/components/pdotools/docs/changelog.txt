@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [Fenom] Ability to use id of chunks and templates in {include} and {extends}.
 - [Fenom] Added support of debugParser.
+- [Fenom] Added {$_modx->getChildIds()} and {$_modx->getParentIds()}.
 
 2.1.7 pl
 ==============
