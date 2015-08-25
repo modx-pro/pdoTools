@@ -68,11 +68,16 @@ class microMODX {
 	 * @return string
 	 */
 	public function getChunk($chunkName, array $properties = array()) {
+		$name = $chunkName;
+		$this->debugParser('getChunk', $name, $properties);
 		if (strpos($chunkName, '!') === 0) {
 			$chunkName = substr($chunkName, 1);
 		}
 
-		return $this->pdoTools->getChunk($chunkName, $properties);
+		$result = $this->pdoTools->getChunk($chunkName, $properties);
+		$this->debugParser('getChunk', $name, $properties);
+
+		return $result;
 	}
 
 
@@ -85,11 +90,16 @@ class microMODX {
 	 * @return string
 	 */
 	public function parseChunk($chunkName, $chunkArr, $prefix = '[[+', $suffix = ']]') {
+		$name = $chunkName;
+		$this->debugParser('parseChunk', $name, $chunkArr);
 		if (strpos($chunkName, '!') === 0) {
 			$chunkName = substr($chunkName, 1);
 		}
 
-		return $this->pdoTools->parseChunk($chunkName, $chunkArr, $prefix, $suffix);
+		$result = $this->pdoTools->parseChunk($chunkName, $chunkArr, $prefix, $suffix);
+		$this->debugParser('parseChunk', $name, $chunkArr);
+
+		return $result;
 	}
 
 
@@ -100,6 +110,8 @@ class microMODX {
 	 * @return string
 	 */
 	public function runSnippet($snippetName, array $params = array()) {
+		$name = $snippetName;
+		$this->debugParser('runSnippet', $name, $params);
 		$output = '';
 		$cacheable = true;
 		if (strpos($snippetName, '!') === 0) {
@@ -113,6 +125,7 @@ class microMODX {
 				$output = $snippet->process($params);
 			}
 		}
+		$this->debugParser('runSnippet', $name, $params);
 
 		return $output;
 	}
@@ -128,7 +141,11 @@ class microMODX {
 	 * @return string
 	 */
 	public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = array()) {
-		return $this->modx->makeUrl($id, $context, $args, $scheme, $options);
+		$this->debugParser('makeUrl', $id, $args);
+		$result = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
+		$this->debugParser('makeUrl', $id, $args);
+
+		return $result;
 	}
 
 
@@ -200,7 +217,9 @@ class microMODX {
 	 * @param array $options
 	 */
 	public function runProcessor($action = '', $scriptProperties = array(), $options = array()) {
+		$this->debugParser('runProcessor', $action, $scriptProperties);
 		$this->modx->runProcessor($action, $scriptProperties, $options);
+		$this->debugParser('runProcessor', $action, $scriptProperties);
 	}
 
 
@@ -384,4 +403,38 @@ class microMODX {
 				: $info;
 		}
 	}
+
+
+	/**
+	 * @param $method
+	 * @param $name
+	 * @param array $properties
+	 */
+	protected function debugParser($method, $name, $properties = array()) {
+		if ($this->modx->parser instanceof debugPdoParser) {
+			/** @var debugPdoParser $parser */
+			$parser = $this->modx->parser;
+			$tag = '{$_modx->' . $method . '("' . $name . '", ' . htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8') . ')}';
+			$hash = sha1($tag);
+
+			if (!isset($parser->tags[$hash])) {
+				$parser->tags[$hash] = array(
+					'tag' => $tag,
+					'attempts' => 1,
+					'queries' => $this->modx->executedQueries,
+					'queries_time' => $this->modx->queryTime,
+					'parse_time' => microtime(true),
+				);
+
+			}
+			else {
+				$parser->tags[$hash] = array_merge($parser->tags[$hash], array(
+					'queries' => $this->modx->executedQueries - $parser->tags['queries'],
+					'queries_time' => number_format(round($this->modx->queryTime - $parser->tags[$hash]['queries_time'], 7), 7),
+					'parse_time' => number_format(round(microtime(true) - $parser->tags[$hash]['parse_time'], 7), 7),
+				));
+			}
+		}
+	}
+
 }

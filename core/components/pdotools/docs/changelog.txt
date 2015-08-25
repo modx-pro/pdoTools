@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.1.8 pl
 ==============
 - [Fenom] Ability to use id of chunks and templates in {include} and {extends}.
+- [Fenom] Added support of debugParser.
 
 2.1.7 pl
 ==============
