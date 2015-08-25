@@ -454,7 +454,7 @@ class microMODX {
 			}
 			else {
 				$parser->tags[$hash] = array_merge($parser->tags[$hash], array(
-					'queries' => $this->modx->executedQueries - $parser->tags['queries'],
+					'queries' => $this->modx->executedQueries - $parser->tags[$hash]['queries'],
 					'queries_time' => number_format(round($this->modx->queryTime - $parser->tags[$hash]['queries_time'], 7), 7),
 					'parse_time' => number_format(round(microtime(true) - $parser->tags[$hash]['parse_time'], 7), 7),
 				));

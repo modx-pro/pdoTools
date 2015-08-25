@@ -44,7 +44,7 @@ class pdoParser extends modParser {
 	 */
 	public function processElementTags($parentTag, & $content, $processUncacheable = false, $removeUnprocessed = false, $prefix = "[[", $suffix = "]]", $tokens = array(), $depth = 0) {
 
-		if (is_string($content) && empty($parentTag) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
+		if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser']) && preg_match('#\{(\$|\/|\w+\s)#', $content)) {
 			$content = $this->pdoTools->fenom($content, $this->modx->placeholders);
 
 			if (!empty($this->modx->resource) && is_object($this->modx->resource)) {
