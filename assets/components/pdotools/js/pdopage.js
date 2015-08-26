@@ -151,7 +151,7 @@ pdoPage.loadPage = function(href, config, mode) {
 			}
 
 			if (pdoPage.callbacks['after'] && typeof(pdoPage.callbacks['after']) == 'function') {
-				pdoPage.callbacks['after'].apply(this, [config, response]);
+				pdoPage.callbacks['after'].apply(this, [config, response, wrapper]);
 			}
 			else if (config['mode'] != 'scroll') {
 				wrapper.css({opacity: 1});
