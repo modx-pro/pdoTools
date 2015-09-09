@@ -81,7 +81,7 @@ class pdoFetch extends pdoTools {
 			$output = $this->query->toSql();
 		}
 		else {
-			$this->modx->exec('SET OPTION SQL_BIG_SELECTS = 1');
+			$this->modx->exec('SET SQL_BIG_SELECTS = 1');
 			$this->addTime('SQL prepared <small>"'.$this->query->toSql().'"</small>');
 			$tstart = microtime(true);
 			if ($this->query->stmt->execute()) {
@@ -969,7 +969,7 @@ class pdoFetch extends pdoTools {
 		$instance->addWhere();
 		$instance->addSort();
 		$instance->prepareQuery();
-		$instance->modx->exec('SET OPTION SQL_BIG_SELECTS = 1');
+		$instance->modx->exec('SET SQL_BIG_SELECTS = 1');
 		$instance->addTime('SQL prepared <small>"'.$instance->query->toSql().'"</small>');
 
 		$rows = array();
