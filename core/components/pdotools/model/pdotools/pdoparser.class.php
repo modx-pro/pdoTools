@@ -93,6 +93,7 @@ class pdoParser extends modParser {
 				// FastField tag
 				// Thank to Argnist and Dimlight Studio (http://dimlight.ru) for the original idea
 				case '#':
+					$processed = true;
 					$tmp = array_map('trim', explode('.', $innerTag));
 					$length = count($tmp);
 					// Resource tag
@@ -147,7 +148,7 @@ class pdoParser extends modParser {
 							case 'files':	$array = $_FILES; break;
 							case 'cookie':	$array = $_COOKIE; break;
 							case 'session':	$array = $_SESSION; break;
-							default: $array = array(); break;
+							default: $array = array(); $processed = false; break;
 						}
 						// Field specified
 						if (!empty($tmp[1])) {
@@ -173,7 +174,6 @@ class pdoParser extends modParser {
 							$output = $this->modx->stripTags($output);
 						}
 					}
-					$processed = true;
 					break;
 			}
 		}
