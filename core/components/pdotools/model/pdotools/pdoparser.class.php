@@ -79,14 +79,15 @@ class pdoParser extends modParser {
 		// Uncacheable tag
 		elseif ($innerTag[0] == '!' && !$processUncacheable) {
 			$this->processElementTags($outerTag, $innerTag, $processUncacheable);
-			$outerTag = '[['.$innerTag.']]';
+			$outerTag = '[[' . $innerTag . ']]';
+
 			return $outerTag;
 		}
 		// We processing only certain types of tags without parameters
 		elseif (strpos($innerTag, '?') === false && preg_match('/^(?:!|)[-|%|~|+|*|#]+/', $innerTag, $matches)) {
 			if (strpos($innerTag, '[[') !== false) {
 				$this->processElementTags($outerTag, $innerTag, $processUncacheable);
-				$outerTag = '[['.$innerTag.']]';
+				$outerTag = '[[' . $innerTag . ']]';
 			}
 
 			$innerTag = ltrim($this->realname($innerTag), '!');
@@ -135,8 +136,9 @@ class pdoParser extends modParser {
 					}
 					break;
 				// FastField tag
-				// Thank to Argnist and Dimlight Studio (http://dimlight.ru) for the original idea
+				// Thanks to Argnist and Dimlight Studio (http://dimlight.ru) for the original idea
 				case '#':
+					$processed = true;
 					$tmp = array_map('trim', explode('.', $innerTag));
 					$length = count($tmp);
 					// Resource tag
@@ -149,7 +151,7 @@ class pdoParser extends modParser {
 						$output = '';
 						if (!empty($resource)) {
 							// Field specified
-							if(!empty($tmp[1])) {
+							if (!empty($tmp[1])) {
 								$tmp[1] = strtolower($tmp[1]);
 								if ($tmp[1] == 'content') {
 									$output = $resource->getContent();
@@ -160,7 +162,9 @@ class pdoParser extends modParser {
 									if (is_array($field)) {
 										if ($length > 2) {
 											foreach ($tmp as $k => $v) {
-												if ($k === 0) {continue;}
+												if ($k === 0) {
+													continue;
+												}
 												if (isset($field[$v])) {
 													$output = $field[$v];
 												}
@@ -184,14 +188,16 @@ class pdoParser extends modParser {
 					// Global array tag
 					else {
 						switch (strtolower($tmp[0])) {
-							case 'post':	$array = $_POST; break;
-							case 'get':		$array = $_GET; break;
-							case 'request':	$array = $_REQUEST; break;
-							case 'server':	$array = $_SERVER; break;
-							case 'files':	$array = $_FILES; break;
-							case 'cookie':	$array = $_COOKIE; break;
-							case 'session':	$array = $_SESSION; break;
-							default: $array = array(); break;
+							case 'post': $array = $_POST; break;
+							case 'get': $array = $_GET; break;
+							case 'request': $array = $_REQUEST; break;
+							case 'server': $array = $_SERVER; break;
+							case 'files': $array = $_FILES; break;
+							case 'cookie': $array = $_COOKIE; break;
+							case 'session': $array = $_SESSION; break;
+							default:
+								$array = array();
+								$processed = false;
 						}
 						// Field specified
 						if (!empty($tmp[1])) {
@@ -202,7 +208,9 @@ class pdoParser extends modParser {
 							if (is_array($field)) {
 								if ($length > 2) {
 									foreach ($tmp as $k => $v) {
-										if ($k === 0) {continue;}
+										if ($k === 0) {
+											continue;
+										}
 										if (isset($field[$v])) {
 											$output = $field[$v];
 										}
@@ -217,7 +225,6 @@ class pdoParser extends modParser {
 							$output = $this->modx->stripTags($output);
 						}
 					}
-					$processed = true;
 					break;
 			}
 		}
@@ -230,7 +237,7 @@ class pdoParser extends modParser {
 				$tag->_content = $output;
 				$tag->setTag($outerTag);
 				$tag->setToken($token);
-				$tag->setContent(ltrim(rtrim($outerTag,']'), '[!'.$token));
+				$tag->setContent(ltrim(rtrim($outerTag, ']'), '[!' . $token));
 				$tag->setCacheable(!$processUncacheable);
 				$tag->process();
 				$output = $tag->_output;
@@ -238,7 +245,6 @@ class pdoParser extends modParser {
 			if ($this->modx->getDebug() === true) {
 				$this->modx->log(xPDO::LOG_LEVEL_DEBUG, "Processing {$outerTag} as {$innerTag}:\n" . print_r($output, 1) . "\n\n");
 			}
-
 			// Print array
 			if (is_array($output)) {
 				$output = htmlentities(print_r($output, true), ENT_QUOTES, 'UTF-8');
@@ -254,7 +260,6 @@ class pdoParser extends modParser {
 }
 
 
-
 class pdoTag extends modTag {
 	/**
 	 * @param null $properties
@@ -265,7 +270,13 @@ class pdoTag extends modTag {
 	public function process($properties = null, $content = null) {
 		$this->filterInput();
 
-		if ($this->modx->getDebug() === true) $this->modx->log(xPDO::LOG_LEVEL_DEBUG, "Processing Element: " . $this->get('name') . ($this->_tag ? "\nTag: {$this->_tag}" : "\n") . "\nProperties: " . print_r($this->_properties, true));
+		if ($this->modx->getDebug() === true) {
+			$this->modx->log(
+				xPDO::LOG_LEVEL_DEBUG, "Processing Element: " . $this->get('name') .
+				($this->_tag ? "\nTag: {$this->_tag}" : "\n") .
+				"\nProperties: " . print_r($this->_properties, true)
+			);
+		}
 		if ($this->isCacheable() && isset($this->modx->elementCache[$this->_tag])) {
 			$this->_output = $this->modx->elementCache[$this->_tag];
 		}
@@ -273,8 +284,8 @@ class pdoTag extends modTag {
 			$this->_output = $this->_content;
 			$this->filterOutput();
 		}
-
 		$this->_processed = true;
+
 		return $this->_result;
 	}
 
