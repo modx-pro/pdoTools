@@ -172,7 +172,7 @@ class pdoPage {
 				$href .= strpos($href, '?') !== false
 					? '&'
 					: '?';
-				$href .= preg_replace('/%5B\d+%5D/', '%5B%5D', http_build_query($request));
+				$href .= http_build_query($request);
 			}
 		}
 

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.10 pl
+==============
+- [#145] [pdoPage] Rolled back #81 due to issues with complicate forms.
+
 2.1.9 pl
 ==============
 - [#144] [pdoParser] Leave unprocessed FastField tags so other components could parse them.
