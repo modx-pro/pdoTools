@@ -142,6 +142,12 @@ pdoPage.loadPage = function(href, mode) {
 		}
 	}
 	params[key] = pdoPage.keys[key] = page;
+	var waitAnimation = $('<div class="wait-wrapper"><div class="wait"></div></div>');
+	if (mode == 'append') {
+		wrapper.find(rows).append(waitAnimation);
+	} else {
+		wrapper.find(rows).empty().append(waitAnimation);
+	}
 	$.get(document.location.pathname, params, function(response) {
 		if (response && response['total']) {
 			wrapper.find(pagination).html(response['pagination']);
@@ -158,6 +164,7 @@ pdoPage.loadPage = function(href, mode) {
 				else if (pdoPage.settings['mode'] == 'scroll') {
 					pdoPage.Reached = false;
 				}
+				waitAnimation.remove();
 			}
 			else {
 				wrapper.find(rows).html(response['output']);
