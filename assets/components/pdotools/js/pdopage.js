@@ -253,7 +253,15 @@ pdoPage.Hash = {
 		var hash = '';
 		for (var i in vars) {
 			if (vars.hasOwnProperty(i)) {
-				hash += '&' + i + '=' + vars[i];
+				if (typeof vars[i] == 'string') {
+					hash += '&' + i + '=' + vars[i];
+				} else {
+					for (var j in vars[i]) {
+						if (vars[i].hasOwnProperty(j)) {
+							hash += '&' + i + '=' + vars[i][j];
+						}
+					}
+				}
 			}
 		}
 
