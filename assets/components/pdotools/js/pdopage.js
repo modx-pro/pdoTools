@@ -149,7 +149,7 @@ pdoPage.loadPage = function(href, mode) {
 		wrapper.find(rows).empty().append(waitAnimation);
 	}
 	$.get(document.location.pathname, params, function(response) {
-		if (response && response['total']) {
+		if (response) {
 			wrapper.find(pagination).html(response['pagination']);
 			if (mode == 'append') {
 				wrapper.find(rows).append(response['output']);
