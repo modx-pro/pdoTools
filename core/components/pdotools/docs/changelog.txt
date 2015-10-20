@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 2.1.10 pl
 ==============
+- [#157] [Fenom] Fixed pre-processing of Fenom tags in extending templates and chunks.
 - [#145] [pdoPage] Rolled back #81 due to issues with complicate forms.
 
 2.1.9 pl

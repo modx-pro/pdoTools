@@ -55,7 +55,11 @@ class modTemplateProvider implements \Fenom\ProviderInterface {
 				$properties = $element->getProperties();
 			}
 			if (!empty($content) && !empty($properties)) {
+				$useFenom = $this->pdoTools->config['useFenom'];
+				$this->pdoTools->config['useFenom'] = false;
+
 				$content = $this->pdoTools->parseChunk('@INLINE ' . $content, $properties);
+				$this->pdoTools->config['useFenom'] = $useFenom;
 			}
 		}
 
