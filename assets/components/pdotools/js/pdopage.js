@@ -222,7 +222,15 @@ pdoPage.Hash = {
 					vars['anchor'] = hash[0];
 				}
 				else {
-					vars[hash[0]] = hash[1];
+					if(hash[0].substr(-2) == '[]') {
+						if(vars.hasOwnProperty(hash[0])) {
+							vars[hash[0]].push(hash[1]);
+						} else {
+							vars[hash[0]] = [hash[1]];
+						}
+					} else {
+						vars[hash[0]] = hash[1];
+					}
 				}
 			}
 		}
@@ -233,7 +241,15 @@ pdoPage.Hash = {
 		var hash = '';
 		for (var i in vars) {
 			if (vars.hasOwnProperty(i)) {
-				hash += '&' + i + '=' + vars[i];
+				if (typeof vars[i] == 'string') {
+					hash += '&' + i + '=' + vars[i];
+				} else {
+					for (var j in vars[i]) {
+						if (vars[i].hasOwnProperty(j)) {
+							hash += '&' + i + '=' + vars[i][j];
+						}
+					}
+				}
 			}
 		}
 
