@@ -222,12 +222,14 @@ pdoPage.Hash = {
 					vars['anchor'] = hash[0];
 				}
 				else {
-					if(hash[0].substr(-2) == '[]') {
-						if(vars.hasOwnProperty(hash[0])) {
-							vars[hash[0]].push(hash[1]);
-						} else {
-							vars[hash[0]] = [hash[1]];
+					// If the key exists already
+					if(vars.hasOwnProperty(hash[0])) {
+						// and if the value is a string change it to an array containing that string
+						if(typeof vars[hash[0]] === 'string') {
+							vars[hash[0]] = [vars[hash[0]]];
 						}
+						// append the new value to that array
+						vars[hash[0]].push(hash[1]);
 					} else {
 						vars[hash[0]] = hash[1];
 					}
