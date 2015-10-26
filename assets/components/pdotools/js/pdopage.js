@@ -5,7 +5,6 @@ if (typeof(pdoPage) == 'undefined') {
 pdoPage.Reached = false;
 
 pdoPage.initialize = function(config) {
-
 	if (pdoPage.keys[config['pageVarKey']] == undefined) {
 		var tkey = config['pageVarKey'];
 		var tparams = pdoPage.Hash.get();
@@ -81,7 +80,6 @@ pdoPage.initialize = function(config) {
 					}
 				});
 			}
-
 			break;
 	}
 };
@@ -110,7 +108,9 @@ pdoPage.loadPage = function(href, config, mode) {
 	var key = config['pageVarKey'];
 	var match = href.match(new RegExp(key + '=(\\d+)'));
 	var page = !match ? 1 : Number(match[1]);
-	if (!mode) {mode = 'replace';}
+	if (!mode) {
+		mode = 'replace';
+	}
 
 	if (pdoPage.keys[key] == page) {
 		return;
@@ -212,8 +212,12 @@ pdoPage.Hash = {
 			splitter = '/';
 		}
 
-		if (hashes.length == 0) {return vars;}
-		else {hashes = hashes.split(splitter);}
+		if (hashes.length == 0) {
+			return vars;
+		}
+		else {
+			hashes = hashes.split(splitter);
+		}
 
 		for (var i in hashes) {
 			if (hashes.hasOwnProperty(i)) {
@@ -223,29 +227,31 @@ pdoPage.Hash = {
 				}
 				else {
 					// If the key exists already
-					if(vars.hasOwnProperty(hash[0])) {
+					if (vars.hasOwnProperty(hash[0])) {
 						// and if the value is a string change it to an array containing that string
-						if(typeof vars[hash[0]] === 'string') {
+						if (typeof vars[hash[0]] === 'string') {
 							vars[hash[0]] = [vars[hash[0]]];
 						}
 						// append the new value to that array
 						vars[hash[0]].push(hash[1]);
-					} else {
+					}
+					else {
 						vars[hash[0]] = hash[1];
 					}
 				}
 			}
 		}
 		return vars;
-	}
+	},
 
-	,set: function(vars) {
+	set: function(vars) {
 		var hash = '';
 		for (var i in vars) {
 			if (vars.hasOwnProperty(i)) {
 				if (typeof vars[i] == 'string') {
 					hash += '&' + i + '=' + vars[i];
-				} else {
+				}
+				else {
 					for (var j in vars[i]) {
 						if (vars[i].hasOwnProperty(j)) {
 							hash += '&' + i + '=' + vars[i][j];
@@ -264,27 +270,27 @@ pdoPage.Hash = {
 		else {
 			window.location.hash = hash.substr(1);
 		}
-	}
+	},
 
-	,add: function(key, val) {
+	add: function(key, val) {
 		var hash = this.get();
 		hash[key] = val;
 		this.set(hash);
-	}
+	},
 
-	,remove: function(key) {
+	remove: function(key) {
 		var hash = this.get();
 		delete hash[key];
 		this.set(hash);
-	}
+	},
 
-	,clear: function() {
+	clear: function() {
 		this.set({});
-	}
+	},
 
-	,oldbrowser: function() {
+	oldbrowser: function() {
 		return !(window.history && history.pushState);
-	}
+	},
 };
 
 if (typeof(jQuery) == 'undefined') {

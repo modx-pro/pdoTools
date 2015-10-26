@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.11 pl
+==============
+- [pdoPage] Support of arrays in hash when &ajaxMode is enabled.
+
 2.1.10 pl
 ==============
 - [#157] [Fenom] Fixed pre-processing of Fenom tags in extending templates and chunks.
