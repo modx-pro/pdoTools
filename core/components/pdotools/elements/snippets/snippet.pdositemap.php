@@ -33,10 +33,10 @@ if (!empty($excludeResources)) {
 	$tmp = array_map('trim', explode(',', $excludeResources));
 	foreach ($tmp as $v) {
 		if (!empty($scriptProperties['resources'])) {
-			$scriptProperties['resources'] .= ',-'.$v;
+			$scriptProperties['resources'] .= ',-' . $v;
 		}
 		else {
-			$scriptProperties['resources'] = '-'.$v;
+			$scriptProperties['resources'] = '-' . $v;
 		}
 	}
 }
@@ -44,16 +44,16 @@ if (!empty($excludeChildrenOf)) {
 	$tmp = array_map('trim', explode(',', $excludeChildrenOf));
 	foreach ($tmp as $v) {
 		if (!empty($scriptProperties['parents'])) {
-			$scriptProperties['parents'] .= ',-'.$v;
+			$scriptProperties['parents'] .= ',-' . $v;
 		}
 		else {
-			$scriptProperties['parents'] = '-'.$v;
+			$scriptProperties['parents'] = '-' . $v;
 		}
 	}
 }
 if (!empty($startId)) {
 	if (!empty($scriptProperties['parents'])) {
-		$scriptProperties['parents'] .= ','.$startId;
+		$scriptProperties['parents'] .= ',' . $startId;
 	}
 	else {
 		$scriptProperties['parents'] = $startId;
@@ -63,7 +63,7 @@ if (!empty($sortBy)) {$scriptProperties['sortby'] = $sortBy;}
 if (!empty($sortDir)) {$scriptProperties['sortdir'] = $sortDir;}
 if (!empty($priorityTV)) {
 	if (!empty($scriptProperties['includeTVs'])) {
-		$scriptProperties['includeTVs'] .= ','.$priorityTV;
+		$scriptProperties['includeTVs'] .= ',' . $priorityTV;
 	}
 	else {
 		$scriptProperties['includeTVs'] = $priorityTV;
@@ -77,8 +77,8 @@ $class = 'modResource';
 $where = array();
 if (empty($showHidden)) {
 	$where[] = array(
-		$class.'.hidemenu' => 0,
-		'OR:'.$class.'.class_key:IN' => array('Ticket','Article')
+		$class . '.hidemenu' => 0,
+		'OR:' . $class . '.class_key:IN' => array('Ticket', 'Article'),
 	);
 }
 if (empty($context)) {
@@ -86,9 +86,11 @@ if (empty($context)) {
 }
 
 $select = array($class => 'id,editedon,createdon,context_key,class_key');
-if (!empty($useWeblinkUrl)) {$select[$class] .= ',content';}
+if (!empty($useWeblinkUrl)) {
+	$select[$class] .= ',content';
+}
 // Add custom parameters
-foreach (array('where','select') as $v) {
+foreach (array('where', 'select') as $v) {
 	if (!empty($scriptProperties[$v])) {
 		$tmp = $modx->fromJSON($scriptProperties[$v]);
 		if (is_array($tmp)) {
@@ -104,22 +106,19 @@ $default = array(
 	'class' => $class,
 	'where' => $modx->toJSON($where),
 	'select' => $modx->toJSON($select),
-	'sortby' => $class.'.menuindex',
+	'sortby' => "{$class}.parent ASC, {$class}.menuindex",
 	'sortdir' => 'ASC',
 	'return' => 'data',
 	'scheme' => 'full',
 	'limit' => 0,
-	//'checkPermissions' => 'load',
-	'fastMode' => true
 );
-
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $rows = $pdoFetch->run();
 
 $now = time();
-$output = array();
+$output = $urls = array();
 foreach ($rows as $row) {
 	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['url'] = is_numeric(trim($row['content'], '[]~ '))
@@ -139,22 +138,32 @@ foreach ($rows as $row) {
 	if ($datediff <= 1) {
 		$row['priority'] = '1.0';
 		$row['update'] = 'daily';
-	} elseif (($datediff > 1) && ($datediff <= 7)) {
+	}
+	elseif (($datediff > 1) && ($datediff <= 7)) {
 		$row['priority'] = '0.75';
 		$row['update'] = 'weekly';
-	} elseif (($datediff > 7) && ($datediff <= 30)) {
+	}
+	elseif (($datediff > 7) && ($datediff <= 30)) {
 		$row['priority'] = '0.50';
 		$row['update'] = 'weekly';
-	} else {
+	}
+	else {
 		$row['priority'] = '0.25';
 		$row['update'] = 'monthly';
 	}
-
 	if (!empty($priorityTV) && !empty($row[$priorityTV])) {
 		$row['priority'] = $row[$priorityTV];
 	}
-	/* add item to output */
-	$output[] = preg_replace('/\[\[.*?\]\]/', '', $pdoFetch->parseChunk($tpl, $row));
+
+	// add item to output
+	if (!empty($urls[$row['url']])) {
+		if ($urls[$row['url']] > $row['date']) {
+			continue;
+		}
+	}
+	$urls[$row['url']] = $row['date'];
+
+	$output[$row['url']] = preg_replace('#\[\[.*?\]\]#', '', $pdoFetch->parseChunk($tpl, $row));
 }
 $pdoFetch->addTime('Rows processed');
 
@@ -162,7 +171,7 @@ $output = implode($outputSeparator, $output);
 $output = $pdoFetch->getChunk($tplWrapper, array(
 	'schema' => $sitemapSchema,
 	'output' => $output,
-	'items' => $output
+	'items' => $output,
 ));
 $pdoFetch->addTime('Rows wrapped');
 
@@ -172,9 +181,8 @@ if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 
 if (!empty($forceXML)) {
 	header("Content-Type:text/xml");
-	echo $output;
 	@session_write_close();
-	exit();
+	exit($output);
 }
 else {
 	return $output;

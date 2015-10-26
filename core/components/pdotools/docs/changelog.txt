@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.1.11 pl
 ==============
 - [pdoPage] Support of arrays in hash when &ajaxMode is enabled.
+- [#147] [pdoSitemap] Fixed possible duplicates in sitemap.
 
 2.1.10 pl
 ==============
