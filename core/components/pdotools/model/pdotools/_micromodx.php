@@ -28,7 +28,7 @@ class microMODX {
 			// TV parameters
 			foreach ($this->resource as $k => $v) {
 				if (is_array($v) && isset($v[1])) {
-					$this->resource[$k] = $v[1];
+					$this->resource[$k] = $modx->resource->getTVValue($k);
 				}
 			}
 		}
