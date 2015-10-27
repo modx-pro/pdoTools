@@ -219,6 +219,7 @@ pdoPage.Hash = {
 			hashes = hashes.split(splitter);
 		}
 
+		var matches, key;
 		for (var i in hashes) {
 			if (hashes.hasOwnProperty(i)) {
 				hash = hashes[i].split('=');
@@ -226,15 +227,27 @@ pdoPage.Hash = {
 					vars['anchor'] = hash[0];
 				}
 				else {
-					// If the key exists already
-					if (vars.hasOwnProperty(hash[0])) {
-						// and if the value is a string change it to an array containing that string
-						if (typeof vars[hash[0]] === 'string') {
-							vars[hash[0]] = [vars[hash[0]]];
+					matches = hash[0].match(/\[(.*?|)\]$/);
+					if (matches) {
+						key = hash[0].replace(matches[0], '');
+						if (!vars.hasOwnProperty(key)) {
+							// Array
+							if (matches[1] == '') {
+								vars[key] = [];
+							}
+							// Object
+							else {
+								vars[key] = {};
+							}
 						}
-						// append the new value to that array
-						vars[hash[0]].push(hash[1]);
+						if (vars[key] instanceof Array) {
+							vars[key].push(hash[1]);
+						}
+						else {
+							vars[key][matches[1]] = hash[1];
+						}
 					}
+					// String or numeric
 					else {
 						vars[hash[0]] = hash[1];
 					}
@@ -248,15 +261,23 @@ pdoPage.Hash = {
 		var hash = '';
 		for (var i in vars) {
 			if (vars.hasOwnProperty(i)) {
-				if (typeof vars[i] == 'string') {
-					hash += '&' + i + '=' + vars[i];
-				}
-				else {
+				if (typeof vars[i] == 'object') {
 					for (var j in vars[i]) {
 						if (vars[i].hasOwnProperty(j)) {
-							hash += '&' + i + '=' + vars[i][j];
+							// Array
+							if (vars[i] instanceof Array) {
+								hash += '&' + i + '[]=' + vars[i][j];
+							}
+							// Object
+							else {
+								hash += '&' + i + '[' + j + ']=' + vars[i][j];
+							}
 						}
 					}
+				}
+				// String or numeric
+				else {
+					hash += '&' + i + '=' + vars[i];
 				}
 			}
 		}

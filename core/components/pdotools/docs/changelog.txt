@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.12 pl
+==============
+- [pdoPage] [#161] Fixed support of arrays in hash when &ajaxMode is enabled.
+
 2.1.11 pl
 ==============
 - [#150] [Fenom] Fixed processing of TVs values in a {$_modx->resource}.
