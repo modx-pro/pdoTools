@@ -42,8 +42,8 @@ class pdoFetch extends pdoTools {
 
 				'additionalPlaceholders' => '',
 				'useWeblinkUrl' => false,
-			), $config)
-		, $clean_timings);
+			), $config),
+		$clean_timings);
 
 		if (empty($this->config['class'])) {$this->config['class'] = 'modResource';}
 		$this->loadModels();
@@ -52,9 +52,12 @@ class pdoFetch extends pdoTools {
 		$this->pk = is_array($pk)
 			? implode(',', $pk)
 			: $pk;
+		if (!isset($this->config['idx']) || !is_numeric($this->config['idx'])) {
+			$this->config['idx'] = 1;
+		}
 		$this->idx = !empty($this->config['offset'])
-			? (integer) $this->config['offset'] + 1
-			: 1;
+			? (int) $this->config['offset'] + $this->config['idx']
+			: (int) $this->config['idx'];
 	}
 
 

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.13 pl
+==============
+- [#163] Fixed ignoring of &idx in pdoResources and pdoUsers.
+
 2.1.12 pl
 ==============
 - [pdoPage] [#161] Fixed support of arrays in hash when &ajaxMode is enabled.

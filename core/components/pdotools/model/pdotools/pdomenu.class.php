@@ -83,7 +83,7 @@ class pdoMenu {
 		$count = count($tree);
 		$output = '';
 
-		$idx = 1;
+		$idx = $this->pdoTools->idx;
 		$this->pdoTools->addTime('Start template tree');
 		foreach ($tree as $row) {
 			if (empty($row['id'])) {continue;}
@@ -124,7 +124,7 @@ class pdoMenu {
 		$row['level'] = $this->level;
 
 		if (!empty($row['children']) && ($this->isHere($row['id']) || empty($this->pdoTools->config['hideSubMenus'])) && $this->checkResource($row['id'])) {
-			$idx = 1;
+			$idx = $this->pdoTools->idx;
 			$this->level++;
 			$count = count($row['children']);
 			foreach ($row['children'] as $v) {
