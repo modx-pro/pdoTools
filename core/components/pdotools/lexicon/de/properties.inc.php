@@ -97,6 +97,7 @@ $_lang['pdotools_prop_field_output'] = 'Der hier eingegebene Text wird zurückge
 $_lang['pdotools_prop_cache'] = 'Ergebnisse der Snippet-Ausführung cachen.';
 $_lang['pdotools_prop_cachePageKey'] = 'Der Name des Schlüssel-Caches.';
 $_lang['pdotools_prop_cacheTime'] = 'Zeit, bis der Cache ungültig wird, in Sekunden.';
+$_lang['pdotools_prop_cacheKey'] = 'Cache-key. Gespeichert in "core/cache/default/yourkey"';
 $_lang['pdotools_prop_cacheAnonymous'] = 'Aktivieren Sie das Caching nur für nicht autorisierte Besucher.';
 $_lang['pdotools_prop_element'] = 'Der Name des auszuführenden Snippets.';
 $_lang['pdotools_prop_maxLimit'] = 'Das maximale Limit der Abfrage. Hat Vorrang vor dem Limit, das der Benutzer in einer URL angibt.';

@@ -87,6 +87,19 @@ $tmp = array(
 		'type' => 'combo-boolean',
 		'value' => true,
 	),
+
+	'cache' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
+	'cacheKey' => array(
+		'type' => 'textfield',
+		'value' => 'sitemap',
+	),
+	'cacheTime' => array(
+		'type' => 'numberfield',
+		'value' => 600,
+	),
 );
 
 foreach ($tmp as $k => $v) {

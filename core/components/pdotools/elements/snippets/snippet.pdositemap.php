@@ -115,59 +115,67 @@ $default = array(
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
-$rows = $pdoFetch->run();
 
-$now = time();
-$output = $urls = array();
-foreach ($rows as $row) {
-	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
-		$row['url'] = is_numeric(trim($row['content'], '[]~ '))
-			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
-			: $row['content'];
-	}
-	else {
-		$row['url'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
-	}
-
-	$time = !empty($row['editedon'])
-		? $row['editedon']
-		: $row['createdon'];
-	$row['date'] = date('Y-m-d', $time);
-
-	$datediff = floor(($now - $time) / 86400);
-	if ($datediff <= 1) {
-		$row['priority'] = '1.0';
-		$row['update'] = 'daily';
-	}
-	elseif (($datediff > 1) && ($datediff <= 7)) {
-		$row['priority'] = '0.75';
-		$row['update'] = 'weekly';
-	}
-	elseif (($datediff > 7) && ($datediff <= 30)) {
-		$row['priority'] = '0.50';
-		$row['update'] = 'weekly';
-	}
-	else {
-		$row['priority'] = '0.25';
-		$row['update'] = 'monthly';
-	}
-	if (!empty($priorityTV) && !empty($row[$priorityTV])) {
-		$row['priority'] = $row[$priorityTV];
-	}
-
-	// add item to output
-	if (!empty($urls[$row['url']])) {
-		if ($urls[$row['url']] > $row['date']) {
-			continue;
-		}
-	}
-	$urls[$row['url']] = $row['date'];
-
-	$output[$row['url']] = preg_replace('#\[\[.*?\]\]#', '', $pdoFetch->parseChunk($tpl, $row));
+if (!empty($cache)) {
+	$data = $pdoFetch->getCache($scriptProperties);
 }
-$pdoFetch->addTime('Rows processed');
+if (empty($data)) {
+	$now = time();
+	$data = $urls = array();
+	$rows = $pdoFetch->run();
+	foreach ($rows as $row) {
+		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
+			$row['url'] = is_numeric(trim($row['content'], '[]~ '))
+					? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
+					: $row['content'];
+		}
+		else {
+			$row['url'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
+		}
 
-$output = implode($outputSeparator, $output);
+		$time = !empty($row['editedon'])
+				? $row['editedon']
+				: $row['createdon'];
+		$row['date'] = date('Y-m-d', $time);
+
+		$datediff = floor(($now - $time) / 86400);
+		if ($datediff <= 1) {
+			$row['priority'] = '1.0';
+			$row['update'] = 'daily';
+		}
+		elseif (($datediff > 1) && ($datediff <= 7)) {
+			$row['priority'] = '0.75';
+			$row['update'] = 'weekly';
+		}
+		elseif (($datediff > 7) && ($datediff <= 30)) {
+			$row['priority'] = '0.50';
+			$row['update'] = 'weekly';
+		}
+		else {
+			$row['priority'] = '0.25';
+			$row['update'] = 'monthly';
+		}
+		if (!empty($priorityTV) && !empty($row[$priorityTV])) {
+			$row['priority'] = $row[$priorityTV];
+		}
+
+		// add item to output
+		if (!empty($urls[$row['url']])) {
+			if ($urls[$row['url']] > $row['date']) {
+				continue;
+			}
+		}
+		$urls[$row['url']] = $row['date'];
+
+		$data[$row['url']] = preg_replace('#\[\[.*?\]\]#', '', $pdoFetch->parseChunk($tpl, $row));
+	}
+	$pdoFetch->addTime('Rows processed');
+	if (!empty($cache)) {
+		$pdoFetch->setCache($data, $scriptProperties);
+	}
+}
+
+$output = implode($outputSeparator, $data);
 $output = $pdoFetch->getChunk($tplWrapper, array(
 	'schema' => $sitemapSchema,
 	'output' => $output,

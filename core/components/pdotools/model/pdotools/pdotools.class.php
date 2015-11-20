@@ -1123,7 +1123,7 @@ class pdoTools {
 		if (empty($options)) {$options = $this->config;}
 
 		$cacheOptions = array(
-			xPDO::OPT_CACHE_KEY => !empty($options['cache_key'])
+			xPDO::OPT_CACHE_KEY => !empty($options['cache_key']) || !empty($options['cacheKey'])
 				? 'default'
 				: (!empty($this->modx->resource)
 					? $this->modx->getOption('cache_resource_key', null, 'resource')
@@ -1154,6 +1154,9 @@ class pdoTools {
 
 		if (!empty($options['cache_key'])) {
 			return $options['cache_key'];
+		}
+		elseif (!empty($options['cacheKey'])) {
+			return $options['cacheKey'];
 		}
 
 		$key = !empty($this->modx->resource)

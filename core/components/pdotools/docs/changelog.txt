@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.1.14 pl
+==============
+- [pdoSitemap] Added options for cache snippets results.
+- [pdoSitemap] Cache enabled by default.
+
 2.1.13 pl
 ==============
 - [#163] Fixed ignoring of &idx in pdoResources and pdoUsers.
