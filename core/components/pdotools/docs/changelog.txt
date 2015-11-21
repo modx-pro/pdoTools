@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.15 pl
+==============
+- [pdoPage] Added parameter &strictMode.
+
 2.1.14 pl
 ==============
 - [pdoSitemap] Added options for cache snippets results.

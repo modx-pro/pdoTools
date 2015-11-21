@@ -169,6 +169,10 @@ $tmp = array(
 		'type' => 'combo-boolean',
 		'value' => true,
 	),
+	'strictMode' => array(
+		'type' => 'combo-boolean',
+		'value' => true,
+	),
 
 );
 

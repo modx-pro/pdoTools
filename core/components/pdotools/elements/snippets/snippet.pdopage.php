@@ -23,6 +23,7 @@ if (!empty($pageSkipTpl)) {$scriptProperties['tplPageSkip'] = $pageSkipTpl;}
 if (!empty($pageNavScheme)) {$scriptProperties['scheme'] = $pageNavScheme;}
 if (!empty($cache_expires)) {$scriptProperties['cacheTime'] = $cache_expires;}
 //---
+$strictMode = !empty($strictMode);
 
 $isAjax = !empty($scriptProperties['ajax']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
 if ($isAjax && !isset($_REQUEST[$pageVarKey])) {
@@ -59,7 +60,7 @@ if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
 }
 
 // Page
-if (isset($_REQUEST[$pageVarKey]) && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] <= 1 && !$isAjax))) {
+if (isset($_REQUEST[$pageVarKey]) && $strictMode && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] <= 1 && !$isAjax))) {
 	return $pdoPage->redirectToFirst($isAjax);
 }
 elseif (!empty($_REQUEST[$pageVarKey])) {
@@ -73,7 +74,7 @@ if (isset($_REQUEST['limit'])) {
 	if (is_numeric($_REQUEST['limit']) && abs($_REQUEST['limit']) > 0) {
 		$scriptProperties['limit'] = abs($_REQUEST['limit']);
 	}
-	else {
+	elseif ($strictMode) {
 		unset($_GET['limit']);
 		return $pdoPage->redirectToFirst($isAjax);
 	}
@@ -124,7 +125,7 @@ if (empty($data)) {
 		: 0;
 
 	// Redirect to start if somebody specified incorrect page
-	if ($page > 1 && $page > $pageCount) {
+	if ($page > 1 && $page > $pageCount && $strictMode) {
 		return $pdoPage->redirectToFirst($isAjax);
 	}
 	elseif (!empty($pageCount) && $pageCount > 1) {

@@ -178,3 +178,4 @@ $_lang['pdotools_prop_tplSearch'] = 'Template of search query in the page title.
 $_lang['pdotools_prop_minQuery'] = 'The minimum length of the search query to be displayed in the page title.';
 $_lang['pdotools_prop_queryVarKey'] = 'The name of variable for the search query in the url.';
 $_lang['pdotools_prop_titleField'] = 'Field of the current resource to be displayed in the page title.';
+$_lang['pdotools_prop_strictMode'] = 'Strict mode. pdoPage do redirects when loading non-existent pages.';
