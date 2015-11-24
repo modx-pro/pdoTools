@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.1.16 pl
+==============
+- [Fenom] Added {$_modx->isMember($groups, $macthAll)}.
+- [Fenom] Added {$_modx->getPlaceholders()}.
+
 2.1.15 pl
 ==============
 - [pdoPage] Added parameter &strictMode.

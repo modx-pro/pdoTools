@@ -244,6 +244,18 @@ class microMODX {
 
 
 	/**
+	 * @param string|array $groups Either a string of a group name or an array
+	 * @param bool|false $matchAll If true, requires the user to be a member of all
+	 * the groups specified. If false, the user can be a member of only one to
+	 *
+	 * @return bool
+	 */
+	public function isMember($groups, $matchAll = false) {
+		return $this->modx->user->isMember($groups, $matchAll);
+	}
+
+
+	/**
 	 * @param $context
 	 *
 	 * @return bool
@@ -335,6 +347,14 @@ class microMODX {
 	 */
 	public function toPlaceholder($key, $value, $prefix = '', $separator = '.', $restore = false) {
 		return $this->modx->toPlaceholder($key, $value, $prefix, $separator, $restore);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getPlaceholders() {
+		return $this->modx->placeholders;
 	}
 
 
