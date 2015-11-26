@@ -119,7 +119,7 @@ $tmp = array(
 	)
 	,'showHidden' => array(
 		'type' => 'combo-boolean'
-		,'value' => true
+		,'value' => false
 	)
 	,'hideContainers' => array(
 		'type' => 'combo-boolean'
