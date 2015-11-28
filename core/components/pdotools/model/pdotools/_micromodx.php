@@ -10,6 +10,7 @@ class microMODX {
 	protected $pdoTools;
 	/** @var modX $modx */
 	protected $modx;
+	private $tags = array();
 
 
 	/**
@@ -462,22 +463,33 @@ class microMODX {
 			$tag = '{$_modx->' . $method . '("' . $name . '", ' . htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8') . ')}';
 			$hash = sha1($tag);
 
-			if (!isset($parser->tags[$hash])) {
-				$parser->tags[$hash] = array(
-					'tag' => $tag,
-					'attempts' => 1,
+			if (!isset($this->tags[$hash])) {
+				$this->tags[$hash] = array(
 					'queries' => $this->modx->executedQueries,
 					'queries_time' => $this->modx->queryTime,
 					'parse_time' => microtime(true),
 				);
-
 			}
 			else {
-				$parser->tags[$hash] = array_merge($parser->tags[$hash], array(
-					'queries' => $this->modx->executedQueries - $parser->tags[$hash]['queries'],
-					'queries_time' => number_format(round($this->modx->queryTime - $parser->tags[$hash]['queries_time'], 7), 7),
-					'parse_time' => number_format(round(microtime(true) - $parser->tags[$hash]['parse_time'], 7), 7),
-				));
+				$queries = $this->modx->executedQueries - $this->tags[$hash]['queries'];
+				$queries_time = number_format(round($this->modx->queryTime - $this->tags[$hash]['queries_time'], 7), 7);
+				$parse_time = number_format(round(microtime(true) - $this->tags[$hash]['parse_time'], 7), 7);
+				if (!isset($parser->tags[$hash])) {
+					$parser->tags[$hash] = array(
+						'tag' => $tag,
+						'attempts' => 1,
+						'queries' => $queries,
+						'queries_time' => $queries_time,
+						'parse_time' => $parse_time,
+					);
+				}
+				else {
+					$parser->tags[$hash]['attempts'] += 1;
+					$parser->tags[$hash]['queries'] += $queries;
+					$parser->tags[$hash]['queries_time'] += $queries_time;
+					$parser->tags[$hash]['parse_time'] += $parse_time;
+				}
+				unset($this->tags[$hash]);
 			}
 		}
 	}

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.17 pl
+==============
+- [Fenom] Improved support of debugParser.
+
 2.1.16 pl
 ==============
 - [Fenom] Added {$_modx->isMember($groups, $macthAll)}.
