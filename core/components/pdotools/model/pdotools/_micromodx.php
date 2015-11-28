@@ -452,6 +452,52 @@ class microMODX {
 
 
 	/**
+	 * @param $id
+	 * @param array $options
+	 *
+	 * @return array|bool
+	 */
+	public function getResource($id, array $options = array()) {
+		if (!is_array($id) && is_numeric($id)) {
+			$where = array(
+				'id' => (int)$id,
+			);
+		}
+		else {
+			$where = $id;
+		}
+		$output = false;
+		$this->debugParser('getResource', $where, $options);
+		/** @var pdoFetch $pdoFetch */
+		if ($pdoFetch = $this->modx->getService('pdoFetch')) {
+			$output = $pdoFetch->getArray('modResource', $where, $options);
+		}
+		$this->debugParser('getResource', $where, $options);
+
+		return $output;
+	}
+
+
+	/**
+	 * @param array $where
+	 * @param array $options
+	 *
+	 * @return array|bool
+	 */
+	public function getResources($where, array $options = array()) {
+		$output = false;
+		$this->debugParser('getResources', $where, $options);
+		/** @var pdoFetch $pdoFetch */
+		if ($pdoFetch = $this->modx->getService('pdoFetch')) {
+			$output = $pdoFetch->getCollection('modResource', $where, $options);
+		}
+		$this->debugParser('getResources', $where, $options);
+
+		return $output;
+	}
+
+
+	/**
 	 * @param $method
 	 * @param $name
 	 * @param array $properties
@@ -460,7 +506,12 @@ class microMODX {
 		if ($this->modx->parser instanceof debugPdoParser) {
 			/** @var debugPdoParser $parser */
 			$parser = $this->modx->parser;
-			$tag = '{$_modx->' . $method . '("' . $name . '", ' . htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8') . ')}';
+			if (is_array($name)) {
+				$name = trim(print_r($name, true));
+			}
+			$tag = !empty($properties)
+				? '{$_modx->' . $method . '("' . $name . '", ' . htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8') . ')}'
+				: '{$_modx->' . $method . '("' . $name . '")}';
 			$hash = sha1($tag);
 
 			if (!isset($this->tags[$hash])) {
