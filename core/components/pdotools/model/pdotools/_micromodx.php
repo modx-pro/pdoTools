@@ -1,15 +1,23 @@
 <?php
 
+/**
+ * Class microMODX
+ */
 class microMODX {
-	public $config;
+	/** @var modX $modx */
+	protected $modx;
+	/** @var pdoTools */
+	protected $pdoTools;
+	/** @var microMODXLexicon */
+	public $lexicon;
+	/** @var microMODXCacheManager */
+	public $cacheManager;
+
+	public $config = array();
 	public $context = array();
 	public $resource = array();
 	public $user = array();
-	public $lexicon = null;
-	public $cacheManager = null;
-	protected $pdoTools;
-	/** @var modX $modx */
-	protected $modx;
+
 	private $tags = array();
 
 
@@ -35,18 +43,16 @@ class microMODX {
 		}
 		if ($modx->user) {
 			$this->user = $modx->user->toArray();
+			/** @var modUserProfile $profile */
 			if ($profile = $modx->user->getOne('Profile')) {
 				$tmp = $profile->toArray();
 				unset($tmp['id']);
 				$this->user = array_merge($this->user, $tmp);
 			}
 		}
-		$this->lexicon = !empty($modx->lexicon)
-			? $modx->lexicon
-			: $modx->getService('lexicon', 'modLexicon');
-		$this->cacheManager = !empty($modx->cacheManager)
-			? $modx->cacheManager
-			: $modx->getCacheManager();
+
+		$this->lexicon = new microMODXLexicon($modx);
+		$this->cacheManager = new microMODXCacheManager($modx);
 	}
 
 
@@ -216,11 +222,21 @@ class microMODX {
 	 * @param string $action
 	 * @param array $scriptProperties
 	 * @param array $options
+	 *
+	 * @return array
 	 */
 	public function runProcessor($action = '', $scriptProperties = array(), $options = array()) {
 		$this->debugParser('runProcessor', $action, $scriptProperties);
-		$this->modx->runProcessor($action, $scriptProperties, $options);
+		/** @var modProcessorResponse $response */
+		$response = $this->modx->runProcessor($action, $scriptProperties, $options);
 		$this->debugParser('runProcessor', $action, $scriptProperties);
+
+		return array(
+			'success' => !$response->isError(),
+			'message' => $response->getMessage(),
+			'response' => $response->getResponse(),
+			'errors' => $response->getFieldErrors(),
+		);
 	}
 
 
@@ -543,6 +559,84 @@ class microMODX {
 				unset($this->tags[$hash]);
 			}
 		}
+	}
+
+}
+
+
+/**
+ * Class microMODXLexicon
+ */
+class microMODXLexicon {
+	/** @var modX $modx */
+	protected $modx;
+	/** @var modLexicon $lexicon */
+	protected $lexicon;
+
+
+	/**
+	 * @param modX $modx
+	 */
+	function __construct(modX $modx) {
+		$this->modx = &$modx;
+		$this->lexicon = $this->modx->getService('lexicon', 'modLexicon');
+	}
+
+
+	/**
+	 *
+	 */
+	public function load() {
+		$topics = func_get_args();
+
+		foreach ($topics as $topic) {
+			$this->lexicon->load($topic);
+		}
+	}
+
+}
+
+
+/**
+ * Class microMODXCacheManager
+ */
+class microMODXCacheManager {
+	/** @var modX $modx */
+	protected $modx;
+	/** @var modCacheManager $cacheManager */
+	protected $cacheManager;
+
+
+	/**
+	 * @param modX $modx
+	 */
+	function __construct(modX $modx) {
+		$this->modx = &$modx;
+		$this->cacheManager = $modx->getCacheManager();
+	}
+
+
+	/**
+	 * @param $key
+	 * @param array $options
+	 *
+	 * @return mixed
+	 */
+	public function get($key, $options = array()) {
+		return $this->cacheManager->get($key, $options);
+	}
+
+
+	/**
+	 * @param $key
+	 * @param $var
+	 * @param int $lifetime
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public function set($key, & $var, $lifetime = 0, $options = array()) {
+		return $this->cacheManager->set($key, $var, $lifetime, $options);
 	}
 
 }

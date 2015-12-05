@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.1.18 pl
+==============
+- [Fenom] Fixed ability to access to the modX object from {$_modx} variable.
+- [Fenom] Improved method {$_modx->runProcessor()}.
+
 2.1.17 pl
 ==============
 - [Fenom] Added {$_modx->getResource($id, $options)}.
