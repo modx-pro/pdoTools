@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.19 pl
+==============
+- [Fenom] Disabled $options in cacheManager::set() due to security reasons.
+
 2.1.18 pl
 ==============
 - [Fenom] Fixed ability to access to the modX object from {$_modx} variable.

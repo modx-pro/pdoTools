@@ -636,7 +636,8 @@ class microMODXCacheManager {
 	 * @return bool
 	 */
 	public function set($key, & $var, $lifetime = 0, $options = array()) {
-		return $this->cacheManager->set($key, $var, $lifetime, $options);
+		// $options is not used due to security reasons
+		return $this->cacheManager->set($key, $var, $lifetime);
 	}
 
 }
