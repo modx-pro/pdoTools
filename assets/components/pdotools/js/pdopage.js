@@ -204,11 +204,11 @@ pdoPage.Hash = {
 		var vars = {}, hash, splitter, hashes;
 		if (!this.oldbrowser()) {
 			var pos = window.location.href.indexOf('?');
-			hashes = (pos != -1) ? decodeURIComponent(window.location.href.substr(pos + 1)) : '';
+			hashes = (pos != -1) ? decodeURIComponent(window.location.href.substr(pos + 1)).replace('+', ' ') : '';
 			splitter = '&';
 		}
 		else {
-			hashes = decodeURIComponent(window.location.hash.substr(1));
+			hashes = decodeURIComponent(window.location.hash.substr(1)).replace('+', ' ');
 			splitter = '/';
 		}
 
