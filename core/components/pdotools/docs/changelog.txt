@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.20 pl
+==============
+- [pdoSitemap] Fixed default &cacheKey.
+
 2.1.19 pl
 ==============
 - [Fenom] Disabled $options in cacheManager::set() due to security reasons.

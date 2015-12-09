@@ -94,7 +94,7 @@ $tmp = array(
 	),
 	'cacheKey' => array(
 		'type' => 'textfield',
-		'value' => 'sitemap',
+		'value' => '',
 	),
 	'cacheTime' => array(
 		'type' => 'numberfield',

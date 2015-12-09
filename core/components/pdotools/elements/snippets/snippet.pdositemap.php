@@ -19,6 +19,7 @@ if (empty($tpl)) {$tpl = "@INLINE \n<url>\n\t<loc>[[+url]]</loc>\n\t<lastmod>[[+
 if (empty($tplWrapper)) {$tplWrapper = "@INLINE <?xml version=\"1.0\" encoding=\"[[++modx_charset]]\"?>\n<urlset xmlns=\"[[+schema]]\">\n[[+output]]\n</urlset>";}
 if (empty($sitemapSchema)) {$sitemapSchema = 'http://www.sitemaps.org/schemas/sitemap/0.9';}
 if (empty($outputSeparator)) {$outputSeparator = "\n";}
+if (empty($cacheKey)) {$scriptProperties['cacheKey'] = 'sitemap/' . substr(md5($modx->toJSON($scriptProperties)), 0, 6);}
 
 // Convert parameters from GoogleSiteMap if exists
 if (!empty($itemTpl)) {$tpl = $itemTpl;}
