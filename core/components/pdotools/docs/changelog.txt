@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.1.21 pl
+==============
+- [#176] [pdoUsers] Fixed &toPlaceholders with &returnIds.
+
 2.1.20 pl
 ==============
 - [pdoSitemap] Fixed default &cacheKey.

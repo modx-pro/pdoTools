@@ -141,7 +141,12 @@ if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
 // Return output
 if (!empty($returnIds)) {
 	$modx->setPlaceholder('pdoUsers.log', $log);
-	return $output;
+	if (!empty($toPlaceholder)) {
+		$modx->setPlaceholder($toPlaceholder, $output);
+	}
+	else {
+		return $output;
+	}
 }
 elseif (!empty($toSeparatePlaceholders)) {
 	$output['log'] = $log;
