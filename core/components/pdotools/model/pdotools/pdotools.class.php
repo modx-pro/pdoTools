@@ -137,6 +137,24 @@ class pdoTools {
 					$options = $default_options;
 				}
 				$this->fenom->setOptions($options);
+				
+				if($opt = $this->modx->getOption('pdotools_fenom_category_snippet_modiffer', null, null, true)){
+					$snippets = $this->modx->getCollection('modSnippet',['category' => $opt]);
+					foreach($snippets as $snippet){
+						$nameSnippet = $snippet->name;
+						$modx = &$this->modx;
+						$this->fenom->addModifier($snippet->name, function ($input,$settings) use ($nameSnippet,&$modx){
+							if(is_array($settings)){
+								array_merge($settings,['input'=>$input]);
+								return $modx->runSnippet($nameSnippet,$settings);
+							}
+							else return $modx->runSnippet($nameSnippet,['input'=>$input]);
+	
+						});
+						//echo $snippet->name."\r\n";
+					}
+				}
+				
 			}
 			catch (Exception $e) {
 				$this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());
