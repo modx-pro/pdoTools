@@ -273,7 +273,17 @@ class pdoFetch extends pdoTools {
 			$this->config['leftJoin'] = '[]';
 		}
 
-		foreach (array('innerJoin','leftJoin','rightJoin') as $join) {
+		$joinSequence = array('innerJoin', 'leftJoin', 'rightJoin');
+		if (!empty($this->config['joinSequence'])) {
+			if (is_string($this->config['joinSequence'])) {
+				$this->config['joinSequence'] = array_map('trim', explode(',', $this->config['joinSequence']));
+			}
+			if (is_array($this->config['joinSequence'])) {
+				$joinSequence = $this->config['joinSequence'];
+			}
+		}
+
+		foreach ($joinSequence as $join) {
 			if (!empty($this->config[$join])) {
 				$tmp = $this->config[$join];
 				if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {

@@ -2,10 +2,12 @@ Changelog for pdoTools.
 
 2.2.0 pl
 ==============
+- [#175] [pdoFetch] Ability to specify sequence of table joins.
 - [#174] [Fenom] Ability to add Fenom modifiers into pdoParser.
 
 2.1.21 pl
 ==============
+- [#175] [pdoFetch] Ability to specify sequence of table joins.
 - [#176] [pdoUsers] Fixed &toPlaceholders with &returnIds.
 
 2.1.20 pl
