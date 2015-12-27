@@ -63,6 +63,7 @@ class pdoTools {
 			'outputSeparator' => "\n",
 			'decodeJSON' => true,
 			'scheme' => '',
+			'fenomModifiers' => $this->modx->getOption('pdotools_fenom_modifiers'),
 		), $config);
 
 		if ($clean_timings) {
@@ -137,6 +138,28 @@ class pdoTools {
 					$options = $default_options;
 				}
 				$this->fenom->setOptions($options);
+
+				// Add modifiers
+				if (!empty($this->config['fenomModifiers'])) {
+					$modifiers = is_string($this->config['fenomModifiers'])
+						? explode(',', $this->config['fenomModifiers'])
+						: $this->config['fenomModifiers'];
+					$modx = $this->modx;
+					foreach ($modifiers as $snippet) {
+						$snippet = trim(strtolower($snippet));
+						if (!empty($snippet)) {
+							$this->fenom->addModifier($snippet, function($input, $options = '') use ($snippet, $modx) {
+								$result = $modx->runSnippet($snippet, array(
+									'input' => $input,
+									'options' => $options,
+								));
+								return !empty($result)
+									? $result
+									: $input;
+							});
+						}
+					}
+				}
 			}
 			catch (Exception $e) {
 				$this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());

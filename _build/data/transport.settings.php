@@ -43,6 +43,10 @@ $tmp = array(
 		'xtype' => 'combo-boolean',
 		'value' => false,
 	),
+	'fenom_modifiers' => array(
+		'xtype' => 'textfield',
+		'value' => '',
+	),
 );
 
 foreach ($tmp as $k => $v) {
