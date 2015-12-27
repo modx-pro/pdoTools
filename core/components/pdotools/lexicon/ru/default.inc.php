@@ -34,4 +34,4 @@ $_lang['setting_pdotools_fenom_options_desc'] = 'JSON строка с масси
 $_lang['setting_pdotools_fenom_cache'] = 'Кэширование скомпилированных чанков';
 $_lang['setting_pdotools_fenom_cache_desc'] = 'Если вы используете большие и сложные чанки Fenom, то можно включить кэширование их скомпилированных версий. Они будут обновляться только при очистке системного кэша. Не рекомендуется при разработке сайта.';
 $_lang['setting_pdotools_fenom_modifiers'] = 'Модификаторы Fenom';
-$_lang['setting_pdotools_fenom_modifiers_desc'] = 'Список сниппетов-модификаторов через запятую, для подключения в Fenom. Каждый сниппет сможет использовать перемнные $input и $options, как указано в <a href="http://docs.modx.pro/system/the-basics/filters-input-and-output#Создание-пользовательского-модификатора" target="_blank">документации</a>.';
+$_lang['setting_pdotools_fenom_modifiers_desc'] = 'Список сниппетов-модификаторов через запятую, для подключения в Fenom. Каждый сниппет сможет использовать переменные $input и $options, как указано в <a href="http://docs.modx.pro/system/the-basics/filters-input-and-output#Создание-пользовательского-модификатора" target="_blank">документации</a>.';
