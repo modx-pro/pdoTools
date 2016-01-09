@@ -163,6 +163,7 @@ $_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery selector for element with p
 $_lang['pdotools_prop_ajaxElemLink'] = 'jQuery selector for pagination links.';
 $_lang['pdotools_prop_ajaxElemMore'] = 'jQuery selector for "load more" button in ajaxMode = button.';
 $_lang['pdotools_prop_ajaxTplMore'] = 'Chunk for templating "more button" when ajaxMode = button. Must include a selector specified in "ajaxElemMore".';
+$_lang['pdotools_prop_ajaxHistory'] = 'Save the page number in the url when working in ajax mode.';
 
 $_lang['pdotools_prop_frontend_js'] = 'Link on javascript for loading by the snippet.';
 $_lang['pdotools_prop_frontend_css'] = 'Link on css styles for loading by the snippet.';

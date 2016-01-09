@@ -165,6 +165,7 @@ $_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery selector für element mit P
 $_lang['pdotools_prop_ajaxElemLink'] = 'jQuery selector für die Paginierung links.';
 $_lang['pdotools_prop_ajaxElemMore'] = 'jQuery selector für "laden" - button in ajaxMode = button.';
 $_lang['pdotools_prop_ajaxTplMore'] = 'Stück für templating "mehr Schaltfläche" wenn ajaxMode = button. Muss eine Selektor angegeben in "ajaxElemMore".';
+$_lang['pdotools_prop_ajaxHistory'] = 'Speichern Sie die Seite Nummer in der url, wenn Sie arbeiten in ajax-Modus.';
 
 $_lang['pdotools_prop_frontend_js'] = 'Link auf javascript für die Belastung durch das snippet.';
 $_lang['pdotools_prop_frontend_css'] = 'Link auf css-Stile für das laden der snippet.';

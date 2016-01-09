@@ -47,24 +47,28 @@ class pdoPage {
 		if ($js = trim($this->pdoTools->config['frontend_js'])) {
 			$this->modx->regClientScript(str_replace('[[+assetsUrl]]', $assetsUrl, $js));
 		}
+		$ajaxHistory = $this->pdoTools->config['ajaxHistory'] === ''
+			? !in_array($this->pdoTools->config['ajaxMode'], array('scroll', 'button'))
+			: !empty($this->pdoTools->config['ajaxHistory']);
 		$limit = $this->pdoTools->config['limit'] > $this->pdoTools->config['maxLimit']
 			? $this->pdoTools->config['maxLimit']
-			:  $this->pdoTools->config['limit'];
+			: $this->pdoTools->config['limit'];
 		$moreChunk = $this->modx->getOption('ajaxTplMore', $this->pdoTools->config, '@INLINE <button class="btn btn-default btn-more">[[%pdopage_more]]</button>');
-		$moreTpl = str_replace('"', '\"', $this->pdoTools->getChunk($moreChunk, array('limit' => $limit)));
+		$moreTpl = $this->pdoTools->getChunk($moreChunk, array('limit' => $limit));
 
-		$config = '{
-			wrapper: "' . $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage') . '",
-			rows: "' . $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows') . '",
-			pagination: "' . $this->modx->getOption('ajaxElemPagination', $this->pdoTools->config, '#pdopage .pagination') . '",
-			link: "' . $this->modx->getOption('ajaxElemLink', $this->pdoTools->config, '#pdopage .pagination a') . '",
-			more: "' . $this->modx->getOption('ajaxElemMore', $this->pdoTools->config, '#pdopage .btn-more') . '",
-			moreTpl: "' . $moreTpl . '",
-			mode: "' . $this->pdoTools->config['ajaxMode'] . '",
-			pageVarKey: "' . $this->pdoTools->config['pageVarKey'] . '",
-			pageLimit: ' . $limit . ',
-			assetsUrl: "' . $assetsUrl . '"
-		}';
+		$config = $this->modx->toJSON(array(
+			'wrapper' => $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage'),
+			'rows' => $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows'),
+			'pagination' => $this->modx->getOption('ajaxElemPagination', $this->pdoTools->config, '#pdopage .pagination'),
+			'link' => $this->modx->getOption('ajaxElemLink', $this->pdoTools->config, '#pdopage .pagination a'),
+			'more' => $this->modx->getOption('ajaxElemMore', $this->pdoTools->config, '#pdopage .btn-more'),
+			'moreTpl' => $moreTpl,
+			'mode' => $this->pdoTools->config['ajaxMode'],
+			'history' => (int)$ajaxHistory,
+			'pageVarKey' => $this->pdoTools->config['pageVarKey'],
+			'pageLimit' => $limit,
+			'assetsUrl' => $assetsUrl,
+		));
 		$this->modx->regClientStartupScript('<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}};</script>', true);
 		$this->modx->regClientScript('<script type="text/javascript">pdoPage.initialize(' . $config . ');</script>', true);
 	}

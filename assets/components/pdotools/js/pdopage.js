@@ -21,30 +21,39 @@ pdoPage.initialize = function(config) {
 				var match = href.match(new RegExp(key + '=(\\d+)'));
 				var page = !match ? 1 : match[1];
 				if (pdoPage.keys[key] != page) {
-					pdoPage.Hash.add(key, page);
+					if (config.history) {
+						pdoPage.Hash.add(key, page);
+					}
 					$this.loadPage(href, config);
 				}
 			});
 
-			$(window).on('popstate', function(e) {
-				if (e.originalEvent.state && e.originalEvent.state['pdoPage']) {
-					$this.loadPage(e.originalEvent.state['pdoPage'], config);
-				}
-			});
+			if (config.history) {
+				$(window).on('popstate', function(e) {
+					if (e.originalEvent.state && e.originalEvent.state['pdoPage']) {
+						$this.loadPage(e.originalEvent.state['pdoPage'], config);
+					}
+				});
 
-			history.replaceState({pdoPage: window.location.href}, '');
+				history.replaceState({pdoPage: window.location.href}, '');
+			}
 			break;
 
 		case 'scroll':
 		case 'button':
-			if (typeof(jQuery().sticky) == 'undefined') {
-				$.getScript(config['assetsUrl'] + 'js/lib/jquery.sticky.js', function() {
-					pdoPage.initialize(config);
-				});
-				return;
+			if (config.history) {
+				if (typeof(jQuery().sticky) == 'undefined') {
+					$.getScript(config['assetsUrl'] + 'js/lib/jquery.sticky.js', function() {
+						pdoPage.initialize(config);
+					});
+					return;
+				}
+				pdoPage.stickyPagination(config);
+			}
+			else {
+				$(config.pagination).hide();
 			}
 
-			pdoPage.stickyPagination(config);
 			var key = config['pageVarKey'];
 
 			if (config['mode'] == 'button') {
@@ -93,7 +102,9 @@ pdoPage.addPage = function(config) {
 		var match = href.match(new RegExp(key + '=(\\d+)'));
 		var page = !match ? 1 : Number(match[1]);
 		if (page > current) {
-			pdoPage.Hash.add(key, page);
+			if (config.history) {
+				pdoPage.Hash.add(key, page);
+			}
 			pdoPage.keys[key] = current;
 			pdoPage.loadPage(href, config, 'append');
 			return false;
@@ -170,8 +181,9 @@ pdoPage.stickyPagination = function(config) {
 	if (pagination.is(':visible')) {
 		pagination.sticky({
 			wrapperClassName: 'sticky-pagination',
-			getWidthFrom: config['pagination'],
-			responsiveWidth: true
+			getWidthFrom: config['wrapper'],
+			responsiveWidth: true,
+			topSpacing: 2,
 		});
 		$(config['wrapper']).trigger('scroll');
 	}

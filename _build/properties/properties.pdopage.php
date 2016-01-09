@@ -157,6 +157,15 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => '@INLINE <button class="btn btn-default btn-more">[[%pdopage_more]]</button>',
 	),
+	'ajaxHistory' => array(
+		'type' => 'list',
+		'value' => '',
+		'options' => array(
+			array('text' => 'Auto', 'value' => ''),
+			array('text' => 'Enabled', 'value' => 1),
+			array('text' => 'Disabled', 'value' => 0),
+		),
+	),
 	'frontend_js' => array(
 		'type' => 'textfield',
 		'value' => '[[+assetsUrl]]js/pdopage.js',
