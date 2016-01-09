@@ -56,6 +56,9 @@ class pdoPage {
 		$moreChunk = $this->modx->getOption('ajaxTplMore', $this->pdoTools->config, '@INLINE <button class="btn btn-default btn-more">[[%pdopage_more]]</button>');
 		$moreTpl = $this->pdoTools->getChunk($moreChunk, array('limit' => $limit));
 
+		$hash = sha1($this->modx->toJSON($this->pdoTools->config));
+		$_SESSION['pdoPage'][$hash] = $this->pdoTools->config;
+
 		$config = $this->modx->toJSON(array(
 			'wrapper' => $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage'),
 			'rows' => $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows'),
@@ -68,7 +71,11 @@ class pdoPage {
 			'pageVarKey' => $this->pdoTools->config['pageVarKey'],
 			'pageLimit' => $limit,
 			'assetsUrl' => $assetsUrl,
+			'connectorUrl' => rtrim($assetsUrl, '/') . '/connector.php',
+			'pageId' => $this->modx->resource->id,
+			'hash' => $hash,
 		));
+
 		$this->modx->regClientStartupScript('<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}};</script>', true);
 		$this->modx->regClientScript('<script type="text/javascript">pdoPage.initialize(' . $config . ');</script>', true);
 	}

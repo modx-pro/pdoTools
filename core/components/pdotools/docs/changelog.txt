@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.2.1 pl
 ==============
 - [#155] [pdoPage] Added new parameter &ajaxHistory.
+- [pdoPage] Added connector for requests in ajax mode.
 
 2.2.0 pl
 ==============

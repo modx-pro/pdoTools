@@ -95,8 +95,7 @@ pdoPage.initialize = function(config) {
 
 pdoPage.addPage = function(config) {
 	var key = config['pageVarKey'];
-	var params = pdoPage.Hash.get();
-	var current = params[key] || 1;
+	var current = pdoPage.keys[key] || 1;
 	$(config['link']).each(function() {
 		var href = $(this).prop('href');
 		var match = href.match(new RegExp(key + '=(\\d+)'));
@@ -105,7 +104,6 @@ pdoPage.addPage = function(config) {
 			if (config.history) {
 				pdoPage.Hash.add(key, page);
 			}
-			pdoPage.keys[key] = current;
 			pdoPage.loadPage(href, config, 'append');
 			return false;
 		}
@@ -129,8 +127,11 @@ pdoPage.loadPage = function(href, config, mode) {
 	if (pdoPage.callbacks['before'] && typeof(pdoPage.callbacks['before']) == 'function') {
 		pdoPage.callbacks['before'].apply(this, [config]);
 	}
-	else if (config['mode'] != 'scroll') {
-		wrapper.css({opacity: .3});
+	else {
+		if (config['mode'] != 'scroll') {
+			wrapper.css({opacity: .3});
+		}
+		wrapper.addClass('loading');
 	}
 
 	var params = pdoPage.Hash.get();
@@ -140,7 +141,10 @@ pdoPage.loadPage = function(href, config, mode) {
 		}
 	}
 	params[key] = pdoPage.keys[key] = page;
-	$.get(document.location.pathname, params, function(response) {
+	params['pageId'] = config['pageId'];
+	params['hash'] = config['hash'];
+
+	$.post(config['connectorUrl'], params, function(response) {
 		if (response && response['total']) {
 			wrapper.find(pagination).html(response['pagination']);
 			if (mode == 'append') {
@@ -164,10 +168,13 @@ pdoPage.loadPage = function(href, config, mode) {
 			if (pdoPage.callbacks['after'] && typeof(pdoPage.callbacks['after']) == 'function') {
 				pdoPage.callbacks['after'].apply(this, [config, response]);
 			}
-			else if (config['mode'] != 'scroll') {
-				wrapper.css({opacity: 1});
-				if (config['mode'] == 'default') {
-					$('html, body').animate({scrollTop: wrapper.position().top - 50 || 0}, 0);
+			else {
+				wrapper.removeClass('loading');
+				if (config['mode'] != 'scroll') {
+					wrapper.css({opacity: 1});
+					if (config['mode'] == 'default') {
+						$('html, body').animate({scrollTop: wrapper.position().top - 50 || 0}, 0);
+					}
 				}
 			}
 			pdoPage.updateTitle(config, response);
