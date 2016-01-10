@@ -105,6 +105,7 @@ $_lang['pdotools_prop_page'] = 'Die Nummer der Seite für die Ausgabe. Hat Vorra
 $_lang['pdotools_prop_pageLimit'] = 'Anzahl der Links zu anderen Seiten. Ist dieser Wert größer oder gleich 7, wird der erweiterte Modus eingeschaltet.';
 $_lang['pdotools_prop_pageNavVar'] = 'Name des Platzhalters für die Ausgabe der Paginierung (Links zu anderen Seiten).';
 $_lang['pdotools_prop_pageCountVar'] = 'Name des Platzhalters für die Ausgabe der Anzahl der Seiten.';
+$_lang['pdotools_prop_pageLinkScheme'] = 'Schema der generation der link zur Seite. Sie können die Platzhalter [[+pageVarKey]] und [[+page]]';
 $_lang['pdotools_prop_pageVarKey'] = 'Der Name des Parameters, der in der URL die Seitennummer angibt.';
 $_lang['pdotools_prop_plPrefix'] = 'Präfix für Platzhalter; Standard ist "wf.".';
 

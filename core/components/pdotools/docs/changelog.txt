@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.2.2 pl
+==============
+- [pdoPage] Added new parameter &pageLinkScheme.
+
 2.2.1 pl
 ==============
 - [#155] [pdoPage] Added new parameter &ajaxHistory.

@@ -102,6 +102,7 @@ $_lang['pdotools_prop_pageLimit'] = 'Количество ссылок на ст
 $_lang['pdotools_prop_pageNavVar'] = 'Имя плейсхолдера для вывода пагинации.';
 $_lang['pdotools_prop_pageCountVar'] = 'Имя плейсхолдера для вывода количества страниц.';
 $_lang['pdotools_prop_pageVarKey'] = 'Имя переменной для поиска номера страницы в url.';
+$_lang['pdotools_prop_pageLinkScheme'] = 'Схема генерации ссылки на страницу. Можно использовать плейсхолдеры [[+pageVarKey]] и [[+page]]';
 $_lang['pdotools_prop_plPrefix'] = 'Префикс для выставляемых плейсхолдеров, по умолчанию "wf.".';
 
 $_lang['pdotools_prop_tplPage'] = 'Чанк оформления обычной ссылки на страницу.';

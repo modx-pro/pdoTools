@@ -50,6 +50,10 @@ $tmp = array(
 		'type' => 'textfield',
 		'value' => 'pageCount',
 	),
+	'pageLinkScheme' => array(
+		'type' => 'textfield',
+		'value' => '',
+	),
 
 	'tplPage' => array(
 		'type' => 'textfield',

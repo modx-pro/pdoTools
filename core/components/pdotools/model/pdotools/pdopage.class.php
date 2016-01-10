@@ -167,12 +167,29 @@ class pdoPage {
 			$url = $this->getBaseUrl();
 		}
 
-		$href = $url;
+		$link = $pcre = '';
+		if (!empty($this->pdoTools->config['pageLinkScheme'])) {
+			$pls = $this->pdoTools->makePlaceholders(array(
+				'pageVarKey' => $this->pdoTools->config['pageVarKey'],
+				'page' => $page
+			));
+			$link = str_replace($pls['pl'], $pls['vl'], $this->pdoTools->config['pageLinkScheme']);
+			$pcre = preg_replace('#\d+#', '(\d+)', $link);
+		}
+
+		$href = !empty($link)
+			? preg_replace('#' . $pcre . '#', '', $url)
+			: $url;
 		if ($page > 1 || ($page == 1 && !empty($this->pdoTools->config['ajax']))) {
-			$href .= strpos($href, '?') !== false
-				? '&'
-				: '?';
-			$href .= $this->pdoTools->config['pageVarKey'] . '=' . $page;
+			if (!empty($link)) {
+				$href = rtrim($href, '/') . '/' . ltrim($link, '/');
+			}
+			else {
+				$href .= strpos($href, '?') !== false
+					? '&'
+					: '?';
+				$href .= $this->pdoTools->config['pageVarKey'] . '=' . $page;
+			}
 		}
 		if (!empty($_GET)) {
 			$request = $_GET;

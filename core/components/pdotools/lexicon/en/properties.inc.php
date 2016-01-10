@@ -104,6 +104,7 @@ $_lang['pdotools_prop_pageLimit'] = 'Number of links on a pages. If is 7 or more
 $_lang['pdotools_prop_pageNavVar'] = 'Name of placeholder for output pagination.';
 $_lang['pdotools_prop_pageCountVar'] = 'Name of placeholder for output number of pages.';
 $_lang['pdotools_prop_pageVarKey'] = 'The Name of the variable to search for the page number in the url.';
+$_lang['pdotools_prop_pageLinkScheme'] = 'Scheme of generation link to page. You can use placeholders [[+pageVarKey]] and [[+page]]';
 $_lang['pdotools_prop_plPrefix'] = 'Prefix for output placeholders, by default is "wf.".';
 
 $_lang['pdotools_prop_tplPage'] = 'Chunk of registration of the normal link to the page.';
