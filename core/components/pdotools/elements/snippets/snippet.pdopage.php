@@ -200,6 +200,10 @@ if ($isAjax) {
 		unset($data[$totalVar]);
 	}
 
+	$maxIterations = (integer) $modx->getOption('parser_max_iterations', null, 10);
+	$modx->getParser()->processElementTags('', $data['output'], false, false, '[[', ']]', array(), $maxIterations);
+	$modx->getParser()->processElementTags('', $data['output'], true, true, '[[', ']]', array(), $maxIterations);
+
 	@session_write_close();
 	exit($modx->toJSON($data));
 }
