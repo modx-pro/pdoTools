@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.2.4 pl
+==============
+- [pdoUsers] Fixed overwrite modUser.id by modUserProfile.id.
+
 2.2.3 pl
 ==============
 - [pdoPage] Fixed processing of uncached conditions in chunks when ajax mode is enabled.

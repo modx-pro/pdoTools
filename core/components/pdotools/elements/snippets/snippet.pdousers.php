@@ -94,8 +94,8 @@ if (!empty($groups_in) || !empty($groups_out) || !empty($roles_in) || !empty($ro
 
 // Fields to select
 $select = array(
-	$class => implode(',', array_keys($modx->getFieldMeta($class)))
-	,$profile => implode(',', array_keys($modx->getFieldMeta($profile)))
+	$profile => implode(',', array_keys($modx->getFieldMeta($profile))),
+	$class => implode(',', array_keys($modx->getFieldMeta($class))),
 );
 
 // Add custom parameters
