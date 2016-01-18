@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 2.2.4 pl
 ==============
+- [Fenom] Fixed speed issues when MODX snippets are run as Fenom modifiers.
 - [pdoUsers] Fixed overwrite modUser.id by modUserProfile.id.
 
 2.2.3 pl

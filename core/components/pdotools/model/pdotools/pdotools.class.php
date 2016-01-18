@@ -145,14 +145,29 @@ class pdoTools {
 						? explode(',', $this->config['fenomModifiers'])
 						: $this->config['fenomModifiers'];
 					$modx = $this->modx;
-					foreach ($modifiers as $snippet) {
-						$snippet = trim(strtolower($snippet));
-						if (!empty($snippet)) {
-							$this->fenom->addModifier($snippet, function($input, $options = '') use ($snippet, $modx) {
-								$result = $modx->runSnippet($snippet, array(
+					$pdo = $this;
+					foreach ($modifiers as $name) {
+						$name = trim(strtolower($name));
+						if (!empty($name)) {
+							$this->fenom->addModifier($name, function($input, $options = '') use ($name, $modx, $pdo) {
+								/** @var modSnippet $snippet */
+								if (!$snippet = $pdo->getStore($name, 'snippet')) {
+									if ($snippet = $modx->getObject('modSnippet', array('name' => $name))) {
+										$pdo->setStore($name, $snippet, 'snippet');
+									}
+									else {
+										return $input;
+									}
+								}
+								$snippet->_cacheable = false;
+								$snippet->_processed = false;
+								$snippet->_content = '';
+								$result = $snippet->process(array(
 									'input' => $input,
 									'options' => $options,
+									'pdoTools' => $pdo,
 								));
+
 								return !empty($result)
 									? $result
 									: $input;
