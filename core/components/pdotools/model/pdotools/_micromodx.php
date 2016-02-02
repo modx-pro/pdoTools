@@ -149,7 +149,7 @@ class microMODX {
 	 */
 	public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = array()) {
 		$this->debugParser('makeUrl', $id, $args);
-		$result = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
+		$result = $id ? $this->modx->makeUrl($id, $context, $args, $scheme, $options) : '';
 		$this->debugParser('makeUrl', $id, $args);
 
 		return $result;
