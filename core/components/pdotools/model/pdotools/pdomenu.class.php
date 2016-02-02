@@ -190,6 +190,9 @@ class pdoMenu {
 				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $this->pdoTools->config['scheme'])
 				: $row['content'];
 		}
+		elseif (!empty($this->pdoTools->config['useDirectUrl']) && $this->pdoTools->config['useDirectUrl'] == true) {
+			$row['link'] = '/' . $row['uri'];
+		}
 		else {
 			$row['link'] = $this->modx->makeUrl($row['id'], $row['context_key'], '', $this->pdoTools->config['scheme']);
 		}
