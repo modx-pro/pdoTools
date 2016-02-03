@@ -8,6 +8,10 @@ $tmp = array(
 		'type' => 'numberfield',
 		'value' => 0,
 	),
+	'exclude' => array(
+		'type' => 'textfield',
+		'value' => '',
+	),
 	'limit' => array(
 		'type' => 'numberfield',
 		'value' => 3,
