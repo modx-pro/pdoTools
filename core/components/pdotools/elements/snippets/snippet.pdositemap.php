@@ -127,16 +127,16 @@ if (empty($data)) {
 	foreach ($rows as $row) {
 		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 			$row['url'] = is_numeric(trim($row['content'], '[]~ '))
-					? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
-					: $row['content'];
+				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
+				: $row['content'];
 		}
 		else {
 			$row['url'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
 		}
 
 		$time = !empty($row['editedon'])
-				? $row['editedon']
-				: $row['createdon'];
+			? $row['editedon']
+			: $row['createdon'];
 		$row['date'] = date('Y-m-d', $time);
 
 		$datediff = floor(($now - $time) / 86400);
@@ -160,7 +160,7 @@ if (empty($data)) {
 			$row['priority'] = $row[$priorityTV];
 		}
 
-		// add item to output
+		// Fix possible duplicates made by modWebLink
 		if (!empty($urls[$row['url']])) {
 			if ($urls[$row['url']] > $row['date']) {
 				continue;
@@ -168,7 +168,11 @@ if (empty($data)) {
 		}
 		$urls[$row['url']] = $row['date'];
 
-		$data[$row['url']] = preg_replace('#\[\[.*?\]\]#', '', $pdoFetch->parseChunk($tpl, $row));
+		// Add item to output
+		$data[$row['url']] = $pdoFetch->parseChunk($tpl, $row);
+		if (strpos($data[$row['url']], '[[') !== false) {
+			$modx->parser->processElementTags('', $data[$row['url']], true, true, '[[', ']]', array(), 10);
+		}
 	}
 	$pdoFetch->addTime('Rows processed');
 	if (!empty($cache)) {
