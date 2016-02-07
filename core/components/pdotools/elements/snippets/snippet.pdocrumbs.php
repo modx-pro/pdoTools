@@ -116,17 +116,17 @@ if (!empty($rows) && is_array($rows)) {
 	foreach ($rows as $row) {
 		if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-				? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
+				? $pdoFetch->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
 				: $row['content'];
 		}
 		else {
-			$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
+			$row['link'] = $pdoFetch->makeUrl($row['id'], $row);
 		}
 
 		$row = array_merge(
-			$scriptProperties
-			,$row
-			,array('idx' => $pdoFetch->idx++)
+			$scriptProperties,
+			$row,
+			array('idx' => $pdoFetch->idx++)
 		);
 		if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
 

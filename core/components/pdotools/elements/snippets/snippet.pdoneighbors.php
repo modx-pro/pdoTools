@@ -129,11 +129,11 @@ foreach ($rows as $row) {
 	if (empty($row['menutitle'])) {$row['menutitle'] = $row['pagetitle'];}
 	if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
 		$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-			? $modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $pdoFetch->config['scheme'])
+			? $pdoFetch->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
 			: $row['content'];
 	}
 	else {
-		$row['link'] = $modx->makeUrl($row['id'], $row['context_key'], '', $pdoFetch->config['scheme']);
+		$row['link'] = $pdoFetch->makeUrl($row['id'], $row);
 	}
 
 	if (isset($prev[$row['id']])) {

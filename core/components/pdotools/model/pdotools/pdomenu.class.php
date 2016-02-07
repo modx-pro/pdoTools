@@ -187,11 +187,11 @@ class pdoMenu {
 
 		if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink') {
 			$row['link'] = is_numeric(trim($row['content'], '[]~ '))
-				? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $this->pdoTools->config['scheme'])
+				? $this->pdoTools->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
 				: $row['content'];
 		}
 		else {
-			$row['link'] = $this->modx->makeUrl($row['id'], $row['context_key'], '', $this->pdoTools->config['scheme']);
+			$row['link'] = $this->pdoTools->makeUrl($row['id'], $row);
 		}
 
 		$row['title'] = !empty($this->pdoTools->config['titleOfLinks'])

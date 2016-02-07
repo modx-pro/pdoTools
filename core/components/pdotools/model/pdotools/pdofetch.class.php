@@ -134,13 +134,11 @@ class pdoFetch extends pdoTools {
 							if (!isset($row['context_key'])) {$row['context_key'] = '';}
 							if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink')) {
 								$row['link'] = isset($row['content']) && is_numeric(trim($row['content'], '[]~ '))
-									? $this->modx->makeUrl(intval(trim($row['content'], '[]~ ')), '', '', $this->config['scheme'])
-									: (isset($row['content'])
-										? $row['content']
-										: '');
+									? $this->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
+									: (isset($row['content']) ? $row['content'] : '');
 							}
 							else {
-								$row['link'] = $this->modx->makeUrl($row['id'], $row['context_key'], '', $this->config['scheme']);
+								$row['link'] = $this->makeUrl($row['id'], $row);
 							}
 						}
 						else {

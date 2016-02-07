@@ -1151,6 +1151,49 @@ class pdoTools {
 
 
 	/**
+	 * @param $id
+	 * @param array $options
+	 * @param array $args
+	 *
+	 * @return mixed|string
+     */
+    public function makeUrl($id, $options = array(), $args = array()) {
+		$scheme = !empty($options['scheme'])
+			? $options['scheme']
+			: $this->config['scheme'];
+		if (strtolower($scheme) == 'uri' && !empty($options['uri'])) {
+			$url = $options['uri'];
+			if (!empty($args)) {
+				if (is_array($args)) {
+					$args = rtrim(modX::toQueryString($args), '?&');
+				}
+				$url .= strpos($url, '?') !== false
+					? '&'
+					: '?';
+				$url .= ltrim(trim($args), '?&');
+			}
+		}
+		else {
+			if (!empty($options['context_key'])) {
+				$context = $options['context_key'];
+			}
+			elseif (!empty($options['context'])) {
+				$context = $options['context'];
+			}
+			else {
+				$context = '';
+			}
+			if (strtolower($scheme) == 'uri') {
+				$scheme = -1;
+			}
+			$url = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
+		}
+
+		return $url;
+	}
+
+
+	/**
 	 * Returns array with options for cache
 	 *
 	 * @param $options

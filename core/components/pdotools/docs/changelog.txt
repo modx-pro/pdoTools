@@ -4,6 +4,8 @@ Changelog for pdoTools.
 ==============
 - [#182] [pdoTitle] Added passing a parameters into nested pdoCrumbs.
 - [pdoSitemap] Added processing of MODX tags if needed.
+- Added method pdoTools::makeUrl().
+- [#181] New url schema type - "uri".
 
 2.2.4 pl
 ==============
