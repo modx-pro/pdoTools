@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.2.5 pl
+==============
+- [#182] [pdoTitle] Added passing a parameters into nested pdoCrumbs.
+
 2.2.4 pl
 ==============
 - [Fenom] Fixed speed issues when MODX snippets are run as Fenom modifiers.

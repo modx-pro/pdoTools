@@ -2,17 +2,15 @@
 /** @var array $scriptProperties */
 if (empty($outputSeparator)) {$outputSeparator = ' / ';}
 if (empty($titleField)) {$titleField = 'longtitle';}
-if (!empty($limit)) {$limit = (int) $limit;}
-if (empty($limit)) {$limit = 3;}
 if (!isset($pageVarKey)) {$pageVarKey = 'page';}
 if (!isset($queryVarKey)) {$queryVarKey = 'query';}
 if (empty($tplPages)) {$tplPages = '@INLINE [[%pdopage_page]] [[+page]] [[%pdopage_from]] [[+pageCount]]';}
 if (empty($tplSearch)) {$tplSearch = '@INLINE «[[+mse2_query]]»';}
 if (empty($minQuery)) {$minQuery = 3;}
 if (empty($id)) {$id = $modx->resource->id;}
-if (empty($exclude)) {$exclude = '';}
 if (empty($cacheKey)) {$cacheKey = 'title_crumbs';}
 if (!isset($cacheTime)) {$cacheTime = 0;}
+/** @var pdoTools $pdoTools */
 $fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
 if ($pdoClass = $modx->loadClass($fqn, '', false, true)) {
 	$pdoTools = new $pdoClass($modx, $scriptProperties);
@@ -58,20 +56,20 @@ $cacheKey = $resource->getCacheKey() . '/' . $cacheKey;
 $cacheOptions = array('cache_key' => $modx->getOption('cache_resource_key', null, 'resource'));
 $crumbs = '';
 if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOptions)) {
-	$crumbs = $modx->runSnippet('pdoCrumbs', array(
-		'to' => $resource->id,
-		'exclude' => $exclude,
-		'limit' => $limit,
-		'outputSeparator' => $outputSeparator,
-		'showHome' => 0,
-		'showAtHome' => 0,
-		'showCurrent' => 0,
-		'direction' => 'rtl',
-		'tpl' => '@INLINE [[+menutitle]]',
-		'tplCurrent' => '@INLINE [[+menutitle]]',
-		'tplMax' => '',
-		'tplHome' => '',
-		'tplWrapper' => '@INLINE [[+output]]',
+	$crumbs = $modx->runSnippet('pdoCrumbs', array_merge(
+		array(
+			'to' => $resource->id,
+			'outputSeparator' => $outputSeparator,
+			'showHome' => 0,
+			'showAtHome' => 0,
+			'showCurrent' => 0,
+			'direction' => 'rtl',
+			'tpl' => '@INLINE [[+menutitle]]',
+			'tplCurrent' => '@INLINE [[+menutitle]]',
+			'tplWrapper' => '@INLINE [[+output]]',
+			'tplMax' => '',
+			'tplHome' => '',
+		), $scriptProperties
 	));
 }
 if (!empty($crumbs)) {
