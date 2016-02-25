@@ -148,7 +148,8 @@ pdoPage.loadPage = function(href, config, mode) {
 		if (response && response['total']) {
 			wrapper.find(pagination).html(response['pagination']);
 			if (mode == 'append') {
-				wrapper.find(rows).append(response['output']);
+				if (config['manualAppend'])
+					wrapper.find(rows).append(response['output']);
 				if (config['mode'] == 'button') {
 					if (response['pages'] == response['page']) {
 						$(config['more']).hide();
