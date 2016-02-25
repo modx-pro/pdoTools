@@ -74,6 +74,7 @@ class pdoPage {
 			'connectorUrl' => rtrim($assetsUrl, '/') . '/connector.php',
 			'pageId' => $this->modx->resource->id,
 			'hash' => $hash,
+			'manualAppend' => $this->modx->getOption('manualAppend', $this->pdoTools->config, 'false'),
 		));
 
 		$this->modx->regClientStartupScript('<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}};</script>', true);
