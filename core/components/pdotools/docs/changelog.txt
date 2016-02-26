@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.2.6 pl
+==============
+- [#184] [Fenom] Updated to version 2.8.2.
+
 2.2.5 pl
 ==============
 - [#182] [pdoTitle] Added passing a parameters into nested pdoCrumbs.
