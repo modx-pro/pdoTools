@@ -1,5 +1,5 @@
 if (typeof(pdoPage) == 'undefined') {
-	pdoPage = {callbacks: {}, keys: {}};
+	pdoPage = {callbacks: {}, keys: {}, configs: {}};
 }
 
 pdoPage.Reached = false;
@@ -10,6 +10,7 @@ pdoPage.initialize = function(config) {
 		var tparams = pdoPage.Hash.get();
 		var tpage = tparams[tkey] == undefined ? 1 : tparams[tkey];
 		pdoPage.keys[tkey] = Number(tpage);
+		pdoPage.configs[tkey] = config;
 	}
 	var $this = this;
 	switch (config['mode']) {
