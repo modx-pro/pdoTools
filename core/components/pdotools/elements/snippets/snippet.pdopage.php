@@ -9,6 +9,7 @@ if (empty($page)) {$page = 1;}
 if (empty($pageLimit)) {$pageLimit = 5;} else {$pageLimit = (integer) $pageLimit;}
 if (!isset($plPrefix)) {$plPrefix = '';}
 if (!empty($scriptProperties['ajaxMode'])) {$scriptProperties['ajax'] = 1;}
+if (!empty($scriptProperties['ajaxPlaceholder'])) {$scriptProperties['ajaxPlaceholder'] = explode(',',$scriptProperties['ajaxPlaceholder']);}
 
 // Convert parameters from getPage if exists
 if (!empty($namespace)) {$plPrefix = $namespace;}
@@ -198,6 +199,12 @@ if ($isAjax) {
 	if ($totalVar != 'total') {
 		$data['total'] = (int)$data[$totalVar];
 		unset($data[$totalVar]);
+	}
+	
+	if ($scriptProperties['ajaxPlaceholder']) {
+	    foreach($scriptProperties['ajaxPlaceholder'] as $placeholder) {
+        	$data[$placeholder] = $modx->getPlaceholder($placeholder);
+	    }
 	}
 
 	$maxIterations = (integer) $modx->getOption('parser_max_iterations', null, 10);
