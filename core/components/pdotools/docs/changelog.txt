@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.2.8 pl
+==============
+- [Fenom] Use modResource::getContent() method to get content of current resource in {$_modx->resource}.
+
 2.2.7 pl
 ==============
 - [pdoPage] Ability to get access to a javascript configs from 3rd party scripts.
