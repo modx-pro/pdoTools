@@ -137,7 +137,7 @@ if (empty($data)) {
 		$time = !empty($row['editedon'])
 			? $row['editedon']
 			: $row['createdon'];
-		$row['date'] = date('Y-m-d', $time);
+		$row['date'] = date('c', $time);
 
 		$datediff = floor(($now - $time) / 86400);
 		if ($datediff <= 1) {
