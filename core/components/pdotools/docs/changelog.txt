@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+2.3.0 pl
+==============
+- Removed shortcuts from system core.
+- PSR-2.
+- [Fenom] Added default modifiers: "url" and "lexicon".
+- [pdoCrumbs] Changed default chunks to ul -> li.
+
 2.2.8 pl
 ==============
 - [Fenom] Use modResource::getContent() method to get content of current resource in {$_modx->resource}.
