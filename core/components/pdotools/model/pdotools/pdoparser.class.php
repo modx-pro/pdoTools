@@ -51,9 +51,7 @@ class pdoParser extends modParser
         $depth = 0
     ) {
 
-        if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser']) && preg_match('#\{(\$|\/|\w+\s)#',
-                $content)
-        ) {
+        if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
             $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
 
             if (!empty($this->modx->resource) && is_object($this->modx->resource)) {
