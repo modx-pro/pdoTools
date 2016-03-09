@@ -6,6 +6,7 @@ Changelog for pdoTools.
 - PSR-2.
 - [Fenom] Added default modifiers: "url" and "lexicon".
 - [pdoCrumbs] Changed default chunks to ul -> li.
+- [#190] [pdoSitemap] Changed date format to ISO 8601.
 
 2.2.8 pl
 ==============
