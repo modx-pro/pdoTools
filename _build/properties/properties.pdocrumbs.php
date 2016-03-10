@@ -29,7 +29,7 @@ $tmp = array(
     ),
     'outputSeparator' => array(
         'type' => 'textfield',
-        'value' => '&nbsp;&rarr;&nbsp;',
+        'value' => "\n",
     ),
     'toPlaceholder' => array(
         'type' => 'textfield',
