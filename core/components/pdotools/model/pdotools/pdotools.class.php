@@ -908,7 +908,7 @@ class pdoTools
             foreach ($modifiers as $name) {
                 $name = trim(strtolower($name));
                 if (!empty($name)) {
-                    $this->fenom->addModifier($name, function ($input, $options = '') use ($name, $modx, $pdo) {
+                    $this->fenom->addModifier($name, function ($input, $options = null) use ($name, $modx, $pdo) {
                         /** @var modSnippet $snippet */
                         if (!$snippet = $pdo->getStore($name, 'snippet')) {
                             if ($snippet = $modx->getObject('modSnippet', array('name' => $name))) {
