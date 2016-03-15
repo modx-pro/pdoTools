@@ -124,6 +124,12 @@ $rows = $pdoFetch->run();
 $prev = array_flip($prev);
 $next = array_flip($next);
 
+if (!count($rows)) {
+    // do not output empty &tplWrapper
+    $pdoFetch->addTime('Nothing was found');
+    return;
+}
+
 $output = array('prev' => array(), 'up' => array(), 'next' => array());
 foreach ($rows as $row) {
     if (empty($row['menutitle'])) {
