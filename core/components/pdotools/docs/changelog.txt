@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.3.1 pl
+==============
+- [pdoSitemap] Lightning fast work chunks processing with &scheme=`uri`.
+
 2.3.0 pl
 ==============
 - Removed shortcuts from system core.

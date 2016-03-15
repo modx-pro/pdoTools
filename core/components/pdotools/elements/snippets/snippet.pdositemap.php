@@ -110,7 +110,7 @@ if (empty($context)) {
     $scriptProperties['context'] = $modx->context->key;
 }
 
-$select = array($class => 'id,editedon,createdon,context_key,class_key');
+$select = array($class => 'id,editedon,createdon,context_key,class_key,uri');
 if (!empty($useWeblinkUrl)) {
     $select[$class] .= ',content';
 }
