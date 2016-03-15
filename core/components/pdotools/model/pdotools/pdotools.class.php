@@ -67,6 +67,7 @@ class pdoTools
             'decodeJSON' => true,
             'scheme' => '',
             'fenomModifiers' => $this->modx->getOption('pdotools_fenom_modifiers'),
+            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
         ), $config);
 
         if ($clean_timings) {
@@ -445,7 +446,7 @@ class pdoTools
         $content = is_array($chunk)
             ? trim($chunk['content'])
             : trim($chunk);
-        if (empty($this->config['useFenom']) || !preg_match('#\{(\$|\/|\w+\s|[\'|"|\(])#', $content)) {
+        if (empty($this->config['useFenom']) || !preg_match($this->config['fenomSyntax'], $content)) {
             return $content;
         }
 

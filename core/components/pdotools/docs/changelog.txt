@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.3.1 pl
 ==============
 - [pdoSitemap] Lightning fast work chunks processing with &scheme=`uri`.
+- [Fenom] Improved check of syntax before processing.
 
 2.3.0 pl
 ==============
