@@ -22,5 +22,8 @@ if (!empty($_REQUEST['hash']) && !empty($_SESSION['pdoPage'][$_REQUEST['hash']])
     $scriptProperties = $_SESSION['pdoPage'][$_REQUEST['hash']];
     $_GET = $_POST;
 
+    // For ClientConfig and other similar plugins
+    $modx->invokeEvent('OnHandleRequest');
+
     $modx->runSnippet('pdoPage', $scriptProperties);
 }

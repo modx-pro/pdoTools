@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.3.2 pl
+==============
+- [#196] [pdoPage] Added workaround to support ClientConfig tags in ajax mode.
+
 2.3.1 pl
 ==============
 - [pdoSitemap] Lightning fast work chunks processing with &scheme=`uri`.
