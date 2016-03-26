@@ -12,10 +12,13 @@ if ($object->xpdo) {
                 'pdoTools.class' => 'pdotools.pdotools',
                 'pdoFetch.class' => 'pdotools.pdofetch',
                 'pdoParser.class' => 'pdotools.pdoparser',
+                'pdotools_fenom_modifiers' => null,
             );
             foreach ($old_settings as $k => $v) {
-                if ($item = $modx->getObject('modSystemSetting', array('key' => $k, 'value' => $v))) {
-                    $item->remove();
+                if ($item = $modx->getObject('modSystemSetting', array('key' => $k))) {
+                    if (!$v || $item->get('value') == $v) {
+                        $item->remove();
+                    }
                 }
             }
             break;

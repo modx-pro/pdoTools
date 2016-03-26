@@ -33,5 +33,3 @@ $_lang['setting_pdotools_fenom_options'] = 'Fenom options';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON string with array of settings described on <a href="https://github.com/fenom-template/fenom/blob/master/docs/en/configuration.md" target="_blank">official documentation</a>. For example: {"auto_escape":true,"force_include":true}';
 $_lang['setting_pdotools_fenom_cache'] = 'Caching compiled chunks';
 $_lang['setting_pdotools_fenom_cache_desc'] = 'If you use large and complex Fenom chunks, you can enable caching of its compiled versions. They will be updated only when you clear the system cache. Not recommended for the development of the site.';
-$_lang['setting_pdotools_fenom_modifiers'] = 'Fenom modifiers';
-$_lang['setting_pdotools_fenom_modifiers_desc'] = 'Comma-separated list of snippets-modifiers to add them into Fenom. Each snippet could use a $input and $options variables as specified in the <a href="https://rtfm.modx.com/revolution/2.x/making-sites-with-modx/customizing-content/input-and-output-filters-(output-modifiers)#InputandOutputFilters%28OutputModifiers%29-CreatingaCustomOutputModifier" target="_blank">documentation</a>.';

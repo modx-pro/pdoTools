@@ -5,7 +5,7 @@
  * @package pdotools
  * @subpackage lexicon
  * @language de
- * 
+ *
  * pdoTools translated to German by Jan-Christoph Ihrens (enigmatic_user, enigma@lunamail.de)
  */
 $_lang['pdotools'] = 'pdoTools';
@@ -35,5 +35,3 @@ $_lang['setting_pdotools_fenom_options'] = 'Fenom Optionen';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON-string-array mit der beschriebenen Einstellungen auf <a href="https://github.com/fenom-Vorlage/fenom/blob/master/docs/de/Konfiguration.md" target="_blank">offiziellen Dokumentation</a>. Beispiel: {"auto_escape":true,"force_include":true}';
 $_lang['setting_pdotools_fenom_cache'] = 'Caching zusammengestellt Brocken';
 $_lang['setting_pdotools_fenom_cache_desc'] = 'Wenn Sie große und komplexe Fenom Brocken, können Sie die Zwischenspeicherung aktivieren der die kompilierten Versionen. Sie wird nur aktualisiert werden, wenn Sie die system-cache. Nicht empfohlen für die Entwicklung der Website.';
-$_lang['setting_pdotools_fenom_modifiers'] = 'Fenom Modifikatoren';
-$_lang['setting_pdotools_fenom_modifiers_desc'] = 'Komma-getrennte Liste von snippets-Modifikatoren, um Sie in Fenom. Jeder Ausschnitt könnte ein $input und $options Variablen wie angegeben, in der <a href="https://rtfm.modx.com/revolution/2.x/making-sites-with-modx/customizing-content/input-and-output-filters-(output-modifiers)#InputandOutputFilters%28OutputModifiers%29-CreatingaCustomOutputModifier" target="_blank">Dokumentation</a>.';

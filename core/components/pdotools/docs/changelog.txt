@@ -3,6 +3,9 @@ Changelog for pdoTools.
 2.3.2 pl
 ==============
 - [#196] [pdoPage] Added workaround to support ClientConfig tags in ajax mode.
+- [Fenom] Added general MODX output filters as Fenom modifiers.
+- [Fenom] Implemented autoload of modifiers from snippets.
+- [Fenom] Removed system setting "pdotools_fenom_modifiers".
 
 2.3.1 pl
 ==============

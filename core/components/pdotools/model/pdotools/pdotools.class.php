@@ -66,7 +66,6 @@ class pdoTools
             'outputSeparator' => "\n",
             'decodeJSON' => true,
             'scheme' => '',
-            'fenomModifiers' => $this->modx->getOption('pdotools_fenom_modifiers'),
             'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
         ), $config);
 
@@ -84,6 +83,7 @@ class pdoTools
         $this->config['useFenomParser'] = $this->modx->getOption('pdotools_fenom_parser', null, false);
         $this->config['useFenomCache'] = $this->modx->getOption('pdotools_fenom_cache', null, false);
         $this->config['useFenomMODX'] = $this->modx->getOption('pdotools_fenom_modx', null, false);
+        $this->config['useFenomPHP'] = $this->modx->getOption('pdotools_fenom_php', null, false);
     }
 
 
@@ -115,35 +115,10 @@ class pdoTools
     {
         if (!$this->fenom) {
             try {
-                if (!class_exists('Fenom')) {
-                    require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
-                    require dirname(dirname(__FILE__)) . '/fenom/Fenom/ProviderInterface.php';
-                    require dirname(dirname(__FILE__)) . '/fenom/Providers/ModChunk.php';
-                    require dirname(dirname(__FILE__)) . '/fenom/Providers/ModTemplate.php';
-                    Fenom::registerAutoload();
+                if (!class_exists('FenomX')) {
+                    require '_fenom.php';
                 }
-                $cache = MODX_CORE_PATH . 'cache/';
-                if (!file_exists($cache)) {
-                    mkdir($cache);
-                }
-                $this->fenom = Fenom::factory(new modChunkProvider($this), $cache);
-                $this->fenom->addProvider('template', new modTemplateProvider($this));
-                $default_options = array(
-                    'force_compile' => true,
-                    'disable_cache' => true,
-                    'force_include' => true,
-                );
-                if (!$this->modx->getOption('pdotools_fenom_php', null, false)) {
-                    $this->fenom->removeAccessor('php');
-                    $default_options['disable_native_funcs'] = true;
-                }
-                if ($options = $this->modx->fromJSON($this->modx->getOption('pdotools_fenom_options'))) {
-                    $options = array_merge($options, $default_options);
-                } else {
-                    $options = $default_options;
-                }
-                $this->fenom->setOptions($options);
-                $this->_addModifiers();
+                $this->fenom = new FenomX($this);
             } catch (Exception $e) {
                 $this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());
 
@@ -882,58 +857,6 @@ class pdoTools
         $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
 
         return $tpl;
-    }
-
-
-    /**
-     * Add modifiers to Fenom
-     */
-    protected function _addModifiers()
-    {
-        $modx = $this->modx;
-        $pdo = $this;
-
-        // Default modifiers
-        $this->fenom->addModifier('url', function ($id, $options = array(), $args = array()) use ($pdo) {
-            return $pdo->makeUrl($id, $options, $args);
-        });
-        $this->fenom->addModifier('lexicon', function ($key, $params = array(), $language = '') use ($modx) {
-            return $modx->lexicon($key, $params, $language);
-        });
-
-        // User modifiers
-        if (!empty($this->config['fenomModifiers'])) {
-            $modifiers = is_string($this->config['fenomModifiers'])
-                ? explode(',', $this->config['fenomModifiers'])
-                : $this->config['fenomModifiers'];
-            foreach ($modifiers as $name) {
-                $name = trim(strtolower($name));
-                if (!empty($name)) {
-                    $this->fenom->addModifier($name, function ($input, $options = null) use ($name, $modx, $pdo) {
-                        /** @var modSnippet $snippet */
-                        if (!$snippet = $pdo->getStore($name, 'snippet')) {
-                            if ($snippet = $modx->getObject('modSnippet', array('name' => $name))) {
-                                $pdo->setStore($name, $snippet, 'snippet');
-                            } else {
-                                return $input;
-                            }
-                        }
-                        $snippet->_cacheable = false;
-                        $snippet->_processed = false;
-                        $snippet->_content = '';
-                        $result = $snippet->process(array(
-                            'input' => $input,
-                            'options' => $options,
-                            'pdoTools' => $pdo,
-                        ));
-
-                        return !empty($result)
-                            ? $result
-                            : $input;
-                    });
-                }
-            }
-        }
     }
 
 
