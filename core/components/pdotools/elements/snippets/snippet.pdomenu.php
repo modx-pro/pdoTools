@@ -128,7 +128,7 @@ foreach ($wfTemplates as $k => $v) {
 
 /** @var pdoMenu $pdoMenu */
 $fqn = $modx->getOption('pdoMenu.class', null, 'pdotools.pdomenu', true);
-$path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
+$path = $modx->getOption('pdomenu_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
     $pdoMenu = new $pdoClass($modx, $scriptProperties);
 } else {

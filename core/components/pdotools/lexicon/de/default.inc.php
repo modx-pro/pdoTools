@@ -10,18 +10,22 @@
  */
 $_lang['pdotools'] = 'pdoTools';
 
+$_lang['setting_pdoTools.class'] = 'FQN der pdoTools';
+$_lang['setting_pdoTools.class_desc'] = 'Pfad für das laden von Klassen aus system-Einstellung "pdotools_class_path".';
+$_lang['setting_pdotools_class_path'] = 'Basispfad zu pdoTools-Klasse';
+$_lang['setting_pdotools_class_path_desc'] = 'Basispfad zu pdoTools Klasse, von dem es geladen wird, mit FQN.';
 
-$_lang['area_pdotools_main'] = 'Grundlegende Einstellungen';
-$_lang['setting_pdoTools.class'] = 'FQN (fully qualified name) von pdoTools';
-$_lang['setting_pdoTools.class_desc'] = 'Pfad zum Laden der Klasse von "MODX_CORE_PATH . model/modx/".';
-$_lang['setting_pdoFetch.class'] = 'FQN (fully qualified name) von pdoFetch';
-$_lang['setting_pdoFetch.class_desc'] = 'Pfad zum Laden der Klasse von "MODX_CORE_PATH . model/modx/".';
-$_lang['setting_pdoParser.class'] = 'FQN (fully qualified name) von pdoParser';
-$_lang['setting_pdoParser.class_desc'] = 'Pfad zum Laden der Klasse von "MODX_CORE_PATH . model/modx/".';
+$_lang['setting_pdoFetch.class'] = 'FQN der pdoFetch';
+$_lang['setting_pdoFetch.class_desc'] = 'Pfad für das laden von Klassen aus system-Einstellung "pdofetch_class_path".';
+$_lang['setting_pdofetch_class_path'] = 'Basispfad zu pdoFetch-Klasse';
+$_lang['setting_pdofetch_class_path_desc'] = 'Basispfad zu pdoFetch Klasse, von dem es geladen wird, mit FQN.';
+
+$_lang['setting_pdoParser.class'] = 'FQN der pdoParser';
+$_lang['setting_pdoParser.class_desc'] = 'Pfad für das laden von Klassen aus system-Einstellung "parser_class_path".';
 $_lang['setting_parser_class'] = 'Parser-Klasse';
-$_lang['setting_parser_class_desc'] = 'Die Parser-Klasse, die verwendet wird, um die MODX-Tags zu verarbeiten.';
-$_lang['setting_parser_class_path'] = 'Der Pfad zum Parser';
-$_lang['setting_parser_class_path_desc'] = 'Der Pfad, der die Datei mit dem Parser enthält.';
+$_lang['setting_parser_class_desc'] = 'Parser-Klasse wird verwendet, um die MODX-tags.';
+$_lang['setting_parser_class_path'] = 'Der Pfad zum parser';
+$_lang['setting_parser_class_path_desc'] = 'Base Pfad zum parser-Klasse, von dem es geladen wird, mit FQN.';
 
 $_lang['setting_pdotools_fenom_default'] = 'Verwenden Sie Fenom für chunks';
 $_lang['setting_pdotools_fenom_default_desc'] = 'pdoTools snippets verwenden Sie die Template-engine Fenom für chunk-Verarbeitung.';

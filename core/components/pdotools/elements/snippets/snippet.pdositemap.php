@@ -1,8 +1,8 @@
 <?php
-/* @var array $scriptProperties */
-/* @var pdoFetch $pdoFetch */
+/** @var array $scriptProperties */
+/** @var pdoFetch $pdoFetch */
 $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
+$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
     $pdoFetch = new $pdoClass($modx, $scriptProperties);
 } else {

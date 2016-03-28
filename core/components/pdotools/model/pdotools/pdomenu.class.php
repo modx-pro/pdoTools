@@ -51,7 +51,7 @@ class pdoMenu
         }
 
         $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-        $path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
+        $path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
         if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
             $this->pdoTools = new $pdoClass($modx, $config);
         } else {

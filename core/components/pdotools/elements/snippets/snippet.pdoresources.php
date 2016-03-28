@@ -1,5 +1,5 @@
 <?php
-/* @var array $scriptProperties */
+/** @var array $scriptProperties */
 if (isset($parents) && $parents === '') {
     $scriptProperties['parents'] = $modx->resource->id;
 }
@@ -20,9 +20,9 @@ if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) 
 }
 $scriptProperties['additionalPlaceholders'] = $additionalPlaceholders;
 
-/* @var pdoFetch $pdoFetch */
+/** @var pdoFetch $pdoFetch */
 $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
+$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
     $pdoFetch = new $pdoClass($modx, $scriptProperties);
 } else {

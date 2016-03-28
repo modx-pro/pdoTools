@@ -22,8 +22,8 @@ $sources = array(
     'snippets' => $root . 'core/components/' . PKG_NAME_LOWER . '/elements/snippets/',
     'lexicon' => $root . 'core/components/' . PKG_NAME_LOWER . '/lexicon/',
     'docs' => $root . 'core/components/' . PKG_NAME_LOWER . '/docs/',
-    'assets' => $root . 'assets/components/' . PKG_NAME_LOWER,
-    'core' => $root . 'core/components/' . PKG_NAME_LOWER,
+    'source_assets' => $root . 'assets/components/' . PKG_NAME_LOWER,
+    'source_core' => $root . 'core/components/' . PKG_NAME_LOWER,
     'resolvers' => $root . '_build/resolvers/',
 );
 unset($root);
@@ -120,11 +120,11 @@ $vehicle = $builder->createVehicle($category, $attr);
 
 /* now pack in resolvers */
 $vehicle->resolve('file', array(
-    'source' => $sources['assets'],
+    'source' => $sources['source_assets'],
     'target' => "return MODX_ASSETS_PATH . 'components/';",
 ));
 $vehicle->resolve('file', array(
-    'source' => $sources['core'],
+    'source' => $sources['source_core'],
     'target' => "return MODX_CORE_PATH . 'components/';",
 ));
 
@@ -163,7 +163,7 @@ if (defined('PKG_AUTO_INSTALL') && PKG_AUTO_INSTALL) {
     $sig = explode('-', $signature);
     $versionSignature = explode('.', $sig[1]);
 
-    /* @var modTransportPackage $package */
+    /** @var modTransportPackage $package */
     if (!$package = $modx->getObject('transport.modTransportPackage', array('signature' => $signature))) {
         $package = $modx->newObject('transport.modTransportPackage');
         $package->set('signature', $signature);

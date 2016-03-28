@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.3.3 pl
+==============
+- Added system plugin for "autoload" of main classes with respect to their paths in system settings.
+
 2.3.2 pl
 ==============
 - [#196] [pdoPage] Added workaround to support ClientConfig tags in ajax mode.

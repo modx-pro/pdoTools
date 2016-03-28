@@ -8,18 +8,24 @@
  */
 $_lang['pdotools'] = 'pdoTools';
 
-
 $_lang['area_pdotools_main'] = 'Main';
+
 $_lang['setting_pdoTools.class'] = 'FQN of pdoTools';
-$_lang['setting_pdoTools.class_desc'] = 'Path for loading class from "MODX_CORE_PATH . model/modx/".';
+$_lang['setting_pdoTools.class_desc'] = 'Path for loading class from system setting "pdotools_class_path".';
+$_lang['setting_pdotools_class_path'] = 'Base path to pdoTools class';
+$_lang['setting_pdotools_class_path_desc'] = 'Base path to pdoTools class from which it will be loaded with FQN.';
+
 $_lang['setting_pdoFetch.class'] = 'FQN of pdoFetch';
-$_lang['setting_pdoFetch.class_desc'] = 'Path for loading class from "MODX_CORE_PATH . model/modx/".';
+$_lang['setting_pdoFetch.class_desc'] = 'Path for loading class from system setting "pdofetch_class_path".';
+$_lang['setting_pdofetch_class_path'] = 'Base path to pdoFetch class';
+$_lang['setting_pdofetch_class_path_desc'] = 'Base path to pdoFetch class from which it will be loaded with FQN.';
+
 $_lang['setting_pdoParser.class'] = 'FQN of pdoParser';
-$_lang['setting_pdoParser.class_desc'] = 'Path for loading class from "MODX_CORE_PATH . model/modx/".';
+$_lang['setting_pdoParser.class_desc'] = 'Path for loading class from system setting "parser_class_path".';
 $_lang['setting_parser_class'] = 'Parser class';
-$_lang['setting_parser_class_desc'] = 'Parser class that will be used to handle the MODX tags.';
+$_lang['setting_parser_class_desc'] = 'Parser class that will be used to process the MODX tags.';
 $_lang['setting_parser_class_path'] = 'The path to the parser';
-$_lang['setting_parser_class_path_desc'] = 'The path that contains file with the parser.';
+$_lang['setting_parser_class_path_desc'] = 'Base path to parser class from which it will be loaded with FQN.';
 
 $_lang['setting_pdotools_fenom_default'] = 'Use Fenom for chunks';
 $_lang['setting_pdotools_fenom_default_desc'] = 'pdoTools snippets will use the templating engine Fenom for chunk processing.';

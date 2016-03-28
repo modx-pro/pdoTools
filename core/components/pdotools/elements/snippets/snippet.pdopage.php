@@ -72,7 +72,7 @@ if ($isAjax && !isset($_REQUEST[$pageVarKey])) {
 
 /** @var pdoPage $pdoPage */
 $fqn = $modx->getOption('pdoPage.class', null, 'pdotools.pdopage', true);
-$path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
+$path = $modx->getOption('pdopage_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
     $pdoPage = new $pdoClass($modx, $scriptProperties);
 } else {

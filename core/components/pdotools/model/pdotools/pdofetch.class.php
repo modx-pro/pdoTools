@@ -990,7 +990,7 @@ class pdoFetch extends pdoTools
     {
         /** @var pdoFetch $instance */
         $fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-        $path = $this->modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/',
+        $path = $this->modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/',
             true);
         if ($pdoClass = $this->modx->loadClass($fqn, $path, false, true)) {
             $instance = new $pdoClass($this->modx, $config);

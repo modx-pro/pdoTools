@@ -3,7 +3,6 @@
 $settings = array();
 
 $tmp = array(
-    /*
     'pdoTools.class' => array(
         'xtype' => 'textfield',
         'value' => 'pdotools.pdotools',
@@ -14,16 +13,23 @@ $tmp = array(
         'value' => 'pdotools.pdofetch',
         'key' => 'pdoFetch.class',
     ),
+    /*
     'pdoParser.class' => array(
         'xtype' => 'textfield',
         'value' => 'pdotools.pdoparser',
         'key' => 'pdoParser.class',
     ),
-    'class_path' => array(
-        'xtype' => 'textfield',
-        'value' => '',
-    ),
     */
+    'pdotools_class_path' => array(
+        'xtype' => 'textfield',
+        'value' => '{core_path}components/pdotools/model/',
+        'key' => 'pdotools_class_path',
+    ),
+    'pdofetch_class_path' => array(
+        'xtype' => 'textfield',
+        'value' => '{core_path}components/pdotools/model/',
+        'key' => 'pdofetch_class_path',
+    ),
     'fenom_default' => array(
         'xtype' => 'combo-boolean',
         'value' => true,
@@ -55,7 +61,7 @@ $tmp = array(
 );
 
 foreach ($tmp as $k => $v) {
-    /* @var modSystemSetting $setting */
+    /** @var modSystemSetting $setting */
     $setting = $modx->newObject('modSystemSetting');
     $setting->fromArray(array_merge(
         array(
