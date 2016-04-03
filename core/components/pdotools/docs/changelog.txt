@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.3.4 pl
+==============
+- [#200] Fixed &sortbyTV with dot in name.
+
 2.3.3 pl
 ==============
 - Added system plugin for "autoload" of main classes with respect to their paths in system settings.

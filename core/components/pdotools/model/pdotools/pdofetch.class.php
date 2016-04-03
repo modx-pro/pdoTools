@@ -463,23 +463,24 @@ class pdoFetch extends pdoTools
         $sorts = $this->replaceTVCondition($tmp);
         if (is_array($sorts)) {
             while (list($sortby, $sortdir) = each($sorts)) {
-                if (preg_match_all('/TV(.*?)[`|.]/', $sortby, $matches)) {
+                if (preg_match_all('#`TV(.*?)`#', $sortby, $matches)) {
                     foreach ($matches[1] as $tv) {
                         if (array_key_exists($tv, $this->config['tvsJoin'])) {
                             $params = $this->config['tvsJoin'][$tv]['tv'];
                             switch ($params['type']) {
                                 case 'number':
                                 case 'decimal':
-                                    $sortby = preg_replace('/(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)/',
+                                    $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
                                         'CAST($1 AS DECIMAL(13,3))', $sortby);
                                     break;
+                                case 'int':
                                 case 'integer':
-                                    $sortby = preg_replace('/(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)/',
+                                    $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
                                         'CAST($1 AS SIGNED INTEGER)', $sortby);
                                     break;
                                 case 'date':
                                 case 'datetime':
-                                    $sortby = preg_replace('/(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)/',
+                                    $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
                                         'CAST($1 AS DATETIME)', $sortby);
                                     break;
                             }
