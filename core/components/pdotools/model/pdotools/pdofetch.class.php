@@ -489,7 +489,14 @@ class pdoFetch extends pdoTools
                 } elseif (array_key_exists($sortby, $fields)) {
                     $sortby = $this->config['class'] . '.' . $sortby;
                 }
-                $this->query->sortby($sortby, $sortdir);
+                // Escaping of columns names
+                $tmp = explode(',', $sortby);
+                array_walk($tmp, function (&$value) {
+                    if (strpos($value, '`') === false) {
+                        $value = preg_replace('#(.*?)\.(.*?)\s#', '`$1`.`$2`', $value);
+                    }
+                });
+                $this->query->sortby(implode(',', $tmp), $sortdir);
 
                 $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
                 $time = microtime(true);

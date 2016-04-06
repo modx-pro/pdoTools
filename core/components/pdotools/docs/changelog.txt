@@ -1,8 +1,12 @@
 Changelog for pdoTools.
 
+2.3.5 pl
+==============
+- [pdoFetch] Added escaping of columns names in query.
+
 2.3.4 pl
 ==============
-- [#200] Fixed &sortbyTV with dot in name.
+- [#200] [pdoFetch] Fixed &sortbyTV with dot in name.
 
 2.3.3 pl
 ==============
