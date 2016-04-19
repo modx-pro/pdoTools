@@ -866,10 +866,11 @@ class pdoTools
      * @param array $tmp Array with rows
      * @param string $id Name of primary key
      * @param string $parent Name of parent key
+     * @param array $roots Allowed roots of nodes
      *
      * @return array
      */
-    public function buildTree($tmp = array(), $id = 'id', $parent = 'parent')
+    public function buildTree($tmp = array(), $id = 'id', $parent = 'parent', array $roots = array())
     {
         $time = microtime(true);
 
@@ -896,7 +897,7 @@ class pdoTools
             }
 
             foreach ($rows as $id => &$row) {
-                if (empty($row[$parent])) {
+                if (empty($row[$parent]) || (!isset($rows[$row[$parent]]) && in_array($id, $roots))) {
                     $tree[$id] = &$row;
                 } else {
                     $rows[$row[$parent]]['children'][$id] = &$row;

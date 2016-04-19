@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.4.0 pl
 ==============
 - [pdoResources] Faster processing of additional snippet parameters to placeholders.
+- [#123] [pdoMenu] Fixed bug with &displayStart and unpublished root nodes.
 
 2.3.5 pl
 ==============

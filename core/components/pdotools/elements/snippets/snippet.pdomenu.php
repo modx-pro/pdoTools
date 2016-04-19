@@ -148,7 +148,7 @@ if ($cache) {
 }
 if (empty($tree)) {
     $data = $pdoMenu->pdoTools->run();
-    $data = $pdoMenu->pdoTools->buildTree($data);
+    $data = $pdoMenu->pdoTools->buildTree($data, 'id', 'parent', $specified_parents);
     $tree = array();
     foreach ($data as $k => $v) {
         if (empty($v['id'])) {
