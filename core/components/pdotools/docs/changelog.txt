@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.4.0 pl
+==============
+- [pdoResources] Faster processing of additional snippet parameters to placeholders.
+
 2.3.5 pl
 ==============
 - [pdoFetch] Added escaping of columns names in query.

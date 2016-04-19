@@ -7,11 +7,16 @@ if (!empty($returnIds)) {
     $scriptProperties['return'] = 'ids';
 }
 
-// Adding extra parameters into special place so we can put them in results
+// Adding extra parameters into special place so we can put them in a results
 /** @var modSnippet $snippet */
-$additionalPlaceholders = array();
-if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
+$additionalPlaceholders = $properties = array();
+if (isset($this) && $this instanceof modSnippet) {
+    $properties = $this->get('properties');
+}
+elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
     $properties = $snippet->get('properties');
+}
+if (!empty($properties)) {
     foreach ($scriptProperties as $k => $v) {
         if (!isset($properties[$k])) {
             $additionalPlaceholders[$k] = $v;

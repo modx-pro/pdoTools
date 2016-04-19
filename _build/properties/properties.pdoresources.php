@@ -74,8 +74,8 @@ $tmp = array(
     'includeContent' => array(
         'type' => 'combo-boolean',
         'value' => false,
-    )
-,
+    ),
+
     'includeTVs' => array(
         'type' => 'textfield',
         'value' => '',
@@ -103,8 +103,8 @@ $tmp = array(
     'tvFiltersOrDelimiter' => array(
         'type' => 'textfield',
         'value' => '||',
-    )
-,
+    ),
+
     'where' => array(
         'type' => 'textfield',
         'value' => '',
@@ -132,8 +132,8 @@ $tmp = array(
     'idx' => array(
         'type' => 'numberfield',
         'value' => '',
-    )
-,
+    ),
+
     'first' => array(
         'type' => 'numberfield',
         'value' => '',
@@ -209,30 +209,12 @@ $tmp = array(
     'scheme' => array(
         'type' => 'list',
         'options' => array(
-            array(
-                'name' => 'System default',
-                'value' => '',
-            ),
-            array(
-                'name' => '-1 (relative to site_url)',
-                'value' => -1,
-            ),
-            array(
-                'name' => 'full (absolute, prepended with site_url)',
-                'value' => 'full',
-            ),
-            array(
-                'name' => 'abs (absolute, prepended with base_url)',
-                'value' => 'abs',
-            ),
-            array(
-                'name' => 'http (absolute, forced to http scheme)',
-                'value' => 'http',
-            ),
-            array(
-                'name' => 'https (absolute, forced to https scheme)',
-                'value' => 'https',
-            ),
+            array('name' => 'System default', 'value' => ''),
+            array('name' => '-1 (relative to site_url)', 'value' => -1),
+            array('name' => 'full (absolute, prepended with site_url)', 'value' => 'full'),
+            array('name' => 'abs (absolute, prepended with base_url)', 'value' => 'abs'),
+            array('name' => 'http (absolute, forced to http scheme)', 'value' => 'http'),
+            array('name' => 'https (absolute, forced to https scheme)', 'value' => 'https'),
         ),
         'value' => '',
     ),
