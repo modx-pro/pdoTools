@@ -67,8 +67,6 @@ class pdoMenu
         }
 
         $modx->lexicon->load('pdotools:pdomenu');
-
-        return true;
     }
 
 
@@ -372,9 +370,8 @@ class pdoMenu
             if ($q->prepare() && $q->stmt->execute()) {
                 $this->modx->queryTime += microtime(true) - $tstart;
                 $this->modx->executedQueries++;
-                $res = $q->stmt->fetch(PDO::FETCH_COLUMN);
 
-                return (boolean)$res;
+                return (bool)$q->stmt->fetchColumn();
             }
         }
 

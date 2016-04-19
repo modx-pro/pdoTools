@@ -27,8 +27,6 @@ class pdoPage
         }
 
         $modx->lexicon->load('pdotools:pdopage');
-
-        return true;
     }
 
 
