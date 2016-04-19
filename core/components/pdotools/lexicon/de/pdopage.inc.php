@@ -1,11 +1,11 @@
 <?php
 /**
- * pdoPage German Lexicon Entries for pdoTools
+ * pdoPage German Lexicon Entries for pdoPage
  *
  * @package pdotools
  * @subpackage lexicon
  * @language de
- * 
+ *
  * pdoTools translated to German by Jan-Christoph Ihrens (enigmatic_user, enigma@lunamail.de)
  */
 $_lang['pdopage_first'] = 'Erste';

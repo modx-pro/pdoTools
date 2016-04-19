@@ -87,7 +87,7 @@ $_lang['pdotools_prop_topLevel'] = 'Selects parent of specified "&id" on level "
 
 $_lang['pdotools_prop_forceXML'] = 'Force the output page as xml.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Schema of sitemap.';
-$_lang['pdotools_prop_scheme'] = 'Scheme of generation of url, goes to modX::makeUrl().';
+$_lang['pdotools_prop_scheme'] = 'Scheme of generation of links: "uri" for the substitution of document uri (very fast) or a parameter to modX::makeUrl().';
 
 $_lang['pdotools_prop_field_default'] = 'Specify an additional resource field the content of which will be returned if the field specified in "&field" is empty.';
 $_lang['pdotools_prop_field_output'] = 'This string will be returned if the the fields specified in "&default" and "&field" are empty.';
@@ -181,3 +181,9 @@ $_lang['pdotools_prop_minQuery'] = 'The minimum length of the search query to be
 $_lang['pdotools_prop_queryVarKey'] = 'The name of variable for the search query in the url.';
 $_lang['pdotools_prop_titleField'] = 'Field of the current resource to be displayed in the page title.';
 $_lang['pdotools_prop_strictMode'] = 'Strict mode. pdoPage do redirects when loading non-existent pages.';
+
+$_lang['pdotools_prop_tplYear'] = 'Template for the year';
+$_lang['pdotools_prop_tplMonth'] = 'Template for the month';
+$_lang['pdotools_prop_tplDay'] = 'Template for the day';
+$_lang['pdotools_prop_dateField'] = 'The field of resource for obtaining document date: createdon, publishedon, or editedon.';
+$_lang['pdotools_prop_dateFormat'] = 'The date format for the function strftime()';

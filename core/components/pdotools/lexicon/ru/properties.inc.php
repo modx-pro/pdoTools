@@ -85,7 +85,7 @@ $_lang['pdotools_prop_topLevel'] = 'Выбирает родителя указа
 
 $_lang['pdotools_prop_forceXML'] = 'Принудительно выводить страницу как xml.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Схема карты сайта.';
-$_lang['pdotools_prop_scheme'] = 'Схема формирования url, передаётся в modX::makeUrl().';
+$_lang['pdotools_prop_scheme'] = 'Схема формирования ссылок: "uri" для подстановки поля uri документа (очень быстро) или параметр для modX::makeUrl().';
 
 $_lang['pdotools_prop_field_default'] = 'Укажите дополнительное поле ресурса, которое вернётся, если "&field" окажется пуст.';
 $_lang['pdotools_prop_field_output'] = 'Указанная здесь строка вернётся, если и "&default" и "&field" оказались пустыми.';
@@ -179,3 +179,9 @@ $_lang['pdotools_prop_minQuery'] = 'Минимальная длина поиск
 $_lang['pdotools_prop_queryVarKey'] = 'Имя переменной поискового запроса в url.';
 $_lang['pdotools_prop_titleField'] = 'Поле текущего ресурса для вывода в заголовке страницы.';
 $_lang['pdotools_prop_strictMode'] = 'Строгий режим работы. pdoPage делает редиректы при загрузке несуществующих страниц.';
+
+$_lang['pdotools_prop_tplYear'] = 'Шаблон для оформления года';
+$_lang['pdotools_prop_tplMonth'] = 'Шаблон для оформления месяца';
+$_lang['pdotools_prop_tplDay'] = 'Шаблон для оформления дня';
+$_lang['pdotools_prop_dateField'] = 'Поле ресурса для получения даты документа: createdon, publishedon или editedon.';
+$_lang['pdotools_prop_dateFormat'] = 'Формат даты для функции strftime()';
