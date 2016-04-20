@@ -254,8 +254,8 @@ class pdoMenu
         if ($row_id == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['selfClass'])) {
             $classes[] = $this->pdoTools->config['selfClass'];
         }
-        if (!empty($row['class_key']) && $row['class_key'] == 'modWebLink' && !empty($this->pdoTools->config['weblinkClass'])) {
-            $classes[] = $this->pdoTools->config['weblinkClass'];
+        if (!empty($row['class_key']) && $row['class_key'] == 'modWebLink' && !empty($this->pdoTools->config['webLinkClass'])) {
+            $classes[] = $this->pdoTools->config['webLinkClass'];
         }
 
         return implode(' ', $classes);

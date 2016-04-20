@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [pdoResources] Faster processing of additional snippet parameters to placeholders.
 - [#123] [pdoMenu] Fixed bug with &displayStart and unpublished root nodes.
+- [#207] [pdoMenu] Fixed &webLinkClass option.
 
 2.3.5 pl
 ==============
