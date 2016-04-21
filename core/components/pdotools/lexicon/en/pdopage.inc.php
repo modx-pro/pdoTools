@@ -1,6 +1,6 @@
 <?php
 /**
- * pdoPage English Lexicon Entries for pdoTools
+ * pdoPage English Lexicon Entries for pdoPage
  *
  * @package pdotools
  * @subpackage lexicon

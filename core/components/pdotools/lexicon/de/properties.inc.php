@@ -5,7 +5,7 @@
  * @package pdotools
  * @subpackage lexicon
  * @language de
- * 
+ *
  * pdoTools translated to German by Jan-Christoph Ihrens (enigmatic_user, enigma@lunamail.de)
  */
 $_lang['pdotools_prop_context'] = 'Gibt an, in welchem Kontext gesucht werden soll.';
@@ -89,7 +89,7 @@ $_lang['pdotools_prop_topLevel'] = 'Wählt das Elternelement der angegebenen "id
 
 $_lang['pdotools_prop_forceXML'] = 'Erzwingt die Ausgabe der Seite im XML-Format.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Schema der Sitemap.';
-$_lang['pdotools_prop_scheme'] = 'Schema der URL-Generierung, wird an modX::makeUrl() übergeben.';
+$_lang['pdotools_prop_scheme'] = 'Schema der Generierung der links: "uri" für die Ersetzung der Dokument-uri (sehr schnell) oder ein parameter für modX::makeUrl().';
 
 $_lang['pdotools_prop_field_default'] = 'Geben Sie ein zusätzliches Ressourcen-Feld an, dessen Inhalt zurückgegeben wird, wenn das in "field" angegebene Feld der Ressource leer ist.';
 $_lang['pdotools_prop_field_output'] = 'Der hier eingegebene Text wird zurückgegeben, wenn die in "default" und "field" definierten Felder der Ressource leer sind.';
@@ -183,3 +183,9 @@ $_lang['pdotools_prop_minQuery'] = 'Die minimale Länge der Suchanfrage angezeig
 $_lang['pdotools_prop_queryVarKey'] = 'Der name der variable für den Suchbegriff in der url.';
 $_lang['pdotools_prop_titleField'] = 'Feld der aktuellen Ressource angezeigt in den Titel der Seite.';
 $_lang['pdotools_prop_strictMode'] = 'Strict-Modus. pdoPage tun leitet beim laden nicht existierenden Seiten.';
+
+$_lang['pdotools_prop_tplYear'] = 'Template für das Jahr';
+$_lang['pdotools_prop_tplMonth'] = 'Template für den Monat';
+$_lang['pdotools_prop_tplDay'] = 'Vorlage für das Tag';
+$_lang['pdotools_prop_dateField'] = 'Das Feld der Ressource für den Erhalt von Dokument-Datum: createdon, publishedon, oder editedon.';
+$_lang['pdotools_prop_dateFormat'] = 'Datum-format für die Funktion strftime()';

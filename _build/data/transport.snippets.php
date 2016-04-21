@@ -12,6 +12,7 @@ $tmp = array(
     'pdoPage' => 'pdopage',
     'pdoMenu' => 'pdomenu',
     'pdoTitle' => 'pdotitle',
+    'pdoArchive' => 'pdoarchive',
 );
 
 foreach ($tmp as $k => $v) {
