@@ -42,6 +42,10 @@ $tmp = array(
         'value' => '@INLINE <div class="neighbors">[[+prev]][[+up]][[+next]]</div>',
         'desc' => 'pdotools_prop_neighbors_tplWrapper',
     ),
+    'wrapIfEmpty' => array(
+        'type' => 'combo-boolean',
+        'value' => false,
+    ),
 
     'showUnpublished' => array(
         'type' => 'combo-boolean',

@@ -166,9 +166,13 @@ if (!empty($toSeparatePlaceholders)) {
     $output['log'] = $log;
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
 } else {
-    $output = !empty($tplWrapper)
-        ? $pdoFetch->getChunk($tplWrapper, $output, $fastMode)
-        : $pdoFetch->getChunk('', $output);
+    if (!empty($rows) || !empty($wrapIfEmpty)) {
+        $output = !empty($tplWrapper)
+            ? $pdoFetch->getChunk($tplWrapper, $output, $fastMode)
+            : $pdoFetch->getChunk('', $output);
+    } else {
+        $output = '';
+    }
     $output .= $log;
 
     if (!empty($toPlaceholder)) {
