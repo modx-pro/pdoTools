@@ -6,6 +6,7 @@ Changelog for pdoTools.
 - [#123] [pdoMenu] Fixed bug with &displayStart and unpublished root nodes.
 - [#207] [pdoMenu] Fixed &webLinkClass option.
 - [#193] [pdoNeighbors] Added parameter &wrapIfEmpty.
+- [#203] [Fenom] Added more PCRE modifiers.
 
 2.3.5 pl
 ==============
