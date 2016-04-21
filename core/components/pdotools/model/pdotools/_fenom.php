@@ -269,7 +269,7 @@ class FenomX extends Fenom
             return !$modx->user->isAuthenticated($ctx);
         };
 
-        // MODX functions
+        // MODX Functions
 
         $this->_modifiers['url'] = function ($id, $options = array(), $args = array()) use ($pdo) {
             return $pdo->makeUrl($id, $options, $args);
@@ -392,74 +392,67 @@ class FenomX extends Fenom
         };
 
 
-        /*  PCRE Modifiers
-         *  take from https://github.com/jasny/twig-extensions/blob/master/src/Jasny/Twig/PcreExtension.php
-         */
+        // PCRE Modifiers
+        // Took from https://github.com/jasny/twig-extensions/blob/master/src/Jasny/Twig/PcreExtension.php
+
         $this->_modifiers['preg_quote'] = function ($value, $delimiter = '/') {
-            if (!isset($value)) {
-                return null;
-            }
             return preg_quote($value, $delimiter);
         };
 
-        $this->_modifiers['preg_match'] = function ($value, $pattern) {
-            $this->assertNoEval($pattern);
-            if (!isset($value)) {
-                return null;
-            }
+        $this->_modifiers['preg_match'] = function ($value, $pattern) use ($fenom) {
+            $fenom->_assertNoEval($pattern);
+
             return preg_match($pattern, $value);
         };
 
-        $this->_modifiers['preg_get'] = function ($value, $pattern, $group = 0) {
-            $this->assertNoEval($pattern);
-            if (!isset($value)) {
-                return null;
-            }
+        $this->_modifiers['preg_get'] = function ($value, $pattern, $group = 0) use ($fenom) {
+            $fenom->_assertNoEval($pattern);
             if (!preg_match($pattern, $value, $matches)) {
                 return null;
             }
-            return isset($matches[$group]) ? $matches[$group] : null;
+
+            return isset($matches[$group])
+                ? $matches[$group]
+                : null;
         };
 
-        $this->_modifiers['preg_get_all'] = function ($value, $pattern, $group = 0) {
-            $this->assertNoEval($pattern);
-            if (!isset($value)) {
-                return null;
+        $this->_modifiers['preg_get_all'] = function ($value, $pattern, $group = 0) use ($fenom) {
+            $fenom->_assertNoEval($pattern);
+            if (!preg_match_all($pattern, $value, $matches, PREG_PATTERN_ORDER)) {
+                return array();
             }
-            if (!preg_match_all($pattern, $value, $matches, PREG_PATTERN_ORDER)) return array();
-            return isset($matches[$group]) ? $matches[$group] : array();
+
+            return isset($matches[$group])
+                ? $matches[$group]
+                : array();
         };
 
-        $this->_modifiers['preg_grep'] = function ($values, $pattern, $flags = '') {
-            $this->assertNoEval($pattern);
-            if (!isset($values)) {
-                return null;
+        $this->_modifiers['preg_grep'] = function ($value, $pattern, $flags = '') use ($fenom) {
+            $fenom->_assertNoEval($pattern);
+            if (is_string($flags)) {
+                $flags = $flags == 'invert'
+                    ? PREG_GREP_INVERT
+                    : 0;
             }
-            if (is_string($flags)) $flags = $flags == 'invert' ? PREG_GREP_INVERT : 0;
-            return preg_grep($pattern, $values, $flags);
+
+            return preg_grep($pattern, $value, $flags);
         };
 
-        $this->_modifiers['preg_replace'] = function ($value, $pattern, $replacement='', $limit=-1) {
-            $this->assertNoEval($pattern);
-            if (!isset($value)) {
-                return null;
-            }
+        $this->_modifiers['preg_replace'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
+            $fenom->_assertNoEval($pattern);
+
             return preg_replace($pattern, $replacement, $value, $limit);
         };
 
-        $this->_modifiers['preg_filter'] = function ($value, $pattern, $replacement='', $limit=-1) {
-            $this->assertNoEval($pattern);
-            if (!isset($value)) {
-                return null;
-            }
+        $this->_modifiers['preg_filter'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
+            $fenom->_assertNoEval($pattern);
+
             return preg_filter($pattern, $replacement, $value, $limit);
         };
 
-        $this->_modifiers['preg_split'] = function ($value, $pattern) {
-            $this->assertNoEval($pattern);
-            if (!isset($value)) {
-                return null;
-            }
+        $this->_modifiers['preg_split'] = function ($value, $pattern) use ($fenom) {
+            $fenom->_assertNoEval($pattern);
+
             return preg_split($pattern, $value);
         };
 
@@ -469,12 +462,18 @@ class FenomX extends Fenom
     /**
      * Check that the regex doesn't use the eval modifier
      *
-     * @param string $pattern
+     * @param $pattern
+     *
+     * @throws Exception
      */
-    protected function assertNoEval($pattern)
+    protected function _assertNoEval($pattern)
     {
-        if (preg_match('/(.).*\1(.+)$/', trim($pattern), $match) && strpos($match[1], 'e') !== false) {
-            throw new \Exception("Using the eval modifier for regular expressions is not allowed");
+        if (is_array($pattern)) {
+            foreach ($pattern as $item) {
+                $this->_assertNoEval($item);
+            }
+        } elseif (preg_match('/(.).*\1(.+)$/', trim($pattern), $match) && strpos($match[2], 'e') !== false) {
+            throw new LogicException("Using the eval modifier for regular expressions is not allowed: \"$pattern\"");
         }
     }
 
