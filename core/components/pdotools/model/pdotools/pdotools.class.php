@@ -227,22 +227,35 @@ class pdoTools
         if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
             $tmp = $this->modx->fromJSON($this->config['loadModels']);
             foreach ($tmp as $k => $v) {
-                $v = trim(strtolower($v));
-                $models[$k] = (strpos($v, MODX_CORE_PATH) === false)
-                    ? MODX_CORE_PATH . ltrim($v, '/')
-                    : $v;
+                if (!is_array($v)) {
+                    $v = array(
+                        'path' => trim(strtolower($v)),
+                    );
+                }
+                $v = array_merge(array(
+                    'path' => MODX_CORE_PATH . 'components/' . strtolower($k) . '/model/',
+                    'prefix' => null,
+                ), $v);
+                if (strpos($v['path'], MODX_CORE_PATH) === false) {
+                    $v['path'] = MODX_CORE_PATH . ltrim($v['path'], '/');
+                }
+                $models[$k] = $v;
             }
         } else {
             $tmp = array_map('trim', explode(',', $this->config['loadModels']));
             foreach ($tmp as $v) {
-                $models[$v] = MODX_CORE_PATH . 'components/' . strtolower($v) . '/model/';
+                $parts = explode(':', $v, 2);
+                $models[$parts[0]] = array(
+                    'path' => MODX_CORE_PATH . 'components/' . strtolower($parts[0]) . '/model/',
+                    'prefix' => count($parts) > 1 ? $parts[1] : null,
+                );
             }
         }
 
         if (!empty($models)) {
             foreach ($models as $k => $v) {
-                $t = '/' . str_replace(MODX_BASE_PATH, '', $v);
-                if ($this->modx->addPackage(strtolower($k), $v)) {
+                $t = '/' . str_replace(MODX_BASE_PATH, '', $v['path']);
+                if ($this->modx->addPackage(strtolower($k), $v['path'], $v['prefix'])) {
                     $this->addTime('Loaded model "' . $k . '" from "' . $t . '"', microtime(true) - $time);
                 } else {
                     $this->addTime('Could not load model "' . $k . '" from "' . $t . '"', microtime(true) - $time);
