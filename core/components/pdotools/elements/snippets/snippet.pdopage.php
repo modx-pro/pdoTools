@@ -193,10 +193,12 @@ if (empty($data)) {
             if ($page > 1) {
                 $modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url,
                         $page - 1) . '"/>');
+                $modx->setPlaceholder('page.prev', '' . $pdoPage->makePageLink($url,$page - 1) . '');
             }
             if ($page < $pageCount) {
                 $modx->regClientStartupHTMLBlock('<link rel="next" href="' . $pdoPage->makePageLink($url,
                         $page + 1) . '"/>');
+                $modx->setPlaceholder('page.next', '' . $pdoPage->makePageLink($url,$page + 1) . '');
             }
         }
 
