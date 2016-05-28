@@ -27,6 +27,8 @@ $_lang['setting_parser_class_desc'] = 'Класс парсера, который
 $_lang['setting_parser_class_path'] = 'Путь к классу парсера';
 $_lang['setting_parser_class_path_desc'] = 'Директории с классом парсера, из которого он будет загружен, используя FQN имя.';
 
+$_lang['setting_pdotools_elements_path'] = 'Путь к элементам';
+$_lang['setting_pdotools_elements_path_desc'] = 'Директория, в которой хранятся файлы элементов для загрузки через @FILE.';
 $_lang['setting_pdotools_fenom_default'] = 'Использовать Fenom в чанках';
 $_lang['setting_pdotools_fenom_default_desc'] = 'Сниппеты pdoTools будут использовать шаблонизатор Fenom для обработки чанков.';
 $_lang['setting_pdotools_fenom_parser'] = 'Использовать Fenom на страницах';

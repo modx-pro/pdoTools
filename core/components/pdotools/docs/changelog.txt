@@ -1,5 +1,13 @@
 Changelog for pdoTools.
 
+2.5.0 pl
+==============
+- Improved support of debugParser.
+- [#209] Improved loading of the models.
+- [Fenom] New modifiers: "snippet" and "chunk".
+- [Fenom] New elements provider: "file".
+- New method pdoTools::runSnippet().
+
 2.4.0 pl
 ==============
 - Added snippet pdoArchive.

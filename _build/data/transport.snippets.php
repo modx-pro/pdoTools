@@ -16,8 +16,9 @@ $tmp = array(
 );
 
 foreach ($tmp as $k => $v) {
-    /* @avr modSnippet $snippet */
+    /** @var modSnippet $snippet */
     $snippet = $modx->newObject('modSnippet');
+    /** @noinspection PhpUndefinedVariableInspection */
     $snippet->fromArray(array(
         'id' => 0,
         'name' => $k,
@@ -28,6 +29,7 @@ foreach ($tmp as $k => $v) {
         'static_file' => 'core/components/' . PKG_NAME_LOWER . '/elements/snippets/snippet.' . $v . '.php',
     ), '', true, true);
 
+    /** @noinspection PhpIncludeInspection */
     $properties = include $sources['build'] . 'properties/properties.' . $v . '.php';
     $snippet->setProperties($properties);
 

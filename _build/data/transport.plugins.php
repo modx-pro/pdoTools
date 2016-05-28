@@ -7,6 +7,7 @@ $tmp = array(
         'description' => '',
         'events' => array(
             'OnMODXInit' => -100,
+            'OnSiteRefresh' => 0,
         ),
     ),
 );
@@ -14,6 +15,7 @@ $tmp = array(
 foreach ($tmp as $k => $v) {
     /** @var modplugin $plugin */
     $plugin = $modx->newObject('modPlugin');
+    /** @noinspection PhpUndefinedVariableInspection */
     $plugin->fromArray(array(
         'name' => $k,
         'description' => @$v['description'],

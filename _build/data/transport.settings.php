@@ -58,6 +58,11 @@ $tmp = array(
         'xtype' => 'textfield',
         'value' => '',
     ),
+
+    'elements_path' => array(
+        'xtype' => 'textfield',
+        'value' => '{core_path}elements/',
+    ),
 );
 
 foreach ($tmp as $k => $v) {

@@ -27,6 +27,8 @@ $_lang['setting_parser_class_desc'] = 'Parser-Klasse wird verwendet, um die MODX
 $_lang['setting_parser_class_path'] = 'Der Pfad zum parser';
 $_lang['setting_parser_class_path_desc'] = 'Base Pfad zum parser-Klasse, von dem es geladen wird, mit FQN.';
 
+$_lang['setting_pdotools_elements_path'] = 'Pfad der Elemente';
+$_lang['setting_pdotools_elements_path_desc'] = 'Verzeichnis mit Datei-Elemente zu laden via @FILE Bindung';
 $_lang['setting_pdotools_fenom_default'] = 'Verwenden Sie Fenom für chunks';
 $_lang['setting_pdotools_fenom_default_desc'] = 'pdoTools snippets verwenden Sie die Template-engine Fenom für chunk-Verarbeitung.';
 $_lang['setting_pdotools_fenom_parser'] = 'Verwenden Sie Fenom für Seiten';

@@ -27,6 +27,8 @@ $_lang['setting_parser_class_desc'] = 'Parser class that will be used to process
 $_lang['setting_parser_class_path'] = 'The path to the parser';
 $_lang['setting_parser_class_path_desc'] = 'Base path to parser class from which it will be loaded with FQN.';
 
+$_lang['setting_pdotools_elements_path'] = 'Path to elements';
+$_lang['setting_pdotools_elements_path_desc'] = 'Directory with file elements to load via @FILE binding.';
 $_lang['setting_pdotools_fenom_default'] = 'Use Fenom for chunks';
 $_lang['setting_pdotools_fenom_default_desc'] = 'pdoTools snippets will use the templating engine Fenom for chunk processing.';
 $_lang['setting_pdotools_fenom_parser'] = 'Use Fenom for pages';

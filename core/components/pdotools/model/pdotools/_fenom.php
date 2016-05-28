@@ -24,31 +24,30 @@ class FenomX extends Fenom
         if (!class_exists('modChunkProvider')) {
             require dirname(dirname(__FILE__)) . '/fenom/Providers/ModChunk.php';
             require dirname(dirname(__FILE__)) . '/fenom/Providers/ModTemplate.php';
+            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModFile.php';
         }
         $provider = new modChunkProvider($pdoTools);
 
         parent::__construct($provider);
 
-        $cache = MODX_CORE_PATH . 'cache/';
-        if (!file_exists($cache)) {
-            mkdir($cache);
-        }
-        $this->setCompileDir($cache);
+        $this->setCompileDir(rtrim($pdoTools->config['cachePath'], '/') . '/file');
         $this->addProvider('template', new modTemplateProvider($pdoTools));
+        $this->addProvider('file', new modFileProvider($pdoTools));
 
         $default_options = array(
-            'force_compile' => true,
-            'disable_cache' => true,
-            'force_include' => true,
+            'disable_cache' => !$pdoTools->config['useFenomCache'],
+            'force_compile' => !$pdoTools->config['useFenomCache'],
+            'force_include' => !$pdoTools->config['useFenomCache'],
+            'auto_reload' => $pdoTools->config['useFenomCache'],
         );
-        if (!$pdoTools->config['useFenomPHP']) {
-            $this->removeAccessor('php');
-            $default_options['disable_native_funcs'] = true;
-        }
         if ($options = $pdoTools->modx->fromJSON($pdoTools->modx->getOption('pdotools_fenom_options'))) {
-            $options = array_merge($options, $default_options);
+            $options = array_merge($default_options, $options);
         } else {
             $options = $default_options;
+        }
+        if (!$pdoTools->config['useFenomPHP']) {
+            $this->removeAccessor('php');
+            $options['disable_native_funcs'] = true;
         }
         $this->setOptions($options);
 
@@ -56,6 +55,32 @@ class FenomX extends Fenom
         $this->modx = $pdoTools->modx;
 
         $this->_addDefaultModifiers();
+    }
+
+
+    /**
+     * Set compile directory
+     *
+     * @param string $dir directory to store compiled templates in
+     *
+     * @throws LogicException
+     * @return Fenom
+     */
+    public function setCompileDir($dir)
+    {
+        $dir = str_replace(MODX_BASE_PATH, '', $dir);
+        $path = MODX_BASE_PATH;
+        $tmp = explode('/', trim($dir, '/'));
+        foreach ($tmp as $v) {
+            if (!empty($v)) {
+                $path .= $v . '/';
+            }
+            if (!file_exists($path)) {
+                mkdir($path);
+            }
+        }
+
+        return parent::setCompileDir($path);
     }
 
 
@@ -237,7 +262,8 @@ class FenomX extends Fenom
 
         $this->_modifiers['ismember'] =
         $this->_modifiers['memberof'] =
-        $this->_modifiers['mo'] = function ($id, $groups = array()) use ($modx) {
+        $this->_modifiers['mo'] = function ($id, $groups = array()) use ($modx, $pdo) {
+            $pdo->debugParserModifier($id, 'ismember', $groups);
             if (empty($id)) {
                 $id = $modx->user->get('id');
             }
@@ -246,11 +272,13 @@ class FenomX extends Fenom
             }
 
             /** @var $user modUser */
+            $member = false;
             if ($user = $modx->getObject('modUser', $id)) {
-                return $user->isMember($groups);
+                $member = $user->isMember($groups);
             }
+            $pdo->debugParserModifier($id, 'ismember', $groups);
 
-            return false;
+            return $member;
         };
 
         $this->_modifiers['isloggedin'] = function ($ctx = null) use ($modx) {
@@ -272,7 +300,12 @@ class FenomX extends Fenom
         // MODX Functions
 
         $this->_modifiers['url'] = function ($id, $options = array(), $args = array()) use ($pdo) {
-            return $pdo->makeUrl($id, $options, $args);
+            $properties = array_merge($options, $args);
+            $pdo->debugParserModifier($id, 'url', $properties);
+            $url = $pdo->makeUrl($id, $options, $args);
+            $pdo->debugParserModifier($id, 'url', $properties);
+
+            return $url;
         };
 
         $this->_modifiers['lexicon'] = function ($key, $params = array(), $language = '') use ($modx) {
@@ -280,7 +313,8 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['user'] =
-        $this->_modifiers['userinfo'] = function ($id, $field = 'username') use ($modx) {
+        $this->_modifiers['userinfo'] = function ($id, $field = 'username') use ($modx, $pdo) {
+            $pdo->debugParserModifier($id, 'user', $field);
             if (empty($id)) {
                 $id = $modx->user->get('id');
             }
@@ -298,11 +332,13 @@ class FenomX extends Fenom
                     $output = $data[$field];
                 }
             }
+            $pdo->debugParserModifier($id, 'user', $field);
 
             return $output;
         };
 
         $this->_modifiers['resource'] = function ($id, $field = null) use ($pdo, $modx, $fenom) {
+            $pdo->debugParserModifier($id, 'resource');
             /** @var modResource $resource */
             if (empty($id)) {
                 $resource = $modx->resource;
@@ -326,8 +362,25 @@ class FenomX extends Fenom
                     $output = $resource->toArray();
                 }
             }
+            $pdo->debugParserModifier($id, 'resource');
 
             return $output;
+        };
+
+        $this->_modifiers['snippet'] = function ($name, $params = array()) use ($pdo) {
+            $pdo->debugParserModifier($name, $params);
+            $result = $pdo->runSnippet($name, $params);
+            $pdo->debugParserModifier($name, $params);
+
+            return $result;
+        };
+
+        $this->_modifiers['chunk'] = function ($name, $params = array()) use ($pdo) {
+            $pdo->debugParserModifier($name, $params);
+            $result = $pdo->getChunk($name, $params);
+            $pdo->debugParserModifier($name, $params);
+
+            return $result;
         };
 
         // Developer Functions
@@ -387,7 +440,8 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['getOption'] =
-        $this->_modifiers['option'] = function ($key) use ($modx) {
+        $this->_modifiers['option'] =
+        $this->_modifiers['config'] = function ($key) use ($modx) {
             return $modx->getOption($key);
         };
 
@@ -492,30 +546,17 @@ class FenomX extends Fenom
         $pdo = $this->pdoTools;
 
         return function ($input, $options = null) use ($name, $modx, $pdo) {
-            /** @var modSnippet $snippet */
-            if (!$snippet = $pdo->getStore($name, 'snippet')) {
-                if ($snippet = $modx->getObject('modSnippet', array('name' => $name))) {
-                    $pdo->setStore($name, $snippet, 'snippet');
-                } else {
-                    $modx->log(modX::LOG_LEVEL_ERROR,
-                        "[pdoTools] Could not load snippet \"{$name}\" as Fenom modifier"
-                    );
-
-                    return $input;
-                }
-            }
-            $snippet->_cacheable = false;
-            $snippet->_processed = false;
-            $snippet->_content = '';
-            $result = $snippet->process(array(
+            $pdo->debugParserModifier($input, $name, $options);
+            $result = $pdo->runSnippet($name, array(
                 'input' => $input,
                 'options' => $options,
                 'pdoTools' => $pdo,
-            ));
+            ), false);
+            $pdo->debugParserModifier($input, $name, $options);
 
-            return !empty($result)
-                ? $result
-                : $input;
+            return $result === ''
+                ? $input
+                : $result;
         };
     }
 
