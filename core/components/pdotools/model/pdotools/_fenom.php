@@ -551,7 +551,7 @@ class FenomX extends Fenom
                 'input' => $input,
                 'options' => $options,
                 'pdoTools' => $pdo,
-            ), false);
+            ));
             $pdo->debugParserModifier($input, $name, $options);
 
             return $result === ''

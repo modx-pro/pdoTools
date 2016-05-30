@@ -331,11 +331,10 @@ class pdoTools
      *
      * @param string $name The name of the snippet.
      * @param array $properties An associative array of properties to pass them as snippet parameters.
-     * @param null $cacheable Set cache mode of snippet
      *
      * @return mixed The processed output of the Snippet.
      */
-    public function runSnippet($name, array $properties = array(), $cacheable = null)
+    public function runSnippet($name, array $properties = array())
     {
         $name = trim($name);
         /** @var array $data */
@@ -350,19 +349,12 @@ class pdoTools
 
         /** @var modSnippet $snippet */
         $snippet = $data['object'];
+        $snippet->_cacheable = $data['cacheable'];
+        $snippet->_processed = false;
+        $snippet->_propertyString = '';
+        $snippet->_tag = '';
 
-        if ($cacheable === null) {
-            $cacheable = $data['cacheable'];
-        }
-        if (!$cacheable) {
-            $snippet->_cacheable = false;
-            $snippet->_processed = false;
-        } else {
-            $snippet->_cacheable = true;
-        }
-        $properties = array_merge($data['properties'], $properties);
-
-        return $snippet->process($properties);
+        return $snippet->process(array_merge($data['properties'], $properties));
     }
 
 
@@ -1122,7 +1114,7 @@ class pdoTools
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
                 'row' => $row,
-            ), false);
+            ));
 
             $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
                 ? $this->modx->fromJSON($tmp, 1)
