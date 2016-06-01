@@ -60,6 +60,15 @@ if (!empty($_GET[$queryVarKey]) && strlen($_GET[$queryVarKey]) >= $minQuery && !
             $queryVarKey => $modx->stripTags($_GET[$queryVarKey]),
         ));
 }
+
+if (!empty($pagetitle) && !empty($prependToTitle)) {
+    $pagetitle = $prependToTitle.$pagetitle;
+}
+
+if (!empty($pagetitle) && !empty($appendToTitle)) {
+    $pagetitle .= $appendToTitle;
+}
+
 $title[] = $pagetitle;
 
 // Add pagination if exists
