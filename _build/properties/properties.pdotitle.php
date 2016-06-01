@@ -21,6 +21,14 @@ $tmp = array(
         'type' => 'textfield',
         'value' => 'longtitle',
     ),
+    'prependToTitle' => array(
+        'type' => 'textfield',
+        'value' => '',
+    ),
+    'appendToTitle' => array(
+        'type' => 'textfield',
+        'value' => '',
+    ),
 
     'cache' => array(
         'type' => 'numberfield',
