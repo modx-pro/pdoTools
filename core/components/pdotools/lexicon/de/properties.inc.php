@@ -182,6 +182,8 @@ $_lang['pdotools_prop_tplSearch'] = 'Template für die Suche im Titel der Seite.
 $_lang['pdotools_prop_minQuery'] = 'Die minimale Länge der Suchanfrage angezeigt in den Titel der Seite.';
 $_lang['pdotools_prop_queryVarKey'] = 'Der name der variable für den Suchbegriff in der url.';
 $_lang['pdotools_prop_titleField'] = 'Feld der aktuellen Ressource angezeigt in den Titel der Seite.';
+$_lang['pdotools_prop_prependToTitle'] = 'Prepend Text an den Titel der Seite.';
+$_lang['pdotools_prop_appendToTitle'] = 'Append Text auf den Titel der Seite.';
 $_lang['pdotools_prop_strictMode'] = 'Strict-Modus. pdoPage tun leitet beim laden nicht existierenden Seiten.';
 
 $_lang['pdotools_prop_tplYear'] = 'Template für das Jahr';
