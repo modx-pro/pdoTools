@@ -787,7 +787,10 @@ class pdoTools
             $cacheable = true;
         }
         // Load from cache
-        if ($element = $this->getStore($cache_name, $type)) {
+        $cache_key = !empty($propertySet)
+            ? md5($cache_name . '@' . $propertySet)
+            : $cache_name;
+        if ($element = $this->getStore($cache_key, $type)) {
             return $element;
         }
 
@@ -911,7 +914,7 @@ class pdoTools
             'binding' => strtolower($type),
             'cacheable' => $cacheable,
         );
-        $this->setStore($cache_name, $data, $type);
+        $this->setStore($cache_key, $data, $type);
 
         return $data;
     }
