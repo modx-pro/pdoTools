@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.5.2 pl
+==============
+- [#220] Cache code of snippet with respect to property set.
+
 2.5.1 pl
 ==============
 - Fixed cache of snippets in pdoTools::runSnippet().

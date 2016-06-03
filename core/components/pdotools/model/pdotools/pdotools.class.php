@@ -788,7 +788,7 @@ class pdoTools
         }
         // Load from cache
         $cache_key = !empty($propertySet)
-            ? md5($cache_name . '@' . $propertySet)
+            ? $cache_name . '@' . $propertySet
             : $cache_name;
         if ($element = $this->getStore($cache_key, $type)) {
             return $element;
