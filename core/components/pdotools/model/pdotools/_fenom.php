@@ -68,8 +68,8 @@ class FenomX extends Fenom
      */
     public function setCompileDir($dir)
     {
-        $dir = str_replace(MODX_BASE_PATH, '', $dir);
-        $path = MODX_BASE_PATH;
+        $dir = str_replace(MODX_CORE_PATH, '', $dir);
+        $path = MODX_CORE_PATH;
         $tmp = explode('/', trim($dir, '/'));
         foreach ($tmp as $v) {
             if (!empty($v)) {

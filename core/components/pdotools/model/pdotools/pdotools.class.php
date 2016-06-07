@@ -69,8 +69,7 @@ class pdoTools
             'scheme' => '',
             'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
             'elementsPath' => $this->modx->getOption('pdotools_elements_path', null, '{core_path}elements/', true),
-            'cachePath' => $this->modx->getOption('pdotools_cache_path', null, '{core_path}cache/default/pdotools',
-                true),
+            'cachePath' => '{core_path}cache/default/pdotools',
         ), $config);
 
         if ($clean_timings) {

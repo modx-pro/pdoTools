@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.5.3 pl
+==============
+- [#221] Fixed typo in month name.
+- [Fenom] Fixed path to compile dir.
+
 2.5.2 pl
 ==============
 - [#220] Cache code of snippet with respect to property set.
