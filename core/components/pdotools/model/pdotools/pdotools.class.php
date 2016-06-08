@@ -984,7 +984,8 @@ class pdoTools
             }
 
             foreach ($rows as $id => &$row) {
-                if (empty($row[$parent]) || (!isset($rows[$row[$parent]]) && in_array($id, $roots))) {
+                if (empty($row[$parent]) 
+                	|| (!isset($rows[$row[$parent]]) && (in_array($id, $roots) || in_array($row[$parent], $roots)))) {
                     $tree[$id] = &$row;
                 } else {
                     $rows[$row[$parent]]['children'][$id] = &$row;
