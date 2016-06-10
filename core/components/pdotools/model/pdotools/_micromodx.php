@@ -522,6 +522,16 @@ class microMODX
 
         return $output;
     }
+    
+    /**
+     * @param string $alias
+     *
+     * @return string
+     */
+    public function cleanAlias($alias = '')
+    {
+        return modResource::filterPathSegment($this->modx, $alias);
+    }
 
 }
 
