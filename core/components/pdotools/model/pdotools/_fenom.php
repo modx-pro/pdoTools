@@ -300,7 +300,7 @@ class FenomX extends Fenom
         // Custom modifiers
 
         $this->_modifiers['decl'] =
-        $this->_modifiers['declension'] = function ($number, $variants, $delimiter = '|') use ($modx) {
+        $this->_modifiers['declension'] = function ($amount, $variants, $number = false, $delimiter = '|') use ($modx) {
             $variants = explode($delimiter, $variants);
             if (count($variants) < 2) {
                 $variants = array_fill(0, 3, $variants[0]);
@@ -308,8 +308,8 @@ class FenomX extends Fenom
                 $variants[2] = $variants[1];
             }
 
-            $modulusOneHundred = $number % 100;
-            switch ($number % 10) {
+            $modulusOneHundred = $amount % 100;
+            switch ($amount % 10) {
                 case 1:
                     $text = $modulusOneHundred == 11 ? $variants[2] : $variants[0];
                     break;
@@ -320,7 +320,7 @@ class FenomX extends Fenom
                 default: $text = $variants[2];
             }
 
-            return $text;
+            return $number ? join(' ', [$amount, $text]) : $text;
         };
 
         // MODX Functions
