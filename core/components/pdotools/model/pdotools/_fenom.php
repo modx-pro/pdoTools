@@ -297,6 +297,32 @@ class FenomX extends Fenom
             return !$modx->user->isAuthenticated($ctx);
         };
 
+        // Custom modifiers
+
+        $this->_modifiers['decl'] =
+        $this->_modifiers['declension'] = function ($number, $variants, $delimiter = '|') use ($modx) {
+            $variants = explode($delimiter, $variants);
+            if (count($variants) < 2) {
+                $variants = array_fill(0, 3, $variants[0]);
+            } elseif (count($variants) < 3) {
+                $variants[2] = $variants[1];
+            }
+
+            $modulusOneHundred = $number % 100;
+            switch ($number % 10) {
+                case 1:
+                    $text = $modulusOneHundred == 11 ? $variants[2] : $variants[0];
+                    break;
+                case 2: case 3: case 4:
+                $text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20) ? $variants[2] : $variants[1];
+                break;
+                case 5: case 6: case 7: case 8: case 9: case 0:
+                default: $text = $variants[2];
+            }
+
+            return $text;
+        };
+
         // MODX Functions
 
         $this->_modifiers['url'] = function ($id, $options = array(), $args = array()) use ($pdo) {
