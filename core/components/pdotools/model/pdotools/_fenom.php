@@ -311,16 +311,28 @@ class FenomX extends Fenom
             $modulusOneHundred = $amount % 100;
             switch ($amount % 10) {
                 case 1:
-                    $text = $modulusOneHundred == 11 ? $variants[2] : $variants[0];
+                    $text = $modulusOneHundred == 11
+                        ? $variants[2]
+                        : $variants[0];
                     break;
-                case 2: case 3: case 4:
-                $text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20) ? $variants[2] : $variants[1];
-                break;
-                case 5: case 6: case 7: case 8: case 9: case 0:
-                default: $text = $variants[2];
+                case 2:
+                case 3:
+                case 4:
+                    $text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20)
+                        ? $variants[2]
+                        : $variants[1];
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 0:
+                default:
+                    $text = $variants[2];
             }
 
-            return $number ? join(' ', [$amount, $text]) : $text;
+            return $number ? join(' ', array($amount, $text)) : $text;
         };
 
         // MODX Functions
