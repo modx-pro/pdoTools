@@ -320,7 +320,7 @@ class FenomX extends Fenom
                 default: $text = $variants[2];
             }
 
-            return $number ? join(' ', [$amount, $text]) : $text;
+            return $number ? join(' ', array($amount, $text)) : $text;
         };
 
         // MODX Functions
