@@ -299,28 +299,35 @@ class FenomX extends Fenom
 
         // Custom modifiers
 
-        $this->_modifiers['decl'] =
-        $this->_modifiers['declension'] = function ($amount, $variants, $number = false, $delimiter = '|') use ($modx) {
+        $this->_modifiers['declension'] =
+        $this->_modifiers['decl'] = function ($amount, $variants, $number = false, $delimiter = '|') use ($modx) {
             $variants = explode($delimiter, $variants);
             if (count($variants) < 2) {
                 $variants = array_fill(0, 3, $variants[0]);
             } elseif (count($variants) < 3) {
                 $variants[2] = $variants[1];
             }
-
             $modulusOneHundred = $amount % 100;
             switch ($amount % 10) {
                 case 1:
-                    $text = $modulusOneHundred == 11 ? $variants[2] : $variants[0];
+                    $text = $modulusOneHundred == 11
+                        ? $variants[2]
+                        : $variants[0];
                     break;
-                case 2: case 3: case 4:
-                $text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20) ? $variants[2] : $variants[1];
-                break;
-                case 5: case 6: case 7: case 8: case 9: case 0:
-                default: $text = $variants[2];
+                case 2:
+                case 3:
+                case 4:
+                    $text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20)
+                        ? $variants[2]
+                        : $variants[1];
+                    break;
+                default:
+                    $text = $variants[2];
             }
 
-            return $number ? join(' ', [$amount, $text]) : $text;
+            return $number
+                ? $amount . ' ' . $text
+                : $text;
         };
 
         // MODX Functions

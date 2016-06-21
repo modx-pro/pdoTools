@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.5.4 pl
+==============
+- [#224] Added microMODX::cleanAlias().
+- [#226] [Fenom] Added "declension" modifier.
+
 2.5.3 pl
 ==============
 - [#221] Fixed typo in month name.
