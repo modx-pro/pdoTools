@@ -744,7 +744,7 @@ class pdoTools
      * @param string $type Type of element
      * @param array $row Current row with results being processed
      *
-     * @return array
+     * @return array|bool
      */
     protected function _loadElement($name, $type, $row = array())
     {
@@ -760,7 +760,7 @@ class pdoTools
         if (!$binding && $pos = strpos($name, '@')) {
             $propertySet = substr($name, $pos + 1);
             $name = substr($name, 0, $pos);
-        } elseif ($pos = strpos($content, '@')) {
+        } elseif (in_array($binding, array('CHUNK', 'TEMPLATE', 'SNIPPET')) && $pos = strpos($content, '@')) {
             $propertySet = substr($content, $pos + 1);
             $content = substr($content, 0, $pos);
         }

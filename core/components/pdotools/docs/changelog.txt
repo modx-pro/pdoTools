@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.5.5 pl
+==============
+- Fixed parse of INLINE chunks with "@" symbols.
+
 2.5.4 pl
 ==============
 - [#224] Added microMODX::cleanAlias().
