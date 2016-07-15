@@ -545,10 +545,13 @@ class pdoFetch extends pdoTools
         }
 
         if (!empty($includeTVs)) {
-            $subclass = preg_grep('/^' . $this->config['class'] . '/i', $this->modx->classMap['modResource']);
-            if (!preg_match('/^modResource$/i', $this->config['class']) && !count($subclass)) {
+            $class = !empty($this->config['joinTVsTo'])
+                ? $this->config['joinTVsTo']
+                : $this->config['class'];
+            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap['modResource']);
+            if (!preg_match('#^modResource$#i', $class) && !count($subclass)) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR,
-                    '[pdoTools] Instantiated a derived class "' . $this->config['class'] . '" that is not a subclass of the "modResource", so tvs not joining.');
+                    '[pdoTools] Could not join TVs to the class "' . $class . '" that is not a subclass of the "modResource". Try to specify correct class in the "joinTVsTo" parameter.');
             } else {
                 $tvs = array_map('trim', explode(',', $includeTVs));
                 $tvs = array_unique($tvs);
@@ -566,7 +569,7 @@ class pdoFetch extends pdoTools
                             $this->config['tvsJoin'][$name] = array(
                                 'class' => 'modTemplateVarResource',
                                 'alias' => $alias,
-                                'on' => '`TV' . $name . '`.`contentid` = `' . $this->config['class'] . '`.`id` AND `TV' . $name . '`.`tmplvarid` = ' . $tv['id'],
+                                'on' => '`TV' . $name . '`.`contentid` = `' . $class . '`.`id` AND `TV' . $name . '`.`tmplvarid` = ' . $tv['id'],
                                 'tv' => $tv,
                             );
                             $this->config['tvsSelect'][$alias] = array('`' . $tvPrefix . $tv['name'] . '`' => 'IFNULL(`' . $alias . '`.`value`, ' . $this->modx->quote($tv['default_text']) . ')');
@@ -992,7 +995,7 @@ class pdoFetch extends pdoTools
      * @param string $where
      * @param array $config
      *
-     * @return array
+     * @return array|boolean
      */
     public function getCollection($class, $where = '', $config = array())
     {

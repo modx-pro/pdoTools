@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.5.6 pl
+==============
+- [pdoFetch] Ability to join TVs not only to the query main class.
+
 2.5.5 pl
 ==============
 - Fixed parse of INLINE chunks with "@" symbols.
