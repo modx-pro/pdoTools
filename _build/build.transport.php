@@ -65,6 +65,25 @@ if (defined('BUILD_SETTING_UPDATE')) {
     unset($settings, $setting, $attributes);
 }
 
+/* load plugins events */
+if (defined('BUILD_EVENT_UPDATE')) {
+    $events = include $sources['data'] . 'transport.events.php';
+    if (!is_array($events)) {
+        $modx->log(modX::LOG_LEVEL_ERROR, 'Could not package in events.');
+    } else {
+        $attributes = array(
+            xPDOTransport::PRESERVE_KEYS => true,
+            xPDOTransport::UPDATE_OBJECT => BUILD_EVENT_UPDATE,
+        );
+        foreach ($events as $event) {
+            $vehicle = $builder->createVehicle($event, $attributes);
+            $builder->putVehicle($vehicle);
+        }
+        $modx->log(xPDO::LOG_LEVEL_INFO, 'Packaged in ' . count($events) . ' Plugins events.');
+    }
+    unset ($events, $event, $attributes);
+}
+
 /* create category */
 $category = $modx->newObject('modCategory');
 $category->set('id', 1);
