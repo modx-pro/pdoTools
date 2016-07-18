@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.6.0 pl
+==============
+- [Fenom] The ability to extend Fenom via system event "pdoToolsOnFenomInit".
+
 2.5.6 pl
 ==============
 - [pdoFetch] Ability to join TVs not only to the query main class.

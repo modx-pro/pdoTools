@@ -55,6 +55,14 @@ class FenomX extends Fenom
         $this->modx = $pdoTools->modx;
 
         $this->_addDefaultModifiers();
+
+        $this->modx->invokeEvent(
+            'pdoToolsOnFenomInit',
+            array(
+                'fenom' => $this,
+                'config' => $pdoTools->config
+            )
+        );
     }
 
 
