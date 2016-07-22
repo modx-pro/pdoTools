@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.6.1 pl
+==============
+- Improved compatibility with PHP 5.3.
+
 2.6.0 pl
 ==============
 - [Fenom] The ability to extend Fenom via system event "pdoToolsOnFenomInit".

@@ -60,7 +60,7 @@ class FenomX extends Fenom
             'pdoToolsOnFenomInit',
             array(
                 'fenom' => $this,
-                'config' => $pdoTools->config
+                'config' => $pdoTools->config,
             )
         );
     }
@@ -495,13 +495,25 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_match'] = function ($value, $pattern) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_match($pattern, $value);
         };
 
         $this->_modifiers['preg_get'] = function ($value, $pattern, $group = 0) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
             if (!preg_match($pattern, $value, $matches)) {
                 return null;
             }
@@ -512,7 +524,13 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_get_all'] = function ($value, $pattern, $group = 0) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
             if (!preg_match_all($pattern, $value, $matches, PREG_PATTERN_ORDER)) {
                 return array();
             }
@@ -534,19 +552,37 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_replace'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_replace($pattern, $replacement, $value, $limit);
         };
 
         $this->_modifiers['preg_filter'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_filter($pattern, $replacement, $value, $limit);
         };
 
         $this->_modifiers['preg_split'] = function ($value, $pattern) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_split($pattern, $value);
         };
@@ -577,9 +613,9 @@ class FenomX extends Fenom
      * Modifier autoloader
      *
      * @param string $name
-     * @param Fenom\Template $template
+     * @param \Fenom\Template $template
      *
-     * @return bool
+     * @return Closure
      */
     protected function _loadModifier($name, $template)
     {
