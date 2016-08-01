@@ -52,7 +52,7 @@ if (isset($showCurrentCrumb)) {
 }
 // --
 $fastMode = !empty($fastMode);
-$siteStart = $modx->getOption('siteStart', $scriptProperties, $modx->getOption('site_start'));
+$siteStart = ($from > 0)?$from:$modx->getOption('siteStart', $scriptProperties, $modx->getOption('site_start'));
 
 if (empty($showAtHome) && $modx->resource->id == $siteStart) {
     return '';
