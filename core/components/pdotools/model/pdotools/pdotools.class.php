@@ -1029,7 +1029,7 @@ class pdoTools
             // Extract JSON fields
             if ($this->config['decodeJSON']) {
                 foreach ($row as $k => $v) {
-                    if (!empty($v) && is_string($v) && strlen($v) >= 2 && (($v[0] == '{' && $v[1] == '"') || ($v[0] == '[' && $v[1] != '['))) {
+                    if (!empty($v) && is_string($v) && strlen($v) >= 2 && (($v[0] == '{' && $v[1] == '"') || ($v[0] == '[' && $v[1] != '[') || (strlen($v) >= 4 && $v[0] == '[' && $v[1] == '[' && ($v[2] == ' ' || $v[2] == ']' || $v[2] == '[' || $v[2] == '{' || $v[2] == '"' || is_numeric($v[2]))))) {
                         $tmp = $this->modx->fromJSON($v);
                         if ($tmp !== null) {
                             $row[$k] = $tmp;
