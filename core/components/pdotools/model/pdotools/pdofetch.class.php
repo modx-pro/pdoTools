@@ -301,8 +301,9 @@ class pdoFetch extends pdoTools
                 foreach ($tmp as $k => $v) {
                     $class = !empty($v['class']) ? $v['class'] : $k;
                     $alias = !empty($v['alias']) ? $v['alias'] : $k;
+                    $on = !empty($v['on']) ? $v['on'] : array();
                     if (!is_numeric($alias) && !is_numeric($class)) {
-                        $this->query->$join($class, $alias, $v['on']);
+                        $this->query->$join($class, $alias, $on);
                         $this->addTime($join . 'ed <i>' . $class . '</i> as <b>' . $alias . '</b>',
                             microtime(true) - $time);
                         $this->aliases[$alias] = $class;

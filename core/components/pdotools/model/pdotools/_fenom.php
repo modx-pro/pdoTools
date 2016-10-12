@@ -409,17 +409,17 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['snippet'] = function ($name, $params = array()) use ($pdo) {
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'snippet', $params);
             $result = $pdo->runSnippet($name, $params);
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'snippet', $params);
 
             return $result;
         };
 
         $this->_modifiers['chunk'] = function ($name, $params = array()) use ($pdo) {
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'chunk', $params);
             $result = $pdo->getChunk($name, $params);
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'chunk', $params);
 
             return $result;
         };

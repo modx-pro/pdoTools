@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.6.3 pl
+==============
+- Fixed possible E_NOTICE on line 305 pdofetch.class.php.
+- Fixed possible E_NOTICE when "snippet" and "chunk" Fenom modifiers was called.
+
 2.6.2 pl
 ==============
 - Fixed possible E_NOTICE on line 1317 pdotools.class.php.
