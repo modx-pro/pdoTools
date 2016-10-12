@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.6.2 pl
+==============
+- Fixed possible E_NOTICE on line 1317 pdotools.class.php.
+
 2.6.1 pl
 ==============
 - Improved compatibility with PHP 5.3.

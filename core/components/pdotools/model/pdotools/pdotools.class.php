@@ -1314,7 +1314,7 @@ class pdoTools
                 ? $options['cache_handler']
                 : $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
 
-            xPDO::OPT_CACHE_EXPIRES => $options['cacheTime'] !== ''
+            xPDO::OPT_CACHE_EXPIRES => isset($options['cacheTime']) && $options['cacheTime'] !== ''
                 ? (integer)$options['cacheTime']
                 : (integer)$this->modx->getOption('cache_resource_expires', null, 0),
         );
