@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.6.4 pl
 ==============
 - Added escaping of a MODX tags that being processed in the &prepareSnippet.
+- [#239] Improved work of the &decodeJSON option.
 
 2.6.3 pl
 ==============
