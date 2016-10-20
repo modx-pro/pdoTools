@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.6.4 pl
+==============
+- Added escaping of a MODX tags that being processed in the &prepareSnippet.
+
 2.6.3 pl
 ==============
 - Fixed possible E_NOTICE on line 305 pdofetch.class.php.

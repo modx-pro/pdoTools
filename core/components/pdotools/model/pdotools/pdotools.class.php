@@ -1112,6 +1112,14 @@ class pdoTools
             $this->preparing = true;
             $name = trim($this->config['prepareSnippet']);
 
+            array_walk_recursive($row, function (&$value) {
+                $value = str_replace(
+                    array('[', ']', '{', '}'),
+                    array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
+                    $value
+                );
+            });
+
             $tmp = $this->runSnippet($name, array(
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
@@ -1125,6 +1133,13 @@ class pdoTools
             if (!is_array($tmp)) {
                 $this->addTime('Preparation snippet must return an array, instead of "' . gettype($tmp) . '"');
             } else {
+                array_walk_recursive($tmp, function (&$value) {
+                    $value = str_replace(
+                        array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
+                        array('[', ']', '{', '}'),
+                        $value
+                    );
+                });
                 $row = array_merge($row, $tmp);
             }
             $this->preparing = false;
