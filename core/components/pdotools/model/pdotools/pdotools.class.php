@@ -1133,16 +1133,17 @@ class pdoTools
             if (!is_array($tmp)) {
                 $this->addTime('Preparation snippet must return an array, instead of "' . gettype($tmp) . '"');
             } else {
-                array_walk_recursive($tmp, function (&$value) {
-                    $value = str_replace(
-                        array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
-                        array('[', ']', '{', '}'),
-                        $value
-                    );
-                });
                 $row = array_merge($row, $tmp);
             }
             $this->preparing = false;
+
+            array_walk_recursive($row, function (&$value) {
+                $value = str_replace(
+                    array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
+                    array('[', ']', '{', '}'),
+                    $value
+                );
+            });
         }
 
         return $row;
