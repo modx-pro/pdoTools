@@ -126,6 +126,7 @@ class pdoFetch extends pdoTools
                 } else {
                     $rows = $this->prepareRows($rows);
                     $time = microtime(true);
+                    $output = array();
                     foreach ($rows as $row) {
                         if (!empty($this->config['additionalPlaceholders'])) {
                             $row = array_merge($this->config['additionalPlaceholders'], $row);
@@ -160,7 +161,7 @@ class pdoFetch extends pdoTools
                     if (!empty($this->config['toSeparatePlaceholders'])) {
                         $this->modx->setPlaceholders($output, $this->config['toSeparatePlaceholders']);
                         $output = '';
-                    } elseif (!empty($output)) {
+                    } else {
                         $output = implode($this->config['outputSeparator'], $output);
                     }
                 }
