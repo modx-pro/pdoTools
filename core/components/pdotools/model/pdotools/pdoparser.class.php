@@ -50,7 +50,6 @@ class pdoParser extends modParser
         $tokens = array(),
         $depth = 0
     ) {
-
         if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
             $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
 

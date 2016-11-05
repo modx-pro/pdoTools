@@ -166,7 +166,17 @@ class microMODX
      */
     public function regClientCSS($src, $media = null)
     {
+        if (empty($this->modx->config['fenom_sjscripts'])) {
+            $this->modx->config['fenom_sjscripts'] = array();
+        }
+        $registered = count($this->modx->sjscripts);
+
         $this->modx->regClientCSS($src, $media);
+
+        $this->modx->config['fenom_sjscripts'] = array_replace(
+            $this->modx->config['fenom_sjscripts'],
+            array_slice($this->modx->sjscripts, $registered, null, true)
+        );
     }
 
 
@@ -176,7 +186,17 @@ class microMODX
      */
     public function regClientStartupScript($src, $plaintext = false)
     {
+        if (empty($this->modx->config['fenom_sjscripts'])) {
+            $this->modx->config['fenom_sjscripts'] = array();
+        }
+        $registered = count($this->modx->sjscripts);
+
         $this->modx->regClientStartupScript($src, $plaintext);
+
+        $this->modx->config['fenom_sjscripts'] = array_replace(
+            $this->modx->config['fenom_sjscripts'],
+            array_slice($this->modx->sjscripts, $registered, null, true)
+        );
     }
 
 
@@ -186,7 +206,17 @@ class microMODX
      */
     public function regClientScript($src, $plaintext = false)
     {
+        if (empty($this->modx->config['fenom_jscripts'])) {
+            $this->modx->config['fenom_jscripts'] = array();
+        }
+        $registered = count($this->modx->jscripts);
+
         $this->modx->regClientScript($src, $plaintext);
+
+        $this->modx->config['fenom_jscripts'] = array_replace(
+            $this->modx->config['fenom_jscripts'],
+            array_slice($this->modx->jscripts, $registered, null, true)
+        );
     }
 
 
@@ -195,7 +225,7 @@ class microMODX
      */
     public function regClientStartupHTMLBlock($html)
     {
-        $this->modx->regClientStartupHTMLBlock($html);
+        $this->regClientStartupScript($html, true);
     }
 
 
@@ -204,7 +234,7 @@ class microMODX
      */
     public function regClientHTMLBlock($html)
     {
-        $this->modx->regClientHTMLBlock($html);
+        $this->regClientScript($html, true);
     }
 
 
@@ -522,7 +552,7 @@ class microMODX
 
         return $output;
     }
-    
+
     /**
      * @param string $alias
      *

@@ -100,6 +100,13 @@ class FenomX extends Fenom
         $modx = $this->modx;
         $pdo = $this->pdoTools;
         $fenom = $this;
+        if (!$micro = $pdo->getStore('microMODX')) {
+            if (!class_exists('microMODX')) {
+                require '_micromodx.php';
+            }
+            $micro = new microMODX($pdo);
+            $pdo->setStore('microMODX', $micro);
+        }
 
         // PHP Functions
         $this->_allowed_funcs = array_merge(
@@ -455,24 +462,24 @@ class FenomX extends Fenom
             return $modx->getPlaceholder($key);
         };
 
-        $this->_modifiers['cssToHead'] = function ($string) use ($modx) {
-            $modx->regClientCSS($string);
+        $this->_modifiers['cssToHead'] = function ($string) use ($micro) {
+            $micro->regClientCSS($string);
         };
 
-        $this->_modifiers['htmlToHead'] = function ($string) use ($modx) {
-            $modx->regClientStartupHTMLBlock($string);
+        $this->_modifiers['htmlToHead'] = function ($string) use ($micro) {
+            $micro->regClientStartupHTMLBlock($string);
         };
 
-        $this->_modifiers['htmlToBottom'] = function ($string) use ($modx) {
-            $modx->regClientHTMLBlock($string);
+        $this->_modifiers['htmlToBottom'] = function ($string) use ($micro) {
+            $micro->regClientHTMLBlock($string);
         };
 
-        $this->_modifiers['jsToHead'] = function ($string, $plaintext = false) use ($modx) {
-            $modx->regClientStartupScript($string, $plaintext);
+        $this->_modifiers['jsToHead'] = function ($string, $plaintext = false) use ($micro) {
+            $micro->regClientStartupScript($string, $plaintext);
         };
 
-        $this->_modifiers['jsToBottom'] = function ($string, $plaintext = false) use ($modx) {
-            $modx->regClientScript($string, $plaintext);
+        $this->_modifiers['jsToBottom'] = function ($string, $plaintext = false) use ($micro) {
+            $micro->regClientScript($string, $plaintext);
         };
 
         $this->_modifiers['json_encode'] =
