@@ -7,6 +7,7 @@
  * For the full copyright and license information, please view the license.md
  * file that was distributed with this source code.
  */
+use Fenom\Error\CompileException;
 use Fenom\ProviderInterface;
 use Fenom\Template;
 
@@ -18,7 +19,7 @@ use Fenom\Template;
  */
 class Fenom
 {
-    const VERSION = '2.8';
+    const VERSION = '2.9';
     const REV = 1;
     /* Actions */
     const INLINE_COMPILER = 1;
@@ -59,8 +60,14 @@ class Fenom
     const ACCESSOR_CALL     = 'Fenom\Accessor::parserCall';
     const ACCESSOR_PROPERTY = 'Fenom\Accessor::parserProperty';
     const ACCESSOR_METHOD   = 'Fenom\Accessor::parserMethod';
+    const ACCESSOR_CHAIN    = 'Fenom\Accessor::parserChain';
 
     public static $charset = "UTF-8";
+
+    /**
+     * @var int maximum length of compiled filename (use sha1 of name if bigger)
+     */
+    public static $filename_length = 200;
 
     /**
      * @var int[] of possible options, as associative array
@@ -166,6 +173,7 @@ class Fenom
         "esplit"      => 'Fenom\Modifier::esplit',
         "join"        => 'Fenom\Modifier::join',
         "in"          => 'Fenom\Modifier::in',
+        "range"       => 'Fenom\Modifier::range',
     );
 
     /**
@@ -270,6 +278,10 @@ class Fenom
             'open'  => 'Fenom\Compiler::setOpen',
             'close' => 'Fenom\Compiler::setClose'
         ),
+        'do'     => array( // {do ...}
+            'type'   => self::INLINE_COMPILER,
+            'parser' => 'Fenom\Compiler::tagDo'
+        ),
         'block'      => array( // {block ...} {parent} {/block}
             'type'       => self::BLOCK_COMPILER,
             'open'       => 'Fenom\Compiler::tagBlockOpen',
@@ -330,7 +342,11 @@ class Fenom
         'unset'  => array(
             'type'   => self::INLINE_COMPILER,
             'parser' => 'Fenom\Compiler::tagUnset'
-        )
+        ),
+        'paste'  => array( // {include ...}
+            'type'   => self::INLINE_COMPILER,
+            'parser' => 'Fenom\Compiler::tagPaste'
+        ),
     );
 
     /**
@@ -379,9 +395,11 @@ class Fenom
         'tpl'     => 'Fenom\Accessor::tpl',
         'version' => 'Fenom\Accessor::version',
         'const'   => 'Fenom\Accessor::constant',
-        'php'     => 'Fenom\Accessor::php',
+        'php'     => 'Fenom\Accessor::call',
+        'call'    => 'Fenom\Accessor::call',
         'tag'     => 'Fenom\Accessor::Tag',
-        'fetch'   => 'Fenom\Accessor::Fetch',
+        'fetch'   => 'Fenom\Accessor::fetch',
+        'block'   => 'Fenom\Accessor::block',
     );
 
     /**
@@ -832,16 +850,31 @@ class Fenom
     }
 
     /**
-     * Add global accessor ($.)
+     * Add global accessor as PHP code ($.)
      * @param string $name
      * @param mixed $accessor
      * @param string $parser
      * @return Fenom
      */
-    public function addAccessorSmart($name, $accessor, $parser) {
+    public function addAccessorSmart($name, $accessor, $parser = self::ACCESSOR_VAR)
+    {
         $this->_accessors[$name] = array(
             "accessor" => $accessor,
-            "parser" => $parser
+            "parser" => $parser,
+        );
+        return $this;
+    }
+
+    /**
+     * Add global accessor handler as callback ($.X)
+     * @param string $name
+     * @param callable $callback
+     * @return Fenom
+     */
+    public function addAccessorCallback($name, $callback)
+    {
+        $this->_accessors[$name] = array(
+            "callback" => $callback
         );
         return $this;
     }
@@ -860,11 +893,17 @@ class Fenom
     /**
      * Get an accessor
      * @param string $name
+     * @param string $key
      * @return callable
      */
-    public function getAccessor($name) {
+    public function getAccessor($name, $key = null)
+    {
         if(isset($this->_accessors[$name])) {
-            return $this->_accessors[$name];
+            if($key) {
+                return $this->_accessors[$name][$key];
+            } else {
+                return $this->_accessors[$name];
+            }
         } else {
             return false;
         }
@@ -876,7 +915,8 @@ class Fenom
      * @param string $pattern
      * @return $this
      */
-    public function addCallFilter($pattern) {
+    public function addCallFilter($pattern)
+    {
         $this->call_filters[] = $pattern;
         return $this;
     }
@@ -904,9 +944,9 @@ class Fenom
      *
      * @return Fenom\Template
      */
-    public function getRawTemplate()
+    public function getRawTemplate(Template $parent = null)
     {
-        return new Template($this, $this->_options);
+        return new Template($this, $this->_options, $parent);
     }
 
     /**
@@ -963,12 +1003,7 @@ class Fenom
     {
         $options |= $this->_options;
         if (is_array($template)) {
-            if(count($template) === 1) {
-                $template = current($template);
-                $key = $options . "@" . $template;
-            } else {
-                $key = $options . "@" . implode(",", $template);
-            }
+            $key = $options . "@" . implode(",", $template);
         } else {
             $key = $options . "@" . $template;
         }
@@ -1017,13 +1052,15 @@ class Fenom
      */
     protected function _load($template, $opts)
     {
-        $file_name = $this->_getCacheName($template, $opts);
+        $file_name = $this->getCompileName($template, $opts);
         if (is_file($this->_compile_dir . "/" . $file_name)) {
             $fenom = $this; // used in template
             $_tpl  = include($this->_compile_dir . "/" . $file_name);
             /* @var Fenom\Render $_tpl */
 
-            if (!($this->_options & self::AUTO_RELOAD) || ($this->_options & self::AUTO_RELOAD) && $_tpl->isValid()) {
+            if (!($this->_options & self::AUTO_RELOAD) || ($this->_options & self::AUTO_RELOAD)
+                && $_tpl instanceof Fenom\Render
+                && $_tpl->isValid()) {
                 return $_tpl;
             }
         }
@@ -1033,22 +1070,27 @@ class Fenom
     /**
      * Generate unique name of compiled template
      *
-     * @param string $tpl
-     * @param int $options
+     * @param string|string[] $tpl
+     * @param int $options additional options
      * @return string
      */
-    private function _getCacheName($tpl, $options)
+    public function getCompileName($tpl, $options = 0)
     {
+        $options = $this->_options | $options;
         if (is_array($tpl)) {
             $hash = implode(".", $tpl) . ":" . $options;
             foreach ($tpl as &$t) {
-                $t = str_replace(":", "_", basename($t));
+                $t = urlencode(str_replace(":", "_", basename($t)));
             }
-            return $this->_compile_id . implode("~", $tpl) . "." . sprintf("%x.%x.php", crc32($hash), strlen($hash));
+            $tpl = implode("~", $tpl);
         } else {
             $hash = $tpl . ":" . $options;
-            return sprintf($this->_compile_id . "%s.%x.%x.php", str_replace(":", "_", basename($tpl)), crc32($hash), strlen($hash));
+            $tpl = urlencode(str_replace(":", "_", basename($tpl)));
         }
+        if($tpl > self::$filename_length) {
+            $tpl = sha1($tpl);
+        }
+        return $this->_compile_id . $tpl . "." . sprintf("%x.%x.php", crc32($hash), strlen($hash));
     }
 
     /**
@@ -1057,12 +1099,11 @@ class Fenom
      * @param string|array $tpl
      * @param bool $store store template on disk
      * @param int $options
-     * @throws RuntimeException
+     * @throws CompileException
      * @return \Fenom\Template
      */
     public function compile($tpl, $store = true, $options = 0)
     {
-        $options = $this->_options | $options;
         if (is_string($tpl)) {
             $template = $this->getRawTemplate()->load($tpl);
         } else {
@@ -1072,17 +1113,15 @@ class Fenom
             }
         }
         if ($store) {
-            $cache   = $this->_getCacheName($tpl, $options);
-            $tpl_tmp = tempnam($this->_compile_dir, $cache);
-            $tpl_fp  = fopen($tpl_tmp, "w");
-            if (!$tpl_fp) {
-                throw new \RuntimeException("Can't to open temporary file $tpl_tmp. Directory " . $this->_compile_dir . " is writable?");
+            $cache_name   = $this->getCompileName($tpl, $options);
+            $compile_path = $this->_compile_dir . "/" . $cache_name . "." . mt_rand(0, 100000) . ".tmp";
+            if(!file_put_contents($compile_path, $template->getTemplateCode())) {
+                throw new CompileException("Can't to write to the file $compile_path. Directory " . $this->_compile_dir . " is writable?");
             }
-            fwrite($tpl_fp, $template->getTemplateCode());
-            fclose($tpl_fp);
-            $file_name = $this->_compile_dir . "/" . $cache;
-            if (!rename($tpl_tmp, $file_name)) {
-                throw new \RuntimeException("Can't to move $tpl_tmp to $file_name");
+            $cache_path = $this->_compile_dir . "/" . $cache_name;
+            if (!rename($compile_path, $cache_path)) {
+                unlink($compile_path);
+                throw new CompileException("Can't to move the file $compile_path -> $cache_path");
             }
         }
         return $template;

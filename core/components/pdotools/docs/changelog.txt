@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 2.7.0 pl
 ==============
+- [Fenom] Updated to the version 2.11.4.
 - [Fenom] Added rand() and number_format() to an allowed PHP functions.
 - [Fenom] New output filter "number" (or "number_format").
 
