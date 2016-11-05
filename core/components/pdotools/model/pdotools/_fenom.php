@@ -102,6 +102,13 @@ class FenomX extends Fenom
         $fenom = $this;
 
         // PHP Functions
+        $this->_allowed_funcs = array_merge(
+            $this->_allowed_funcs,
+            array(
+                'rand' => 1,
+                'number_format' => 1,
+            )
+        );
 
         $this->_modifiers = array_merge(
             $this->_modifiers,
@@ -123,6 +130,8 @@ class FenomX extends Fenom
                 'len' => 'Fenom\Modifier::length',
                 'length' => 'Fenom\Modifier::length',
                 'strlen' => 'Fenom\Modifier::length',
+                'number_format' => 'number_format',
+                'number' => 'number_format',
             )
         );
 

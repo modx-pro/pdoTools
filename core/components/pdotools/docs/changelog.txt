@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.7.0 pl
+==============
+- [Fenom] Added rand() and number_format() to an allowed PHP functions.
+- [Fenom] New output filter "number" (or "number_format").
+
 2.6.5 pl
 ==============
 - Fixed undeclared variable (PHP 7.1)
