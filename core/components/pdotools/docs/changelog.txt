@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.7.1 pl
+==============
+- Some security improvements in the connector.php.
+
 2.7.0 pl
 ==============
 - [Fenom] Updated to the version 2.11.4.
