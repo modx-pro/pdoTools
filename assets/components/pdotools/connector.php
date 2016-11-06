@@ -9,7 +9,7 @@ $modx->setLogTarget('FILE');
 
 // Switch context if needed
 if (!empty($_REQUEST['pageId'])) {
-    if ($resource = $modx->getObject('modResource', $_REQUEST['pageId'])) {
+    if ($resource = $modx->getObject('modResource', (int)$_REQUEST['pageId'])) {
         if ($resource->get('context_key') != 'web') {
             $modx->switchContext($resource->get('context_key'));
         }
