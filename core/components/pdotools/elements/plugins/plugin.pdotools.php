@@ -16,13 +16,16 @@ switch ($modx->event->name) {
         if (!empty($modx->config['fenom_jscripts'])) {
             foreach ($modx->config['fenom_jscripts'] as $key => $value) {
                 unset($modx->resource->_jscripts[$key]);
-                unset($modx->resource->_loadedjscripts[$value]);
             }
         }
         if (!empty($modx->config['fenom_sjscripts'])) {
             foreach ($modx->config['fenom_sjscripts'] as $key => $value) {
                 unset($modx->resource->_sjscripts[$key]);
-                unset($modx->resource->_loadedjscripts[$value]);
+            }
+        }
+        if (!empty($modx->config['fenom_loadedscripts'])) {
+            foreach ($modx->config['fenom_loadedscripts'] as $key => $value) {
+                unset($modx->resource->_loadedjscripts[$key]);
             }
         }
         break;

@@ -177,6 +177,10 @@ class microMODX
             $this->modx->config['fenom_sjscripts'],
             array_slice($this->modx->sjscripts, $registered, null, true)
         );
+        if (empty($this->modx->config['fenom_loadedscripts'])) {
+            $this->modx->config['fenom_loadedscripts'] = array();
+        }
+        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
@@ -197,6 +201,10 @@ class microMODX
             $this->modx->config['fenom_sjscripts'],
             array_slice($this->modx->sjscripts, $registered, null, true)
         );
+        if (empty($this->modx->config['fenom_loadedscripts'])) {
+            $this->modx->config['fenom_loadedscripts'] = array();
+        }
+        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
@@ -217,6 +225,10 @@ class microMODX
             $this->modx->config['fenom_jscripts'],
             array_slice($this->modx->jscripts, $registered, null, true)
         );
+        if (empty($this->modx->config['fenom_loadedscripts'])) {
+            $this->modx->config['fenom_loadedscripts'] = array();
+        }
+        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
@@ -552,6 +564,7 @@ class microMODX
 
         return $output;
     }
+
 
     /**
      * @param string $alias

@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.7.1 pl
 ==============
 - Some security improvements in the connector.php.
+- Fixed bug with registering scripts in styles via Fenom introduced in version 2.7.0.
 
 2.7.0 pl
 ==============
