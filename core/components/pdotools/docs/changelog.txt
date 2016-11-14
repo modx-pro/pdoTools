@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.7.2 pl
+==============
+- [pdoFetch] Some security improvements.
+
 2.7.1 pl
 ==============
 - Some security improvements in the connector.php.

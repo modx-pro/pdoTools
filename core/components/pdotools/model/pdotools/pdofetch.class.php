@@ -514,11 +514,11 @@ class pdoFetch extends pdoTools
      */
     public function prepareQuery()
     {
-        if (!empty($this->config['limit'])) {
+        if ($limit = (int)$this->config['limit']) {
+            $offset = (int)$this->config['offset'];
             $time = microtime(true);
-            $this->query->limit($this->config['limit'], $this->config['offset']);
-            $this->addTime('Limited to <b>' . $this->config['limit'] . '</b>, offset <b>' . $this->config['offset'] . '</b>',
-                microtime(true) - $time);
+            $this->query->limit($limit, $offset);
+            $this->addTime('Limited to <b>' . $limit . '</b>, offset <b>' . $offset . '</b>', microtime(true) - $time);
         }
 
         return $this->query->prepare();
@@ -727,7 +727,7 @@ class pdoFetch extends pdoTools
                             }
                         }
                         $depth = (isset($config['depth']) && $config['depth'] !== '')
-                            ? (integer)$config['depth']
+                            ? (int)$config['depth']
                             : 10;
                         if (!empty($depth) && $depth > 0) {
                             $pids = array();
@@ -1014,11 +1014,11 @@ class pdoFetch extends pdoTools
         $config['class'] = $class;
         $config['limit'] = !isset($config['limit'])
             ? 0
-            : (integer)$config['limit'];
+            : (int)$config['limit'];
         if (!empty($where)) {
             unset($config['where']);
             if (is_numeric($where)) {
-                $where = array($instance->modx->getPK($class) => (integer)$where);
+                $where = array($instance->modx->getPK($class) => (int)$where);
             } elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
                 $where = $instance->modx->fromJSON($where);
             }
@@ -1096,7 +1096,7 @@ class pdoFetch extends pdoTools
         $options['return'] = 'ids';
 
         if ($id !== null && intval($depth) >= 1) {
-            $where[$parent_field] = (integer)$id;
+            $where[$parent_field] = (int)$id;
             $children = $this->getCollection($class, $where, $options);
             foreach ($children as $child) {
                 $ids[] = $child[$id_field];
