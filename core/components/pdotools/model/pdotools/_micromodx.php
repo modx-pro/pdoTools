@@ -37,7 +37,7 @@ class microMODX
             $this->resource['content'] = $modx->resource->getContent();
             // TV parameters
             foreach ($this->resource as $k => $v) {
-                if (is_array($v) && isset($v[1])) {
+                if (is_array($v) && isset($v[1]) && !in_array($k, array('_sjscripts','_jscripts','_loadedjscripts'))) {
                     $this->resource[$k] = $modx->resource->getTVValue($k);
                 }
             }
