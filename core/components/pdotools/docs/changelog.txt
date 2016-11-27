@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.7.3 pl
+==============
+- Improved compatibility with MODX 2.5.2.
+
 2.7.2 pl
 ==============
 - [pdoFetch] Some security improvements.

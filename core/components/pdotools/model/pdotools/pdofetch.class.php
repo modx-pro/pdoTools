@@ -498,7 +498,10 @@ class pdoFetch extends pdoTools
                         $value = preg_replace('#(.*?)\.(.*?)\s#', '`$1`.`$2`', $value);
                     }
                 });
-                $this->query->sortby(implode(',', $tmp), $sortdir);
+                $this->query->query['sortby'][] = array(
+                    'column' => implode(',', $tmp),
+                    'direction' => $sortdir
+                );
 
                 $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
                 $time = microtime(true);
