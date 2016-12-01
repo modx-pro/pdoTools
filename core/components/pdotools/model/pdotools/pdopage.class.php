@@ -59,7 +59,7 @@ class pdoPage
         $hash = sha1($this->modx->toJSON($this->pdoTools->config));
         $_SESSION['pdoPage'][$hash] = $this->pdoTools->config;
 
-        $config = $this->modx->toJSON(array(
+        $config = array(
             'wrapper' => $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage'),
             'rows' => $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows'),
             'pagination' => $this->modx->getOption('ajaxElemPagination', $this->pdoTools->config,
@@ -74,15 +74,33 @@ class pdoPage
             'assetsUrl' => $assetsUrl,
             'connectorUrl' => rtrim($assetsUrl, '/') . '/connector.php',
             'pageId' => $this->modx->resource->id,
-            'hash' => $hash,
-        ));
+            'hash' => $hash
+        );
 
-        $this->modx->regClientStartupScript(
-            '<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}, configs: {}};</script>', true
-        );
-        $this->modx->regClientScript(
-            '<script type="text/javascript">pdoPage.initialize(' . $config . ');</script>', true
-        );
+        $startupScript = $this->pdoTools->config['frontend_startup_js'];
+        if (!$startupScript) {
+            $this->modx->regClientStartupScript(
+                '<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}, configs: {}};</script>', true
+            );
+        } else {
+            $this->modx->regClientStartupScript(
+                $this->pdoTools->getChunk($startupScript), true
+            );
+        }
+        $initScript = $this->pdoTools->config['frontend_init_js'];
+        if (!$initScript) {
+            $this->modx->regClientScript(
+                '<script type="text/javascript">pdoPage.initialize(' . json_encode($config, JSON_PRETTY_PRINT) . ');</script>', true
+            );
+        } else {
+            $this->modx->regClientScript(
+                $this->pdoTools->getChunk($initScript, array(
+                    'key' => $config['pageVarKey'],
+                    'wrapper' => $config['wrapper'],
+                    'config' => json_encode($config, JSON_PRETTY_PRINT)
+                )), true
+            );
+        }
     }
 
 
