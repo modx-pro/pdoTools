@@ -15,7 +15,8 @@
             mode: 'scroll',
             pageVarKey: 'page',
             pageLimit: 12,
-            assetsUrl: '/assets/components/pdotools/'
+            assetsUrl: '/assets/components/pdotools/',
+            scrollTop: true
         };
 
     function Plugin(element, options) {
@@ -35,29 +36,29 @@
     $.extend(Plugin.prototype, {
         init: function () {
             var _this = this;
-            if (_this.page == undefined) {
-                var params = _this.hashGet();
-                var page = params[_this.key] == undefined ? 1 : params[_this.key];
-                _this.page = Number(page);
+            if (this.page == undefined) {
+                var params = this.hashGet();
+                var page = params[this.key] == undefined ? 1 : params[this.key];
+                this.page = Number(page);
             }
-            switch (_this.mode) {
+            switch (this.mode) {
                 case 'default':
                     this.initDefault();
                     break;
                 case 'scroll':
                 case 'button':
-                    if (_this.history) {
+                    if (this.history) {
                         if (typeof(jQuery().sticky) == 'undefined') {
-                            $.getScript(_this.settings.assetsUrl + 'js/lib/jquery.sticky.min.js', function () {
+                            $.getScript(this.settings.assetsUrl + 'js/lib/jquery.sticky.js', function () {
                                 _this.init(_this.settings);
                             });
                             return;
                         }
-                        _this.stickyPagination();
+                        this.stickyPagination();
                     } else {
-                        $(_this.settings.pagination).hide();
+                        $(this.settings.pagination).hide();
                     }
-                    if (_this.mode == 'button') {
+                    if (this.mode == 'button') {
                         this.initButton();
                     } else {
                         this.initScroll();
@@ -68,7 +69,7 @@
         initDefault: function () {
             // Default pagination
             var _this = this;
-            $(document).on('click', _this.settings.link, function (e) {
+            $(document).on('click', this.settings.link, function (e) {
                 e.preventDefault();
                 var href = $(this).prop('href');
                 var match = href.match(new RegExp(_this.key + '=(\\d+)'));
@@ -80,7 +81,7 @@
                     _this.loadPage(href);
                 }
             });
-            if (_this.history) {
+            if (this.history) {
                 $(window).on('popstate', function (e) {
                     if (e.originalEvent.state && e.originalEvent.state.pdoPage) {
                         _this.loadPage(e.originalEvent.state.pdoPage);
@@ -92,9 +93,9 @@
         initButton: function () {
             // More button pagination
             var _this = this;
-            $(_this.settings.rows).after(_this.settings.moreTpl);
+            $(this.settings.rows).after(this.settings.moreTpl);
             var has_results = false;
-            $(_this.settings.link).each(function () {
+            $(this.settings.link).each(function () {
                 var href = $(this).prop('href');
                 var match = href.match(new RegExp(_this.key + '=(\\d+)'));
                 var page = !match ? 1 : match[1];
@@ -104,9 +105,9 @@
                 }
             });
             if (!has_results) {
-                $(_this.settings.more).hide();
+                $(this.settings.more).hide();
             }
-            $(document).on('click', _this.settings.more, function (e) {
+            $(document).on('click', this.settings.more, function (e) {
                 e.preventDefault();
                 _this.addPage()
             });
@@ -124,9 +125,9 @@
         },
         addPage: function () {
             var _this = this;
-            var params = _this.hashGet();
-            var current = params[_this.key] || 1;
-            $(_this.settings.link).each(function () {
+            var params = this.hashGet();
+            var current = params[this.key] || 1;
+            $(this.settings.link).each(function () {
                 var href = $(this).prop('href');
                 var match = href.match(new RegExp(_this.key + '=(\\d+)'));
                 var page = !match ? 1 : Number(match[1]);
@@ -142,37 +143,29 @@
         },
         loadPage: function (href, mode) {
             var _this = this;
-            var rows = $(_this.settings.rows);
-            var pagination = $(_this.settings.pagination);
-            var match = href.match(new RegExp(_this.key + '=(\\d+)'));
+            var rows = $(this.settings.rows);
+            var pagination = $(this.settings.pagination);
+            var match = href.match(new RegExp(this.key + '=(\\d+)'));
             var page = !match ? 1 : Number(match[1]);
             if (!mode) {
                 mode = 'replace';
             }
-            if (_this.page == page && mode != 'force') {
+            if (this.page == page && mode != 'force') {
                 return;
             }
-            _this.wrapper.trigger('beforeLoad', [_this, _this.settings]);
-            if (_this.mode != 'scroll') {
-                _this.wrapper.css({opacity: .3});
+            this.wrapper.trigger('beforeLoad', [this, this.settings]);
+            if (this.mode != 'scroll') {
+                this.wrapper.css({opacity: .3});
             }
-            var params = _this.hashGet();
-            for (var i in params) {
-                if (params.hasOwnProperty(i) && i != _this.key) {
-                    delete(params[i]);
-                }
-            }
-            params[_this.key] = _this.page = page;
-            var waitAnimation = $(_this.settings.waitAnimation);
+            this.page = page;
+            var waitAnimation = $(this.settings.waitAnimation);
             if (mode == 'append') {
-                _this.wrapper.find(rows).append(waitAnimation);
+                this.wrapper.find(rows).append(waitAnimation);
             } else {
-                _this.wrapper.find(rows).empty().append(waitAnimation);
+                this.wrapper.find(rows).empty().append(waitAnimation);
             }
-            if (mode == 'force') {
-                params = _this.getUrlParameters(href);
-                params[_this.key] = params[_this.key] || 1;
-            }
+            var params = this.getUrlParameters(href);
+            params[this.key] = this.page;
             $.get(window.location.pathname, params, function (response) {
                 if (response) {
                     _this.wrapper.find(pagination).html(response.pagination);
@@ -190,11 +183,14 @@
                         waitAnimation.remove();
                     } else {
                         _this.wrapper.find(rows).html(response.output);
+                        if (mode == 'force' && _this.history) {
+                            _this.hashSet(params);
+                        }
                     }
                     _this.wrapper.trigger('afterLoad', [_this, _this.settings, response]);
                     if (_this.mode != 'scroll') {
                         _this.wrapper.css({opacity: 1});
-                        if (_this.mode == 'default') {
+                        if (_this.mode == 'default' && _this.settings.scrollTop) {
                             $('html, body').animate({
                                 scrollTop: _this.wrapper.position().top - 50 || 0
                             }, 0);
@@ -205,15 +201,14 @@
             }, 'json');
         },
         stickyPagination: function () {
-            var _this = this;
-            var pagination = $(_this.settings.pagination);
+            var pagination = $(this.settings.pagination);
             if (pagination.is(':visible')) {
                 pagination.sticky({
                     wrapperClassName: 'sticky-pagination',
-                    getWidthFrom: _this.settings.pagination,
+                    getWidthFrom: this.settings.pagination,
                     responsiveWidth: true
                 });
-                _this.wrapper.trigger('scroll');
+                this.wrapper.trigger('scroll');
             }
         },
         updateTitle: function (response) {
@@ -245,67 +240,60 @@
             return result;
         },
         deparam: function (params) {
-            // Source: https://github.com/jupiterjs/jquerymx/blob/master/lang/string/deparam/deparam.js
+            // source: https://github.com/jupiterjs/jquerymx/blob/master/lang/string/deparam/deparam.js
             var digitTest = /^\d+$/,
                 keyBreaker = /([^\[\]]+)|(\[\])/g,
-                plus = /\+/g,
-                paramTest = /([^?#]*)(#.*)?$/;
-            if (!params || !paramTest.test(params)) {
-                return {};
-            }
-            var data = {},
-                pairs = params.split('&'),
-                current;
-            for (var i = 0; i < pairs.length; i++) {
-                current = data;
-                var pair = pairs[i].split('=');
-                // if we find foo=1+1=2
-                if (pair.length != 2) {
-                    pair = [pair[0], pair.slice(1).join("=")]
-                }
-                var key = decodeURIComponent(pair[0].replace(plus, " ")),
-                    value = decodeURIComponent(pair[1].replace(plus, " ")),
-                    parts = key.match(keyBreaker);
-
-                for (var j = 0; j < parts.length - 1; j++) {
-                    var part = parts[j];
-                    if (!current[part]) {
-                        // if what we are pointing to looks like an array
-                        current[part] = digitTest.test(parts[j + 1]) || parts[j + 1] == "[]" ? [] : {}
+                paramTest = /([^?#]*)(#.*)?$/,
+                prep = function (str) {
+                    return decodeURIComponent(str.replace(/\+/g, ' '));
+                };
+            var data = {}, pairs, lastPart;
+            if (params && paramTest.test(params)) {
+                pairs = params.split('&');
+                $.each(pairs, function (index, pair) {
+                    var parts = pair.split('='),
+                        key = prep(parts.shift()),
+                        value = prep(parts.join('=')),
+                        current = data;
+                    if (key) {
+                        parts = key.match(keyBreaker);
+                        for (var j = 0, l = parts.length - 1; j < l; j++) {
+                            if (!current[parts[j]]) {
+                                // If what we are pointing to looks like an `array`
+                                current[parts[j]] = digitTest.test(parts[j + 1]) || parts[j + 1] === '[]' ? [] : {};
+                            }
+                            current = current[parts[j]];
+                        }
+                        lastPart = parts.pop();
+                        if (lastPart === '[]') {
+                            current.push(value);
+                        } else {
+                            current[lastPart] = value;
+                        }
                     }
-                    current = current[part];
-                }
-                var lastPart = parts[parts.length - 1];
-                if (lastPart == "[]") {
-                    current.push(value)
-                } else {
-                    current[lastPart] = value;
-                }
+                });
             }
             return data;
         },
         hashGet: function () {
-            var vars = {}, hash, splitter, hashes;
+            var vars = {}, hash, hashes;
             if (!this.oldBrowser) {
                 var pos = window.location.href.indexOf('?');
                 hashes = (pos != -1) ? decodeURIComponent(window.location.href.substr(pos + 1)) : '';
-                splitter = '&';
+                vars = this.deparam(hashes);
             } else {
                 hashes = decodeURIComponent(window.location.hash.substr(1));
-                splitter = '/';
-            }
-            if (hashes.length == 0) {
-                return vars;
-            } else {
-                hashes = hashes.split(splitter);
-            }
-            for (var i in hashes) {
-                if (hashes.hasOwnProperty(i)) {
-                    hash = hashes[i].split('=');
-                    if (typeof hash[1] == 'undefined') {
-                        vars.anchor = hash[0];
-                    } else {
-                        vars[hash[0]] = hash[1];
+                if (hashes.length) {
+                    hashes = hashes.split('/');
+                    for (var i in hashes) {
+                        if (hashes.hasOwnProperty(i)) {
+                            hash = hashes[i].split('=');
+                            if (typeof hash[1] == 'undefined') {
+                                vars.anchor = hash[0];
+                            } else {
+                                vars[hash[0]] = hash[1];
+                            }
+                        }
                     }
                 }
             }
@@ -315,12 +303,16 @@
             var hash = '';
             for (var i in vars) {
                 if (vars.hasOwnProperty(i)) {
-                    if (typeof vars[i] == 'string') {
+                    if (typeof vars[i] != 'object') {
                         hash += '&' + i + '=' + vars[i];
                     } else {
                         for (var j in vars[i]) {
                             if (vars[i].hasOwnProperty(j)) {
-                                hash += '&' + i + '=' + vars[i][j];
+                                if (!isNaN(parseFloat(j)) && isFinite(parseFloat(j))) {
+                                    hash += '&' + i + '[' + ']=' + vars[i][j];
+                                } else {
+                                    hash += '&' + i + '[' + j + ']=' + vars[i][j];
+                                }
                             }
                         }
                     }

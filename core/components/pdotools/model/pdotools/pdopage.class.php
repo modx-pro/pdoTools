@@ -74,7 +74,8 @@ class pdoPage
             'assetsUrl' => $assetsUrl,
             'connectorUrl' => rtrim($assetsUrl, '/') . '/connector.php',
             'pageId' => $this->modx->resource->id,
-            'hash' => $hash
+            'hash' => $hash,
+            'scrollTop' => (bool) $this->modx->getOption('scrollTop', $this->pdoTools->config, true)
         );
 
         $startupScript = $this->pdoTools->config['frontend_startup_js'];
