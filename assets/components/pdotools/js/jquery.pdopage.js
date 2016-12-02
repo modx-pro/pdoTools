@@ -149,7 +149,7 @@
             if (!mode) {
                 mode = 'replace';
             }
-            if (_this.page == page) {
+            if (_this.page == page && mode != 'force') {
                 return;
             }
             _this.wrapper.trigger('beforeLoad', [_this, _this.settings]);
@@ -168,6 +168,10 @@
                 _this.wrapper.find(rows).append(waitAnimation);
             } else {
                 _this.wrapper.find(rows).empty().append(waitAnimation);
+            }
+            if (mode == 'force') {
+                params = _this.getUrlParameters(href);
+                params[_this.key] = params[_this.key] || 1;
             }
             $.get(window.location.pathname, params, function (response) {
                 if (response) {
@@ -231,6 +235,54 @@
                 }
             }
             title.text(parts.join(separator));
+        },
+        getUrlParameters: function (url) {
+            var result = {};
+            var searchIndex = url.indexOf("?");
+            if (searchIndex !== -1) {
+                result = this.deparam(url.substring(searchIndex + 1));
+            }
+            return result;
+        },
+        deparam: function (params) {
+            // Source: https://github.com/jupiterjs/jquerymx/blob/master/lang/string/deparam/deparam.js
+            var digitTest = /^\d+$/,
+                keyBreaker = /([^\[\]]+)|(\[\])/g,
+                plus = /\+/g,
+                paramTest = /([^?#]*)(#.*)?$/;
+            if (!params || !paramTest.test(params)) {
+                return {};
+            }
+            var data = {},
+                pairs = params.split('&'),
+                current;
+            for (var i = 0; i < pairs.length; i++) {
+                current = data;
+                var pair = pairs[i].split('=');
+                // if we find foo=1+1=2
+                if (pair.length != 2) {
+                    pair = [pair[0], pair.slice(1).join("=")]
+                }
+                var key = decodeURIComponent(pair[0].replace(plus, " ")),
+                    value = decodeURIComponent(pair[1].replace(plus, " ")),
+                    parts = key.match(keyBreaker);
+
+                for (var j = 0; j < parts.length - 1; j++) {
+                    var part = parts[j];
+                    if (!current[part]) {
+                        // if what we are pointing to looks like an array
+                        current[part] = digitTest.test(parts[j + 1]) || parts[j + 1] == "[]" ? [] : {}
+                    }
+                    current = current[part];
+                }
+                var lastPart = parts[parts.length - 1];
+                if (lastPart == "[]") {
+                    current.push(value)
+                } else {
+                    current[lastPart] = value;
+                }
+            }
+            return data;
         },
         hashGet: function () {
             var vars = {}, hash, splitter, hashes;
@@ -299,12 +351,26 @@
     });
 
     $.fn[pluginName] = function (options) {
-        return this.each(function () {
-            if (!$.data(this, 'plugin_' + pluginName)) {
-                $.data(this, 'plugin_' +
-                    pluginName, new Plugin(this, options));
-            }
-        });
+        var args = arguments;
+        if (options === undefined || typeof options === 'object') {
+            return this.each(function () {
+                if (!$.data(this, 'plugin_' + pluginName)) {
+                    $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
+                }
+            });
+        } else if (typeof options === 'string' && options[0] !== '_' && options !== 'init') {
+            var returns;
+            this.each(function () {
+                var instance = $.data(this, 'plugin_' + pluginName);
+                if (instance instanceof Plugin && typeof instance[options] === 'function') {
+                    returns = instance[options].apply(instance, Array.prototype.slice.call(args, 1));
+                }
+                if (options === 'destroy') {
+                    $.data(this, 'plugin_' + pluginName, null);
+                }
+            });
+            return returns !== undefined ? returns : this;
+        }
     };
 
 })(jQuery, window, document);
