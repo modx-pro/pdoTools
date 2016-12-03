@@ -172,11 +172,11 @@ $tmp = array(
     ),
     'frontend_js' => array(
         'type' => 'textfield',
-        'value' => '[[+assetsUrl]]js/pdopage.js',
+        'value' => '[[+assetsUrl]]js/pdopage.min.js',
     ),
     'frontend_css' => array(
         'type' => 'textfield',
-        'value' => '[[+assetsUrl]]css/pdopage.css',
+        'value' => '[[+assetsUrl]]css/pdopage.min.css',
     ),
     'setMeta' => array(
         'type' => 'combo-boolean',

@@ -44,7 +44,7 @@ pdoPage.initialize = function (config) {
         case 'button':
             if (config.history) {
                 if (typeof(jQuery().sticky) == 'undefined') {
-                    $.getScript(config['assetsUrl'] + 'js/lib/jquery.sticky.js', function () {
+                    $.getScript(config['assetsUrl'] + 'js/lib/jquery.sticky.min.js', function () {
                         pdoPage.initialize(config);
                     });
                     return;
@@ -191,7 +191,7 @@ pdoPage.stickyPagination = function (config) {
             wrapperClassName: 'sticky-pagination',
             getWidthFrom: config['wrapper'],
             responsiveWidth: true,
-            topSpacing: 2,
+            topSpacing: 2
         });
         $(config['wrapper']).trigger('scroll');
     }
@@ -331,7 +331,7 @@ pdoPage.Hash = {
 
     oldbrowser: function () {
         return !(window.history && history.pushState);
-    },
+    }
 };
 
 if (typeof(jQuery) == 'undefined') {

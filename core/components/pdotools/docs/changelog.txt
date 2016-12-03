@@ -2,8 +2,9 @@ Changelog for pdoTools.
 
 2.7.4 pl
 ==============
+- [#242] Added jquery.pdopage.js plugin and minified versions.
 - [#241] [Fenom] Improved the retrieving of TVs for a current resource.
-- [pdoFeth] Restored the checking of possible SQL injections in the &sortby with xPDO 2.5.1.
+- [pdoFetch] Restored the checking of possible SQL injections in the &sortby with xPDO 2.5.1.
 
 2.7.3 pl
 ==============

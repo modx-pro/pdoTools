@@ -59,7 +59,7 @@ class pdoPage
         $hash = sha1($this->modx->toJSON($this->pdoTools->config));
         $_SESSION['pdoPage'][$hash] = $this->pdoTools->config;
 
-        $config = $this->modx->toJSON(array(
+        $config = array(
             'wrapper' => $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage'),
             'rows' => $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows'),
             'pagination' => $this->modx->getOption('ajaxElemPagination', $this->pdoTools->config,
@@ -75,14 +75,32 @@ class pdoPage
             'connectorUrl' => rtrim($assetsUrl, '/') . '/connector.php',
             'pageId' => $this->modx->resource->id,
             'hash' => $hash,
-        ));
+            'scrollTop' => (bool)$this->modx->getOption('scrollTop', $this->pdoTools->config, true),
+        );
 
-        $this->modx->regClientStartupScript(
-            '<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}, configs: {}};</script>', true
-        );
-        $this->modx->regClientScript(
-            '<script type="text/javascript">pdoPage.initialize(' . $config . ');</script>', true
-        );
+        if (empty($this->pdoTools->config['frontend_startup_js'])) {
+            $this->modx->regClientStartupScript(
+                '<script type="text/javascript">pdoPage = {callbacks: {}, keys: {}, configs: {}};</script>', true
+            );
+        } else {
+            $this->modx->regClientStartupScript(
+                $this->pdoTools->getChunk($this->pdoTools->config['frontend_startup_js']), true
+            );
+        }
+
+        if (empty($this->pdoTools->config['frontend_init_js'])) {
+            $this->modx->regClientScript(
+                '<script type="text/javascript">pdoPage.initialize(' . json_encode($config) . ');</script>', true
+            );
+        } else {
+            $this->modx->regClientScript(
+                $this->pdoTools->getChunk($this->pdoTools->config['frontend_init_js'], array(
+                    'key' => $config['pageVarKey'],
+                    'wrapper' => $config['wrapper'],
+                    'config' => json_encode($config),
+                )), true
+            );
+        }
     }
 
 
