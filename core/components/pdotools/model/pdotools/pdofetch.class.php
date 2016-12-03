@@ -498,12 +498,26 @@ class pdoFetch extends pdoTools
                         $value = preg_replace('#(.*?)\.(.*?)\s#', '`$1`.`$2`', $value);
                     }
                 });
-                $this->query->query['sortby'][] = array(
-                    'column' => implode(',', $tmp),
-                    'direction' => $sortdir
-                );
+                $sortby = implode(',', $tmp);
+                if (!in_array(strtoupper($sortdir), array('ASC', 'DESC', ''), true)) {
+                    $sortdir = 'ASC';
+                }
 
-                $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
+                // Use reflection to check clause by protected method of xPDOQuery
+                $isValidClause = new ReflectionMethod('xPDOQuery', 'isValidClause');
+                $isValidClause->setAccessible(true);
+                $isValidClause->invoke($this->query, $sortby);
+                if (!$isValidClause->invoke($this->query, $sortby)) {
+                    $message = 'SQL injection attempt detected in sortby column; clause rejected';
+                    $this->modx->log(xPDO::LOG_LEVEL_ERROR, $message);
+                    $this->addTime($message . ': ' . $sortby);
+                } elseif (!empty($sortby)) {
+                    $this->query->query['sortby'][] = array(
+                        'column' => $sortby,
+                        'direction' => $sortdir
+                    );
+                    $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
+                }
                 $time = microtime(true);
             }
         }
