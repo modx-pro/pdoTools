@@ -49,6 +49,23 @@ class Modifier
         }
         return date($format, $date);
     }
+    
+    /**
+     * @param string $date
+     * @param string $format
+     * @return string
+     */
+    public static function dateHuman($date)
+    {
+        if (!is_numeric($date)) {
+            $date = strtotime($date);
+            if (!$date) {
+                $date = time();
+            }
+        }
+        $months = array('','января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря');
+        return date("j",$input).' '.$months[date("n",$input)].' '.date("Y",$input).'';
+    }
 
     /**
      * Escape string
