@@ -237,10 +237,15 @@ class FenomX extends Fenom
 
         $this->_modifiers['reverse'] =
         $this->_modifiers['strrev'] = function ($string) {
-            $ar = array();
-            preg_match_all('/(\d+)?./us', $string, $ar);
-
-            return join('', array_reverse($ar[0]));
+            if (is_array($string)) {
+                $string = array_reverse($string);
+            } else {
+                $ar = array();
+                preg_match_all('/(\d+)?./us', $string, $ar);
+                $string = join('', array_reverse($ar[0]));
+            }
+            
+            return $string;
         };
 
         $this->_modifiers['wordwrap'] = function ($string, $width = null, $break = "<br />\n ") {
@@ -286,20 +291,20 @@ class FenomX extends Fenom
 
         $this->_modifiers['ismember'] =
         $this->_modifiers['memberof'] =
-        $this->_modifiers['mo'] = function ($id, $groups = array()) use ($modx, $pdo) {
+        $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
             $pdo->debugParserModifier($id, 'ismember', $groups);
-            if (empty($id)) {
-                $id = $modx->user->get('id');
-            }
             if (!is_array($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
 
             /** @var $user modUser */
-            $member = false;
-            if ($user = $modx->getObject('modUser', $id)) {
-                $member = $user->isMember($groups);
+            if (empty($id)) {
+                $id = $modx->user->get('id');
+                $user = $modx->user;
+            } else {
+                $user = $modx->getObject('modUser', $id);
             }
+            $member = $user->isMember($groups, $matchAll);
             $pdo->debugParserModifier($id, 'ismember', $groups);
 
             return $member;
