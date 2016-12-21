@@ -3,6 +3,8 @@ Changelog for pdoTools.
 2.7.5 pl
 ==============
 - [Fenom] Modifier "resource" no longer checks fields of resources in their schema.
+- [Fenom] Modifier "strrev" now can work with arrays.
+- [Fenom] Improved modifier "ismember".
 
 2.7.4 pl
 ==============
