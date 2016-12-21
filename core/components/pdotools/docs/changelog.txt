@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.7.5 pl
+==============
+- [Fenom] Modifier "resource" no longer checks fields of resources in their schema.
+
 2.7.4 pl
 ==============
 - [#242] Added jquery.pdopage.js plugin and minified versions.

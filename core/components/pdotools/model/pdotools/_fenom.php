@@ -409,11 +409,11 @@ class FenomX extends Fenom
                 if (!empty($field)) {
                     if (strtolower($field) == 'content') {
                         $output = $resource->getContent();
-                    } elseif (array_key_exists($field, $modx->getFields($resource->get('class_key')))) {
-                        $output = $resource->get($field);
                     } else {
-                        $field = preg_replace('#^tv\.#i', '', $field);
-                        $output = $resource->getTVValue($field);
+                        $output = $resource->get($field);
+                        if (is_null($output)) {
+                            $output = $resource->getTVValue(preg_replace('#^tv\.#i', '', $field));
+                        }
                     }
                 } else {
                     $output = $resource->toArray();
