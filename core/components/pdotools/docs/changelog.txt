@@ -2,6 +2,7 @@ Changelog for pdoTools.
 
 2.7.5 pl
 ==============
+- Fenom is now managed via composer.
 - [Fenom] Modifier "resource" no longer checks fields of resources in their schema.
 - [Fenom] Modifier "strrev" now can work with arrays.
 - [Fenom] Improved modifier "ismember".

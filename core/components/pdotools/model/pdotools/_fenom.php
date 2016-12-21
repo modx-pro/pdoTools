@@ -1,8 +1,7 @@
 <?php
 
 if (!class_exists('Fenom')) {
-    require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
-    require dirname(dirname(__FILE__)) . '/fenom/Fenom/ProviderInterface.php';
+    require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
     Fenom::registerAutoload();
 }
 
