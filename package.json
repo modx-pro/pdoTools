@@ -1,0 +1,11 @@
+{
+  "name": "pdoTools",
+  "description": "Small library for creating fast snippets for MODX Revolution that works through PDO",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-banner": "^0.6.0",
+    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-contrib-watch": "^1.0.0"
+  }
+}

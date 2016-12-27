@@ -69,8 +69,7 @@ class pdoTools
             'scheme' => '',
             'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
             'elementsPath' => $this->modx->getOption('pdotools_elements_path', null, '{core_path}elements/', true),
-            'cachePath' => $this->modx->getOption('pdotools_cache_path', null, '{core_path}cache/default/pdotools',
-                true),
+            'cachePath' => '{core_path}cache/default/pdotools',
         ), $config);
 
         if ($clean_timings) {
@@ -745,7 +744,7 @@ class pdoTools
      * @param string $type Type of element
      * @param array $row Current row with results being processed
      *
-     * @return array
+     * @return array|bool
      */
     protected function _loadElement($name, $type, $row = array())
     {
@@ -761,7 +760,7 @@ class pdoTools
         if (!$binding && $pos = strpos($name, '@')) {
             $propertySet = substr($name, $pos + 1);
             $name = substr($name, 0, $pos);
-        } elseif ($pos = strpos($content, '@')) {
+        } elseif (in_array($binding, array('CHUNK', 'TEMPLATE', 'SNIPPET')) && $pos = strpos($content, '@')) {
             $propertySet = substr($content, $pos + 1);
             $content = substr($content, 0, $pos);
         }
@@ -1030,9 +1029,9 @@ class pdoTools
             // Extract JSON fields
             if ($this->config['decodeJSON']) {
                 foreach ($row as $k => $v) {
-                    if (!empty($v) && is_string($v) && strlen($v) >= 2 && (($v[0] == '{' && $v[1] == '"') || ($v[0] == '[' && $v[1] != '['))) {
-                        $tmp = $this->modx->fromJSON($v);
-                        if ($tmp !== null) {
+                    if (!empty($v) && is_string($v) && ($v[0] == '[' || $v[0] == '{')) {
+                        $tmp = json_decode($v, true);
+                        if (json_last_error() == JSON_ERROR_NONE) {
                             $row[$k] = $tmp;
                         }
                     }
@@ -1113,6 +1112,14 @@ class pdoTools
             $this->preparing = true;
             $name = trim($this->config['prepareSnippet']);
 
+            array_walk_recursive($row, function (&$value) {
+                $value = str_replace(
+                    array('[', ']', '{', '}'),
+                    array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
+                    $value
+                );
+            });
+
             $tmp = $this->runSnippet($name, array(
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
@@ -1129,6 +1136,14 @@ class pdoTools
                 $row = array_merge($row, $tmp);
             }
             $this->preparing = false;
+
+            array_walk_recursive($row, function (&$value) {
+                $value = str_replace(
+                    array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
+                    array('[', ']', '{', '}'),
+                    $value
+                );
+            });
         }
 
         return $row;
@@ -1315,7 +1330,7 @@ class pdoTools
                 ? $options['cache_handler']
                 : $this->modx->getOption('cache_resource_handler', null, 'xPDOFileCache'),
 
-            xPDO::OPT_CACHE_EXPIRES => $options['cacheTime'] !== ''
+            xPDO::OPT_CACHE_EXPIRES => isset($options['cacheTime']) && $options['cacheTime'] !== ''
                 ? (integer)$options['cacheTime']
                 : (integer)$this->modx->getOption('cache_resource_expires', null, 0),
         );

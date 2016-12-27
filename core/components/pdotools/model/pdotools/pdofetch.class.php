@@ -126,6 +126,7 @@ class pdoFetch extends pdoTools
                 } else {
                     $rows = $this->prepareRows($rows);
                     $time = microtime(true);
+                    $output = array();
                     foreach ($rows as $row) {
                         if (!empty($this->config['additionalPlaceholders'])) {
                             $row = array_merge($this->config['additionalPlaceholders'], $row);
@@ -160,7 +161,7 @@ class pdoFetch extends pdoTools
                     if (!empty($this->config['toSeparatePlaceholders'])) {
                         $this->modx->setPlaceholders($output, $this->config['toSeparatePlaceholders']);
                         $output = '';
-                    } elseif (!empty($output)) {
+                    } else {
                         $output = implode($this->config['outputSeparator'], $output);
                     }
                 }
@@ -301,8 +302,9 @@ class pdoFetch extends pdoTools
                 foreach ($tmp as $k => $v) {
                     $class = !empty($v['class']) ? $v['class'] : $k;
                     $alias = !empty($v['alias']) ? $v['alias'] : $k;
+                    $on = !empty($v['on']) ? $v['on'] : array();
                     if (!is_numeric($alias) && !is_numeric($class)) {
-                        $this->query->$join($class, $alias, $v['on']);
+                        $this->query->$join($class, $alias, $on);
                         $this->addTime($join . 'ed <i>' . $class . '</i> as <b>' . $alias . '</b>',
                             microtime(true) - $time);
                         $this->aliases[$alias] = $class;
@@ -496,9 +498,26 @@ class pdoFetch extends pdoTools
                         $value = preg_replace('#(.*?)\.(.*?)\s#', '`$1`.`$2`', $value);
                     }
                 });
-                $this->query->sortby(implode(',', $tmp), $sortdir);
+                $sortby = implode(',', $tmp);
+                if (!in_array(strtoupper($sortdir), array('ASC', 'DESC', ''), true)) {
+                    $sortdir = 'ASC';
+                }
 
-                $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
+                // Use reflection to check clause by protected method of xPDOQuery
+                $isValidClause = new ReflectionMethod('xPDOQuery', 'isValidClause');
+                $isValidClause->setAccessible(true);
+                $isValidClause->invoke($this->query, $sortby);
+                if (!$isValidClause->invoke($this->query, $sortby)) {
+                    $message = 'SQL injection attempt detected in sortby column; clause rejected';
+                    $this->modx->log(xPDO::LOG_LEVEL_ERROR, $message);
+                    $this->addTime($message . ': ' . $sortby);
+                } elseif (!empty($sortby)) {
+                    $this->query->query['sortby'][] = array(
+                        'column' => $sortby,
+                        'direction' => $sortdir
+                    );
+                    $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
+                }
                 $time = microtime(true);
             }
         }
@@ -512,11 +531,11 @@ class pdoFetch extends pdoTools
      */
     public function prepareQuery()
     {
-        if (!empty($this->config['limit'])) {
+        if ($limit = (int)$this->config['limit']) {
+            $offset = (int)$this->config['offset'];
             $time = microtime(true);
-            $this->query->limit($this->config['limit'], $this->config['offset']);
-            $this->addTime('Limited to <b>' . $this->config['limit'] . '</b>, offset <b>' . $this->config['offset'] . '</b>',
-                microtime(true) - $time);
+            $this->query->limit($limit, $offset);
+            $this->addTime('Limited to <b>' . $limit . '</b>, offset <b>' . $offset . '</b>', microtime(true) - $time);
         }
 
         return $this->query->prepare();
@@ -545,10 +564,13 @@ class pdoFetch extends pdoTools
         }
 
         if (!empty($includeTVs)) {
-            $subclass = preg_grep('/^' . $this->config['class'] . '/i', $this->modx->classMap['modResource']);
-            if (!preg_match('/^modResource$/i', $this->config['class']) && !count($subclass)) {
+            $class = !empty($this->config['joinTVsTo'])
+                ? $this->config['joinTVsTo']
+                : $this->config['class'];
+            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap['modResource']);
+            if (!preg_match('#^modResource$#i', $class) && !count($subclass)) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR,
-                    '[pdoTools] Instantiated a derived class "' . $this->config['class'] . '" that is not a subclass of the "modResource", so tvs not joining.');
+                    '[pdoTools] Could not join TVs to the class "' . $class . '" that is not a subclass of the "modResource". Try to specify correct class in the "joinTVsTo" parameter.');
             } else {
                 $tvs = array_map('trim', explode(',', $includeTVs));
                 $tvs = array_unique($tvs);
@@ -566,7 +588,7 @@ class pdoFetch extends pdoTools
                             $this->config['tvsJoin'][$name] = array(
                                 'class' => 'modTemplateVarResource',
                                 'alias' => $alias,
-                                'on' => '`TV' . $name . '`.`contentid` = `' . $this->config['class'] . '`.`id` AND `TV' . $name . '`.`tmplvarid` = ' . $tv['id'],
+                                'on' => '`TV' . $name . '`.`contentid` = `' . $class . '`.`id` AND `TV' . $name . '`.`tmplvarid` = ' . $tv['id'],
                                 'tv' => $tv,
                             );
                             $this->config['tvsSelect'][$alias] = array('`' . $tvPrefix . $tv['name'] . '`' => 'IFNULL(`' . $alias . '`.`value`, ' . $this->modx->quote($tv['default_text']) . ')');
@@ -722,7 +744,7 @@ class pdoFetch extends pdoTools
                             }
                         }
                         $depth = (isset($config['depth']) && $config['depth'] !== '')
-                            ? (integer)$config['depth']
+                            ? (int)$config['depth']
                             : 10;
                         if (!empty($depth) && $depth > 0) {
                             $pids = array();
@@ -992,7 +1014,7 @@ class pdoFetch extends pdoTools
      * @param string $where
      * @param array $config
      *
-     * @return array
+     * @return array|boolean
      */
     public function getCollection($class, $where = '', $config = array())
     {
@@ -1009,11 +1031,11 @@ class pdoFetch extends pdoTools
         $config['class'] = $class;
         $config['limit'] = !isset($config['limit'])
             ? 0
-            : (integer)$config['limit'];
+            : (int)$config['limit'];
         if (!empty($where)) {
             unset($config['where']);
             if (is_numeric($where)) {
-                $where = array($instance->modx->getPK($class) => (integer)$where);
+                $where = array($instance->modx->getPK($class) => (int)$where);
             } elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
                 $where = $instance->modx->fromJSON($where);
             }
@@ -1091,7 +1113,7 @@ class pdoFetch extends pdoTools
         $options['return'] = 'ids';
 
         if ($id !== null && intval($depth) >= 1) {
-            $where[$parent_field] = (integer)$id;
+            $where[$parent_field] = (int)$id;
             $children = $this->getCollection($class, $where, $options);
             foreach ($children as $child) {
                 $ids[] = $child[$id_field];

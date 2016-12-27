@@ -55,15 +55,18 @@ class pdoMenu
         if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
             $this->pdoTools = new $pdoClass($modx, $config);
         } else {
-            return false;
+            return;
         }
 
-        if ($config['hereId'] && $currentResource = $this->pdoTools->getObject('modResource', $config['hereId'])) {
-            $tmp = $modx->getParentIds($currentResource['id'], 100, array(
-                'context' => $currentResource['context_key'],
-            ));
-            $tmp[] = $config['hereId'];
-            $this->parentTree = array_flip($tmp);
+        if ($config['hereId']) {
+            $here = $this->pdoTools->getObject('modResource', $config['hereId'], array('select' => 'id, context_key'));
+            if ($here) {
+                $tmp = $modx->getParentIds($here['id'], 100, array(
+                    'context' => $here['context_key'],
+                ));
+                $tmp[] = $config['hereId'];
+                $this->parentTree = array_flip($tmp);
+            }
         }
 
         $modx->lexicon->load('pdotools:pdomenu');

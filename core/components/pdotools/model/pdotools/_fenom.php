@@ -1,8 +1,7 @@
 <?php
 
 if (!class_exists('Fenom')) {
-    require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
-    require dirname(dirname(__FILE__)) . '/fenom/Fenom/ProviderInterface.php';
+    require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
     Fenom::registerAutoload();
 }
 
@@ -55,6 +54,14 @@ class FenomX extends Fenom
         $this->modx = $pdoTools->modx;
 
         $this->_addDefaultModifiers();
+
+        $this->modx->invokeEvent(
+            'pdoToolsOnFenomInit',
+            array(
+                'fenom' => $this,
+                'config' => $pdoTools->config,
+            )
+        );
     }
 
 
@@ -68,8 +75,8 @@ class FenomX extends Fenom
      */
     public function setCompileDir($dir)
     {
-        $dir = str_replace(MODX_BASE_PATH, '', $dir);
-        $path = MODX_BASE_PATH;
+        $dir = str_replace(MODX_CORE_PATH, '', $dir);
+        $path = MODX_CORE_PATH;
         $tmp = explode('/', trim($dir, '/'));
         foreach ($tmp as $v) {
             if (!empty($v)) {
@@ -92,8 +99,22 @@ class FenomX extends Fenom
         $modx = $this->modx;
         $pdo = $this->pdoTools;
         $fenom = $this;
+        if (!$micro = $pdo->getStore('microMODX')) {
+            if (!class_exists('microMODX')) {
+                require '_micromodx.php';
+            }
+            $micro = new microMODX($pdo);
+            $pdo->setStore('microMODX', $micro);
+        }
 
         // PHP Functions
+        $this->_allowed_funcs = array_merge(
+            $this->_allowed_funcs,
+            array(
+                'rand' => 1,
+                'number_format' => 1,
+            )
+        );
 
         $this->_modifiers = array_merge(
             $this->_modifiers,
@@ -115,6 +136,8 @@ class FenomX extends Fenom
                 'len' => 'Fenom\Modifier::length',
                 'length' => 'Fenom\Modifier::length',
                 'strlen' => 'Fenom\Modifier::length',
+                'number_format' => 'number_format',
+                'number' => 'number_format',
             )
         );
 
@@ -213,10 +236,15 @@ class FenomX extends Fenom
 
         $this->_modifiers['reverse'] =
         $this->_modifiers['strrev'] = function ($string) {
-            $ar = array();
-            preg_match_all('/(\d+)?./us', $string, $ar);
+            if (is_array($string)) {
+                $string = array_reverse($string);
+            } else {
+                $ar = array();
+                preg_match_all('/(\d+)?./us', $string, $ar);
+                $string = join('', array_reverse($ar[0]));
+            }
 
-            return join('', array_reverse($ar[0]));
+            return $string;
         };
 
         $this->_modifiers['wordwrap'] = function ($string, $width = null, $break = "<br />\n ") {
@@ -262,20 +290,20 @@ class FenomX extends Fenom
 
         $this->_modifiers['ismember'] =
         $this->_modifiers['memberof'] =
-        $this->_modifiers['mo'] = function ($id, $groups = array()) use ($modx, $pdo) {
+        $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
             $pdo->debugParserModifier($id, 'ismember', $groups);
-            if (empty($id)) {
-                $id = $modx->user->get('id');
-            }
             if (!is_array($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
 
             /** @var $user modUser */
-            $member = false;
-            if ($user = $modx->getObject('modUser', $id)) {
-                $member = $user->isMember($groups);
+            if (empty($id)) {
+                $id = $modx->user->get('id');
+                $user = $modx->user;
+            } else {
+                $user = $modx->getObject('modUser', $id);
             }
+            $member = $user->isMember($groups, $matchAll);
             $pdo->debugParserModifier($id, 'ismember', $groups);
 
             return $member;
@@ -295,6 +323,39 @@ class FenomX extends Fenom
             }
 
             return !$modx->user->isAuthenticated($ctx);
+        };
+
+        // Custom modifiers
+
+        $this->_modifiers['declension'] =
+        $this->_modifiers['decl'] = function ($amount, $variants, $number = false, $delimiter = '|') use ($modx) {
+            $variants = explode($delimiter, $variants);
+            if (count($variants) < 2) {
+                $variants = array_fill(0, 3, $variants[0]);
+            } elseif (count($variants) < 3) {
+                $variants[2] = $variants[1];
+            }
+            $modulusOneHundred = $amount % 100;
+            switch ($amount % 10) {
+                case 1:
+                    $text = $modulusOneHundred == 11
+                        ? $variants[2]
+                        : $variants[0];
+                    break;
+                case 2:
+                case 3:
+                case 4:
+                    $text = ($modulusOneHundred > 10) && ($modulusOneHundred < 20)
+                        ? $variants[2]
+                        : $variants[1];
+                    break;
+                default:
+                    $text = $variants[2];
+            }
+
+            return $number
+                ? $amount . ' ' . $text
+                : $text;
         };
 
         // MODX Functions
@@ -352,11 +413,11 @@ class FenomX extends Fenom
                 if (!empty($field)) {
                     if (strtolower($field) == 'content') {
                         $output = $resource->getContent();
-                    } elseif (array_key_exists($field, $modx->getFields($resource->get('class_key')))) {
-                        $output = $resource->get($field);
                     } else {
-                        $field = preg_replace('#^tv\.#i', '', $field);
-                        $output = $resource->getTVValue($field);
+                        $output = $resource->get($field);
+                        if (is_null($output)) {
+                            $output = $resource->getTVValue(preg_replace('#^tv\.#i', '', $field));
+                        }
                     }
                 } else {
                     $output = $resource->toArray();
@@ -368,17 +429,17 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['snippet'] = function ($name, $params = array()) use ($pdo) {
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'snippet', $params);
             $result = $pdo->runSnippet($name, $params);
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'snippet', $params);
 
             return $result;
         };
 
         $this->_modifiers['chunk'] = function ($name, $params = array()) use ($pdo) {
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'chunk', $params);
             $result = $pdo->getChunk($name, $params);
-            $pdo->debugParserModifier($name, $params);
+            $pdo->debugParserModifier($name, 'chunk', $params);
 
             return $result;
         };
@@ -405,24 +466,24 @@ class FenomX extends Fenom
             return $modx->getPlaceholder($key);
         };
 
-        $this->_modifiers['cssToHead'] = function ($string) use ($modx) {
-            $modx->regClientCSS($string);
+        $this->_modifiers['cssToHead'] = function ($string) use ($micro) {
+            $micro->regClientCSS($string);
         };
 
-        $this->_modifiers['htmlToHead'] = function ($string) use ($modx) {
-            $modx->regClientStartupHTMLBlock($string);
+        $this->_modifiers['htmlToHead'] = function ($string) use ($micro) {
+            $micro->regClientStartupHTMLBlock($string);
         };
 
-        $this->_modifiers['htmlToBottom'] = function ($string) use ($modx) {
-            $modx->regClientHTMLBlock($string);
+        $this->_modifiers['htmlToBottom'] = function ($string) use ($micro) {
+            $micro->regClientHTMLBlock($string);
         };
 
-        $this->_modifiers['jsToHead'] = function ($string, $plaintext = false) use ($modx) {
-            $modx->regClientStartupScript($string, $plaintext);
+        $this->_modifiers['jsToHead'] = function ($string, $plaintext = false) use ($micro) {
+            $micro->regClientStartupScript($string, $plaintext);
         };
 
-        $this->_modifiers['jsToBottom'] = function ($string, $plaintext = false) use ($modx) {
-            $modx->regClientScript($string, $plaintext);
+        $this->_modifiers['jsToBottom'] = function ($string, $plaintext = false) use ($micro) {
+            $micro->regClientScript($string, $plaintext);
         };
 
         $this->_modifiers['json_encode'] =
@@ -454,13 +515,25 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_match'] = function ($value, $pattern) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_match($pattern, $value);
         };
 
         $this->_modifiers['preg_get'] = function ($value, $pattern, $group = 0) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
             if (!preg_match($pattern, $value, $matches)) {
                 return null;
             }
@@ -471,7 +544,13 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_get_all'] = function ($value, $pattern, $group = 0) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
             if (!preg_match_all($pattern, $value, $matches, PREG_PATTERN_ORDER)) {
                 return array();
             }
@@ -493,19 +572,37 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_replace'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_replace($pattern, $replacement, $value, $limit);
         };
 
         $this->_modifiers['preg_filter'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_filter($pattern, $replacement, $value, $limit);
         };
 
         $this->_modifiers['preg_split'] = function ($value, $pattern) use ($fenom) {
-            $fenom->_assertNoEval($pattern);
+            if (PHP_VERSION_ID < 50400) {
+                $method = new ReflectionMethod($fenom, '_assertNoEval');
+                $method->setAccessible(true);
+                $method->invoke($fenom, $pattern);
+            } else {
+                $fenom->_assertNoEval($pattern);
+            }
 
             return preg_split($pattern, $value);
         };
@@ -536,9 +633,9 @@ class FenomX extends Fenom
      * Modifier autoloader
      *
      * @param string $name
-     * @param Fenom\Template $template
+     * @param \Fenom\Template $template
      *
-     * @return bool
+     * @return Closure
      */
     protected function _loadModifier($name, $template)
     {

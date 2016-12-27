@@ -1,5 +1,82 @@
 Changelog for pdoTools.
 
+2.7.5 pl
+==============
+- Fenom is now managed via composer.
+- [Fenom] Modifier "resource" no longer checks fields of resources in their schema.
+- [Fenom] Modifier "strrev" now can work with arrays.
+- [Fenom] Improved modifier "ismember".
+
+2.7.4 pl
+==============
+- [#242] Added jquery.pdopage.js plugin and minified versions.
+- [#241] [Fenom] Improved the retrieving of TVs for a current resource.
+- [pdoFetch] Restored the checking of possible SQL injections in the &sortby with xPDO 2.5.1.
+
+2.7.3 pl
+==============
+- Improved compatibility with MODX 2.5.2.
+
+2.7.2 pl
+==============
+- [pdoFetch] Some security improvements.
+
+2.7.1 pl
+==============
+- Some security improvements in the connector.php.
+- Fixed bug with registering scripts in styles via Fenom introduced in version 2.7.0.
+
+2.7.0 pl
+==============
+- [Fenom] Updated to the version 2.11.4.
+- [Fenom] Fixed resource cache for scripts and styles registered by Fenom.
+- [Fenom] Added rand() and number_format() to an allowed PHP functions.
+- [Fenom] New output filter "number" (or "number_format").
+
+2.6.5 pl
+==============
+- Fixed undeclared variable (PHP 7.1)
+
+2.6.4 pl
+==============
+- Added escaping of a MODX tags that being processed in the &prepareSnippet.
+- [#239] Improved work of the &decodeJSON option.
+
+2.6.3 pl
+==============
+- Fixed possible E_NOTICE on line 305 pdofetch.class.php.
+- Fixed possible E_NOTICE when "snippet" and "chunk" Fenom modifiers was called.
+
+2.6.2 pl
+==============
+- Fixed possible E_NOTICE on line 1317 pdotools.class.php.
+
+2.6.1 pl
+==============
+- Improved compatibility with PHP 5.3.
+
+2.6.0 pl
+==============
+- [Fenom] The ability to extend Fenom via system event "pdoToolsOnFenomInit".
+
+2.5.6 pl
+==============
+- [pdoFetch] Ability to join TVs not only to the query main class.
+
+2.5.5 pl
+==============
+- Fixed parse of INLINE chunks with "@" symbols.
+
+2.5.4 pl
+==============
+- [#224] Added microMODX::cleanAlias().
+- [#226] [Fenom] Added "declension" modifier.
+
+2.5.3 pl
+==============
+- [#221] Fixed typo in month name.
+- [Fenom] Fixed path to compile dir.
+
 2.5.2 pl
 ==============
 - [#220] Cache code of snippet with respect to property set.
