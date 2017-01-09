@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+2.8.0 pl
+==============
+- Ability to use an arrays in the parameters of the snippets.
+- Replaced modX::toJSON and modX::fromJSON to native php functions.
+
 2.7.5 pl
 ==============
 - Fenom is now managed via composer.

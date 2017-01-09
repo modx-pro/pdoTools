@@ -56,7 +56,7 @@ class pdoPage
         );
         $moreTpl = $this->pdoTools->getChunk($moreChunk, array('limit' => $limit));
 
-        $hash = sha1($this->modx->toJSON($this->pdoTools->config));
+        $hash = sha1(json_encode($this->pdoTools->config));
         $_SESSION['pdoPage'][$hash] = $this->pdoTools->config;
 
         $config = array(

@@ -118,7 +118,7 @@ class pdoFetch extends pdoTools
                 } elseif (strtolower($this->config['return']) == 'json') {
                     $rows = $this->prepareRows($rows);
                     $this->addTime('Returning raw data as JSON string');
-                    $output = $this->modx->toJSON($rows);
+                    $output = json_encode($rows);
                 } elseif (strtolower($this->config['return']) == 'serialize') {
                     $rows = $this->prepareRows($rows);
                     $this->addTime('Returning raw data as serialized string');
@@ -198,7 +198,7 @@ class pdoFetch extends pdoTools
         if (!empty($this->config['where'])) {
             $tmp = $this->config['where'];
             if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
-                $tmp = $this->modx->fromJSON($tmp);
+                $tmp = json_decode($tmp, true);
             }
             if (!is_array($tmp)) {
                 $tmp = array($tmp);
@@ -228,7 +228,7 @@ class pdoFetch extends pdoTools
         if (!empty($this->config['having'])) {
             $tmp = $this->config['having'];
             if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
-                $tmp = $this->modx->fromJSON($tmp);
+                $tmp = json_decode($tmp, true);
             }
             $having = $this->replaceTVCondition($tmp);
             $this->query->having($having);
@@ -294,7 +294,7 @@ class pdoFetch extends pdoTools
             if (!empty($this->config[$join])) {
                 $tmp = $this->config[$join];
                 if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
-                    $tmp = $this->modx->fromJSON($tmp);
+                    $tmp = json_decode($tmp, true);
                 }
                 if ($join == 'leftJoin' && !empty($this->config['tvsJoin'])) {
                     $tmp = array_merge($tmp, $this->config['tvsJoin']);
@@ -332,7 +332,7 @@ class pdoFetch extends pdoTools
         } elseif ($tmp = $this->config['select']) {
             if (!is_array($tmp)) {
                 $tmp = (!empty($tmp) && $tmp[0] == '{' || $tmp[0] == '[')
-                    ? $this->modx->fromJSON($tmp)
+                    ? json_decode($tmp, true)
                     : array($this->config['class'] => $tmp);
             }
             if (!is_array($tmp)) {
@@ -440,7 +440,7 @@ class pdoFetch extends pdoTools
             }
         } else {
             $tmp = (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
-                ? $this->modx->fromJSON($this->config['sortby'])
+                ? json_decode($this->config['sortby'], true)
                 : array($this->config['sortby'] => $this->config['sortdir']);
         }
         if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
@@ -893,7 +893,7 @@ class pdoFetch extends pdoTools
         if (!empty($this->config['where'])) {
             $tmp = $this->config['where'];
             if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
-                $where = $this->modx->fromJSON($tmp);
+                $where = json_decode($tmp, true);
             }
             if (!is_array($where)) {
                 $where = array($where);
@@ -1037,7 +1037,7 @@ class pdoFetch extends pdoTools
             if (is_numeric($where)) {
                 $where = array($instance->modx->getPK($class) => (int)$where);
             } elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
-                $where = $instance->modx->fromJSON($where);
+                $where = json_decode($where, true);
             }
             if (is_array($where)) {
                 $config['where'] = $where;

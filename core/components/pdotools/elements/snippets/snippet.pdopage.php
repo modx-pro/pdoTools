@@ -240,7 +240,7 @@ if ($isAjax) {
     $modx->getParser()->processElementTags('', $data['output'], true, true, '[[', ']]', array(), $maxIterations);
 
     @session_write_close();
-    exit($modx->toJSON($data));
+    exit(json_encode($data));
 } else {
     $modx->setPlaceholders($data, $plPrefix);
     if (!empty($toPlaceholder)) {

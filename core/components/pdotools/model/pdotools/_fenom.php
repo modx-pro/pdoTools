@@ -39,7 +39,7 @@ class FenomX extends Fenom
             'force_include' => !$pdoTools->config['useFenomCache'],
             'auto_reload' => $pdoTools->config['useFenomCache'],
         );
-        if ($options = $pdoTools->modx->fromJSON($pdoTools->modx->getOption('pdotools_fenom_options'))) {
+        if ($options = json_decode($pdoTools->modx->getOption('pdotools_fenom_options'), true)) {
             $options = array_merge($default_options, $options);
         } else {
             $options = $default_options;
@@ -488,12 +488,12 @@ class FenomX extends Fenom
 
         $this->_modifiers['json_encode'] =
         $this->_modifiers['toJSON'] = function ($array) use ($modx) {
-            return $modx->toJSON($array);
+            return json_encode($array);
         };
 
         $this->_modifiers['json_decode'] =
         $this->_modifiers['fromJSON'] = function ($string) use ($modx) {
-            return $modx->fromJSON($string);
+            return json_decode($string, true);
         };
 
         $this->_modifiers['setOption'] = function ($var, $key) use ($modx) {

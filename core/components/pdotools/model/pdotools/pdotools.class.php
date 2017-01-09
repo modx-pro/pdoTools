@@ -242,7 +242,7 @@ class pdoTools
         $time = microtime(true);
         $models = array();
         if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
-            $tmp = $this->modx->fromJSON($this->config['loadModels']);
+            $tmp = json_decode($this->config['loadModels'], true);
             foreach ($tmp as $k => $v) {
                 if (!is_array($v)) {
                     $v = array(
@@ -640,7 +640,7 @@ class pdoTools
             $resourceTpl = $this->config['tplOdd'];
         } else {
             if (empty($resourceTpl) && !empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
-                $conTpls = $this->modx->fromJSON($this->config['conditionalTpls']);
+                $conTpls = json_decode($this->config['conditionalTpls'], true);
                 if (isset($properties[$this->config['tplCondition']])) {
                     $subject = $properties[$this->config['tplCondition']];
                     $tplOperator = !empty($this->config['tplOperator']) ? strtolower($this->config['tplOperator']) : '=';
@@ -1127,7 +1127,7 @@ class pdoTools
             ));
 
             $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
-                ? $this->modx->fromJSON($tmp, 1)
+                ? json_decode($tmp, true)
                 : unserialize($tmp);
 
             if (!is_array($tmp)) {
