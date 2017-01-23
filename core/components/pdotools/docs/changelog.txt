@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.8.1 pl
 ==============
 - [#244] Fixed possible duplicate of a container in the jquery.pdopage.js.
+- Added fallback class for the enable modParser.
 
 2.8.0 pl
 ==============
