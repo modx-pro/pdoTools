@@ -138,20 +138,13 @@ $data = $cache
     : array();
 
 if (empty($data)) {
-    if ($object = $modx->getObject('modSnippet', array('name' => $scriptProperties['element']))) {
-        $object->setCacheable(false);
-
-        if (!empty($toPlaceholder)) {
-            $object->process($scriptProperties);
-            $output = $modx->getPlaceholder($toPlaceholder);
-        } else {
-            $output = $object->process($scriptProperties);
-        }
-    } else {
-        $modx->log(modX::LOG_LEVEL_ERROR, '[pdoPage] Could not load element "' . $scriptProperties['element'] . '"');
-
+    $output = $pdoPage->pdoTools->runSnippet($scriptProperties['element'], $scriptProperties);
+    if ($output === false) {
         return '';
+    } elseif (!empty($toPlaceholder)) {
+        $output = $modx->getPlaceholder($toPlaceholder);
     }
+
     /** Pagination */
     $total = (int)$modx->getPlaceholder($totalVar);
     $pageCount = !empty($scriptProperties['limit']) && $total > $offset

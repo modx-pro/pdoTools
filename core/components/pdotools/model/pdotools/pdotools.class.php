@@ -343,7 +343,7 @@ class pdoTools
         if (empty($data) || !($data['object'] instanceof modSnippet)) {
             $this->modx->log(modX::LOG_LEVEL_ERROR, "[pdoTools] Could not load snippet \"{$name}\"");
 
-            return '';
+            return false;
         }
 
         /** @var modSnippet $snippet */

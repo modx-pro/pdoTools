@@ -430,7 +430,7 @@ class FenomX extends Fenom
 
         $this->_modifiers['snippet'] = function ($name, $params = array()) use ($pdo) {
             $pdo->debugParserModifier($name, 'snippet', $params);
-            $result = $pdo->runSnippet($name, $params);
+            $result = (string)$pdo->runSnippet($name, $params);
             $pdo->debugParserModifier($name, 'snippet', $params);
 
             return $result;
@@ -651,7 +651,7 @@ class FenomX extends Fenom
             ));
             $pdo->debugParserModifier($input, $name, $options);
 
-            return $result === ''
+            return $result === false
                 ? $input
                 : $result;
         };

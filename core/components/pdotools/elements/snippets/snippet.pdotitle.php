@@ -74,7 +74,7 @@ $cacheKey = $resource->getCacheKey() . '/' . $cacheKey;
 $cacheOptions = array('cache_key' => $modx->getOption('cache_resource_key', null, 'resource'));
 $crumbs = '';
 if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOptions)) {
-    $crumbs = $modx->runSnippet('pdoCrumbs', array_merge(
+    $crumbs = (string)$pdoTools->runSnippet('pdoCrumbs', array_merge(
         array(
             'to' => $resource->id,
             'outputSeparator' => $outputSeparator,

@@ -130,7 +130,7 @@ class pdoPage
             $_GET[$this->pdoTools->config['pageVarKey']] = 1;
             $_REQUEST = $_GET;
 
-            return $this->modx->runSnippet('pdoPage', $this->pdoTools->config);
+            return (string)$this->pdoTools->runSnippet('pdoPage', $this->pdoTools->config);
         }
     }
 

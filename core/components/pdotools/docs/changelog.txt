@@ -3,6 +3,8 @@ Changelog for pdoTools.
 2.8.2 pl
 ==============
 - [pdoMenu] Fixed the checking of permissions for containers.
+- [pdoPage] Added the ability to run files as &element.
+- [pdoTools] The method runSnippet will return boolean false if snippet was not found.
 
 2.8.1 pl
 ==============
