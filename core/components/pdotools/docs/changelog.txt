@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.8.2 pl
+==============
+- [pdoMenu] Fixed the checking of permissions for containers.
+
 2.8.1 pl
 ==============
 - [#244] Fixed possible duplicate of a container in the jquery.pdopage.js.

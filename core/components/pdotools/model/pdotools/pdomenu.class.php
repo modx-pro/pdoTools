@@ -351,7 +351,7 @@ class pdoMenu
      *
      * @return bool|int
      */
-    public function checkResource($id = 0)
+    public function checkResource($id)
     {
         $tmp = array();
         if (empty($this->pdoTools->config['showHidden'])) {
@@ -366,16 +366,10 @@ class pdoMenu
 
         if (!empty($tmp)) {
             $tmp['id'] = $id;
-            $q = $this->modx->newQuery('modResource', $tmp);
-            $q->select('id');
 
-            $tstart = microtime(true);
-            if ($q->prepare() && $q->stmt->execute()) {
-                $this->modx->queryTime += microtime(true) - $tstart;
-                $this->modx->executedQueries++;
-
-                return (bool)$q->stmt->fetchColumn();
-            }
+            return empty($this->pdoTools->config['checkPermissions'])
+                ? (bool)$this->modx->getCount('modResource', $tmp)
+                : (bool)$this->modx->getObject('modResource', $tmp);
         }
 
         return true;
