@@ -17,11 +17,13 @@ switch ($modx->event->name) {
             foreach ($modx->config['fenom_jscripts'] as $key => $value) {
                 unset($modx->resource->_jscripts[$key]);
             }
+            $modx->resource->_jscripts = array_values($modx->resource->_jscripts);
         }
         if (!empty($modx->config['fenom_sjscripts'])) {
             foreach ($modx->config['fenom_sjscripts'] as $key => $value) {
                 unset($modx->resource->_sjscripts[$key]);
             }
+            $modx->resource->_sjscripts = array_values($modx->resource->_sjscripts);
         }
         if (!empty($modx->config['fenom_loadedscripts'])) {
             foreach ($modx->config['fenom_loadedscripts'] as $key => $value) {
