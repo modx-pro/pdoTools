@@ -113,7 +113,7 @@ class microMODX
     public function runSnippet($name, array $params = array())
     {
         $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
-        $output = (string)$this->pdoTools->runSnippet($name, $params);
+        $output = $this->pdoTools->runSnippet($name, $params);
         $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
 
         return $output;
