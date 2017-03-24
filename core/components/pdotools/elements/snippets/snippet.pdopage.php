@@ -183,6 +183,7 @@ if (empty($data)) {
         }
 
         if (!empty($setMeta) && !$isAjax) {
+            $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $url . '"/>');
             if ($page > 1) {
                 $modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url,
                         $page - 1) . '"/>');

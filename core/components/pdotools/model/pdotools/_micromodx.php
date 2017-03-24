@@ -163,8 +163,9 @@ class microMODX
     /**
      * @param $src
      * @param null $media
+     * @param bool $cache
      */
-    public function regClientCSS($src, $media = null)
+    public function regClientCSS($src, $media = null, $cache = true)
     {
         if (empty($this->modx->config['fenom_sjscripts'])) {
             $this->modx->config['fenom_sjscripts'] = array();
@@ -172,23 +173,25 @@ class microMODX
         $registered = count($this->modx->sjscripts);
 
         $this->modx->regClientCSS($src, $media);
-
-        $this->modx->config['fenom_sjscripts'] = array_replace(
-            $this->modx->config['fenom_sjscripts'],
-            array_slice($this->modx->sjscripts, $registered, null, true)
-        );
-        if (empty($this->modx->config['fenom_loadedscripts'])) {
-            $this->modx->config['fenom_loadedscripts'] = array();
+        if (!$cache) {
+            $this->modx->config['fenom_sjscripts'] = array_replace(
+                $this->modx->config['fenom_sjscripts'],
+                array_slice($this->modx->sjscripts, $registered, null, true)
+            );
+            if (empty($this->modx->config['fenom_loadedscripts'])) {
+                $this->modx->config['fenom_loadedscripts'] = array();
+            }
+            $this->modx->config['fenom_loadedscripts'][$src] = true;
         }
-        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
     /**
      * @param $src
      * @param bool|false $plaintext
+     * @param bool $cache
      */
-    public function regClientStartupScript($src, $plaintext = false)
+    public function regClientStartupScript($src, $plaintext = false, $cache = true)
     {
         if (empty($this->modx->config['fenom_sjscripts'])) {
             $this->modx->config['fenom_sjscripts'] = array();
@@ -197,22 +200,25 @@ class microMODX
 
         $this->modx->regClientStartupScript($src, $plaintext);
 
-        $this->modx->config['fenom_sjscripts'] = array_replace(
-            $this->modx->config['fenom_sjscripts'],
-            array_slice($this->modx->sjscripts, $registered, null, true)
-        );
-        if (empty($this->modx->config['fenom_loadedscripts'])) {
-            $this->modx->config['fenom_loadedscripts'] = array();
+        if (!$cache) {
+            $this->modx->config['fenom_sjscripts'] = array_replace(
+                $this->modx->config['fenom_sjscripts'],
+                array_slice($this->modx->sjscripts, $registered, null, true)
+            );
+            if (empty($this->modx->config['fenom_loadedscripts'])) {
+                $this->modx->config['fenom_loadedscripts'] = array();
+            }
+            $this->modx->config['fenom_loadedscripts'][$src] = true;
         }
-        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
     /**
      * @param $src
      * @param bool|false $plaintext
+     * @param bool $cache
      */
-    public function regClientScript($src, $plaintext = false)
+    public function regClientScript($src, $plaintext = false, $cache = true)
     {
         if (empty($this->modx->config['fenom_jscripts'])) {
             $this->modx->config['fenom_jscripts'] = array();
@@ -221,32 +227,36 @@ class microMODX
 
         $this->modx->regClientScript($src, $plaintext);
 
-        $this->modx->config['fenom_jscripts'] = array_replace(
-            $this->modx->config['fenom_jscripts'],
-            array_slice($this->modx->jscripts, $registered, null, true)
-        );
-        if (empty($this->modx->config['fenom_loadedscripts'])) {
-            $this->modx->config['fenom_loadedscripts'] = array();
+        if (!$cache) {
+            $this->modx->config['fenom_jscripts'] = array_replace(
+                $this->modx->config['fenom_jscripts'],
+                array_slice($this->modx->jscripts, $registered, null, true)
+            );
+            if (empty($this->modx->config['fenom_loadedscripts'])) {
+                $this->modx->config['fenom_loadedscripts'] = array();
+            }
+            $this->modx->config['fenom_loadedscripts'][$src] = true;
         }
-        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
     /**
      * @param $html
+     * @param bool $cache
      */
-    public function regClientStartupHTMLBlock($html)
+    public function regClientStartupHTMLBlock($html, $cache = true)
     {
-        $this->regClientStartupScript($html, true);
+        $this->regClientStartupScript($html, true, $cache);
     }
 
 
     /**
      * @param $html
+     * @param bool $cache
      */
-    public function regClientHTMLBlock($html)
+    public function regClientHTMLBlock($html, $cache = true)
     {
-        $this->regClientScript($html, true);
+        $this->regClientScript($html, true, $cache);
     }
 
 

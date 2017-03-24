@@ -1120,11 +1120,11 @@ class pdoTools
                 );
             });
 
-            $tmp = $this->runSnippet($name, array(
+            $tmp = $this->runSnippet($name, array_merge($this->config, array(
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
                 'row' => $row,
-            ));
+            )));
 
             $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
                 ? json_decode($tmp, true)

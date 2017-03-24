@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+2.8.3 pl
+==============
+- [Fenom] Fixed rare bug with the caching of scripts and styles that was registered via Fenom.
+- [pdoPage] Fixed the "?page=1" in the url when ajaxMode is enabled.
+- [pdoPage] Snippet will register "canonical" link if "&setMeta" is enabled.
+- [pdoTools] Added passing of "scriptProperties" values into a "&prepareSnippet".
+
 2.8.2 pl
 ==============
 - [pdoMenu] Fixed the checking of permissions for containers.

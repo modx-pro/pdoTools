@@ -466,24 +466,24 @@ class FenomX extends Fenom
             return $modx->getPlaceholder($key);
         };
 
-        $this->_modifiers['cssToHead'] = function ($string) use ($micro) {
-            $micro->regClientCSS($string);
+        $this->_modifiers['cssToHead'] = function ($string, $media = null, $cache = true) use ($micro) {
+            $micro->regClientCSS($string, $media, $cache);
         };
 
-        $this->_modifiers['htmlToHead'] = function ($string) use ($micro) {
-            $micro->regClientStartupHTMLBlock($string);
+        $this->_modifiers['htmlToHead'] = function ($string, $cache = true) use ($micro) {
+            $micro->regClientStartupHTMLBlock($string, $cache);
         };
 
-        $this->_modifiers['htmlToBottom'] = function ($string) use ($micro) {
-            $micro->regClientHTMLBlock($string);
+        $this->_modifiers['htmlToBottom'] = function ($string, $cache = true) use ($micro) {
+            $micro->regClientHTMLBlock($string, $cache);
         };
 
-        $this->_modifiers['jsToHead'] = function ($string, $plaintext = false) use ($micro) {
-            $micro->regClientStartupScript($string, $plaintext);
+        $this->_modifiers['jsToHead'] = function ($string, $plaintext = false, $cache = true) use ($micro) {
+            $micro->regClientStartupScript($string, $plaintext, $cache);
         };
 
-        $this->_modifiers['jsToBottom'] = function ($string, $plaintext = false) use ($micro) {
-            $micro->regClientScript($string, $plaintext);
+        $this->_modifiers['jsToBottom'] = function ($string, $plaintext = false, $cache = true) use ($micro) {
+            $micro->regClientScript($string, $plaintext, $cache);
         };
 
         $this->_modifiers['json_encode'] =
