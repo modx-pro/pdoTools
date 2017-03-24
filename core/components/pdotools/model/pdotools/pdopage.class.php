@@ -218,7 +218,10 @@ class pdoPage
             }
         }
         if (!empty($_GET)) {
-            $request = $_GET;
+            $request = array();
+            foreach ($_GET as $key => $val) {
+                $request[$key] = rawurldecode($val);
+            }
             unset($request[$this->req_var]);
             unset($request[$this->pdoTools->config['pageVarKey']]);
 
