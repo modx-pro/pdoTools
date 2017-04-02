@@ -271,7 +271,7 @@ class pdoTools
 
         if (!empty($models)) {
             foreach ($models as $k => $v) {
-                $t = '/' . str_replace(MODX_BASE_PATH, '', $v['path']);
+                $t = '/' . str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $v['path']);
                 if ($this->modx->addPackage(strtolower($k), $v['path'], $v['prefix'])) {
                     $this->addTime('Loaded model "' . $k . '" from "' . $t . '"', microtime(true) - $time);
                 } else {
@@ -820,11 +820,11 @@ class pdoTools
                 } else {
                     $path = $this->config['elementsPath'];
                 }
-                if (strpos($path, MODX_BASE_PATH) === false) {
+                if (strpos($path, MODX_BASE_PATH) === false && strpos($path, MODX_CORE_PATH) === false) {
                     $path = MODX_BASE_PATH . $path;
                 }
                 $path = preg_replace('#/+#', '/', $path . ltrim($content, './'));
-                $rel_path = str_replace(MODX_BASE_PATH, '', $path);
+                $rel_path = str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $path);
                 if (!preg_match('#\.(html|tpl|php)$#i', $path)) {
                     $this->addTime('Allowed extensions for @FILE elements is "html", "tpl" and "php"');
                 } elseif (!file_exists($path)) {

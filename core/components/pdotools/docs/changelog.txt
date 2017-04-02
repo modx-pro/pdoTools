@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.8.4 pl
+==============
+- Ability to use file elements in core path outside base path.
+
 2.8.3 pl
 ==============
 - [Fenom] Fixed rare bug with the caching of scripts and styles that was registered via Fenom.
