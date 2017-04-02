@@ -790,6 +790,8 @@ class pdoTools
             ? $cache_name . '@' . $propertySet
             : $cache_name;
         if ($element = $this->getStore($cache_key, $type)) {
+            $element['cacheable'] = $cacheable && empty($binding);
+
             return $element;
         }
 

@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.8.4 pl
 ==============
 - Ability to use file elements in core path outside base path.
+- Fixed bug with the caching of elements.
 
 2.8.3 pl
 ==============
