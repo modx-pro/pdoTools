@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.8.5 pl
+==============
+- [#248] [pdoPage] Fixed E_WARNING with array values in GET parameters.
+
 2.8.4 pl
 ==============
 - Ability to use file elements in core path outside base path.
