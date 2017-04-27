@@ -180,6 +180,17 @@ class pdoPage
 
 
     /**
+     * Local rawurldecode method for array_walk_recursive
+     *
+     * @param string $item
+     * @param string $key
+     */
+    private function rawurldecode(&$item, $key) {
+        $item = rawurldecode($item);
+    }
+
+
+    /**
      * Returns templates link for pagination
      *
      * @param string $url
@@ -218,10 +229,8 @@ class pdoPage
             }
         }
         if (!empty($_GET)) {
-            $request = array();
-            foreach ($_GET as $key => $val) {
-                $request[$key] = rawurldecode($val);
-            }
+            $request = $_GET;
+            array_walk_recursive($request, array($this, 'rawurldecode'));
             unset($request[$this->req_var]);
             unset($request[$this->pdoTools->config['pageVarKey']]);
 
