@@ -401,6 +401,7 @@ class FenomX extends Fenom
         $this->_modifiers['resource'] = function ($id, $field = null) use ($pdo, $modx, $fenom) {
             $pdo->debugParserModifier($id, 'resource');
             /** @var modResource $resource */
+            if (!empty($id) && is_string($id)) {
                 $field = $id;
                 $resource = $modx->resource;
             } elseif (empty($id)) {
