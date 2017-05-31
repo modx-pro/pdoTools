@@ -487,8 +487,8 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['json_encode'] =
-        $this->_modifiers['toJSON'] = function ($array) use ($modx) {
-            return json_encode($array);
+        $this->_modifiers['toJSON'] = function ($array, $options = 0) use ($modx) {
+            return json_encode($array, $options);
         };
 
         $this->_modifiers['json_decode'] =
