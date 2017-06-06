@@ -150,6 +150,9 @@ class pdoFetch extends pdoTools
                         }
 
                         $tpl = $this->defineChunk($row);
+                        if(empty($output)){
+                            $output = [];
+                        }
                         if (empty($tpl)) {
                             $output[] = '<pre>' . $this->getChunk('', $row) . '</pre>';
                         } else {
