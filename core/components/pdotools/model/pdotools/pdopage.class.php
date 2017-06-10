@@ -201,7 +201,7 @@ class pdoPage
                 'page' => $page,
             ));
             $link = str_replace($pls['pl'], $pls['vl'], $this->pdoTools->config['pageLinkScheme']);
-            $pcre = preg_replace('#\d+#', '(\d+)', $link);
+            $pcre = preg_replace('#\d+#', '(\d+)', preg_quote(preg_replace('#\#.*#', '', $link)));
         }
 
         $href = !empty($link)
@@ -209,7 +209,7 @@ class pdoPage
             : $url;
         if ($page > 1 || ($page == 1 && !empty($this->pdoTools->config['ajax']))) {
             if (!empty($link)) {
-                $href = rtrim($href, '/') . '/' . ltrim($link, '/');
+                $href .= $link;
             } else {
                 $href .= strpos($href, '?') !== false
                     ? '&'

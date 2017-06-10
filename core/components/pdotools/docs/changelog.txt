@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.9.0 pl
+==============
+- [pdoPage] Improved "&pageLinkScheme" logic.
+
 2.8.6 pl
 ==============
 - [pdoArchive] Ability to specify fields with regular dates in the "&dateField" parameter.
