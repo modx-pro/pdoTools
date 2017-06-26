@@ -96,7 +96,7 @@ if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
 }
 
 // Page
-if (isset($_REQUEST[$pageVarKey]) && $strictMode && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] <= 1 && !$isAjax))) {
+if (isset($_REQUEST[$pageVarKey]) && $strictMode && (!is_numeric($_REQUEST[$pageVarKey]) || ($_REQUEST[$pageVarKey] < 1 && !$isAjax))) {
     return $pdoPage->redirectToFirst($isAjax);
 } elseif (!empty($_REQUEST[$pageVarKey])) {
     $page = (integer)$_REQUEST[$pageVarKey];
