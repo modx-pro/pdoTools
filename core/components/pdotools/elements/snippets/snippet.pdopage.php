@@ -197,6 +197,17 @@ if (empty($data)) {
         $pagination = !empty($tplPageWrapper)
             ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
             : $pdoPage->pdoTools->parseChunk('', $pagination);
+    } else {
+        $pagination = array(
+            'first' => '',
+            'prev' => '',
+            'pages' => '',
+            'next' => '',
+            'last' => ''
+        );
+        $pagination = !empty($tplPageWrapper)
+            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
+            : $pdoPage->pdoTools->parseChunk('', $pagination);
     }
 
     $data = array(
