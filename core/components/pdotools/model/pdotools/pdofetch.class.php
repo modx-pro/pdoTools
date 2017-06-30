@@ -86,7 +86,7 @@ class pdoFetch extends pdoTools
         $this->addSort();
         $this->prepareQuery();
 
-        $output = '';
+        $output = array();
         if (strtolower($this->config['return']) == 'sql') {
             $this->addTime('Returning raw sql query');
             $output = $this->query->toSQL();
