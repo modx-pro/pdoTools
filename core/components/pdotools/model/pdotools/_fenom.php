@@ -403,6 +403,9 @@ class FenomX extends Fenom
             /** @var modResource $resource */
             if (empty($id)) {
                 $resource = $modx->resource;
+            } elseif (!is_numeric($id)) {
+                $field = $id;
+                $resource = $modx->resource;
             } elseif (!$resource = $pdo->getStore($id, 'resource')) {
                 $resource = $modx->getObject('modResource', $id);
                 $pdo->setStore($id, $resource, 'resource');
