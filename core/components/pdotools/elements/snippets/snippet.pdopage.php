@@ -154,7 +154,8 @@ if (empty($data)) {
     // Redirect to start if somebody specified incorrect page
     if ($page > 1 && $page > $pageCount && $strictMode) {
         return $pdoPage->redirectToFirst($isAjax);
-    } elseif (!empty($pageCount) && $pageCount > 1) {
+    }
+    if (!empty($pageCount) && $pageCount > 1) {
         $pagination = array(
             'first' => $page > 1 && !empty($tplPageFirst)
                 ? $pdoPage->makePageLink($url, 1, $tplPageFirst)
@@ -185,25 +186,33 @@ if (empty($data)) {
         if (!empty($setMeta) && !$isAjax) {
             $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $url . '"/>');
             if ($page > 1) {
-                $modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url,
-                        $page - 1) . '"/>');
+                $modx->regClientStartupHTMLBlock(
+                    '<link rel="prev" href="' . $pdoPage->makePageLink($url, $page - 1) . '"/>'
+                );
             }
             if ($page < $pageCount) {
-                $modx->regClientStartupHTMLBlock('<link rel="next" href="' . $pdoPage->makePageLink($url,
-                        $page + 1) . '"/>');
+                $modx->regClientStartupHTMLBlock(
+                    '<link rel="next" href="' . $pdoPage->makePageLink($url, $page + 1) . '"/>'
+                );
             }
         }
-
-        $pagination = !empty($tplPageWrapper)
-            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
-            : $pdoPage->pdoTools->parseChunk('', $pagination);
+    } else {
+        $pagination = array(
+            'first' => '',
+            'prev' => '',
+            'pages' => '',
+            'next' => '',
+            'last' => ''
+        );
     }
 
     $data = array(
         'output' => $output,
         $pageVarKey => $page,
         $pageCountVar => $pageCount,
-        $pageNavVar => $pagination,
+        $pageNavVar => !empty($tplPageWrapper)
+            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
+            : $pdoPage->pdoTools->parseChunk('', $pagination),
         $totalVar => $total,
     );
     if ($cache) {

@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.9.0 pl
 ==============
 - [pdoPage] Improved "&pageLinkScheme" logic.
+- [#253] [pdoPage] Fixing a missing pagination in Ajax mode.
 - [#254] [Fenom] Options of json modifiers must check version of PHP to proper work.
 
 2.8.6 pl
