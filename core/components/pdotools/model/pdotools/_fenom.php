@@ -488,12 +488,16 @@ class FenomX extends Fenom
 
         $this->_modifiers['json_encode'] =
         $this->_modifiers['toJSON'] = function ($array, $options = 0, $depth = 512) use ($modx) {
-            return json_encode($array, $options, $depth);
+            return PHP_VERSION_ID < 50500
+                ? json_encode($array, $options)
+                : json_encode($array, $options, $depth);
         };
 
         $this->_modifiers['json_decode'] =
         $this->_modifiers['fromJSON'] = function ($string, $assoc = true, $depth = 512, $options = 0) use ($modx) {
-            return json_decode($string, $assoc, $depth, $options);
+            return PHP_VERSION_ID < 50400
+                ? json_decode($string, $assoc, $depth)
+                : json_decode($string, $assoc, $depth, $options);
         };
 
         $this->_modifiers['setOption'] = function ($var, $key) use ($modx) {
