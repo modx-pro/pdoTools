@@ -2,6 +2,10 @@ Changelog for pdoTools.
 
 2.9.0 pl
 ==============
+- [Fenom] Updated to version 2.11.8.
+
+2.9.0 pl
+==============
 - [pdoPage] Improved "&pageLinkScheme" logic.
 - [#249] A little improvement for resource modifier.
 - [#251] [pdoFetch] More compatibility with PHP 7.1.
