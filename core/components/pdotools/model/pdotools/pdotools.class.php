@@ -941,6 +941,9 @@ class pdoTools
             } catch (Exception $e) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
                 $this->modx->log(modX::LOG_LEVEL_INFO, $content);
+                if ($this->modx->getOption('log_compiled_on_error')) {
+                    $this->setCache($content, array('cache_key' => 'pdotools/' . $name));
+                }
             }
         }
         $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
