@@ -1,6 +1,10 @@
 Changelog for pdoTools.
 
-2.9.0 pl
+2.9.2 pl
+==============
+- [pdoParser] Proper traversal trough arrays fields of resources in fast tags.
+
+2.9.1 pl
 ==============
 - [Fenom] Updated to version 2.11.8.
 
