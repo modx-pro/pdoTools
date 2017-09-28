@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.9.3 pl
+==============
+- [#255] [Fenom] New system setting "pdotools_fenom_save_on_errors" to save code on compilation errors in the cache directory for later debugging.
+
 2.9.2 pl
 ==============
 - [pdoParser] Proper traversal trough arrays fields of resources in fast tags.
