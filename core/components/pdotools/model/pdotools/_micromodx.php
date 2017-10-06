@@ -163,100 +163,48 @@ class microMODX
     /**
      * @param $src
      * @param null $media
-     * @param bool $cache
      */
-    public function regClientCSS($src, $media = null, $cache = true)
+    public function regClientCSS($src, $media = null)
     {
-        if (empty($this->modx->config['fenom_sjscripts'])) {
-            $this->modx->config['fenom_sjscripts'] = array();
-        }
-        $registered = count($this->modx->sjscripts);
-
         $this->modx->regClientCSS($src, $media);
-        if (!$cache) {
-            $this->modx->config['fenom_sjscripts'] = array_replace(
-                $this->modx->config['fenom_sjscripts'],
-                array_slice($this->modx->sjscripts, $registered, null, true)
-            );
-            if (empty($this->modx->config['fenom_loadedscripts'])) {
-                $this->modx->config['fenom_loadedscripts'] = array();
-            }
-            $this->modx->config['fenom_loadedscripts'][$src] = true;
-        }
     }
 
 
     /**
      * @param $src
      * @param bool|false $plaintext
-     * @param bool $cache
      */
-    public function regClientStartupScript($src, $plaintext = false, $cache = true)
+    public function regClientStartupScript($src, $plaintext = false)
     {
-        if (empty($this->modx->config['fenom_sjscripts'])) {
-            $this->modx->config['fenom_sjscripts'] = array();
-        }
-        $registered = count($this->modx->sjscripts);
-
         $this->modx->regClientStartupScript($src, $plaintext);
-
-        if (!$cache) {
-            $this->modx->config['fenom_sjscripts'] = array_replace(
-                $this->modx->config['fenom_sjscripts'],
-                array_slice($this->modx->sjscripts, $registered, null, true)
-            );
-            if (empty($this->modx->config['fenom_loadedscripts'])) {
-                $this->modx->config['fenom_loadedscripts'] = array();
-            }
-            $this->modx->config['fenom_loadedscripts'][$src] = true;
-        }
     }
 
 
     /**
      * @param $src
      * @param bool|false $plaintext
-     * @param bool $cache
      */
-    public function regClientScript($src, $plaintext = false, $cache = true)
+    public function regClientScript($src, $plaintext = false)
     {
-        if (empty($this->modx->config['fenom_jscripts'])) {
-            $this->modx->config['fenom_jscripts'] = array();
-        }
-        $registered = count($this->modx->jscripts);
-
         $this->modx->regClientScript($src, $plaintext);
-
-        if (!$cache) {
-            $this->modx->config['fenom_jscripts'] = array_replace(
-                $this->modx->config['fenom_jscripts'],
-                array_slice($this->modx->jscripts, $registered, null, true)
-            );
-            if (empty($this->modx->config['fenom_loadedscripts'])) {
-                $this->modx->config['fenom_loadedscripts'] = array();
-            }
-            $this->modx->config['fenom_loadedscripts'][$src] = true;
-        }
     }
 
 
     /**
      * @param $html
-     * @param bool $cache
      */
-    public function regClientStartupHTMLBlock($html, $cache = true)
+    public function regClientStartupHTMLBlock($html)
     {
-        $this->regClientStartupScript($html, true, $cache);
+        $this->regClientStartupScript($html, true);
     }
 
 
     /**
      * @param $html
-     * @param bool $cache
      */
-    public function regClientHTMLBlock($html, $cache = true)
+    public function regClientHTMLBlock($html)
     {
-        $this->regClientScript($html, true, $cache);
+        $this->regClientScript($html, true);
     }
 
 

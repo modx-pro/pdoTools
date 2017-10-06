@@ -352,10 +352,48 @@ class pdoTools
         $snippet->_processed = false;
         $snippet->_propertyString = '';
         $snippet->_tag = '';
-
-        return $snippet->process(array_merge($data['properties'], $properties));
+        $regScriptsBefore = $this->countScripts();
+        $output = $snippet->process(array_merge($data['properties'], $properties));
+        $regScriptsAfter = $this->countScripts();
+        if ($data['cacheable'] && $regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
+            $this->getScriptsForCache($regScriptsBefore, $regScriptsAfter);
+        }
+        return $output;
     }
 
+    /**
+     * Retrieve the number of the registered scripts.
+     * @return array
+     */
+    protected function countScripts()
+    {
+        foreach (array('jscripts', 'sjscripts', 'loadedjscripts') as $prop) {
+            $count[$prop] = count($this->modx->$prop);
+        }
+        return $count;
+    }
+
+    /**
+     * Store scripts added by a cacheable snippet.
+     * @param array $regScriptsBefore
+     * @param array $regScriptsAfter
+     * @return void
+     */
+    protected function getScriptsForCache($regScriptsBefore, $regScriptsAfter)
+    {
+        foreach (array('jscripts', 'sjscripts', 'loadedjscripts') as $prop) {
+            if ($regScriptsBefore[$prop] == $regScriptsAfter[$prop]) continue;
+            $resProp = '_' . $prop;
+            $it = new ArrayIterator($this->modx->$prop);
+            foreach (new LimitIterator($it, $regScriptsBefore[$prop]) as $key => $value) {
+                if ($prop == 'loadedjscripts') {
+                    $this->modx->resource->$resProp[$key] = $value;
+                } else {
+                    $this->modx->resource->$resProp[] = $value;
+                }
+            }
+        }
+    }
 
     /**
      * Process and return the output from a Chunk by name.
