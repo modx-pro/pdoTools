@@ -352,13 +352,16 @@ class pdoTools
         $snippet->_processed = false;
         $snippet->_propertyString = '';
         $snippet->_tag = '';
-        $regScriptsBefore = $this->countScripts();
-        $output = $snippet->process(array_merge($data['properties'], $properties));
-        $regScriptsAfter = $this->countScripts();
-        if ($data['cacheable'] && $regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
-            $this->getScriptsForCache($regScriptsBefore, $regScriptsAfter);
+        if ($data['cacheable']) {
+            $regScriptsBefore = $this->countScripts();
+            $output = $snippet->process(array_merge($data['properties'], $properties));
+            $regScriptsAfter = $this->countScripts();
+            if ($regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
+                $this->getScriptsForCache($regScriptsBefore, $regScriptsAfter);
+            }
+            return $output;
         }
-        return $output;
+        return $snippet->process(array_merge($data['properties'], $properties));
     }
 
     /**
