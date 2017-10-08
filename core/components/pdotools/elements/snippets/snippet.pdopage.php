@@ -184,15 +184,22 @@ if (empty($data)) {
         }
 
         if (!empty($setMeta) && !$isAjax) {
-            $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $url . '"/>');
+             if ($scriptProperties['scheme'] !== 'full') {
+                $url = (substr($url,0,1) === MODX_BASE_URL)?$url:MODX_BASE_URL.$url;
+                $canurl = $modx->getOption('url_scheme') . $modx->getOption('http_host') . $url; 
+            } else { 
+                $canurl = $url; 
+            }
+
+            $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
             if ($page > 1) {
                 $modx->regClientStartupHTMLBlock(
-                    '<link rel="prev" href="' . $pdoPage->makePageLink($url, $page - 1) . '"/>'
+                    '<link rel="prev" href="' . $pdoPage->makePageLink($canurl, $page - 1) . '"/>'
                 );
             }
             if ($page < $pageCount) {
                 $modx->regClientStartupHTMLBlock(
-                    '<link rel="next" href="' . $pdoPage->makePageLink($url, $page + 1) . '"/>'
+                    '<link rel="next" href="' . $pdoPage->makePageLink($canurl, $page + 1) . '"/>'
                 );
             }
         }
