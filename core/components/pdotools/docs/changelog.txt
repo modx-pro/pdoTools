@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.9.4 pl
+==============
+- [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
+
 2.9.3 pl
 ==============
 - [#255] [Fenom] New system setting "pdotools_fenom_save_on_errors" to save code on compilation errors in the cache directory for later debugging.

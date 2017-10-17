@@ -230,6 +230,9 @@ class pdoFetch extends pdoTools
             if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
                 $tmp = json_decode($tmp, true);
             }
+            if (!is_array($tmp)) {
+                $tmp = array($tmp);
+            }
             $having = $this->replaceTVCondition($tmp);
             $this->query->having($having);
 
