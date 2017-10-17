@@ -138,7 +138,8 @@ $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $output = $pdoFetch->run();
 
 $log = '';
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+$user = $modx->getAuthenticatedUser('mgr');
+if ($user && $user->hasSessionContext('mgr') && !empty($showLog)) {
     $log .= '<pre class="pdoUsersLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 

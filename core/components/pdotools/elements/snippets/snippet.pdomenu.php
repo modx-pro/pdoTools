@@ -169,7 +169,8 @@ if (!empty($tree)) {
     $output = $pdoMenu->templateTree($tree);
 }
 
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+$user = $modx->getAuthenticatedUser('mgr');
+if ($user && $user->hasSessionContext('mgr') && !empty($showLog)) {
     $output .= '<pre class="pdoMenuLog">' . print_r($pdoMenu->pdoTools->getTime(), 1) . '</pre>';
 }
 

@@ -138,7 +138,8 @@ if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
     $pdoFetch->addTime('Rows wrapped');
 }
 
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+$user = $modx->getAuthenticatedUser('mgr');
+if ($user && $user->hasSessionContext('mgr') && !empty($showLog)) {
     $output .= '<pre class="pdoArchiveLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 
