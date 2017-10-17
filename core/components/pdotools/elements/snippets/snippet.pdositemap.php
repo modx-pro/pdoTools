@@ -211,7 +211,8 @@ $output = $pdoFetch->getChunk($tplWrapper, array(
 ));
 $pdoFetch->addTime('Rows wrapped');
 
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+$user = $modx->getAuthenticatedUser('mgr');
+if ($user && $user->hasSessionContext('mgr') && !empty($showLog)) {
     $output .= '<pre class="pdoSitemapLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 
