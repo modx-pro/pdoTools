@@ -187,7 +187,8 @@ if (count($output) == 1 && !empty($hideSingle)) {
 }
 
 $log = '';
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+$user = $modx->getAuthenticatedUser('mgr');
+if ($user && $user->hasSessionContext('mgr') && !empty($showLog)) {
     $log .= '<pre class="pdoCrumbsLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
 }
 
