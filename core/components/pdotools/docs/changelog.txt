@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
 - [#258] [pdoPage] Canonical urls always must be "full".
 - [#245] [pdoMenu] Ability to use conditional tpls instead of regular "tpl".
+- [#121] [pdoMenu] Improved work of specified chunks with weblinks.
 
 2.9.3 pl
 ==============
