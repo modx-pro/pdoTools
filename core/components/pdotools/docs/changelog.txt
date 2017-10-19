@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.9.4 pl
 ==============
 - [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
+- [#258] [pdoPage] Canonical urls always must be "full".
 
 2.9.3 pl
 ==============
