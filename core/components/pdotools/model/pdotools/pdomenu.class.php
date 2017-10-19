@@ -299,7 +299,7 @@ class pdoMenu
         } elseif ($row['level'] > 1 && !empty($this->pdoTools->config['tplInnerRow'])) {
             $tpl = 'tplInnerRow';
         } else {
-            $tpl = 'tpl';
+            return $this->pdoTools->defineChunk($row);
         }
 
         return $this->pdoTools->config[$tpl];
