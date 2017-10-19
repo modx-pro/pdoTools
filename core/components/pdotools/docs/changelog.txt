@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.10.1 pl
+==============
+- [#256] [Fenom] Fixed bug with caching of scripts and styles.
+
 2.10.0 pl
 ==============
 - [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.

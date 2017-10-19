@@ -52,12 +52,6 @@ class pdoParser extends modParser
     ) {
         if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
             $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
-
-            if (!empty($this->modx->resource) && is_object($this->modx->resource)) {
-                $this->modx->resource->_jscripts = $this->modx->jscripts;
-                $this->modx->resource->_sjscripts = $this->modx->sjscripts;
-                $this->modx->resource->_loadedjscripts = $this->modx->loadedjscripts;
-            }
         }
 
         return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,

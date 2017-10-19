@@ -12,26 +12,6 @@ switch ($modx->event->name) {
         $modx->loadClass($fqn, $path, false, true);
         break;
 
-    case 'OnBeforeSaveWebPageCache':
-        if (!empty($modx->config['fenom_jscripts'])) {
-            foreach ($modx->config['fenom_jscripts'] as $key => $value) {
-                unset($modx->resource->_jscripts[$key]);
-            }
-            $modx->resource->_jscripts = array_values($modx->resource->_jscripts);
-        }
-        if (!empty($modx->config['fenom_sjscripts'])) {
-            foreach ($modx->config['fenom_sjscripts'] as $key => $value) {
-                unset($modx->resource->_sjscripts[$key]);
-            }
-            $modx->resource->_sjscripts = array_values($modx->resource->_sjscripts);
-        }
-        if (!empty($modx->config['fenom_loadedscripts'])) {
-            foreach ($modx->config['fenom_loadedscripts'] as $key => $value) {
-                unset($modx->resource->_loadedjscripts[$key]);
-            }
-        }
-        break;
-
     case 'OnSiteRefresh':
         /** @var pdoTools $pdoTools */
         if ($pdoTools = $modx->getService('pdoTools')) {
