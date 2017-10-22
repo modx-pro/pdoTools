@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.10.1 pl
 ==============
 - [#256] [Fenom] Fixed bug with caching of scripts and styles.
+- [pdoPage] "&setMeta" now works when "&cache=`1`".
 
 2.10.0 pl
 ==============

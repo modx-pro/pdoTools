@@ -145,7 +145,7 @@ if (empty($data)) {
         $output = $modx->getPlaceholder($toPlaceholder);
     }
 
-    /** Pagination */
+    // Pagination
     $total = (int)$modx->getPlaceholder($totalVar);
     $pageCount = !empty($scriptProperties['limit']) && $total > $offset
         ? ceil(($total - $offset) / $scriptProperties['limit'])
@@ -180,24 +180,6 @@ if (empty($data)) {
                 if (!empty(${$tpl}) && empty($pagination[$v])) {
                     $pagination[$v] = $pdoPage->pdoTools->getChunk(${$tpl});
                 }
-            }
-        }
-
-        if (!empty($setMeta) && !$isAjax) {
-            $canurl = $pdoPage->pdoTools->config['scheme'] !== 'full'
-                ? $modx->getOption('url_scheme') . rtrim($modx->getOption('http_host'), '/') . '/' . ltrim($url, '/')
-                : $url;
-
-            $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
-            if ($page > 1) {
-                $modx->regClientStartupHTMLBlock(
-                    '<link rel="prev" href="' . $pdoPage->makePageLink($canurl, $page - 1) . '"/>'
-                );
-            }
-            if ($page < $pageCount) {
-                $modx->regClientStartupHTMLBlock(
-                    '<link rel="next" href="' . $pdoPage->makePageLink($canurl, $page + 1) . '"/>'
-                );
             }
         }
     } else {
@@ -249,6 +231,24 @@ if ($isAjax) {
     @session_write_close();
     exit(json_encode($data));
 } else {
+    if (!empty($setMeta)) {
+        $canurl = $pdoPage->pdoTools->config['scheme'] !== 'full'
+            ? $modx->getOption('url_scheme') . rtrim($modx->getOption('http_host'), '/') . '/' . ltrim($url, '/')
+            : $url;
+
+        $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
+        if ($data[$pageVarKey] > 1) {
+            $modx->regClientStartupHTMLBlock(
+                '<link rel="prev" href="' . $pdoPage->makePageLink($canurl, $data[$pageVarKey] - 1) . '"/>'
+            );
+        }
+        if ($data[$pageVarKey] < $data[$pageCountVar]) {
+            $modx->regClientStartupHTMLBlock(
+                '<link rel="next" href="' . $pdoPage->makePageLink($canurl, $data[$pageVarKey] + 1) . '"/>'
+            );
+        }
+    }
+
     $modx->setPlaceholders($data, $plPrefix);
     if (!empty($toPlaceholder)) {
         $modx->setPlaceholder($toPlaceholder, $data['output']);
