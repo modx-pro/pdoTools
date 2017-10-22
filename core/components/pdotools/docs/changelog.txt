@@ -4,6 +4,7 @@ Changelog for pdoTools.
 ==============
 - [#256] [Fenom] Fixed bug with caching of scripts and styles.
 - [pdoPage] "&setMeta" now works when "&cache=`1`".
+- [Fenom] Improved regular expression to detect Fenom syntax.
 
 2.10.0 pl
 ==============
