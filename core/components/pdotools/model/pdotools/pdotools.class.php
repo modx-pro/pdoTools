@@ -31,6 +31,8 @@ class pdoTools
     public $fenom;
     private $tags = array();
 
+    public $ignores = array();
+
 
     /**
      * @param modX $modx
