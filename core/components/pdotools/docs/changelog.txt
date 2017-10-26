@@ -1,5 +1,18 @@
 Changelog for pdoTools.
 
+2.10.1 pl
+==============
+- [#256] [Fenom] Fixed bug with caching of scripts and styles.
+- [pdoPage] "&setMeta" now works when "&cache=`1`".
+- [Fenom] Improved regular expression to detect Fenom syntax.
+
+2.10.0 pl
+==============
+- [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
+- [#258] [pdoPage] Canonical urls always must be "full".
+- [#245] [pdoMenu] Ability to use conditional tpls instead of regular "tpl".
+- [#121] [pdoMenu] Improved work of specified chunks with weblinks.
+
 2.9.3 pl
 ==============
 - [#255] [Fenom] New system setting "pdotools_fenom_save_on_errors" to save code on compilation errors in the cache directory for later debugging.
