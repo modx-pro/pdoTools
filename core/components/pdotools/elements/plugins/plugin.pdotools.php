@@ -20,4 +20,12 @@ switch ($modx->event->name) {
             }
         }
         break;
+
+    case 'OnWebPagePrerender':
+        if ($pdoTools = $this->modx->getParser()->pdoTools) {
+            foreach ($pdoTools->ignores as $key => $val) {
+                $this->modx->resource->_output = str_replace($key, $val, $this->modx->resource->_output);
+            }
+        }
+        break;
 }

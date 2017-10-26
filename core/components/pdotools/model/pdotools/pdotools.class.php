@@ -30,7 +30,7 @@ class pdoTools
     /** @var Fenom $fenom */
     public $fenom;
     private $tags = array();
-
+    public $ignores = array();
 
     /**
      * @param modX $modx
@@ -67,7 +67,7 @@ class pdoTools
             'outputSeparator' => "\n",
             'decodeJSON' => true,
             'scheme' => '',
-            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
+            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+(\s|\(|\|)|\(|\')#', true),
             'elementsPath' => $this->modx->getOption('pdotools_elements_path', null, '{core_path}elements/', true),
             'cachePath' => '{core_path}cache/default/pdotools',
         ), $config);
@@ -152,8 +152,6 @@ class pdoTools
      *
      * @var string $message
      * @var integer $delta
-     *
-     * @param $message
      */
     public function addTime($message, $delta = null)
     {
@@ -353,50 +351,41 @@ class pdoTools
         $snippet->_propertyString = '';
         $snippet->_tag = '';
         if ($data['cacheable']) {
-            $regScriptsBefore = $this->countScripts();
-            $output = $snippet->process(array_merge($data['properties'], $properties));
-            $regScriptsAfter = $this->countScripts();
-            if ($regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
-                $this->getScriptsForCache($regScriptsBefore, $regScriptsAfter);
+            $scripts = array('jscripts', 'sjscripts', 'loadedjscripts');
+            $regScriptsBefore = $regScriptsAfter = array();
+            foreach ($scripts as $prop) {
+                $regScriptsBefore[$prop] = count($this->modx->$prop);
             }
+            $output = $snippet->process(array_merge($data['properties'], $properties));
+            foreach ($scripts as $prop) {
+                $regScriptsAfter[$prop] = count($this->modx->$prop);
+            }
+            if (!empty($this->modx->resource)) {
+                if ($regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
+                    foreach ($scripts as $prop) {
+                        if ($regScriptsBefore[$prop] != $regScriptsAfter[$prop]) {
+                            $resProp = '_' . $prop;
+                            foreach (array_slice($this->modx->$prop, $regScriptsBefore[$prop]) as $key => $value) {
+                                if (!is_array($this->modx->resource->$resProp)) {
+                                    $this->modx->resource->$resProp = array();
+                                }
+                                if ($prop == 'loadedjscripts') {
+                                    $this->modx->resource->$resProp[$key] = $value;
+                                } else {
+                                    array_push($this->modx->resource->$resProp, $value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             return $output;
         }
+
         return $snippet->process(array_merge($data['properties'], $properties));
     }
 
-    /**
-     * Retrieve the number of the registered scripts.
-     * @return array
-     */
-    protected function countScripts()
-    {
-        foreach (array('jscripts', 'sjscripts', 'loadedjscripts') as $prop) {
-            $count[$prop] = count($this->modx->$prop);
-        }
-        return $count;
-    }
-
-    /**
-     * Store scripts added by a cacheable snippet.
-     * @param array $regScriptsBefore
-     * @param array $regScriptsAfter
-     * @return void
-     */
-    protected function getScriptsForCache($regScriptsBefore, $regScriptsAfter)
-    {
-        foreach (array('jscripts', 'sjscripts', 'loadedjscripts') as $prop) {
-            if ($regScriptsBefore[$prop] == $regScriptsAfter[$prop]) continue;
-            $resProp = '_' . $prop;
-            $it = new ArrayIterator($this->modx->$prop);
-            foreach (new LimitIterator($it, $regScriptsBefore[$prop]) as $key => $value) {
-                if ($prop == 'loadedjscripts') {
-                    $this->modx->resource->$resProp[$key] = $value;
-                } else {
-                    $this->modx->resource->$resProp[] = $value;
-                }
-            }
-        }
-    }
 
     /**
      * Process and return the output from a Chunk by name.
