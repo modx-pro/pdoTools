@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.10.2 pl
+==============
+- [Fenom] Improved processing of caching snippets inside uncached.
+
 2.10.1 pl
 ==============
 - [#256] [Fenom] Fixed bug with caching of scripts and styles.

@@ -352,7 +352,7 @@ class pdoTools
         $snippet->_processed = false;
         $snippet->_propertyString = '';
         $snippet->_tag = '';
-        if ($data['cacheable']) {
+        if ($data['cacheable'] && !$this->modx->getParser()->isProcessingUncacheable()) {
             $scripts = array('jscripts', 'sjscripts', 'loadedjscripts');
             $regScriptsBefore = $regScriptsAfter = array();
             foreach ($scripts as $prop) {
