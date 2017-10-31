@@ -367,14 +367,15 @@ class pdoTools
                     foreach ($scripts as $prop) {
                         if ($regScriptsBefore[$prop] != $regScriptsAfter[$prop]) {
                             $resProp = '_' . $prop;
-                            foreach (array_slice($this->modx->$prop, $regScriptsBefore[$prop]) as $key => $value) {
-                                if (!is_array($this->modx->resource->$resProp)) {
-                                    $this->modx->resource->$resProp = array();
+                            foreach (array_slice($this->modx->{$prop}, $regScriptsBefore[$prop]) as $key => $value) {
+                                if (!is_array($this->modx->resource->{$resProp})) {
+                                    $this->modx->resource->{$resProp} = array();
                                 }
+                                
                                 if ($prop == 'loadedjscripts') {
-                                    $this->modx->resource->$resProp[$key] = $value;
+                                    $this->modx->resource->{$resProp}[$key] = $value;
                                 } else {
-                                    array_push($this->modx->resource->$resProp, $value);
+                                    array_push($this->modx->resource->{$resProp}, $value);
                                 }
                             }
                         }
