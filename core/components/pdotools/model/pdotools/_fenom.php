@@ -292,7 +292,7 @@ class FenomX extends Fenom
         $this->_modifiers['memberof'] =
         $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
             $pdo->debugParserModifier($id, 'ismember', $groups);
-            if (!is_array($groups)) {
+            if (is_string($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
 

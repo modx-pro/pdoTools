@@ -23,9 +23,8 @@ class pdoPage
         if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
             $this->pdoTools = new $pdoClass($modx, $config);
         } else {
-            return false;
+            return;
         }
-
         $modx->lexicon->load('pdotools:pdopage');
     }
 
@@ -89,6 +88,7 @@ class pdoPage
         }
 
         if (empty($this->pdoTools->config['frontend_init_js'])) {
+            /** @noinspection Annotator */
             $this->modx->regClientScript(
                 '<script type="text/javascript">pdoPage.initialize(' . json_encode($config) . ');</script>', true
             );

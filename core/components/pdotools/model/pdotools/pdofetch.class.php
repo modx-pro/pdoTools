@@ -369,10 +369,9 @@ class pdoFetch extends pdoTools
 
                 if (is_string($fields) && strpos($fields, '(') !== false) {
                     // Commas in functions
-                    $fields = preg_replace_callback('/\(.*?\)/', create_function(
-                        '$matches',
-                        'return str_replace(",", "|", $matches[0]);'
-                    ), $fields);
+                    $fields = preg_replace_callback('/\(.*?\)/', function($matches) {
+                        return str_replace(",", "|", $matches[0]);
+                    }, $fields);
                     $fields = explode(',', $fields);
                     foreach ($fields as &$field) {
                         $field = str_replace('|', ',', $field);
@@ -427,7 +426,7 @@ class pdoFetch extends pdoTools
     {
         $time = microtime(true);
         $tmp = $this->config['sortby'];
-        if (empty($tmp) || strtolower($tmp) == 'resources' || strtolower($tmp) == 'ids') {
+        if (empty($tmp) || (is_string($tmp) && in_array(strtolower($tmp), array('resources', 'ids')))) {
             $resources = $this->config['class'] . '.' . $this->pk . ':IN';
             if (!empty($this->config['where'][$resources])) {
                 $tmp = array(
@@ -441,10 +440,10 @@ class pdoFetch extends pdoTools
                         : 'ASC',
                 );
             }
-        } else {
-            $tmp = (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
-                ? json_decode($this->config['sortby'], true)
-                : array($this->config['sortby'] => $this->config['sortdir']);
+        } elseif (is_string($tmp)) {
+            $tmp = $tmp[0] == '{' || $tmp[0] == '['
+                ? json_decode($tmp, true)
+                : array($tmp => $this->config['sortdir']);
         }
         if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
             $tmp2[$this->config['sortbyTV']] = !empty($this->config['sortdirTV'])
@@ -466,63 +465,61 @@ class pdoFetch extends pdoTools
 
         $fields = $this->modx->getFields($this->config['class']);
         $sorts = $this->replaceTVCondition($tmp);
-        if (is_array($sorts)) {
-            while (list($sortby, $sortdir) = each($sorts)) {
-                if (preg_match_all('#`TV(.*?)`#', $sortby, $matches)) {
-                    foreach ($matches[1] as $tv) {
-                        if (array_key_exists($tv, $this->config['tvsJoin'])) {
-                            $params = $this->config['tvsJoin'][$tv]['tv'];
-                            switch ($params['type']) {
-                                case 'number':
-                                case 'decimal':
-                                    $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
-                                        'CAST($1 AS DECIMAL(13,3))', $sortby);
-                                    break;
-                                case 'int':
-                                case 'integer':
-                                    $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
-                                        'CAST($1 AS SIGNED INTEGER)', $sortby);
-                                    break;
-                                case 'date':
-                                case 'datetime':
-                                    $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
-                                        'CAST($1 AS DATETIME)', $sortby);
-                                    break;
-                            }
+        foreach ($sorts as $sortby => $sortdir) {
+            if (preg_match_all('#`TV(.*?)`#', $sortby, $matches)) {
+                foreach ($matches[1] as $tv) {
+                    if (array_key_exists($tv, $this->config['tvsJoin'])) {
+                        $params = $this->config['tvsJoin'][$tv]['tv'];
+                        switch ($params['type']) {
+                            case 'number':
+                            case 'decimal':
+                                $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
+                                    'CAST($1 AS DECIMAL(13,3))', $sortby);
+                                break;
+                            case 'int':
+                            case 'integer':
+                                $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
+                                    'CAST($1 AS SIGNED INTEGER)', $sortby);
+                                break;
+                            case 'date':
+                            case 'datetime':
+                                $sortby = preg_replace('#(TV' . $tv . '\.value|`TV' . $tv . '`\.`value`)#',
+                                    'CAST($1 AS DATETIME)', $sortby);
+                                break;
                         }
                     }
-                } elseif (array_key_exists($sortby, $fields)) {
-                    $sortby = $this->config['class'] . '.' . $sortby;
                 }
-                // Escaping of columns names
-                $tmp = explode(',', $sortby);
-                array_walk($tmp, function (&$value) {
-                    if (strpos($value, '`') === false) {
-                        $value = preg_replace('#(.*?)\.(.*?)\s#', '`$1`.`$2`', $value);
-                    }
-                });
-                $sortby = implode(',', $tmp);
-                if (!in_array(strtoupper($sortdir), array('ASC', 'DESC', ''), true)) {
-                    $sortdir = 'ASC';
-                }
-
-                // Use reflection to check clause by protected method of xPDOQuery
-                $isValidClause = new ReflectionMethod('xPDOQuery', 'isValidClause');
-                $isValidClause->setAccessible(true);
-                $isValidClause->invoke($this->query, $sortby);
-                if (!$isValidClause->invoke($this->query, $sortby)) {
-                    $message = 'SQL injection attempt detected in sortby column; clause rejected';
-                    $this->modx->log(xPDO::LOG_LEVEL_ERROR, $message);
-                    $this->addTime($message . ': ' . $sortby);
-                } elseif (!empty($sortby)) {
-                    $this->query->query['sortby'][] = array(
-                        'column' => $sortby,
-                        'direction' => $sortdir
-                    );
-                    $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
-                }
-                $time = microtime(true);
+            } elseif (array_key_exists($sortby, $fields)) {
+                $sortby = $this->config['class'] . '.' . $sortby;
             }
+            // Escaping of columns names
+            $tmp = explode(',', $sortby);
+            array_walk($tmp, function (&$value) {
+                if (strpos($value, '`') === false) {
+                    $value = preg_replace('#(.*?)\.(.*?)\s#', '`$1`.`$2`', $value);
+                }
+            });
+            $sortby = implode(',', $tmp);
+            if (!in_array(strtoupper($sortdir), array('ASC', 'DESC', ''), true)) {
+                $sortdir = 'ASC';
+            }
+
+            // Use reflection to check clause by protected method of xPDOQuery
+            $isValidClause = new ReflectionMethod('xPDOQuery', 'isValidClause');
+            $isValidClause->setAccessible(true);
+            $isValidClause->invoke($this->query, $sortby);
+            if (!$isValidClause->invoke($this->query, $sortby)) {
+                $message = 'SQL injection attempt detected in sortby column; clause rejected';
+                $this->modx->log(xPDO::LOG_LEVEL_ERROR, $message);
+                $this->addTime($message . ': ' . $sortby);
+            } elseif (!empty($sortby)) {
+                $this->query->query['sortby'][] = array(
+                    'column' => $sortby,
+                    'direction' => $sortdir
+                );
+                $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
+            }
+            $time = microtime(true);
         }
     }
 
@@ -956,7 +953,9 @@ class pdoFetch extends pdoTools
 
         $sorts = array();
         foreach ($array as $k => $v) {
-            $callback = create_function('$matches', 'return \'`TV\'.strtolower($matches[1]).\'`.`value`\';');
+            $callback = function($matches) {
+                return '`TV' . strtolower($matches[1]). '`.`value`';
+            };
             if (is_numeric($k) && is_string($v)) {
                 $tmp = preg_replace_callback('/\b(' . $tvs . ')\b/i', $callback, $v);
                 $sorts[$k] = $tmp;
@@ -967,7 +966,6 @@ class pdoFetch extends pdoTools
                 $sorts[$tmp] = $v;
             }
         }
-
         $this->addTime('Replaced TV conditions', microtime(true) - $time);
 
         return $sorts;

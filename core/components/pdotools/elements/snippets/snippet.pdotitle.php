@@ -102,6 +102,7 @@ if (!empty($registerJs)) {
         'separator' => $outputSeparator,
         'tpl' => str_replace(array('[[+', ']]'), array('{', '}'), $pdoTools->getChunk($tplPages)),
     );
+    /** @noinspection Annotator */
     $modx->regClientStartupScript('<script type="text/javascript">pdoTitle = ' . json_encode($config) . ';</script>',
         true);
 }

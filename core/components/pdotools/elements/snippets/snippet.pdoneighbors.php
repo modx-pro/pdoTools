@@ -33,7 +33,7 @@ if (!$resource) {
 $params = $scriptProperties;
 $params['select'] = 'id';
 $params['limit'] = 0;
-if (!empty($parents)) {
+if (!empty($parents) && is_string($parents)) {
     $parents = array_map('trim', explode(',', $parents));
     if (!in_array($resource->parent, $parents)) {
         $parents[] = $resource->parent;
