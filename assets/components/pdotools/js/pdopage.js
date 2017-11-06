@@ -15,9 +15,16 @@ pdoPage.initialize = function (config) {
     var $this = this;
     switch (config['mode']) {
         case 'default':
-            $(document).on('click', config['link'], function (e) {
+            document.querySelector(config.pagination).addEventListener('click', function(e){
                 e.preventDefault();
-                var href = $(this).prop('href');
+                var target = e.target;
+                if(target.tagName == 'A') {
+                    clickLinkPagenation(target);
+                }
+            });
+            
+            function clickLinkPagenation(node){
+                var href = node.getAttribute('href');
                 var key = config['pageVarKey'];
                 var match = href.match(new RegExp(key + '=(\\d+)'));
                 var page = !match ? 1 : match[1];
@@ -31,10 +38,10 @@ pdoPage.initialize = function (config) {
                     }
                     $this.loadPage(href, config);
                 }
-            });
+            }
 
             if (config.history) {
-                $(window).on('popstate', function (e) {
+                window.addEventListener('popstate', function(e){
                     if (e.originalEvent.state && e.originalEvent.state['pdoPage']) {
                         $this.loadPage(e.originalEvent.state['pdoPage'], config);
                     }
@@ -56,17 +63,17 @@ pdoPage.initialize = function (config) {
                 pdoPage.stickyPagination(config);
             }
             else {
-                $(config.pagination).hide();
+                document.querySelector(config.pagination).style.display = 'none';
             }
 
             var key = config['pageVarKey'];
 
             if (config['mode'] == 'button') {
                 // Add more button
-                $(config['rows']).after(config['moreTpl']);
+                document.querySelector(config['rows']).insertAdjacentHTML('afterend', config['moreTpl']);
                 var has_results = false;
-                $(config['link']).each(function () {
-                    var href = $(this).prop('href');
+                Array.prototype.forEach.call(document.querySelectorAll(config['link']), function(el, i){
+                    var href = el.getAttribute('href');
                     var match = href.match(new RegExp(key + '=(\\d+)'));
                     var page = !match ? 1 : match[1];
                     if (page > pdoPage.keys[key]) {
@@ -75,20 +82,20 @@ pdoPage.initialize = function (config) {
                     }
                 });
                 if (!has_results) {
-                    $(config['more']).hide();
+                    document.querySelector(config['more']).style.display = 'none';
                 }
 
-                $(document).on('click', config['more'], function (e) {
+                document.querySelector(config['more']).addEventListener('click', function(e){
                     e.preventDefault();
                     pdoPage.addPage(config)
                 });
             }
             else {
                 // Scroll pagination
-                var wrapper = $(config['wrapper']);
-                var $window = $(window);
-                $window.on('scroll', function () {
-                    if (!pdoPage.Reached && $window.scrollTop() > wrapper.height() - $window.height()) {
+                var wrapper = document.querySelector(config['wrapper']);
+
+                document.addEventListener('scroll', function(){
+                    if (!pdoPage.Reached && -document.body.getBoundingClientRect().top > wrapper.clientHeight - window.innerHeight) {
                         pdoPage.Reached = true;
                         pdoPage.addPage(config);
                     }
@@ -99,6 +106,9 @@ pdoPage.initialize = function (config) {
 };
 
 pdoPage.addPage = function (config) {
+    if (typeof(jQuery) == 'undefined') {
+        console.log("You must load jQuery for using ajax mode in pdoPage.");
+    }
     var key = config['pageVarKey'];
     var current = pdoPage.keys[key] || 1;
     $(config['link']).each(function () {
@@ -120,6 +130,9 @@ pdoPage.addPage = function (config) {
 };
 
 pdoPage.loadPage = function (href, config, mode) {
+    if (typeof(jQuery) == 'undefined') {
+        console.log("You must load jQuery for using ajax mode in pdoPage.");
+    }
     var wrapper = $(config['wrapper']);
     var rows = $(config['rows']);
     var pagination = $(config['pagination']);
@@ -341,7 +354,3 @@ pdoPage.Hash = {
         return !(window.history && history.pushState);
     }
 };
-
-if (typeof(jQuery) == 'undefined') {
-    console.log("You must load jQuery for using ajax mode in pdoPage.");
-}
