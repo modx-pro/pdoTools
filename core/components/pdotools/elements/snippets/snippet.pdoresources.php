@@ -62,7 +62,7 @@ if (!empty($returnIds)) {
 
     if (!empty($toPlaceholder)) {
         $modx->setPlaceholder($toPlaceholder, $output);
-    } else {
+    }  elseif($output!='Array') {
         return $output;
     }
 }
