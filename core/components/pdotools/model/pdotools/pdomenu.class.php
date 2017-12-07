@@ -244,13 +244,9 @@ class pdoMenu
         if ($row['children'] && !empty($this->pdoTools->config['parentClass']) && ($row['level'] < $this->pdoTools->config['level'] || empty($this->pdoTools->config['level']))) {
             $classes[] = $this->pdoTools->config['parentClass'];
         }
-        if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' && is_numeric(trim($row['content'],
-                '[]~ '))
-        ) {
-            $row_id = intval(trim($row['content'], '[]~ '));
-        } else {
-            $row_id = $row['id'];
-        }
+        $row_id = !empty($this->pdoTools->config['useWeblinkUrl']) && is_numeric(trim($row['content'], '[]~ ')) && $row['class_key'] == 'modWebLink'
+            ? intval(trim($row['content'], '[]~ '))
+            : $row['id'];
         if ($this->isHere($row_id) && !empty($this->pdoTools->config['hereClass'])) {
             $classes[] = $this->pdoTools->config['hereClass'];
         }
@@ -274,24 +270,23 @@ class pdoMenu
      */
     public function getTpl($row = array())
     {
+        $row_id = !empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' && is_numeric(trim($row['content'], '[]~ '))
+            ? intval(trim($row['content'], '[]~ '))
+            : $row['id'];
         if ($row['level'] == 1 && !empty($this->pdoTools->config['tplStart']) && !empty($this->pdoTools->config['displayStart'])) {
             $tpl = 'tplStart';
-        } elseif ($row['children'] && $row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplParentRowHere'])) {
+        } elseif ($row['children'] && $row_id == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplParentRowHere'])) {
             $tpl = 'tplParentRowHere';
-        } elseif ($row['level'] > 1 && $row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplInnerHere'])) {
+        } elseif ($row['level'] > 1 && $row_id == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplInnerHere'])) {
             $tpl = 'tplInnerHere';
-        } elseif ($row['id'] == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplHere'])) {
+        } elseif ($row_id == $this->pdoTools->config['hereId'] && !empty($this->pdoTools->config['tplHere'])) {
             $tpl = 'tplHere';
-        } elseif ($row['children'] && $this->isHere($row['id']) && !empty($this->pdoTools->config['tplParentRowActive'])) {
+        } elseif ($row['children'] && $this->isHere($row_id) && !empty($this->pdoTools->config['tplParentRowActive'])) {
             $tpl = 'tplParentRowActive';
-        } elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false)
-            && !empty($this->pdoTools->config['tplCategoryFolder'])
-        ) {
+        } elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolder'])) {
             $tpl = 'tplCategoryFolder';
         } // It's a typo, but it is left for backward compatibility
-        elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'],
-                    'category') != false) && !empty($this->pdoTools->config['tplCategoryFolders'])
-        ) {
+        elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolders'])) {
             $tpl = 'tplCategoryFolders';
         } // ---
         elseif ($row['children'] && !empty($this->pdoTools->config['tplParentRow'])) {
@@ -299,7 +294,7 @@ class pdoMenu
         } elseif ($row['level'] > 1 && !empty($this->pdoTools->config['tplInnerRow'])) {
             $tpl = 'tplInnerRow';
         } else {
-            $tpl = 'tpl';
+            return $this->pdoTools->defineChunk($row);
         }
 
         return $this->pdoTools->config[$tpl];

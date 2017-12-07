@@ -67,7 +67,7 @@ class pdoTools
             'outputSeparator' => "\n",
             'decodeJSON' => true,
             'scheme' => '',
-            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
+            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+(\s|\(|\|)|\(|\')#', true),
             'elementsPath' => $this->modx->getOption('pdotools_elements_path', null, '{core_path}elements/', true),
             'cachePath' => '{core_path}cache/default/pdotools',
         ), $config);
@@ -271,7 +271,7 @@ class pdoTools
 
         if (!empty($models)) {
             foreach ($models as $k => $v) {
-                $t = '/' . str_replace(MODX_BASE_PATH, '', $v['path']);
+                $t = '/' . str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $v['path']);
                 if ($this->modx->addPackage(strtolower($k), $v['path'], $v['prefix'])) {
                     $this->addTime('Loaded model "' . $k . '" from "' . $t . '"', microtime(true) - $time);
                 } else {
@@ -352,6 +352,39 @@ class pdoTools
         $snippet->_processed = false;
         $snippet->_propertyString = '';
         $snippet->_tag = '';
+        if ($data['cacheable'] && !$this->modx->getParser()->isProcessingUncacheable()) {
+            $scripts = array('jscripts', 'sjscripts', 'loadedjscripts');
+            $regScriptsBefore = $regScriptsAfter = array();
+            foreach ($scripts as $prop) {
+                $regScriptsBefore[$prop] = count($this->modx->$prop);
+            }
+            $output = $snippet->process(array_merge($data['properties'], $properties));
+            foreach ($scripts as $prop) {
+                $regScriptsAfter[$prop] = count($this->modx->$prop);
+            }
+            if (!empty($this->modx->resource)) {
+                if ($regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
+                    foreach ($scripts as $prop) {
+                        if ($regScriptsBefore[$prop] != $regScriptsAfter[$prop]) {
+                            $resProp = '_' . $prop;
+                            foreach (array_slice($this->modx->{$prop}, $regScriptsBefore[$prop]) as $key => $value) {
+                                if (!is_array($this->modx->resource->{$resProp})) {
+                                    $this->modx->resource->{$resProp} = array();
+                                }
+                                
+                                if ($prop == 'loadedjscripts') {
+                                    $this->modx->resource->{$resProp}[$key] = $value;
+                                } else {
+                                    array_push($this->modx->resource->{$resProp}, $value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $output;
+        }
 
         return $snippet->process(array_merge($data['properties'], $properties));
     }
@@ -790,6 +823,8 @@ class pdoTools
             ? $cache_name . '@' . $propertySet
             : $cache_name;
         if ($element = $this->getStore($cache_key, $type)) {
+            $element['cacheable'] = $cacheable && empty($binding);
+
             return $element;
         }
 
@@ -820,11 +855,11 @@ class pdoTools
                 } else {
                     $path = $this->config['elementsPath'];
                 }
-                if (strpos($path, MODX_BASE_PATH) === false) {
+                if (strpos($path, MODX_BASE_PATH) === false && strpos($path, MODX_CORE_PATH) === false) {
                     $path = MODX_BASE_PATH . $path;
                 }
                 $path = preg_replace('#/+#', '/', $path . ltrim($content, './'));
-                $rel_path = str_replace(MODX_BASE_PATH, '', $path);
+                $rel_path = str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $path);
                 if (!preg_match('#\.(html|tpl|php)$#i', $path)) {
                     $this->addTime('Allowed extensions for @FILE elements is "html", "tpl" and "php"');
                 } elseif (!file_exists($path)) {
@@ -939,6 +974,9 @@ class pdoTools
             } catch (Exception $e) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
                 $this->modx->log(modX::LOG_LEVEL_INFO, $content);
+                if ($this->modx->getOption('pdotools_fenom_save_on_errors')) {
+                    $this->setCache($content, array('cache_key' => 'pdotools/error/' . $name));
+                }
             }
         }
         $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
@@ -1120,11 +1158,11 @@ class pdoTools
                 );
             });
 
-            $tmp = $this->runSnippet($name, array(
+            $tmp = $this->runSnippet($name, array_merge($this->config, array(
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
                 'row' => $row,
-            ));
+            )));
 
             $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
                 ? json_decode($tmp, true)

@@ -145,7 +145,7 @@ if (empty($data)) {
         $output = $modx->getPlaceholder($toPlaceholder);
     }
 
-    /** Pagination */
+    // Pagination
     $total = (int)$modx->getPlaceholder($totalVar);
     $pageCount = !empty($scriptProperties['limit']) && $total > $offset
         ? ceil(($total - $offset) / $scriptProperties['limit'])
@@ -154,7 +154,8 @@ if (empty($data)) {
     // Redirect to start if somebody specified incorrect page
     if ($page > 1 && $page > $pageCount && $strictMode) {
         return $pdoPage->redirectToFirst($isAjax);
-    } elseif (!empty($pageCount) && $pageCount > 1) {
+    }
+    if (!empty($pageCount) && $pageCount > 1) {
         $pagination = array(
             'first' => $page > 1 && !empty($tplPageFirst)
                 ? $pdoPage->makePageLink($url, 1, $tplPageFirst)
@@ -181,28 +182,23 @@ if (empty($data)) {
                 }
             }
         }
-
-        if (!empty($setMeta) && !$isAjax) {
-            if ($page > 1) {
-                $modx->regClientStartupHTMLBlock('<link rel="prev" href="' . $pdoPage->makePageLink($url,
-                        $page - 1) . '"/>');
-            }
-            if ($page < $pageCount) {
-                $modx->regClientStartupHTMLBlock('<link rel="next" href="' . $pdoPage->makePageLink($url,
-                        $page + 1) . '"/>');
-            }
-        }
-
-        $pagination = !empty($tplPageWrapper)
-            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
-            : $pdoPage->pdoTools->parseChunk('', $pagination);
+    } else {
+        $pagination = array(
+            'first' => '',
+            'prev' => '',
+            'pages' => '',
+            'next' => '',
+            'last' => ''
+        );
     }
 
     $data = array(
         'output' => $output,
         $pageVarKey => $page,
         $pageCountVar => $pageCount,
-        $pageNavVar => $pagination,
+        $pageNavVar => !empty($tplPageWrapper)
+            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
+            : $pdoPage->pdoTools->parseChunk('', $pagination),
         $totalVar => $total,
     );
     if ($cache) {
@@ -235,6 +231,24 @@ if ($isAjax) {
     @session_write_close();
     exit(json_encode($data));
 } else {
+    if (!empty($setMeta)) {
+        $canurl = $pdoPage->pdoTools->config['scheme'] !== 'full'
+            ? $modx->getOption('url_scheme') . rtrim($modx->getOption('http_host'), '/') . '/' . ltrim($url, '/')
+            : $url;
+
+        $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
+        if ($data[$pageVarKey] > 1) {
+            $modx->regClientStartupHTMLBlock(
+                '<link rel="prev" href="' . $pdoPage->makePageLink($canurl, $data[$pageVarKey] - 1) . '"/>'
+            );
+        }
+        if ($data[$pageVarKey] < $data[$pageCountVar]) {
+            $modx->regClientStartupHTMLBlock(
+                '<link rel="next" href="' . $pdoPage->makePageLink($canurl, $data[$pageVarKey] + 1) . '"/>'
+            );
+        }
+    }
+
     $modx->setPlaceholders($data, $plPrefix);
     if (!empty($toPlaceholder)) {
         $modx->setPlaceholder($toPlaceholder, $data['output']);
