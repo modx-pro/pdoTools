@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.10.4 pl
+==============
+- [Fenom] Do not output raw tags if there was a compile errors.
+
 2.10.3 pl
 ==============
 - Improved compatibility with PHP 7.2
