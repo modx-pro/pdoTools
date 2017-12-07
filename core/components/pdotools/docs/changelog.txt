@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.10.4 pl
 ==============
 - [#266] [pdoMenu] Fixed the setting of "here" and "self" classes.
+- [Fenom] Do not output raw tags if there was a compile errors.
 
 2.10.3 pl
 ==============
