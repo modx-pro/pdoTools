@@ -244,7 +244,7 @@ class pdoMenu
         if ($row['children'] && !empty($this->pdoTools->config['parentClass']) && ($row['level'] < $this->pdoTools->config['level'] || empty($this->pdoTools->config['level']))) {
             $classes[] = $this->pdoTools->config['parentClass'];
         }
-        $row_id = !empty($this->pdoTools->config['useWeblinkUrl']) && is_numeric(trim($row['content'], '[]~ ') && $row['class_key'] == 'modWebLink')
+        $row_id = !empty($this->pdoTools->config['useWeblinkUrl']) && is_numeric(trim($row['content'], '[]~ ')) && $row['class_key'] == 'modWebLink'
             ? intval(trim($row['content'], '[]~ '))
             : $row['id'];
         if ($this->isHere($row_id) && !empty($this->pdoTools->config['hereClass'])) {
