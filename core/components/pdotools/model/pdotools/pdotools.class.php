@@ -972,15 +972,17 @@ class pdoTools
             }
             try {
                 $tpl = $fenom->getRawTemplate()->source($name, $content, true);
+                $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
             } catch (Exception $e) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
                 $this->modx->log(modX::LOG_LEVEL_INFO, $content);
                 if ($this->modx->getOption('pdotools_fenom_save_on_errors')) {
                     $this->setCache($content, array('cache_key' => 'pdotools/error/' . $name));
                 }
+                $tpl = $fenom->getRawTemplate()->source($name, '', false);
+                $this->addTime('Can`t compile Fenom chunk with name "' . $name . '": ' . $e->getMessage());
             }
         }
-        $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
 
         return $tpl;
     }
