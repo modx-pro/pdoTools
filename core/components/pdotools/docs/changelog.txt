@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.10.4 pl
 ==============
 - [#266] [pdoMenu] Fixed the setting of "here" and "self" classes.
+- [#261] [Fenom] Fixed unexpected behavior of the fenom tag "ignore".
 
 2.10.3 pl
 ==============

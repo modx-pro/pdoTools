@@ -8,6 +8,7 @@ $tmp = array(
         'events' => array(
             'OnMODXInit' => -100,
             'OnSiteRefresh' => 0,
+            'OnWebPagePrerender' => -100,
         ),
     ),
 );

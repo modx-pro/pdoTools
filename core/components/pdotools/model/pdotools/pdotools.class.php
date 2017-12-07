@@ -30,6 +30,7 @@ class pdoTools
     /** @var Fenom $fenom */
     public $fenom;
     private $tags = array();
+    public $ignores = array();
 
 
     /**
