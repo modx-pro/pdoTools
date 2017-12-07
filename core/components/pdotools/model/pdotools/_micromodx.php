@@ -113,7 +113,7 @@ class microMODX
     public function runSnippet($name, array $params = array())
     {
         $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
-        $output = (string)$this->pdoTools->runSnippet($name, $params);
+        $output = $this->pdoTools->runSnippet($name, $params);
         $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
 
         return $output;
@@ -166,21 +166,7 @@ class microMODX
      */
     public function regClientCSS($src, $media = null)
     {
-        if (empty($this->modx->config['fenom_sjscripts'])) {
-            $this->modx->config['fenom_sjscripts'] = array();
-        }
-        $registered = count($this->modx->sjscripts);
-
         $this->modx->regClientCSS($src, $media);
-
-        $this->modx->config['fenom_sjscripts'] = array_replace(
-            $this->modx->config['fenom_sjscripts'],
-            array_slice($this->modx->sjscripts, $registered, null, true)
-        );
-        if (empty($this->modx->config['fenom_loadedscripts'])) {
-            $this->modx->config['fenom_loadedscripts'] = array();
-        }
-        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
@@ -190,21 +176,7 @@ class microMODX
      */
     public function regClientStartupScript($src, $plaintext = false)
     {
-        if (empty($this->modx->config['fenom_sjscripts'])) {
-            $this->modx->config['fenom_sjscripts'] = array();
-        }
-        $registered = count($this->modx->sjscripts);
-
         $this->modx->regClientStartupScript($src, $plaintext);
-
-        $this->modx->config['fenom_sjscripts'] = array_replace(
-            $this->modx->config['fenom_sjscripts'],
-            array_slice($this->modx->sjscripts, $registered, null, true)
-        );
-        if (empty($this->modx->config['fenom_loadedscripts'])) {
-            $this->modx->config['fenom_loadedscripts'] = array();
-        }
-        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 
@@ -214,21 +186,7 @@ class microMODX
      */
     public function regClientScript($src, $plaintext = false)
     {
-        if (empty($this->modx->config['fenom_jscripts'])) {
-            $this->modx->config['fenom_jscripts'] = array();
-        }
-        $registered = count($this->modx->jscripts);
-
         $this->modx->regClientScript($src, $plaintext);
-
-        $this->modx->config['fenom_jscripts'] = array_replace(
-            $this->modx->config['fenom_jscripts'],
-            array_slice($this->modx->jscripts, $registered, null, true)
-        );
-        if (empty($this->modx->config['fenom_loadedscripts'])) {
-            $this->modx->config['fenom_loadedscripts'] = array();
-        }
-        $this->modx->config['fenom_loadedscripts'][$src] = true;
     }
 
 

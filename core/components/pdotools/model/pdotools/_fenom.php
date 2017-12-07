@@ -292,7 +292,7 @@ class FenomX extends Fenom
         $this->_modifiers['memberof'] =
         $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
             $pdo->debugParserModifier($id, 'ismember', $groups);
-            if (!is_array($groups)) {
+            if (is_string($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
 
@@ -403,6 +403,9 @@ class FenomX extends Fenom
             /** @var modResource $resource */
             if (empty($id)) {
                 $resource = $modx->resource;
+            } elseif (!is_numeric($id)) {
+                $field = $id;
+                $resource = $modx->resource;
             } elseif (!$resource = $pdo->getStore($id, 'resource')) {
                 $resource = $modx->getObject('modResource', $id);
                 $pdo->setStore($id, $resource, 'resource');
@@ -430,7 +433,7 @@ class FenomX extends Fenom
 
         $this->_modifiers['snippet'] = function ($name, $params = array()) use ($pdo) {
             $pdo->debugParserModifier($name, 'snippet', $params);
-            $result = (string)$pdo->runSnippet($name, $params);
+            $result = $pdo->runSnippet($name, $params);
             $pdo->debugParserModifier($name, 'snippet', $params);
 
             return $result;
@@ -466,8 +469,8 @@ class FenomX extends Fenom
             return $modx->getPlaceholder($key);
         };
 
-        $this->_modifiers['cssToHead'] = function ($string) use ($micro) {
-            $micro->regClientCSS($string);
+        $this->_modifiers['cssToHead'] = function ($string, $media = null) use ($micro) {
+            $micro->regClientCSS($string, $media);
         };
 
         $this->_modifiers['htmlToHead'] = function ($string) use ($micro) {
@@ -487,13 +490,17 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['json_encode'] =
-        $this->_modifiers['toJSON'] = function ($array) use ($modx) {
-            return json_encode($array);
+        $this->_modifiers['toJSON'] = function ($array, $options = 0, $depth = 512) use ($modx) {
+            return PHP_VERSION_ID < 50500
+                ? json_encode($array, $options)
+                : json_encode($array, $options, $depth);
         };
 
         $this->_modifiers['json_decode'] =
-        $this->_modifiers['fromJSON'] = function ($string) use ($modx) {
-            return json_decode($string, true);
+        $this->_modifiers['fromJSON'] = function ($string, $assoc = true, $depth = 512, $options = 0) use ($modx) {
+            return PHP_VERSION_ID < 50400
+                ? json_decode($string, $assoc, $depth)
+                : json_decode($string, $assoc, $depth, $options);
         };
 
         $this->_modifiers['setOption'] = function ($var, $key) use ($modx) {

@@ -23,9 +23,8 @@ class pdoPage
         if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
             $this->pdoTools = new $pdoClass($modx, $config);
         } else {
-            return false;
+            return;
         }
-
         $modx->lexicon->load('pdotools:pdopage');
     }
 
@@ -89,6 +88,7 @@ class pdoPage
         }
 
         if (empty($this->pdoTools->config['frontend_init_js'])) {
+            /** @noinspection Annotator */
             $this->modx->regClientScript(
                 '<script type="text/javascript">pdoPage.initialize(' . json_encode($config) . ');</script>', true
             );
@@ -130,7 +130,7 @@ class pdoPage
             $_GET[$this->pdoTools->config['pageVarKey']] = 1;
             $_REQUEST = $_GET;
 
-            return (string)$this->pdoTools->runSnippet('pdoPage', $this->pdoTools->config);
+            return $this->pdoTools->runSnippet('pdoPage', $this->pdoTools->config);
         }
     }
 
@@ -201,7 +201,7 @@ class pdoPage
                 'page' => $page,
             ));
             $link = str_replace($pls['pl'], $pls['vl'], $this->pdoTools->config['pageLinkScheme']);
-            $pcre = preg_replace('#\d+#', '(\d+)', $link);
+            $pcre = preg_replace('#\d+#', '(\d+)', preg_quote(preg_replace('#\#.*#', '', $link)));
         }
 
         $href = !empty($link)
@@ -209,7 +209,7 @@ class pdoPage
             : $url;
         if ($page > 1 || ($page == 1 && !empty($this->pdoTools->config['ajax']))) {
             if (!empty($link)) {
-                $href = rtrim($href, '/') . '/' . ltrim($link, '/');
+                $href .= $link;
             } else {
                 $href .= strpos($href, '?') !== false
                     ? '&'
@@ -219,6 +219,9 @@ class pdoPage
         }
         if (!empty($_GET)) {
             $request = $_GET;
+            array_walk_recursive($request, function(&$item) {
+                $item = rawurldecode($item);
+            });
             unset($request[$this->req_var]);
             unset($request[$this->pdoTools->config['pageVarKey']]);
 

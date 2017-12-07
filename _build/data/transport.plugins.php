@@ -7,7 +7,6 @@ $tmp = array(
         'description' => '',
         'events' => array(
             'OnMODXInit' => -100,
-            'OnBeforeSaveWebPageCache' => 0,
             'OnSiteRefresh' => 0,
         ),
     ),

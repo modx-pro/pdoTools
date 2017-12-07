@@ -52,12 +52,6 @@ class pdoParser extends modParser
     ) {
         if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
             $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
-
-            if (!empty($this->modx->resource) && is_object($this->modx->resource)) {
-                $this->modx->resource->_jscripts = $this->modx->jscripts;
-                $this->modx->resource->_sjscripts = $this->modx->sjscripts;
-                $this->modx->resource->_loadedjscripts = $this->modx->loadedjscripts;
-            }
         }
 
         return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,
@@ -164,18 +158,20 @@ class pdoParser extends modParser
                                     $output = $resource->getContent();
                                 } // Resource field
                                 elseif ($field = $resource->get($tmp[1])) {
-                                    $output = $field;
-                                    if (is_array($field)) {
-                                        if ($length > 2) {
-                                            foreach ($tmp as $k => $v) {
-                                                if ($k === 0) {
-                                                    continue;
-                                                }
-                                                if (isset($field[$v])) {
+                                    if (is_array($field) && $length > 2) {
+                                        $tmp2 = array_slice($tmp, 2);
+                                        $count = count($tmp2);
+                                        foreach ($tmp2 as $k => $v) {
+                                            if (isset($field[$v])) {
+                                                if ($k == ($count - 1)) {
                                                     $output = $field[$v];
+                                                } else {
+                                                    $field = $field[$v];
                                                 }
                                             }
                                         }
+                                    } else {
+                                        $output = $field;
                                     }
                                 } // Template variable
                                 elseif ($field === null) {
