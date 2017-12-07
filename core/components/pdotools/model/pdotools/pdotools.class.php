@@ -30,7 +30,7 @@ class pdoTools
     /** @var Fenom $fenom */
     public $fenom;
     private $tags = array();
-
+    public $ignores = array();
 
     /**
      * @param modX $modx
@@ -152,8 +152,6 @@ class pdoTools
      *
      * @var string $message
      * @var integer $delta
-     *
-     * @param $message
      */
     public function addTime($message, $delta = null)
     {

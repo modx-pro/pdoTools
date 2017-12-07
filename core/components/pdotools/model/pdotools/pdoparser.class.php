@@ -51,6 +51,13 @@ class pdoParser extends modParser
         $depth = 0
     ) {
         if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
+            if (preg_match_all('#\{ignore\}(.*?)\{\/ignore\}#is', $content, $ignores)) {
+                foreach ($ignores[1] as $ignore) {
+                    $key = 'ignore_' . md5($ignore);
+                    $this->pdoTools->ignores[$key] = $ignore;
+                    $content = str_replace($ignore, $key, $content);
+                }
+            }
             $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
         }
 
