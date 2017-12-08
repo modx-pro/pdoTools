@@ -9,7 +9,7 @@ class pdoParser extends modParser
 {
     /** @var pdoTools $pdoTools */
     public $pdoTools;
-
+    protected $fenomComplete = false;
 
     /**
      * @param xPDO $modx
@@ -50,15 +50,9 @@ class pdoParser extends modParser
         $tokens = array(),
         $depth = 0
     ) {
-        if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
-            if (preg_match_all('#\{ignore\}(.*?)\{\/ignore\}#is', $content, $ignores)) {
-                foreach ($ignores[1] as $ignore) {
-                    $key = 'ignore_' . md5($ignore);
-                    $this->pdoTools->ignores[$key] = $ignore;
-                    $content = str_replace($ignore, $key, $content);
-                }
-            }
+        if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser']) && !$this->fenomComplete) {
             $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
+            $this->fenomComplete = true;
         }
 
         return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,
