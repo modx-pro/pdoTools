@@ -1166,10 +1166,12 @@ class pdoTools
                 'pdoFetch' => $this,
                 'row' => $row,
             )));
-
-            $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
-                ? json_decode($tmp, true)
-                : unserialize($tmp);
+            
+            if (!is_array($tmp)){
+                $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
+                    ? json_decode($tmp, true)
+                    : unserialize($tmp);
+            }
 
             if (!is_array($tmp)) {
                 $this->addTime('Preparation snippet must return an array, instead of "' . gettype($tmp) . '"');
