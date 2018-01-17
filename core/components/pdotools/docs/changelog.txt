@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.10.5 pl
+==============
+- [pdoTools] Ability to return array from "prepareSnippet" for more performance.
+
 2.10.4 pl
 ==============
 - [Fenom] Do not output raw tags if there was a compile errors.
