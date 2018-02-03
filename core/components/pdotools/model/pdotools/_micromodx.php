@@ -153,10 +153,12 @@ class microMODX
     /**
      * @param $name
      * @param string $type
+     *
+     * @return mixed|null
      */
     public function getStore($name, $type = 'data')
     {
-        $this->pdoTools->getStore($name, $type);
+        return $this->pdoTools->getStore($name, $type);
     }
 
 
