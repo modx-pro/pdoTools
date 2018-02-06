@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.10.6 pl
+==============
+- Improved German lexicons.
+
 2.10.5 pl
 ==============
 - [pdoTools] Ability to return array from "prepareSnippet" for more performance.
