@@ -138,6 +138,7 @@ $data = $cache
     : array();
 
 if (empty($data)) {
+    $scriptProperties['setTotal'] = true;
     $output = $pdoPage->pdoTools->runSnippet($scriptProperties['element'], $scriptProperties);
     if ($output === false) {
         return '';

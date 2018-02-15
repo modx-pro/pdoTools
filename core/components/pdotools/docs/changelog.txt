@@ -1,5 +1,11 @@
 Changelog for pdoTools.
 
+2.11.0 pl
+==============
+- [pdoFetch] Added "setTotal" option to enable calculating all rows ("SQL_CALC_FOUND_ROWS"), which will also result in the "totalVar" placeholder is being set.
+- [pdoFetch] Option "setTotal" disabled by default.
+- [pdoPage] Forces "setTotal" to provide pagination.
+
 2.10.6 pl
 ==============
 - Improved German lexicons.

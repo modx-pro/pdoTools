@@ -29,6 +29,7 @@ class pdoFetch extends pdoTools
                 'sortdir' => '',
                 'groupby' => '',
                 'totalVar' => 'total',
+                'setTotal' => false,
                 'tpl' => '',
                 'return' => 'chunks',    // chunks, data, sql or ids
 
@@ -254,7 +255,7 @@ class pdoFetch extends pdoTools
      */
     public function setTotal()
     {
-        if (!in_array($this->config['return'], array('sql', 'ids'))) {
+        if ($this->config['setTotal'] && !in_array($this->config['return'], array('sql', 'ids'))) {
             $time = microtime(true);
 
             $q = $this->modx->prepare("SELECT FOUND_ROWS();");
@@ -363,7 +364,7 @@ class pdoFetch extends pdoTools
                     }
                 }
 
-                if ($i == 0) {
+                if ($i == 0 && $this->config['setTotal']) {
                     $fields = 'SQL_CALC_FOUND_ROWS ' . $fields;
                 }
 
@@ -519,7 +520,6 @@ class pdoFetch extends pdoTools
                 );
                 $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
             }
-            $time = microtime(true);
         }
     }
 
