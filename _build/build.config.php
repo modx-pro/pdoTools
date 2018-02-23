@@ -4,7 +4,7 @@
 define('PKG_NAME', 'pdoTools');
 define('PKG_NAME_LOWER', strtolower(PKG_NAME));
 
-define('PKG_VERSION', '2.11.0');
+define('PKG_VERSION', '3.0.0');
 define('PKG_RELEASE', 'pl');
 define('PKG_AUTO_INSTALL', true);
 
@@ -48,6 +48,9 @@ define('BUILD_SNIPPET_STATIC', false);
 define('BUILD_PLUGIN_STATIC', false);
 
 $BUILD_RESOLVERS = array(
-    'extension',
+    'composer',
     'parser',
+);
+$BUILD_VALIDATORS = array(
+    'requirements'
 );

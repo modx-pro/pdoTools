@@ -1,8 +1,11 @@
 <?php
 
-if ($object->xpdo) {
+/** @var xPDOTransport $transport */
+/** @var array $options */
+/** @var modX $modx */
+if ($transport->xpdo) {
     /** @var $modx modX */
-    $modx =& $object->xpdo;
+    $modx =& $transport->xpdo;
 
     switch ($options[xPDOTransport::PACKAGE_ACTION]) {
         case xPDOTransport::ACTION_INSTALL:
@@ -32,20 +35,21 @@ if ($object->xpdo) {
                 'key' => 'parser_class_path',
             ), '', true, true);
             $tmp->save();
-
-            // Remove old settings
-            if ($tmp = $modx->getObject('modSystemSetting', array('key' => 'pdotools_useFenom'))) {
-                $tmp->remove();
-            }
             break;
 
         case xPDOTransport::ACTION_UNINSTALL:
-            if ($tmp = $modx->getObject('modSystemSetting', array('key' => 'parser_class', 'value' => 'pdoParser'))) {
+            $tmp = $modx->getObject('modSystemSetting', array(
+                'key' => 'parser_class',
+                'value' => 'pdoParser'
+            ));
+            if ($tmp) {
                 $tmp->remove();
             }
-            if ($tmp = $modx->getObject('modSystemSetting',
-                array('key' => 'parser_class_path', 'value' => '{core_path}components/pdotools/model/pdotools/'))
-            ) {
+            $tmp = $modx->getObject('modSystemSetting', array(
+                'key' => 'parser_class_path',
+                'value' => '{core_path}components/pdotools/model/pdotools/'
+            ));
+            if ($tmp) {
                 $tmp->remove();
             }
             break;

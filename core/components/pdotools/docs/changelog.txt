@@ -1,5 +1,10 @@
 Changelog for pdoTools.
 
+3.0.0 pl
+==============
+- Moved composer dependencies to MODX 3 core/vendor directory
+- Require MODX 3
+
 2.11.0 pl
 ==============
 - [pdoFetch] Added "setTotal" option to enable calculating all rows ("SQL_CALC_FOUND_ROWS"), which will also result in the "totalVar" placeholder is being set.
