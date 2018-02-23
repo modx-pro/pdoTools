@@ -1,19 +1,21 @@
 <?php
 
-$events = array();
+use MODX\Revolution\modEvent;
 
-$tmp = array(
+$events = [];
+
+$tmp = [
     'pdoToolsOnFenomInit',
-);
+];
 
 foreach ($tmp as $k => $v) {
     /** @var modEvent $event */
-    $event = $modx->newObject('modEvent');
-    $event->fromArray(array(
+    $event = $modx->newObject(modEvent::class);
+    $event->fromArray([
         'name' => $v,
         'service' => 6,
         'groupname' => PKG_NAME,
-    ), '', true, true);
+    ], '', true, true);
     $events[] = $event;
 }
 

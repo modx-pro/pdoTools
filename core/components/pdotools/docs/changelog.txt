@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+3.0.0 alpha1
+==============
+- Requires MODX 3
+- Refactored to use namespaces
+- Added DebugParser functions
+- Removed "nestedChunkPrefix" parameter
+
 2.12.3 pl
 ==============
 - Fixed E_NOTICE introduced in #285.

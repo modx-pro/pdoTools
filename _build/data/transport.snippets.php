@@ -1,8 +1,10 @@
 <?php
 
-$snippets = array();
+use MODX\Revolution\modSnippet;
 
-$tmp = array(
+$snippets = [];
+
+$tmp = [
     'pdoResources' => 'pdoresources',
     'pdoUsers' => 'pdousers',
     'pdoCrumbs' => 'pdocrumbs',
@@ -13,13 +15,12 @@ $tmp = array(
     'pdoMenu' => 'pdomenu',
     'pdoTitle' => 'pdotitle',
     'pdoArchive' => 'pdoarchive',
-);
+];
 
 foreach ($tmp as $k => $v) {
     /** @var modSnippet $snippet */
-    $snippet = $modx->newObject('modSnippet');
-    /** @noinspection PhpUndefinedVariableInspection */
-    $snippet->fromArray(array(
+    $snippet = $modx->newObject(modSnippet::class);
+    $snippet->fromArray([
         'id' => 0,
         'name' => $k,
         'description' => '',
@@ -27,7 +28,7 @@ foreach ($tmp as $k => $v) {
         'static' => BUILD_SNIPPET_STATIC,
         'source' => 1,
         'static_file' => 'core/components/' . PKG_NAME_LOWER . '/elements/snippets/snippet.' . $v . '.php',
-    ), '', true, true);
+    ], '', true, true);
 
     /** @noinspection PhpIncludeInspection */
     $properties = include $sources['build'] . 'properties/properties.' . $v . '.php';

@@ -1,35 +1,42 @@
 <?php
 
-/**
- * Class microMODX
- */
-class microMODX
+namespace MODX\Components\PDOTools\Fenom\Jail;
+
+use MODX\Components\PDOTools\Core;
+use MODX\Components\PDOTools\Fetch;
+use MODX\Revolution\modContext;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modUserProfile;
+use MODX\Revolution\modX;
+use MODX\Revolution\Processors\ProcessorResponse;
+
+class System
 {
     /** @var modX $modx */
     protected $modx;
-    /** @var pdoTools */
+    /** @var Core */
     protected $pdoTools;
-    /** @var microMODXLexicon */
+    /** @var Lexicon */
     public $lexicon;
-    /** @var microMODXCacheManager */
+    /** @var CacheManager */
     public $cacheManager;
 
-    public $config = array();
-    public $context = array();
-    public $resource = array();
-    public $user = array();
+    public $config = [];
+    public $context = [];
+    public $resource = [];
+    public $user = [];
 
 
     /**
-     * @param pdoTools $pdoTools
+     * @param Core $pdoTools
      */
-    function __construct(pdoTools $pdoTools)
+    function __construct(Core $pdoTools)
     {
         $this->modx = $modx = $pdoTools->modx;
         $this->pdoTools = $pdoTools;
         $this->config = $modx->config;
 
-        if ($modx->context && $context = $this->modx->getObject('modContext', $modx->context->get('key'))) {
+        if ($modx->context && $context = $this->modx->getObject(modContext::class, $modx->context->get('key'))) {
             $this->context = $context->toArray();
         }
         if ($modx->resource) {
@@ -52,8 +59,8 @@ class microMODX
             }
         }
 
-        $this->lexicon = new microMODXLexicon($modx);
-        $this->cacheManager = new microMODXCacheManager($modx);
+        $this->lexicon = new Lexicon($modx);
+        $this->cacheManager = new CacheManager($modx);
     }
 
 
@@ -64,7 +71,7 @@ class microMODX
      *
      * @return null|string
      */
-    public function lexicon($key, $params = array(), $language = '')
+    public function lexicon($key, $params = [], $language = '')
     {
         return $this->modx->lexicon($key, $params, $language);
     }
@@ -76,11 +83,11 @@ class microMODX
      *
      * @return string
      */
-    public function getChunk($name, array $placeholders = array())
+    public function getChunk($name, array $placeholders = [])
     {
-        $this->pdoTools->debugParserMethod('getChunk', $name, $placeholders);
+        $this->pdoTools->debug->method('getChunk', $name, $placeholders);
         $result = $this->pdoTools->getChunk($name, $placeholders);
-        $this->pdoTools->debugParserMethod('getChunk', $name, $placeholders);
+        $this->pdoTools->debug->method('getChunk', $name, $placeholders);
 
         return $result;
     }
@@ -96,9 +103,9 @@ class microMODX
      */
     public function parseChunk($name, $placeholders, $prefix = '[[+', $suffix = ']]')
     {
-        $this->pdoTools->debugParserMethod('parseChunk', $name, $placeholders);
+        $this->pdoTools->debug->method('parseChunk', $name, $placeholders);
         $result = $this->pdoTools->parseChunk($name, $placeholders, $prefix, $suffix);
-        $this->pdoTools->debugParserMethod('parseChunk', $name, $placeholders);
+        $this->pdoTools->debug->method('parseChunk', $name, $placeholders);
 
         return $result;
     }
@@ -110,11 +117,11 @@ class microMODX
      *
      * @return string
      */
-    public function runSnippet($name, array $params = array())
+    public function runSnippet($name, array $params = [])
     {
-        $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
+        $this->pdoTools->debug->method('runSnippet', $name, $params);
         $output = $this->pdoTools->runSnippet($name, $params);
-        $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
+        $this->pdoTools->debug->method('runSnippet', $name, $params);
 
         return $output;
     }
@@ -129,11 +136,11 @@ class microMODX
      *
      * @return string
      */
-    public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = array())
+    public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = [])
     {
-        $this->pdoTools->debugParserMethod('makeUrl', $id, $args);
+        $this->pdoTools->debug->method('makeUrl', $id, $args);
         $result = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
-        $this->pdoTools->debugParserMethod('makeUrl', $id, $args);
+        $this->pdoTools->debug->method('makeUrl', $id, $args);
 
         return $result;
     }
@@ -217,19 +224,19 @@ class microMODX
      *
      * @return array
      */
-    public function runProcessor($action = '', $scriptProperties = array(), $options = array())
+    public function runProcessor($action = '', $scriptProperties = [], $options = [])
     {
-        $this->pdoTools->debugParserMethod('runProcessor', $action, $scriptProperties);
-        /** @var modProcessorResponse $response */
+        $this->pdoTools->debug->method('runProcessor', $action, $scriptProperties);
+        /** @var ProcessorResponse $response */
         $response = $this->modx->runProcessor($action, $scriptProperties, $options);
-        $this->pdoTools->debugParserMethod('runProcessor', $action, $scriptProperties);
+        $this->pdoTools->debug->method('runProcessor', $action, $scriptProperties);
 
-        return array(
+        return [
             'success' => !$response->isError(),
             'message' => $response->getMessage(),
             'response' => $response->getResponse(),
             'errors' => $response->getFieldErrors(),
-        );
+        ];
     }
 
 
@@ -295,7 +302,7 @@ class microMODX
      * @param string $type
      * @param array $options
      */
-    public function sendError($type = '', $options = array())
+    public function sendError($type = '', $options = [])
     {
         $this->modx->sendError($type, $options);
     }
@@ -417,7 +424,7 @@ class microMODX
      *
      * @return array
      */
-    public function getChildIds($id = null, $depth = 10, array $options = array())
+    public function getChildIds($id = null, $depth = 10, array $options = [])
     {
         return $this->modx->getChildIds($id, $depth, $options);
     }
@@ -430,7 +437,7 @@ class microMODX
      *
      * @return array
      */
-    public function getParentIds($id = null, $height = 10, array $options = array())
+    public function getParentIds($id = null, $height = 10, array $options = [])
     {
         return $this->modx->getParentIds($id, $height, $options);
     }
@@ -452,22 +459,22 @@ class microMODX
         $queries = isset($this->modx->executedQueries) ? $this->modx->executedQueries : 0;
         $source = $this->modx->resourceGenerated ? 'database' : 'cache';
 
-        $info = array(
+        $info = [
             'queries' => $queries,
             'totalTime' => $totalTime,
             'queryTime' => $queryTime,
             'phpTime' => $phpTime,
             'source' => $source,
             'log' => "\n" . $this->pdoTools->getTime(),
-        );
+        ];
 
         if (empty($key) && !empty($string)) {
-            $output = array();
+            $output = [];
             foreach ($info as $key => $value) {
-                $output[] = $this->pdoTools->parseChunk($tpl, array(
+                $output[] = $this->pdoTools->parseChunk($tpl, [
                     'key' => $key,
                     'value' => $value,
-                ));
+                ]);
             }
 
             return implode("\n", $output);
@@ -485,22 +492,22 @@ class microMODX
      *
      * @return array|bool
      */
-    public function getResource($id, array $options = array())
+    public function getResource($id, array $options = [])
     {
         if (!is_array($id) && is_numeric($id)) {
-            $where = array(
+            $where = [
                 'id' => (int)$id,
-            );
+            ];
         } else {
             $where = $id;
         }
         $output = false;
-        $this->pdoTools->debugParserMethod('getResource', $where, $options);
-        /** @var pdoFetch $pdoFetch */
-        if ($pdoFetch = $this->modx->getService('pdoFetch')) {
-            $output = $pdoFetch->getArray('modResource', $where, $options);
+        $this->pdoTools->debug->method('getResource', $where, $options);
+        /** @var Fetch $pdoFetch */
+        if ($pdoFetch = $this->modx->services->get('pdofetch')) {
+            $output = $pdoFetch->getArray(modResource::class, $where, $options);
         }
-        $this->pdoTools->debugParserMethod('getResource', $where, $options);
+        $this->pdoTools->debug->method('getResource', $where, $options);
 
         return $output;
     }
@@ -512,15 +519,15 @@ class microMODX
      *
      * @return array|bool
      */
-    public function getResources($where, array $options = array())
+    public function getResources($where, array $options = [])
     {
         $output = false;
-        $this->pdoTools->debugParserMethod('getResources', $where, $options);
-        /** @var pdoFetch $pdoFetch */
-        if ($pdoFetch = $this->modx->getService('pdoFetch')) {
-            $output = $pdoFetch->getCollection('modResource', $where, $options);
+        $this->pdoTools->debug->method('getResources', $where, $options);
+        /** @var Fetch $pdoFetch */
+        if ($pdoFetch = $this->modx->services->get('pdofetch')) {
+            $output = $pdoFetch->getCollection(modResource::class, $where, $options);
         }
-        $this->pdoTools->debugParserMethod('getResources', $where, $options);
+        $this->pdoTools->debug->method('getResources', $where, $options);
 
         return $output;
     }
@@ -534,91 +541,6 @@ class microMODX
     public function cleanAlias($alias = '')
     {
         return modResource::filterPathSegment($this->modx, $alias);
-    }
-
-}
-
-
-/**
- * Class microMODXLexicon
- */
-class microMODXLexicon
-{
-    /** @var modX $modx */
-    protected $modx;
-    /** @var modLexicon $lexicon */
-    protected $lexicon;
-
-
-    /**
-     * @param modX $modx
-     */
-    function __construct(modX $modx)
-    {
-        $this->modx = &$modx;
-        $this->lexicon = $this->modx->getService('lexicon', 'modLexicon');
-    }
-
-
-    /**
-     *
-     */
-    public function load()
-    {
-        $topics = func_get_args();
-
-        foreach ($topics as $topic) {
-            $this->lexicon->load($topic);
-        }
-    }
-
-}
-
-
-/**
- * Class microMODXCacheManager
- */
-class microMODXCacheManager
-{
-    /** @var modX $modx */
-    protected $modx;
-    /** @var modCacheManager $cacheManager */
-    protected $cacheManager;
-
-
-    /**
-     * @param modX $modx
-     */
-    function __construct(modX $modx)
-    {
-        $this->modx = &$modx;
-        $this->cacheManager = $modx->getCacheManager();
-    }
-
-
-    /**
-     * @param $key
-     * @param array $options
-     *
-     * @return mixed
-     */
-    public function get($key, $options = array())
-    {
-        return $this->cacheManager->get($key, $options);
-    }
-
-
-    /**
-     * @param $key
-     * @param $var
-     * @param int $lifetime
-     *
-     * @return bool
-     */
-    public function set($key, & $var, $lifetime = 0)
-    {
-        // $options is not used due to security reasons
-        return $this->cacheManager->set($key, $var, $lifetime);
     }
 
 }

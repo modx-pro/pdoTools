@@ -5,9 +5,10 @@
  *
  * @return string
  */
-function getSnippetContent($filename) {
+function getSnippetContent($filename)
+{
     $file = trim(file_get_contents($filename));
-    preg_match('#\<\?php(.*)#is', $file, $data);
+    preg_match('#<\?php(.*)#is', $file, $data);
 
     return rtrim(rtrim(trim($data[1]), '?>'));
 }
@@ -18,7 +19,8 @@ function getSnippetContent($filename) {
  *
  * @param $dir
  */
-function removeDir($dir) {
+function removeDir($dir)
+{
     $dir = rtrim($dir, '/');
     if (is_dir($dir)) {
         $objects = scandir($dir);
@@ -26,8 +28,7 @@ function removeDir($dir) {
             if ($object != '.' && $object != '..') {
                 if (is_dir($dir . '/' . $object)) {
                     removeDir($dir . '/' . $object);
-                }
-                else {
+                } else {
                     unlink($dir . '/' . $object);
                 }
             }
@@ -40,22 +41,21 @@ function removeDir($dir) {
 /**
  * @param $base
  */
-function cleanPackages($base) {
+function cleanPackages($base)
+{
     if ($dirs = @scandir($base)) {
         foreach ($dirs as $dir) {
-            if (in_array($dir, array('.', '..'))) {
+            if (in_array($dir, ['.', '..'])) {
                 continue;
             }
             $path = $base . $dir;
             if (is_dir($path)) {
-                if (in_array($dir, array('tests', 'docs', 'gui'))) {
+                if (in_array($dir, ['tests', 'docs', 'gui'])) {
                     removeDir($path);
-                }
-                else {
+                } else {
                     cleanPackages($path . '/');
                 }
-            }
-            elseif (pathinfo($path, PATHINFO_EXTENSION) != 'php') {
+            } elseif (pathinfo($path, PATHINFO_EXTENSION) != 'php') {
                 unlink($path);
             }
         }

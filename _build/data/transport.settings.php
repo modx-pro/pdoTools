@@ -1,79 +1,54 @@
 <?php
 
-$settings = array();
+use MODX\Revolution\modSystemSetting;
 
-$tmp = array(
-    'pdoTools.class' => array(
-        'xtype' => 'textfield',
-        'value' => 'pdotools.pdotools',
-        'key' => 'pdoTools.class',
-    ),
-    'pdoFetch.class' => array(
-        'xtype' => 'textfield',
-        'value' => 'pdotools.pdofetch',
-        'key' => 'pdoFetch.class',
-    ),
-    /*
-    'pdoParser.class' => array(
-        'xtype' => 'textfield',
-        'value' => 'pdotools.pdoparser',
-        'key' => 'pdoParser.class',
-    ),
-    */
-    'pdotools_class_path' => array(
-        'xtype' => 'textfield',
-        'value' => '{core_path}components/pdotools/model/',
-        'key' => 'pdotools_class_path',
-    ),
-    'pdofetch_class_path' => array(
-        'xtype' => 'textfield',
-        'value' => '{core_path}components/pdotools/model/',
-        'key' => 'pdofetch_class_path',
-    ),
-    'fenom_default' => array(
+$settings = [];
+
+$tmp = [
+    'fenom_default' => [
         'xtype' => 'combo-boolean',
         'value' => true,
-    ),
-    'fenom_parser' => array(
+    ],
+    'fenom_parser' => [
         'xtype' => 'combo-boolean',
         'value' => false,
-    ),
-    'fenom_php' => array(
+    ],
+    'fenom_php' => [
         'xtype' => 'combo-boolean',
         'value' => false,
-    ),
-    'fenom_modx' => array(
+    ],
+    'fenom_modx' => [
         'xtype' => 'combo-boolean',
         'value' => false,
-    ),
-    'fenom_options' => array(
+    ],
+    'fenom_options' => [
         'xtype' => 'textarea',
         'value' => '',
-    ),
-    'fenom_cache' => array(
+    ],
+    'fenom_cache' => [
         'xtype' => 'combo-boolean',
         'value' => false,
-    ),
-    'fenom_save_on_errors' => array(
+    ],
+    'fenom_save_on_errors' => [
         'xtype' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'elements_path' => array(
+    'elements_path' => [
         'xtype' => 'textfield',
         'value' => '{core_path}elements/',
-    ),
-);
+    ],
+];
 
 foreach ($tmp as $k => $v) {
     /** @var modSystemSetting $setting */
-    $setting = $modx->newObject('modSystemSetting');
+    $setting = $modx->newObject(modSystemSetting::class);
     $setting->fromArray(array_merge(
-        array(
+        [
             'key' => PKG_NAME_LOWER . '_' . $k,
             'namespace' => PKG_NAME_LOWER,
             'area' => 'pdotools_main',
-        ), $v
+        ], $v
     ), '', true, true);
 
     $settings[] = $setting;

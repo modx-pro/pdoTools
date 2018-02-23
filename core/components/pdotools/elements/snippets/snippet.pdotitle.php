@@ -1,5 +1,9 @@
 <?php
 /** @var array $scriptProperties */
+
+use MODX\Components\PDOTools\Core;
+use MODX\Revolution\modResource;
+
 if (empty($outputSeparator)) {
     $outputSeparator = ' / ';
 }
@@ -30,25 +34,21 @@ if (empty($cacheKey)) {
 if (!isset($cacheTime)) {
     $cacheTime = 0;
 }
-/** @var pdoTools $pdoTools */
-$fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
-$path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoTools = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+
+/** @var Core $pdoTools */
+$pdoClass = get_class($modx->services->get('pdotools'));
+$pdoTools = new $pdoClass($modx, $scriptProperties);
 $modx->lexicon->load('pdotools:pdopage');
 
 /** @var modResource $resource */
 $resource = ($id == $modx->resource->id)
     ? $modx->resource
-    : $modx->getObject('modResource', $id);
+    : $modx->getObject(modResource::class, $id);
 if (!$resource) {
     return '';
 }
 
-$title = array();
+$title = [];
 $pagetitle = trim($resource->get($titleField));
 if (empty($pagetitle)) {
     $pagetitle = $resource->get('pagetitle');
@@ -56,26 +56,26 @@ if (empty($pagetitle)) {
 
 // Add search request if exists
 if (!empty($_GET[$queryVarKey]) && strlen($_GET[$queryVarKey]) >= $minQuery && !empty($tplSearch)) {
-    $pagetitle .= ' ' . $pdoTools->getChunk($tplSearch, array(
+    $pagetitle .= ' ' . $pdoTools->getChunk($tplSearch, [
             $queryVarKey => $modx->stripTags($_GET[$queryVarKey]),
-        ));
+        ]);
 }
 $title[] = $pagetitle;
 
 // Add pagination if exists
 if (!empty($_GET[$pageVarKey]) && !empty($tplPages)) {
-    $title[] = $pdoTools->getChunk($tplPages, array(
+    $title[] = $pdoTools->getChunk($tplPages, [
         'page' => intval($_GET[$pageVarKey]),
-    ));
+    ]);
 }
 
 // Add parents
 $cacheKey = $resource->getCacheKey() . '/' . $cacheKey;
-$cacheOptions = array('cache_key' => $modx->getOption('cache_resource_key', null, 'resource'));
+$cacheOptions = ['cache_key' => $modx->getOption('cache_resource_key', null, 'resource')];
 $crumbs = '';
 if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOptions)) {
     $crumbs = $pdoTools->runSnippet('pdoCrumbs', array_merge(
-        array(
+        [
             'to' => $resource->id,
             'outputSeparator' => $outputSeparator,
             'showHome' => 0,
@@ -87,7 +87,7 @@ if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOption
             'tplWrapper' => '@INLINE [[+output]]',
             'tplMax' => '',
             'tplHome' => '',
-        ), $scriptProperties
+        ], $scriptProperties
     ));
 }
 if (!empty($crumbs)) {
@@ -98,13 +98,12 @@ if (!empty($crumbs)) {
 }
 
 if (!empty($registerJs)) {
-    $config = array(
+    $config = [
         'separator' => $outputSeparator,
-        'tpl' => str_replace(array('[[+', ']]'), array('{', '}'), $pdoTools->getChunk($tplPages)),
-    );
+        'tpl' => str_replace(['[[+', ']]'], ['{', '}'], $pdoTools->getChunk($tplPages)),
+    ];
     /** @noinspection Annotator */
-    $modx->regClientStartupScript('<script type="text/javascript">pdoTitle = ' . json_encode($config) . ';</script>',
-        true);
+    $modx->regClientStartupScript('<script type="text/javascript">pdoTitle = ' . json_encode($config) . ';</script>', true);
 }
 
 return implode($outputSeparator, $title);

@@ -1,0 +1,52 @@
+#pdotools-debug table.debug {
+    font: normal 12px Arial;
+    border-spacing: 0;
+    width: 100%;
+}
+
+#pdotools-debug table.info {
+    font: normal 12px Arial;
+    border-spacing: 0;
+    margin: 50px 0 50px 20px;
+}
+
+#pdotools-debug table.debug thead th,
+#pdotools-debug table.debug tr:last-child td {
+    border-bottom: 1px solid #555 !important;
+}
+
+#pdotools-debug table.debug th {
+    margin: 0;
+    padding: 15px;
+    font-size: 14px;
+}
+
+#pdotools-debug table.info th {
+    text-align: left;
+    padding-right: 20px;
+}
+
+#pdotools-debug table.debug th.total {
+    text-align: right;
+}
+
+#pdotools-debug table.debug td {
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    border: 0;
+    border-bottom: 1px solid #AAA;
+}
+
+#pdotools-debug table.debug tr:last-child td {
+    border: none;
+}
+
+#pdotools-debug table.debug tr:hover td {
+    background: #efefef;
+}
+
+#pdotools-debug table.debug td.tag {
+    width: 50%;
+    text-align: left;
+}

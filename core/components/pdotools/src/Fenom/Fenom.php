@@ -1,13 +1,24 @@
 <?php
 
-if (!class_exists('Fenom')) {
-    require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
-    Fenom::registerAutoload();
-}
+namespace MODX\Components\PDOTools\Fenom;
 
-class FenomX extends Fenom
+use Closure;
+use Exception;
+use Fenom\Render;
+use LogicException;
+use MODX\Components\PDOTools\Core;
+use MODX\Components\PDOTools\Fenom\Jail\System;
+use MODX\Components\PDOTools\Fenom\Providers\Chunk;
+use MODX\Components\PDOTools\Fenom\Providers\File;
+use MODX\Components\PDOTools\Fenom\Providers\Template;
+use MODX\Revolution\modX;
+use MODX\Revolution\modUser;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modLexicon;
+
+class Fenom extends \Fenom
 {
-    /** @var pdoTools $pdoTools */
+    /** @var Core $pdoTools */
     protected $pdoTools;
     /** @var modX $modx */
     protected $modx;
@@ -16,29 +27,24 @@ class FenomX extends Fenom
     /**
      * FenomX constructor.
      *
-     * @param pdoTools $pdoTools
+     * @param Core $pdoTools
      */
-    public function __construct(pdoTools $pdoTools)
+    public function __construct(Core $pdoTools)
     {
-        if (!class_exists('modChunkProvider')) {
-            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModChunk.php';
-            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModTemplate.php';
-            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModFile.php';
-        }
-        $provider = new modChunkProvider($pdoTools);
+        $provider = new Chunk($pdoTools);
 
         parent::__construct($provider);
 
         $this->setCompileDir(rtrim($pdoTools->config['cachePath'], '/') . '/file');
-        $this->addProvider('template', new modTemplateProvider($pdoTools));
-        $this->addProvider('file', new modFileProvider($pdoTools));
+        $this->addProvider('template', new Template($pdoTools));
+        $this->addProvider('file', new File($pdoTools));
 
-        $default_options = array(
+        $default_options = [
             'disable_cache' => !$pdoTools->config['useFenomCache'],
             'force_compile' => !$pdoTools->config['useFenomCache'],
             'force_include' => !$pdoTools->config['useFenomCache'],
             'auto_reload' => $pdoTools->config['useFenomCache'],
-        );
+        ];
         if ($options = json_decode($pdoTools->modx->getOption('pdotools_fenom_options'), true)) {
             $options = array_merge($default_options, $options);
         } else {
@@ -57,21 +63,93 @@ class FenomX extends Fenom
 
         $this->modx->invokeEvent(
             'pdoToolsOnFenomInit',
-            array(
+            [
                 'fenom' => $this,
                 'config' => $pdoTools->config,
-            )
+            ]
         );
     }
 
+    /**
+     * Parse content with Fenom syntax
+     *
+     * @param $chunk
+     * @param array $properties
+     * @return string
+     */
+    public function process($chunk, array $properties = [])
+    {
+        $content = is_array($chunk)
+            ? trim($chunk['content'])
+            : trim($chunk);
+        if (empty($this->pdoTools->config['useFenom']) || !preg_match($this->pdoTools->config['fenomSyntax'], $content)) {
+            return $content;
+        }
+
+        $name = '';
+        if (is_array($chunk)) {
+            if (!empty($chunk['binding'])) {
+                $name = $chunk['binding'] . '/';
+            }
+            if (!empty($chunk['id'])) {
+                $name .= $chunk['id'];
+            } elseif (!empty($chunk['name'])) {
+                $name .= $chunk['name'];
+            } else {
+                $name .= md5($content);
+            }
+        } else {
+            $name = md5($content);
+        }
+        /** @var \Fenom\Template $tpl */
+        if (!$tpl = $this->pdoTools->getStore($name, 'fenom')) {
+            if (!empty($this->pdoTools->config['useFenomCache'])) {
+                $cache_options = [
+                    'cache_key' => 'pdotools/' . $name,
+                ];
+                if (!$cache = $this->pdoTools->cache->get($cache_options)) {
+                    if ($tpl = $this->_compileChunk($content, $name)) {
+                        $this->pdoTools->cache->set($tpl->getTemplateCode(), $cache_options);
+                    }
+                } else {
+                    $cache = preg_replace('#^<\?php#', '', $cache);
+                    $tpl = eval($cache);
+                }
+            } else {
+                $tpl = $this->_compileChunk($content, $name);
+            }
+            if ($tpl) {
+                $this->pdoTools->setStore($name, $tpl, 'fenom');
+            }
+        }
+
+        if ($tpl instanceof Render) {
+            $properties['_modx'] = new System($this->pdoTools);
+            $properties['_pls'] = $properties;
+
+            // Add system objects
+            if (!empty($this->pdoTools->config['useFenomMODX'])) {
+                $properties['modx'] = $this->modx;
+                $properties['pdoTools'] = $this;
+            }
+            try {
+                $content = $tpl->fetch($properties);
+            } catch (Exception $e) {
+                $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
+                $this->modx->log(modX::LOG_LEVEL_INFO, $tpl->getTemplateCode());
+            }
+        }
+
+        return $content;
+    }
 
     /**
      * Set compile directory
      *
      * @param string $dir directory to store compiled templates in
      *
+     * @return \Fenom
      * @throws LogicException
-     * @return Fenom
      */
     public function setCompileDir($dir)
     {
@@ -90,6 +168,35 @@ class FenomX extends Fenom
         return parent::setCompileDir($path);
     }
 
+    /**
+     * Compiles Fenom chunk
+     *
+     * @param $content
+     * @param string $name
+     *
+     * @return bool|\Fenom\Template
+     */
+    protected function _compileChunk($content, $name = '')
+    {
+        if (empty($name)) {
+            $name = md5($content);
+        }
+        try {
+            $tpl = $this->getRawTemplate()->source($name, $content, true);
+            $this->pdoTools->addTime('Compiled Fenom chunk with name "' . $name . '"');
+        } catch (Exception $e) {
+            $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
+            $this->modx->log(modX::LOG_LEVEL_INFO, $content);
+            if ($this->modx->getOption('pdotools_fenom_save_on_errors')) {
+                $this->pdoTools->cache->set($content, ['cache_key' => 'pdotools/error/' . $name]);
+            }
+            $tpl = $this->getRawTemplate()->source($name, '', false);
+            $this->pdoTools->addTime('Can`t compile Fenom chunk with name "' . $name . '": ' . $e->getMessage());
+        }
+
+        return $tpl;
+    }
+
 
     /**
      * Add default modifiers
@@ -99,26 +206,20 @@ class FenomX extends Fenom
         $modx = $this->modx;
         $pdo = $this->pdoTools;
         $fenom = $this;
-        if (!$micro = $pdo->getStore('microMODX')) {
-            if (!class_exists('microMODX')) {
-                require '_micromodx.php';
-            }
-            $micro = new microMODX($pdo);
-            $pdo->setStore('microMODX', $micro);
-        }
+        $micro = new System($pdo);
 
         // PHP Functions
         $this->_allowed_funcs = array_merge(
             $this->_allowed_funcs,
-            array(
+            [
                 'rand' => 1,
                 'number_format' => 1,
-            )
+            ]
         );
 
         $this->_modifiers = array_merge(
             $this->_modifiers,
-            array(
+            [
                 'md5' => 'md5',
                 'sha1' => 'sha1',
                 'crc32' => 'crc32',
@@ -140,7 +241,7 @@ class FenomX extends Fenom
                 'number' => 'number_format',
                 'reset' => 'reset',
                 'end' => 'end',
-            )
+            ]
         );
 
         // String Modifiers
@@ -196,8 +297,8 @@ class FenomX extends Fenom
             $string = preg_replace('/&amp;(#[0-9]+|[a-z]+);/i', '&$1;', htmlspecialchars($string));
 
             return str_replace(
-                array('[', ']', '`', '{', '}'),
-                array('&#91;', '&#93;', '&#96;', '&#123;', '&#125;'),
+                ['[', ']', '`', '{', '}'],
+                ['&#91;', '&#93;', '&#96;', '&#123;', '&#125;'],
                 $string
             );
         };
@@ -210,7 +311,7 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['stripmodxtags'] = function ($string) {
-            return preg_replace("/\\[\\[([^\\[\\]]++|(?R))*?\\]\\]/s", '', $string);
+            return preg_replace("/\\[\\[([^\\[\\]]++|(?R))*?]]/s", '', $string);
         };
 
         $this->_modifiers['cdata'] = function ($string, $enc = 'utf-8') {
@@ -241,7 +342,7 @@ class FenomX extends Fenom
             if (is_array($string)) {
                 $string = array_reverse($string);
             } else {
-                $ar = array();
+                $ar = [];
                 preg_match_all('/(\d+)?./us', $string, $ar);
                 $string = join('', array_reverse($ar[0]));
             }
@@ -269,17 +370,17 @@ class FenomX extends Fenom
             $output = '&mdash;';
 
             if (!empty($date)) {
-                if (empty($modx->lexicon)) {
-                    $modx->getService('lexicon', 'modLexicon');
+                /** @var modLexicon $lexicon */
+                if ($lexicon = $modx->services->get('lexicon')) {
+                    $lexicon->load('filters');
                 }
-                $modx->lexicon->load('filters');
                 $time = !is_numeric($date)
                     ? strtotime($date)
                     : $date;
                 if ($time >= strtotime('today')) {
-                    $output = $modx->lexicon('today_at', array('time' => strftime('%I:%M %p', $time)));
+                    $output = $modx->lexicon('today_at', ['time' => strftime('%I:%M %p', $time)]);
                 } elseif ($time >= strtotime('yesterday')) {
-                    $output = $modx->lexicon('yesterday_at', array('time' => strftime('%I:%M %p', $time)));
+                    $output = $modx->lexicon('yesterday_at', ['time' => strftime('%I:%M %p', $time)]);
                 } else {
                     $output = strftime($format, $time);
                 }
@@ -292,8 +393,8 @@ class FenomX extends Fenom
 
         $this->_modifiers['ismember'] =
         $this->_modifiers['memberof'] =
-        $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
-            $pdo->debugParserModifier($id, 'ismember', $groups);
+        $this->_modifiers['mo'] = function ($id, $groups = [], $matchAll = false) use ($modx, $pdo) {
+            $pdo->debug->modifier($id, 'ismember', $groups);
             if (is_string($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
@@ -303,10 +404,10 @@ class FenomX extends Fenom
                 $id = $modx->user->get('id');
                 $user = $modx->user;
             } else {
-                $user = $modx->getObject('modUser', ['id' => intval($id)]);
+                $user = $modx->getObject(modUser::class, ['id' => intval($id)]);
             }
             $member = is_object($user) ? $user->isMember($groups, $matchAll) : false;
-            $pdo->debugParserModifier($id, 'ismember', $groups);
+            $pdo->debug->modifier($id, 'ismember', $groups);
 
             return $member;
         };
@@ -362,29 +463,29 @@ class FenomX extends Fenom
 
         // MODX Functions
 
-        $this->_modifiers['url'] = function ($id, $options = array(), $args = array()) use ($pdo) {
+        $this->_modifiers['url'] = function ($id, $options = [], $args = []) use ($pdo) {
             $properties = array_merge($options, $args);
-            $pdo->debugParserModifier($id, 'url', $properties);
+            $pdo->debug->modifier($id, 'url', $properties);
             $url = $pdo->makeUrl($id, $options, $args);
-            $pdo->debugParserModifier($id, 'url', $properties);
+            $pdo->debug->modifier($id, 'url', $properties);
 
             return $url;
         };
 
-        $this->_modifiers['lexicon'] = function ($key, $params = array(), $language = '') use ($modx) {
+        $this->_modifiers['lexicon'] = function ($key, $params = [], $language = '') use ($modx) {
             return $modx->lexicon($key, $params, $language);
         };
 
         $this->_modifiers['user'] =
         $this->_modifiers['userinfo'] = function ($id, $field = 'username') use ($modx, $pdo) {
-            $pdo->debugParserModifier($id, 'user', $field);
+            $pdo->debug->modifier($id, 'user', $field);
             if (empty($id)) {
                 $id = $modx->user->get('id');
             }
             $output = '';
             /** @var modUser $user */
-            if ($user = $modx->getObjectGraph('modUser', '{"Profile":{}}', $id)) {
-                $data = array_merge($user->toArray(), $user->Profile->toArray());
+            if ($user = $modx->getObjectGraph(modUser::class, '{"Profile":{}}', $id)) {
+                $data = array_merge($user->Profile->toArray(), $user->toArray());
                 unset($data['cachepwd'], $data['salt'], $data['sessionid'], $data['password'], $data['session_stale']);
 
                 if (strpos($field, 'extended.') === 0 && isset($data['extended'][substr($field, 9)])) {
@@ -395,13 +496,13 @@ class FenomX extends Fenom
                     $output = $data[$field];
                 }
             }
-            $pdo->debugParserModifier($id, 'user', $field);
+            $pdo->debug->modifier($id, 'user', $field);
 
             return $output;
         };
 
         $this->_modifiers['resource'] = function ($id, $field = null) use ($pdo, $modx, $fenom) {
-            $pdo->debugParserModifier($id, 'resource');
+            $pdo->debug->modifier($id, 'resource');
             /** @var modResource $resource */
             if (empty($id)) {
                 $resource = $modx->resource;
@@ -409,7 +510,7 @@ class FenomX extends Fenom
                 $field = $id;
                 $resource = $modx->resource;
             } elseif (!$resource = $pdo->getStore($id, 'resource')) {
-                $resource = $modx->getObject('modResource', ['id' => intval($id)]);
+                $resource = $modx->getObject(modResource::class, ['id' => intval($id)]);
                 $pdo->setStore($id, $resource, 'resource');
             }
 
@@ -428,23 +529,23 @@ class FenomX extends Fenom
                     $output = $resource->toArray();
                 }
             }
-            $pdo->debugParserModifier($id, 'resource');
+            $pdo->debug->modifier($id, 'resource');
 
             return $output;
         };
 
-        $this->_modifiers['snippet'] = function ($name, $params = array()) use ($pdo) {
-            $pdo->debugParserModifier($name, 'snippet', $params);
+        $this->_modifiers['snippet'] = function ($name, $params = []) use ($pdo) {
+            $pdo->debug->modifier($name, 'snippet', $params);
             $result = $pdo->runSnippet($name, $params);
-            $pdo->debugParserModifier($name, 'snippet', $params);
+            $pdo->debug->modifier($name, 'snippet', $params);
 
             return $result;
         };
 
-        $this->_modifiers['chunk'] = function ($name, $params = array()) use ($pdo) {
-            $pdo->debugParserModifier($name, 'chunk', $params);
+        $this->_modifiers['chunk'] = function ($name, $params = []) use ($pdo) {
+            $pdo->debug->modifier($name, 'chunk', $params);
             $result = $pdo->getChunk($name, $params);
-            $pdo->debugParserModifier($name, 'chunk', $params);
+            $pdo->debug->modifier($name, 'chunk', $params);
 
             return $result;
         };
@@ -524,25 +625,10 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_match'] = function ($value, $pattern) use ($fenom) {
-            if (PHP_VERSION_ID < 50400) {
-                $method = new ReflectionMethod($fenom, '_assertNoEval');
-                $method->setAccessible(true);
-                $method->invoke($fenom, $pattern);
-            } else {
-                $fenom->_assertNoEval($pattern);
-            }
-
             return preg_match($pattern, $value);
         };
 
         $this->_modifiers['preg_get'] = function ($value, $pattern, $group = 0) use ($fenom) {
-            if (PHP_VERSION_ID < 50400) {
-                $method = new ReflectionMethod($fenom, '_assertNoEval');
-                $method->setAccessible(true);
-                $method->invoke($fenom, $pattern);
-            } else {
-                $fenom->_assertNoEval($pattern);
-            }
             if (!preg_match($pattern, $value, $matches)) {
                 return null;
             }
@@ -553,24 +639,16 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_get_all'] = function ($value, $pattern, $group = 0) use ($fenom) {
-            if (PHP_VERSION_ID < 50400) {
-                $method = new ReflectionMethod($fenom, '_assertNoEval');
-                $method->setAccessible(true);
-                $method->invoke($fenom, $pattern);
-            } else {
-                $fenom->_assertNoEval($pattern);
-            }
             if (!preg_match_all($pattern, $value, $matches, PREG_PATTERN_ORDER)) {
-                return array();
+                return [];
             }
 
             return isset($matches[$group])
                 ? $matches[$group]
-                : array();
+                : [];
         };
 
         $this->_modifiers['preg_grep'] = function ($value, $pattern, $flags = '') use ($fenom) {
-            $fenom->_assertNoEval($pattern);
             if (is_string($flags)) {
                 $flags = $flags == 'invert'
                     ? PREG_GREP_INVERT
@@ -581,60 +659,17 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['preg_replace'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
-            if (PHP_VERSION_ID < 50400) {
-                $method = new ReflectionMethod($fenom, '_assertNoEval');
-                $method->setAccessible(true);
-                $method->invoke($fenom, $pattern);
-            } else {
-                $fenom->_assertNoEval($pattern);
-            }
-
             return preg_replace($pattern, $replacement, $value, $limit);
         };
 
         $this->_modifiers['preg_filter'] = function ($value, $pattern, $replacement = '', $limit = -1) use ($fenom) {
-            if (PHP_VERSION_ID < 50400) {
-                $method = new ReflectionMethod($fenom, '_assertNoEval');
-                $method->setAccessible(true);
-                $method->invoke($fenom, $pattern);
-            } else {
-                $fenom->_assertNoEval($pattern);
-            }
-
             return preg_filter($pattern, $replacement, $value, $limit);
         };
 
         $this->_modifiers['preg_split'] = function ($value, $pattern) use ($fenom) {
-            if (PHP_VERSION_ID < 50400) {
-                $method = new ReflectionMethod($fenom, '_assertNoEval');
-                $method->setAccessible(true);
-                $method->invoke($fenom, $pattern);
-            } else {
-                $fenom->_assertNoEval($pattern);
-            }
-
             return preg_split($pattern, $value);
         };
 
-    }
-
-
-    /**
-     * Check that the regex doesn't use the eval modifier
-     *
-     * @param $pattern
-     *
-     * @throws Exception
-     */
-    protected function _assertNoEval($pattern)
-    {
-        if (is_array($pattern)) {
-            foreach ($pattern as $item) {
-                $this->_assertNoEval($item);
-            }
-        } elseif (preg_match('/(.).*\1(.+)$/', trim($pattern), $match) && strpos($match[2], 'e') !== false) {
-            throw new LogicException("Using the eval modifier for regular expressions is not allowed: \"$pattern\"");
-        }
     }
 
 
@@ -648,17 +683,16 @@ class FenomX extends Fenom
      */
     protected function _loadModifier($name, $template)
     {
-        $modx = $this->modx;
         $pdo = $this->pdoTools;
 
-        return function ($input, $options = null) use ($name, $modx, $pdo) {
-            $pdo->debugParserModifier($input, $name, $options);
-            $result = $pdo->runSnippet($name, array(
+        return function ($input, $options = null) use ($name, $pdo) {
+            $pdo->debug->modifier($input, $name, $options);
+            $result = $pdo->runSnippet($name, [
                 'input' => $input,
                 'options' => $options,
                 'pdoTools' => $pdo,
-            ));
-            $pdo->debugParserModifier($input, $name, $options);
+            ]);
+            $pdo->debug->modifier($input, $name, $options);
 
             return $result === false
                 ? $input

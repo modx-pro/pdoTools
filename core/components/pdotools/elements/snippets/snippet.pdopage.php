@@ -1,5 +1,9 @@
 <?php
 /** @var array $scriptProperties */
+
+use MODX\Components\PDOTools\Snippet\Page;
+use MODX\Revolution\modSnippet;
+
 // Default variables
 if (empty($pageVarKey)) {
     $pageVarKey = 'page';
@@ -70,14 +74,11 @@ if ($isAjax && !isset($_REQUEST[$pageVarKey])) {
     return;
 }
 
-/** @var pdoPage $pdoPage */
-$fqn = $modx->getOption('pdoPage.class', null, 'pdotools.pdopage', true);
-$path = $modx->getOption('pdopage_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoPage = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+$pdoClass = $modx->services->has('pdopage')
+    ? get_class($modx->services->get('pdopage'))
+    : Page::class;
+/** @var Page $pdoPage */
+$pdoPage = new $pdoClass($modx, $scriptProperties);
 $pdoPage->pdoTools->addTime('pdoTools loaded');
 
 // Script and styles
@@ -85,7 +86,7 @@ if (!$isAjax && !empty($scriptProperties['ajaxMode'])) {
     $pdoPage->loadJsCss();
 }
 // Removing of default scripts and styles so they do not overwrote nested snippet parameters
-if ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoPage'))) {
+if ($snippet = $modx->getObject(modSnippet::class, ['name' => 'pdoPage'])) {
     $properties = $snippet->get('properties');
     if ($scriptProperties['frontend_js'] == $properties['frontend_js']['value']) {
         unset($scriptProperties['frontend_js']);
@@ -135,8 +136,8 @@ $url = $pdoPage->getBaseUrl();
 $output = $pagination = $total = $pageCount = '';
 
 $data = $cache
-    ? $pdoPage->pdoTools->getCache($scriptProperties)
-    : array();
+    ? $pdoPage->pdoTools->cache->get($scriptProperties)
+    : [];
 
 if (empty($data)) {
     $output = $pdoPage->pdoTools->runSnippet($scriptProperties['element'], $scriptProperties);
@@ -157,7 +158,7 @@ if (empty($data)) {
         return $pdoPage->redirectToFirst($isAjax);
     }
     if (!empty($pageCount) && $pageCount > 1) {
-        $pagination = array(
+        $pagination = [
             'first' => $page > 1 && !empty($tplPageFirst)
                 ? $pdoPage->makePageLink($url, 1, $tplPageFirst)
                 : '',
@@ -173,10 +174,10 @@ if (empty($data)) {
             'last' => $page < $pageCount && !empty($tplPageLast)
                 ? $pdoPage->makePageLink($url, $pageCount, $tplPageLast)
                 : '',
-        );
+        ];
 
         if (!empty($pageCount)) {
-            foreach (array('first', 'prev', 'next', 'last') as $v) {
+            foreach (['first', 'prev', 'next', 'last'] as $v) {
                 $tpl = 'tplPage' . ucfirst($v) . 'Empty';
                 if (!empty(${$tpl}) && empty($pagination[$v])) {
                     $pagination[$v] = $pdoPage->pdoTools->getChunk(${$tpl});
@@ -184,16 +185,16 @@ if (empty($data)) {
             }
         }
     } else {
-        $pagination = array(
+        $pagination = [
             'first' => '',
             'prev' => '',
             'pages' => '',
             'next' => '',
-            'last' => ''
-        );
+            'last' => '',
+        ];
     }
 
-    $data = array(
+    $data = [
         'output' => $output,
         $pageVarKey => $page,
         $pageCountVar => $pageCount,
@@ -201,9 +202,9 @@ if (empty($data)) {
             ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
             : $pdoPage->pdoTools->parseChunk('', $pagination),
         $totalVar => $total,
-    );
+    ];
     if ($cache) {
-        $pdoPage->pdoTools->setCache($data, $scriptProperties);
+        $pdoPage->pdoTools->cache->set($data, $scriptProperties);
     }
 }
 
@@ -230,8 +231,8 @@ if ($isAjax) {
     }
 
     $maxIterations = (integer)$modx->getOption('parser_max_iterations', null, 10);
-    $modx->getParser()->processElementTags('', $data['output'], false, false, '[[', ']]', array(), $maxIterations);
-    $modx->getParser()->processElementTags('', $data['output'], true, true, '[[', ']]', array(), $maxIterations);
+    $modx->getParser()->processElementTags('', $data['output'], false, false, '[[', ']]', [], $maxIterations);
+    $modx->getParser()->processElementTags('', $data['output'], true, true, '[[', ']]', [], $maxIterations);
 
     @session_write_close();
     exit(json_encode($data));

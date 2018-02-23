@@ -1,14 +1,24 @@
 <?php
 
-class modChunkProvider implements \Fenom\ProviderInterface
+namespace MODX\Components\PDOTools\Fenom\Providers;
+
+use PDO;
+use Iterator;
+use Fenom\ProviderInterface;
+use MODX\Revolution\modX;
+use MODX\Revolution\modChunk;
+use MODX\Revolution\modTemplate;
+use MODX\Components\PDOTools\Core;
+
+class Template implements ProviderInterface
 {
     /** @var modX $modx */
     public $modx;
-    /** @var pdoTools $pdoTools */
+    /** @var Core $pdoTools */
     public $pdoTools;
 
 
-    function __construct(pdoTools $pdoTools)
+    function __construct(Core $pdoTools)
     {
         $this->pdoTools = $pdoTools;
         $this->modx = $pdoTools->modx;
@@ -24,9 +34,9 @@ class modChunkProvider implements \Fenom\ProviderInterface
     {
         $c = is_numeric($tpl) && $tpl > 0
             ? $tpl
-            : array('name' => $tpl);
+            : ['templatename' => $tpl];
 
-        return (bool)$this->modx->getCount('modChunk', $c);
+        return (bool)$this->modx->getCount(modTemplate::class, $c);
     }
 
 
@@ -45,12 +55,12 @@ class modChunkProvider implements \Fenom\ProviderInterface
         }
         $c = is_numeric($tpl) && $tpl > 0
             ? $tpl
-            : array('name' => $tpl);
+            : ['templatename' => $tpl];
         /** @var modChunk $chunk */
-        if ($element = $this->modx->getObject('modChunk', $c)) {
+        if ($element = $this->modx->getObject(modTemplate::class, $c)) {
             $content = $element->getContent();
 
-            $properties = array();
+            $properties = [];
             if (!empty($propertySet)) {
                 if ($tmp = $element->getPropertySet($propertySet)) {
                     $properties = $tmp;
@@ -80,9 +90,9 @@ class modChunkProvider implements \Fenom\ProviderInterface
     {
         $c = is_numeric($tpl) && $tpl > 0
             ? $tpl
-            : array('name' => $tpl);
+            : ['templatename' => $tpl];
         /** @var modChunk $chunk */
-        if ($chunk = $this->modx->getObject('modChunk', $c)) {
+        if ($chunk = $this->modx->getObject(modTemplate::class, $c)) {
             if ($chunk->isStatic() && $file = $chunk->getSourceFile()) {
                 return filemtime($file);
             }
@@ -107,17 +117,17 @@ class modChunkProvider implements \Fenom\ProviderInterface
 
     /**
      * Get all names of template from provider
-     * @return array|\Iterator
+     * @return array|Iterator
      */
     public function getList()
     {
-        $c = $this->modx->newQuery('modChunk');
-        $c->select('name');
+        $c = $this->modx->newQuery(modTemplate::class);
+        $c->select('templatename');
         if ($c->prepare() && $c->stmt->execute()) {
             return $c->stmt->fetchAll(PDO::FETCH_COLUMN);
         }
 
-        return array();
+        return [];
     }
 
 }

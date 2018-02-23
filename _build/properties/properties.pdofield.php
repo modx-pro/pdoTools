@@ -1,68 +1,68 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'id' => array(
+$tmp = [
+    'id' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'field' => array(
+    ],
+    'field' => [
         'type' => 'numberfield',
         'value' => 'pagetitle',
-    ),
-    'prepareTVs' => array(
+    ],
+    'prepareTVs' => [
         'type' => 'textfield',
         'value' => '1',
-    ),
-    'processTVs' => array(
+    ],
+    'processTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'where' => array(
+    ],
+    'where' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'context' => array(
+    ],
+    'context' => [
         'type' => 'textfield',
         'desc' => 'pdotools_prop_field_context',
         'value' => '',
-    ),
-    'top' => array(
+    ],
+    'top' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'topLevel' => array(
+    ],
+    'topLevel' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'default' => array(
+    ],
+    'default' => [
         'type' => 'textfield',
         'desc' => 'pdotools_prop_field_default',
         'value' => '',
-    ),
-    'output' => array(
+    ],
+    'output' => [
         'type' => 'textfield',
         'desc' => 'pdotools_prop_field_output',
         'value' => '',
-    ),
-    'toPlaceholder' => array(
+    ],
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'ultimate' => array(
+    ],
+    'ultimate' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

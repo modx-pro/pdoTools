@@ -1,55 +1,61 @@
 <?php
 /** @var array $scriptProperties */
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+
+use MODX\Components\PDOTools\Fetch;
+use MODX\Revolution\modUser;
+use MODX\Revolution\modUserGroup;
+use MODX\Revolution\modUserGroupMember;
+use MODX\Revolution\modUserGroupRole;
+use MODX\Revolution\modUserProfile;
+
+/** @var Fetch $pdoFetch */
+$pdoClass = get_class($modx->services->get('pdofetch'));
+$pdoFetch = new $pdoClass($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 
-$class = 'modUser';
-$profile = 'modUserProfile';
-$member = 'modUserGroupMember';
+$class = modUser::class;
+$alias_class = $modx->getAlias($class);
+$profile = modUserProfile::class;
+$alias_profile = $modx->getAlias($profile);
+$member = modUserGroupMember::class;
+$alias_member = $modx->getAlias($member);
 
 // Start building "Where" expression
-$where = array();
+$where = [];
 if (empty($showInactive)) {
-    $where[$class . '.active'] = 1;
+    $where[$alias_class . '.active'] = 1;
 }
 if (empty($showBlocked)) {
-    $where[$profile . '.blocked'] = 0;
+    $where[$alias_profile . '.blocked'] = 0;
 }
 
 // Add users profiles and groups
-$innerJoin = array(
-    $profile => array('alias' => $profile, 'on' => "$class.id = $profile.internalKey"),
-);
+$innerJoin = [
+    $profile => ['class' => $profile, 'alias' => $alias_profile, 'on' => "$alias_class.id = $alias_profile.internalKey"],
+];
 
 // Filter by users, groups and roles
-$tmp = array(
-    'users' => array(
+$tmp = [
+    'users' => [
         'class' => $class,
         'name' => 'username',
-        'join' => $class . '.id',
-    ),
-    'groups' => array(
-        'class' => 'modUserGroup',
+        'join' => $alias_class . '.id',
+    ],
+    'groups' => [
+        'class' => modUserGroup::class,
         'name' => 'name',
-        'join' => $member . '.user_group',
-    ),
-    'roles' => array(
-        'class' => 'modUserGroupRole',
+        'join' => $alias_member . '.user_group',
+    ],
+    'roles' => [
+        'class' => modUserGroupRole::class,
         'name' => 'name',
-        'join' => $member . '.role',
-    ),
-);
+        'join' => $alias_member . '.role',
+    ],
+];
 foreach ($tmp as $k => $p) {
     if (!empty($$k)) {
         $$k = array_map('trim', explode(',', $$k));
-        ${$k . '_in'} = ${$k . '_out'} = $fetch_in = $fetch_out = array();
+        ${$k . '_in'} = ${$k . '_out'} = $fetch_in = $fetch_out = [];
         foreach ($$k as $v) {
             if (is_numeric($v)) {
                 if ($v[0] == '-') {
@@ -67,7 +73,7 @@ foreach ($tmp as $k => $p) {
         }
 
         if (!empty($fetch_in) || !empty($fetch_out)) {
-            $q = $modx->newQuery($p['class'], array($p['name'] . ':IN' => array_merge($fetch_in, $fetch_out)));
+            $q = $modx->newQuery($p['class'], [$p['name'] . ':IN' => array_merge($fetch_in, $fetch_out)]);
             $q->select('id,' . $p['name']);
             $tstart = microtime(true);
             if ($q->prepare() && $q->stmt->execute()) {
@@ -93,17 +99,17 @@ foreach ($tmp as $k => $p) {
 }
 
 if (!empty($groups_in) || !empty($groups_out) || !empty($roles_in) || !empty($roles_out)) {
-    $innerJoin[$member] = array('alias' => $member, 'on' => "$class.id = $member.member");
+    $innerJoin[$alias_member] = ['class' => $member, 'alias' => $alias_member, 'on' => "$alias_class.id = $alias_member.member"];
 }
 
 // Fields to select
-$select = array(
-    $profile => implode(',', array_keys($modx->getFieldMeta($profile))),
+$select = [
     $class => implode(',', array_keys($modx->getFieldMeta($class))),
-);
+    $profile => implode(',', array_keys($modx->getFieldMeta($profile))),
+];
 
 // Add custom parameters
-foreach (array('where', 'innerJoin', 'select') as $v) {
+foreach (['where', 'innerJoin', 'select'] as $v) {
     if (!empty($scriptProperties[$v])) {
         $tmp = $scriptProperties[$v];
         if (!is_array($tmp)) {
@@ -117,21 +123,21 @@ foreach (array('where', 'innerJoin', 'select') as $v) {
 }
 $pdoFetch->addTime('Conditions prepared');
 
-$default = array(
+$default = [
     'class' => $class,
-    'innerJoin' => json_encode($innerJoin),
-    'where' => json_encode($where),
-    'select' => json_encode($select),
-    'groupby' => $class . '.id',
-    'sortby' => $class . '.id',
+    'innerJoin' => $innerJoin,
+    'where' => $where,
+    'select' => $select,
+    'groupby' => $alias_class . '.id',
+    'sortby' => $alias_class . '.id',
     'sortdir' => 'ASC',
     'fastMode' => false,
     'return' => !empty($returnIds) ? 'ids' : 'chunks',
     'disableConditions' => true,
-);
+];
 
-if (!empty($users_in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == $class . '.id')) {
-    $scriptProperties['sortby'] = "find_in_set(`$class`.`id`,'" . implode(',', $users_in) . "')";
+if (!empty($users_in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == $alias_class . '.id')) {
+    $scriptProperties['sortby'] = "find_in_set(`$alias_class`.`id`,'" . implode(',', $users_in) . "')";
     $scriptProperties['sortdir'] = '';
 }
 
@@ -160,7 +166,7 @@ if (!empty($returnIds)) {
     $output .= $log;
 
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, array('output' => $output), $pdoFetch->config['fastMode']);
+        $output = $pdoFetch->getChunk($tplWrapper, ['output' => $output], $pdoFetch->config['fastMode']);
     }
 
     if (!empty($toPlaceholder)) {

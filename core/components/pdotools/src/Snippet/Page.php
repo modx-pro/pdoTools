@@ -1,10 +1,15 @@
 <?php
 
-class pdoPage
+namespace MODX\Components\PDOTools\Snippet;
+
+use MODX\Components\PDOTools\Core;
+use MODX\Revolution\modX;
+
+class Page
 {
     /** @var modX $modx */
     public $modx;
-    /** @var pdoTools $pdoTools */
+    /** @var Core $pdoTools */
     public $pdoTools;
     /** @var string $req_var */
     protected $req_var = '';
@@ -14,17 +19,10 @@ class pdoPage
      * @param modX $modx
      * @param array $config
      */
-    public function __construct(modX & $modx, $config = array())
+    public function __construct(modX &$modx, $config = [])
     {
         $this->modx = &$modx;
-
-        $fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
-        $path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-        if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-            $this->pdoTools = new $pdoClass($modx, $config);
-        } else {
-            return;
-        }
+        $this->pdoTools = new Core($modx, $config);
         $modx->lexicon->load('pdotools:pdopage');
     }
 
@@ -45,7 +43,7 @@ class pdoPage
             $this->modx->regClientScript(str_replace('[[+assetsUrl]]', $assetsUrl, $js));
         }
         $ajaxHistory = $this->pdoTools->config['ajaxHistory'] === ''
-            ? !in_array($this->pdoTools->config['ajaxMode'], array('scroll', 'button'))
+            ? !in_array($this->pdoTools->config['ajaxMode'], ['scroll', 'button'])
             : !empty($this->pdoTools->config['ajaxHistory']);
         $limit = $this->pdoTools->config['limit'] > $this->pdoTools->config['maxLimit']
             ? $this->pdoTools->config['maxLimit']
@@ -53,12 +51,12 @@ class pdoPage
         $moreChunk = $this->modx->getOption('ajaxTplMore', $this->pdoTools->config,
             '@INLINE <button class="btn btn-default btn-more">[[%pdopage_more]]</button>'
         );
-        $moreTpl = $this->pdoTools->getChunk($moreChunk, array('limit' => $limit));
+        $moreTpl = $this->pdoTools->getChunk($moreChunk, ['limit' => $limit]);
 
         $hash = sha1(json_encode($this->pdoTools->config));
         $_SESSION['pdoPage'][$hash] = $this->pdoTools->config;
 
-        $config = array(
+        $config = [
             'wrapper' => $this->modx->getOption('ajaxElemWrapper', $this->pdoTools->config, '#pdopage'),
             'rows' => $this->modx->getOption('ajaxElemRows', $this->pdoTools->config, '#pdopage .rows'),
             'pagination' => $this->modx->getOption('ajaxElemPagination', $this->pdoTools->config,
@@ -75,7 +73,7 @@ class pdoPage
             'pageId' => $this->modx->resource->id,
             'hash' => $hash,
             'scrollTop' => (bool)$this->modx->getOption('scrollTop', $this->pdoTools->config, true),
-        );
+        ];
 
         if (empty($this->pdoTools->config['frontend_startup_js'])) {
             $this->modx->regClientStartupScript(
@@ -88,17 +86,15 @@ class pdoPage
         }
 
         if (empty($this->pdoTools->config['frontend_init_js'])) {
-            /** @noinspection Annotator */
-            $this->modx->regClientScript(
-                '<script type="text/javascript">pdoPage.initialize(' . json_encode($config) . ');</script>', true
-            );
+            /** @noinspection BadExpressionStatementJS */
+            $this->modx->regClientScript('<script type="text/javascript">pdoPage.initialize(' . json_encode($config) . ')</script>', true);
         } else {
             $this->modx->regClientScript(
-                $this->pdoTools->getChunk($this->pdoTools->config['frontend_init_js'], array(
+                $this->pdoTools->getChunk($this->pdoTools->config['frontend_init_js'], [
                     'key' => $config['pageVarKey'],
                     'wrapper' => $config['wrapper'],
                     'config' => json_encode($config),
-                )), true
+                ]), true
             );
         }
     }
@@ -196,10 +192,10 @@ class pdoPage
 
         $link = $pcre = '';
         if (!empty($this->pdoTools->config['pageLinkScheme'])) {
-            $pls = $this->pdoTools->makePlaceholders(array(
+            $pls = $this->pdoTools->makePlaceholders([
                 'pageVarKey' => $this->pdoTools->config['pageVarKey'],
                 'page' => $page,
-            ));
+            ]);
             $link = str_replace($pls['pl'], $pls['vl'], $this->pdoTools->config['pageLinkScheme']);
             $pcre = preg_replace('#\d+#', '(\d+)', preg_quote(preg_replace('#\#.*#', '', $link)));
         }
@@ -219,7 +215,7 @@ class pdoPage
         }
         if (!empty($_GET)) {
             $request = $_GET;
-            array_walk_recursive($request, function(&$item) {
+            array_walk_recursive($request, function (&$item) {
                 $item = rawurldecode($item);
             });
             unset($request[$this->req_var]);
@@ -237,11 +233,11 @@ class pdoPage
             $href = preg_replace("/&(?!amp;)/", "&amp;", $href);
         }
 
-        $data = array(
+        $data = [
             'page' => $page,
             'pageNo' => $page,
             'href' => $href,
-        );
+        ];
 
         return !empty($tpl)
             ? $this->pdoTools->getChunk($tpl, $data)
@@ -337,7 +333,7 @@ class pdoPage
             $center = $pageLimit - ($tmp * 2);
         }
 
-        $pagination = array();
+        $pagination = [];
         // Left
         for ($i = 1; $i <= $left; $i++) {
             if ($page == $i && !empty($this->pdoTools->config['tplPageActive'])) {

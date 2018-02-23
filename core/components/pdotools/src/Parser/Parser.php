@@ -1,28 +1,30 @@
 <?php
 
-if (!class_exists('modParser')) {
-    /** @noinspection PhpIncludeInspection */
-    require_once MODX_CORE_PATH . 'model/modx/modparser.class.php';
-}
+namespace MODX\Components\PDOTools\Parser;
 
-class pdoParser extends modParser
+use xPDO\xPDO;
+use MODX\Components\PDOTools\Core;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modParser;
+
+class Parser extends modParser
 {
-    /** @var pdoTools $pdoTools */
+    /** @var Core $pdoTools */
     public $pdoTools;
+    public $ignores = [];
 
 
     /**
      * @param xPDO $modx
+     * @param Core $pdoTools
      */
-    function __construct(xPDO &$modx)
+    function __construct(xPDO &$modx, $pdoTools = null)
     {
         parent::__construct($modx);
-
-        $fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
-        $path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-        if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-            $this->pdoTools = new $pdoClass($modx);
+        if (!$pdoTools) {
+            $pdoTools = new Core($modx);
         }
+        $this->pdoTools = $pdoTools;
     }
 
 
@@ -40,30 +42,30 @@ class pdoParser extends modParser
      *
      * @return int
      */
-    public function processElementTags(
-        $parentTag,
-        & $content,
-        $processUncacheable = false,
-        $removeUnprocessed = false,
-        $prefix = "[[",
-        $suffix = "]]",
-        $tokens = array(),
-        $depth = 0
-    ) {
+    public function processElementTags($parentTag, &$content, $processUncacheable = false, $removeUnprocessed = false, $prefix = '[[', $suffix = ']]', $tokens = [], $depth = 0)
+    {
         if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
-            if (preg_match_all('#\{ignore\}(.*?)\{\/ignore\}#is', $content, $ignores)) {
+            if ($this->pdoTools->debug->enabled && empty($parentTag) && preg_match($this->pdoTools->config['fenomSyntax'], $content)) {
+                $logTag = htmlentities(trim($content), ENT_QUOTES, 'UTF-8');
+                $this->pdoTools->debug->log($logTag);
+            }
+
+            if (preg_match_all('#{ignore}(.*?){ignore}#is', $content, $ignores)) {
                 foreach ($ignores[1] as $ignore) {
                     $key = 'ignore_' . md5($ignore);
-                    $this->pdoTools->ignores[$key] = $ignore;
+                    $this->ignores[$key] = $ignore;
                     $content = str_replace($ignore, $key, $content);
                 }
             }
-            $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
+            $content = $this->pdoTools->fenom->process($content, $this->modx->placeholders);
         }
 
-        return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,
-            $suffix, $tokens, $depth
-        );
+        $result = parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix, $suffix, $tokens, $depth);
+        if (isset($logTag)) {
+            $this->pdoTools->debug->log($logTag);
+        }
+
+        return $result;
     }
 
 
@@ -81,6 +83,10 @@ class pdoParser extends modParser
         $innerTag = $tag[1];
         $processed = false;
         $output = $token = '';
+        if ($this->pdoTools->debug->enabled) {
+            $logTag = $outerTag;
+            $this->pdoTools->debug->log($logTag);
+        }
 
         // Disabled tag
         if (empty($innerTag[0]) || $innerTag[0] == '-') {
@@ -89,10 +95,13 @@ class pdoParser extends modParser
         elseif ($innerTag[0] == '!' && !$processUncacheable) {
             $this->processElementTags($outerTag, $innerTag, $processUncacheable);
             $outerTag = '[[' . $innerTag . ']]';
+            if (isset($logTag)) {
+                $this->pdoTools->debug->log($logTag);
+            }
 
             return $outerTag;
         } // We processing only certain types of tags without parameters
-        elseif (strpos($innerTag, '?') === false && preg_match('/^(?:!|)[-|%|~|+|*|#]+/', $innerTag, $matches)) {
+        elseif (strpos($innerTag, '?') === false && preg_match('/^(?:!|)[-%~+*#]+/', $innerTag, $matches)) {
             if (strpos($innerTag, '[[') !== false) {
                 $this->processElementTags($outerTag, $innerTag, $processUncacheable);
                 $outerTag = '[[' . $innerTag . ']]';
@@ -113,9 +122,7 @@ class pdoParser extends modParser
                 // Link tag
                 case '~':
                     if (is_numeric($innerTag)) {
-                        if ($tmp = $this->modx->makeUrl($innerTag, '', '',
-                            $this->modx->getOption('link_tag_scheme', null, -1, true))
-                        ) {
+                        if ($tmp = $this->modx->makeUrl($innerTag, '', '', $this->modx->getOption('link_tag_scheme', null, -1, true))) {
                             $output = $tmp;
                             $processed = true;
                         }
@@ -153,7 +160,7 @@ class pdoParser extends modParser
                     if (is_numeric($tmp[0])) {
                         /** @var modResource $resource */
                         if (!$resource = $this->pdoTools->getStore($tmp[0], 'resource')) {
-                            $resource = $this->modx->getObject('modResource', $tmp[0]);
+                            $resource = $this->modx->getObject(modResource::class, $tmp[0]);
                             $this->pdoTools->setStore($tmp[0], $resource, 'resource');
                         }
                         $output = '';
@@ -216,7 +223,7 @@ class pdoParser extends modParser
                                 $array = $_SESSION;
                                 break;
                             default:
-                                $array = array();
+                                $array = [];
                                 $processed = false;
                         }
                         // Field specified
@@ -251,8 +258,8 @@ class pdoParser extends modParser
         // Processing output filters
         if ($processed) {
             if (strpos($outerTag, ':') !== false) {
-                /** @var pdoTag $object */
-                $tag = new pdoTag($this->modx);
+                /** @var Tag $object */
+                $tag = new Tag($this->modx);
                 $tag->_content = $output;
                 $tag->setTag($outerTag);
                 $tag->setToken($token);
@@ -262,8 +269,7 @@ class pdoParser extends modParser
                 $output = $tag->_output;
             }
             if ($this->modx->getDebug() === true) {
-                $this->modx->log(xPDO::LOG_LEVEL_DEBUG,
-                    "Processing {$outerTag} as {$innerTag}:\n" . print_r($output, 1) . "\n\n");
+                $this->modx->log(xPDO::LOG_LEVEL_DEBUG, "Processing {$outerTag} as {$innerTag}:\n" . print_r($output, 1) . "\n\n");
             }
             // Print array
             if (is_array($output)) {
@@ -273,49 +279,11 @@ class pdoParser extends modParser
             $output = parent::processTag($tag, $processUncacheable);
         }
 
+        if (isset($logTag)) {
+            $this->pdoTools->debug->log($logTag);
+        }
+
         return $output;
-    }
-
-}
-
-
-class pdoTag extends modTag
-{
-    /**
-     * @param null $properties
-     * @param null $content
-     *
-     * @return bool
-     */
-    public function process($properties = null, $content = null)
-    {
-        $this->filterInput();
-
-        if ($this->modx->getDebug() === true) {
-            $this->modx->log(
-                xPDO::LOG_LEVEL_DEBUG, "Processing Element: " . $this->get('name') .
-                ($this->_tag ? "\nTag: {$this->_tag}" : "\n") .
-                "\nProperties: " . print_r($this->_properties, true)
-            );
-        }
-        if ($this->isCacheable() && isset($this->modx->elementCache[$this->_tag])) {
-            $this->_output = $this->modx->elementCache[$this->_tag];
-        } else {
-            $this->_output = $this->_content;
-            $this->filterOutput();
-        }
-        $this->_processed = true;
-
-        return $this->_result;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getTag()
-    {
-        return $this->_tag;
     }
 
 }

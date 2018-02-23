@@ -1,5 +1,9 @@
 <?php
 /** @var array $scriptProperties */
+
+use MODX\Components\PDOTools\Fetch;
+use MODX\Revolution\modResource;
+
 if (!empty($input)) {
     $id = $input;
 }
@@ -9,15 +13,16 @@ if (!isset($default)) {
 if (!isset($output)) {
     $output = '';
 }
-$class = $modx->getOption('class', $scriptProperties, 'modResource', true);
-$isResource = $class == 'modResource' || in_array($class, $modx->getDescendants('modResource'));
+$class = $modx->getOption('class', $scriptProperties, modResource::class, true);
+$alias = $modx->getAlias($class);
+$isResource = $class == modResource::class || in_array($class, $modx->getDescendants(modResource::class));
 
 if (empty($field)) {
     $field = 'pagetitle';
 }
 $top = isset($top) ? intval($top) : 0;
 $topLevel = isset($topLevel) ? intval($topLevel) : 0;
-if (!empty($options)) {
+if (!empty($options) && is_string($options)) {
     $options = trim($options);
     if ($options[0] == '{') {
         $tmp = json_decode($options, true);
@@ -33,7 +38,7 @@ if (empty($id)) {
     if (!empty($modx->resource)) {
         $id = $modx->resource->id;
     } else {
-        return 'You must specify an id of ' . $class;
+        return 'You must specify an id of ' . $alias;
     }
 }
 if (!isset($context)) {
@@ -56,10 +61,10 @@ if ($isResource && $id && ($top || $topLevel)) {
     // Original pdoField logic
     if (empty($ultimate)) {
         if ($topLevel) {
-            $pids = $modx->getChildIds(0, $topLevel, array('context' => $context));
+            $pids = $modx->getChildIds(0, $topLevel, ['context' => $context]);
             $pid = $id;
             while (true) {
-                $tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+                $tmp = $modx->getParentIds($pid, 1, ['context' => $context]);
                 if (!$pid = current($tmp)) {
                     break;
                 } elseif (in_array($pid, $pids)) {
@@ -70,7 +75,7 @@ if ($isResource && $id && ($top || $topLevel)) {
         } elseif ($top) {
             $pid = $id;
             for ($i = 1; $i <= $top; $i++) {
-                $tmp = $modx->getParentIds($pid, 1, array('context' => $context));
+                $tmp = $modx->getParentIds($pid, 1, ['context' => $context]);
                 if (!$pid = current($tmp)) {
                     break;
                 }
@@ -82,15 +87,15 @@ if ($isResource && $id && ($top || $topLevel)) {
     // https://github.com/splittingred/UltimateParent/blob/develop/core/components/ultimateparent/snippet.ultimateparent.php
     elseif ($id != $top) {
         $pid = $id;
-        $pids = $modx->getParentIds($id, 10, array('context' => $context));
+        $pids = $modx->getParentIds($id, 10, ['context' => $context]);
         if (!$topLevel || count($pids) >= $topLevel) {
-            while ($parentIds = $modx->getParentIds($id, 1, array('context' => $context))) {
+            while ($parentIds = $modx->getParentIds($id, 1, ['context' => $context])) {
                 $pid = array_pop($parentIds);
                 if ($pid == $top) {
                     break;
                 }
                 $id = $pid;
-                $parentIds = $modx->getParentIds($id, 10, array('context' => $context));
+                $parentIds = $modx->getParentIds($id, 10, ['context' => $context]);
                 if ($topLevel && count($parentIds) < $topLevel) {
                     break;
                 }
@@ -99,19 +104,14 @@ if ($isResource && $id && ($top || $topLevel)) {
     }
 }
 
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+/** @var Fetch $pdoFetch */
+$pdoClass = get_class($modx->services->get('pdofetch'));
+$pdoFetch = new $pdoClass($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 
-$where = array($class . '.id' => $id);
+$where = [$alias . '.id' => $id];
 // Add custom parameters
-foreach (array('where') as $v) {
+foreach (['where'] as $v) {
     if (!empty($scriptProperties[$v])) {
         $tmp = $scriptProperties[$v];
         if (!is_array($tmp)) {
@@ -129,17 +129,17 @@ $pdoFetch->addTime('Conditions prepared');
 $resourceColumns = array_keys($modx->getFieldMeta($class));
 $field = strtolower($field);
 if (in_array($field, $resourceColumns)) {
-    $scriptProperties['select'] = array($class => $field);
+    $scriptProperties['select'] = [$alias => $field];
     $scriptProperties['includeTVs'] = '';
 } elseif ($isResource) {
-    $scriptProperties['select'] = array($class => 'id');
+    $scriptProperties['select'] = [$alias => 'id'];
     $scriptProperties['includeTVs'] = $field;
 }
 // Additional default field
 if (!empty($default)) {
     $default = strtolower($default);
     if (in_array($default, $resourceColumns)) {
-        $scriptProperties['select'][$class] .= ',' . $default;
+        $scriptProperties['select'][$alias] .= ',' . $default;
     } elseif ($isResource) {
         $scriptProperties['includeTVs'] = empty($scriptProperties['includeTVs'])
             ? $default
@@ -148,7 +148,7 @@ if (!empty($default)) {
 }
 
 $scriptProperties['disableConditions'] = true;
-if ($row = $pdoFetch->getObject($class, $where, $scriptProperties)) {
+if ($row = $pdoFetch->getArray($class, $where, $scriptProperties)) {
     foreach ($row as $k => $v) {
         if (strtolower($k) == $field && $v != '') {
             $output = $v;

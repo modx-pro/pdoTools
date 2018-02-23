@@ -1,13 +1,13 @@
 <?php
 /** @var array $scriptProperties */
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+
+use MODX\Components\PDOTools\Fetch;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modWebLink;
+
+/** @var Fetch $pdoFetch */
+$pdoClass = get_class($modx->services->get('pdofetch'));
+$pdoFetch = new $pdoClass($modx);
 $pdoFetch->addTime('pdoTools loaded');
 
 // Default variables
@@ -98,24 +98,25 @@ if (!empty($itemSeparator)) {
 //---
 
 
-$class = 'modResource';
-$where = array();
+$class = modResource::class;
+$alias = $modx->getAlias($class);
+$where = [];
 if (empty($showHidden)) {
-    $where[] = array(
-        $class . '.hidemenu' => 0,
-        'OR:' . $class . '.class_key:IN' => array('Ticket', 'Article'),
-    );
+    $where[] = [
+        $alias . '.hidemenu' => 0,
+        'OR:' . $alias . '.class_key:IN' => ['Ticket', 'Article'],
+    ];
 }
 if (empty($context)) {
     $scriptProperties['context'] = $modx->context->key;
 }
 
-$select = array($class => 'id,editedon,createdon,context_key,class_key,uri');
+$select = [$alias => 'id,editedon,createdon,context_key,class_key,uri'];
 if (!empty($useWeblinkUrl)) {
-    $select[$class] .= ',content';
+    $select[$alias] .= ',content';
 }
 // Add custom parameters
-foreach (array('where', 'select') as $v) {
+foreach (['where', 'select'] as $v) {
     if (!empty($scriptProperties[$v])) {
         $tmp = $scriptProperties[$v];
         if (!is_array($tmp)) {
@@ -130,29 +131,29 @@ foreach (array('where', 'select') as $v) {
 $pdoFetch->addTime('Conditions prepared');
 
 // Default parameters
-$default = array(
+$default = [
     'class' => $class,
-    'where' => json_encode($where),
-    'select' => json_encode($select),
-    'sortby' => "{$class}.parent ASC, {$class}.menuindex",
+    'where' => $where,
+    'select' => $select,
+    'sortby' => "{$alias}.parent ASC, {$alias}.menuindex",
     'sortdir' => 'ASC',
     'return' => 'data',
     'scheme' => 'full',
     'limit' => 0,
-);
+];
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 
 if (!empty($cache)) {
-    $data = $pdoFetch->getCache($scriptProperties);
+    $data = $pdoFetch->cache->get($scriptProperties);
 }
 if (empty($data)) {
     $now = time();
-    $data = $urls = array();
+    $data = $urls = [];
     $rows = $pdoFetch->run();
     foreach ($rows as $row) {
-        if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
+        if (!empty($useWeblinkUrl) && $row['class_key'] == modWebLink::class) {
             $row['url'] = is_numeric(trim($row['content'], '[]~ '))
                 ? $pdoFetch->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
                 : $row['content'];
@@ -194,21 +195,21 @@ if (empty($data)) {
         // Add item to output
         $data[$row['url']] = $pdoFetch->parseChunk($tpl, $row);
         if (strpos($data[$row['url']], '[[') !== false) {
-            $modx->parser->processElementTags('', $data[$row['url']], true, true, '[[', ']]', array(), 10);
+            $modx->parser->processElementTags('', $data[$row['url']], true, true, '[[', ']]', [], 10);
         }
     }
     $pdoFetch->addTime('Rows processed');
     if (!empty($cache)) {
-        $pdoFetch->setCache($data, $scriptProperties);
+        $pdoFetch->cache->set($data, $scriptProperties);
     }
 }
 
 $output = implode($outputSeparator, $data);
-$output = $pdoFetch->getChunk($tplWrapper, array(
+$output = $pdoFetch->getChunk($tplWrapper, [
     'schema' => $sitemapSchema,
     'output' => $output,
     'items' => $output,
-));
+]);
 $pdoFetch->addTime('Rows wrapped');
 
 if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {

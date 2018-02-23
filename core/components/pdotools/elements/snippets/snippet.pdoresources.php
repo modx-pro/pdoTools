@@ -1,5 +1,9 @@
 <?php
 /** @var array $scriptProperties */
+
+use MODX\Components\PDOTools\Fetch;
+use MODX\Revolution\modSnippet;
+
 if (isset($parents) && $parents === '') {
     $scriptProperties['parents'] = $modx->resource->id;
 }
@@ -9,11 +13,10 @@ if (!empty($returnIds)) {
 
 // Adding extra parameters into special place so we can put them in a results
 /** @var modSnippet $snippet */
-$additionalPlaceholders = $properties = array();
+$additionalPlaceholders = $properties = [];
 if (isset($this) && $this instanceof modSnippet) {
     $properties = $this->get('properties');
-}
-elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
+} elseif ($snippet = $modx->getObject(modSnippet::class, ['name' => 'pdoResources'])) {
     $properties = $snippet->get('properties');
 }
 if (!empty($properties)) {
@@ -25,14 +28,9 @@ if (!empty($properties)) {
 }
 $scriptProperties['additionalPlaceholders'] = $additionalPlaceholders;
 
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+/** @var Fetch $pdoFetch */
+$pdoClass = get_class($modx->services->get('pdofetch'));
+$pdoFetch = new $pdoClass($modx, $scriptProperties);
 $pdoFetch->addTime('pdoTools loaded');
 $output = $pdoFetch->run();
 
@@ -56,7 +54,7 @@ if (!empty($returnIds)) {
     $output .= $log;
 
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, array('output' => $output)),
+        $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, ['output' => $output]),
             $pdoFetch->config['fastMode']);
     }
 

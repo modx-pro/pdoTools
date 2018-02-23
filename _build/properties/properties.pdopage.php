@@ -1,200 +1,200 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'plPrefix' => array(
+$tmp = [
+    'plPrefix' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 10,
-    ),
-    'maxLimit' => array(
+    ],
+    'maxLimit' => [
         'type' => 'numberfield',
         'value' => 100,
-    ),
-    'offset' => array(
+    ],
+    'offset' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
+    ],
 
-    'page' => array(
+    'page' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'pageVarKey' => array(
+    ],
+    'pageVarKey' => [
         'type' => 'textfield',
         'value' => 'page',
-    ),
-    'totalVar' => array(
+    ],
+    'totalVar' => [
         'type' => 'textfield',
         'value' => 'page.total',
-    ),
-    'pageLimit' => array(
+    ],
+    'pageLimit' => [
         'type' => 'numberfield',
         'value' => 5,
-    ),
+    ],
 
-    'element' => array(
+    'element' => [
         'type' => 'textfield',
         'value' => 'pdoResources',
-    ),
+    ],
 
-    'pageNavVar' => array(
+    'pageNavVar' => [
         'type' => 'textfield',
         'value' => 'page.nav',
-    ),
-    'pageCountVar' => array(
+    ],
+    'pageCountVar' => [
         'type' => 'textfield',
         'value' => 'pageCount',
-    ),
-    'pageLinkScheme' => array(
+    ],
+    'pageLinkScheme' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'tplPage' => array(
+    'tplPage' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item"><a class="page-link" href="[[+href]]">[[+pageNo]]</a></li>',
-    ),
-    'tplPageWrapper' => array(
+    ],
+    'tplPageWrapper' => [
         'type' => 'textfield',
         'value' => '@INLINE <ul class="pagination">[[+first]][[+prev]][[+pages]][[+next]][[+last]]</ul>',
-    ),
-    'tplPageActive' => array(
+    ],
+    'tplPageActive' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item active"><a class="page-link" href="[[+href]]">[[+pageNo]]</a></li>',
-    ),
-    'tplPageFirst' => array(
+    ],
+    'tplPageFirst' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item"><a class="page-link" href="[[+href]]">[[%pdopage_first]]</a></li>',
-    ),
-    'tplPageLast' => array(
+    ],
+    'tplPageLast' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item"><a class="page-link" href="[[+href]]">[[%pdopage_last]]</a></li>',
-    ),
-    'tplPagePrev' => array(
+    ],
+    'tplPagePrev' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item"><a class="page-link" href="[[+href]]">&laquo;</a></li>',
-    ),
-    'tplPageNext' => array(
+    ],
+    'tplPageNext' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item"><a class="page-link" href="[[+href]]">&raquo;</a></li>',
-    ),
-    'tplPageSkip' => array(
+    ],
+    'tplPageSkip' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">...</a></li>',
-    ),
+    ],
 
-    'tplPageFirstEmpty' => array(
+    'tplPageFirstEmpty' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">[[%pdopage_first]]</a></li>',
-    ),
-    'tplPageLastEmpty' => array(
+    ],
+    'tplPageLastEmpty' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">[[%pdopage_last]]</a></li>',
-    ),
-    'tplPagePrevEmpty' => array(
+    ],
+    'tplPagePrevEmpty' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>',
-    ),
-    'tplPageNextEmpty' => array(
+    ],
+    'tplPageNextEmpty' => [
         'type' => 'textfield',
         'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>',
-    ),
+    ],
 
-    'cache' => array(
+    'cache' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'cacheTime' => array(
+    ],
+    'cacheTime' => [
         'type' => 'numberfield',
         'value' => 3600,
-    ),
-    'cacheAnonymous' => array(
+    ],
+    'cacheAnonymous' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'toPlaceholder' => array(
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'ajax' => array(
+    'ajax' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'ajaxMode' => array(
+    ],
+    'ajaxMode' => [
         'type' => 'list',
         'value' => '',
-        'options' => array(
-            array('text' => 'None', 'value' => ''),
-            array('text' => 'Default', 'value' => 'default'),
-            array('text' => 'Scroll', 'value' => 'scroll'),
-            array('text' => 'Button', 'value' => 'button'),
-        ),
-    ),
-    'ajaxElemWrapper' => array(
+        'options' => [
+            ['text' => 'None', 'value' => ''],
+            ['text' => 'Default', 'value' => 'default'],
+            ['text' => 'Scroll', 'value' => 'scroll'],
+            ['text' => 'Button', 'value' => 'button'],
+        ],
+    ],
+    'ajaxElemWrapper' => [
         'type' => 'textfield',
         'value' => '#pdopage',
-    ),
-    'ajaxElemRows' => array(
+    ],
+    'ajaxElemRows' => [
         'type' => 'textfield',
         'value' => '#pdopage .rows',
-    ),
-    'ajaxElemPagination' => array(
+    ],
+    'ajaxElemPagination' => [
         'type' => 'textfield',
         'value' => '#pdopage .pagination',
-    ),
-    'ajaxElemLink' => array(
+    ],
+    'ajaxElemLink' => [
         'type' => 'textfield',
         'value' => '#pdopage .pagination a',
-    ),
-    'ajaxElemMore' => array(
+    ],
+    'ajaxElemMore' => [
         'type' => 'textfield',
         'value' => '#pdopage .btn-more',
-    ),
-    'ajaxTplMore' => array(
+    ],
+    'ajaxTplMore' => [
         'type' => 'textfield',
         'value' => '@INLINE <button class="btn btn-primary btn-more">[[%pdopage_more]]</button>',
-    ),
-    'ajaxHistory' => array(
+    ],
+    'ajaxHistory' => [
         'type' => 'list',
         'value' => '',
-        'options' => array(
-            array('text' => 'Auto', 'value' => ''),
-            array('text' => 'Enabled', 'value' => 1),
-            array('text' => 'Disabled', 'value' => 0),
-        ),
-    ),
-    'frontend_js' => array(
+        'options' => [
+            ['text' => 'Auto', 'value' => ''],
+            ['text' => 'Enabled', 'value' => 1],
+            ['text' => 'Disabled', 'value' => 0],
+        ],
+    ],
+    'frontend_js' => [
         'type' => 'textfield',
         'value' => '[[+assetsUrl]]js/pdopage.min.js',
-    ),
-    'frontend_css' => array(
+    ],
+    'frontend_css' => [
         'type' => 'textfield',
         'value' => '[[+assetsUrl]]css/pdopage.min.css',
-    ),
-    'setMeta' => array(
+    ],
+    'setMeta' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'strictMode' => array(
+    ],
+    'strictMode' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

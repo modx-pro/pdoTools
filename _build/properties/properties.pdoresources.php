@@ -1,236 +1,236 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'tpl' => array(
+$tmp = [
+    'tpl' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'returnIds' => array(
+    ],
+    'returnIds' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showLog' => array(
+    ],
+    'showLog' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'fastMode' => array(
+    ],
+    'fastMode' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'sortby' => array(
+    ],
+    'sortby' => [
         'type' => 'textfield',
         'value' => 'publishedon',
-    ),
-    'sortbyTV' => array(
+    ],
+    'sortbyTV' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'sortbyTVType' => array(
+    ],
+    'sortbyTVType' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'sortdir' => array(
+    ],
+    'sortdir' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'ASC', 'value' => 'ASC'),
-            array('text' => 'DESC', 'value' => 'DESC'),
-        ),
+        'options' => [
+            ['text' => 'ASC', 'value' => 'ASC'],
+            ['text' => 'DESC', 'value' => 'DESC'],
+        ],
         'value' => 'DESC',
-    ),
-    'sortdirTV' => array(
+    ],
+    'sortdirTV' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'ASC', 'value' => 'ASC'),
-            array('text' => 'DESC', 'value' => 'DESC'),
-        ),
+        'options' => [
+            ['text' => 'ASC', 'value' => 'ASC'],
+            ['text' => 'DESC', 'value' => 'DESC'],
+        ],
         'value' => 'ASC',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 10,
-    ),
-    'offset' => array(
+    ],
+    'offset' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'depth' => array(
+    ],
+    'depth' => [
         'type' => 'numberfield',
         'value' => 10,
-    ),
-    'outputSeparator' => array(
+    ],
+    'outputSeparator' => [
         'type' => 'textfield',
         'value' => "\n",
-    ),
-    'toPlaceholder' => array(
+    ],
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'parents' => array(
+    ],
+    'parents' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'includeContent' => array(
+    ],
+    'includeContent' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'includeTVs' => array(
+    'includeTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'prepareTVs' => array(
+    ],
+    'prepareTVs' => [
         'type' => 'textfield',
         'value' => '1',
-    ),
-    'processTVs' => array(
+    ],
+    'processTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tvPrefix' => array(
+    ],
+    'tvPrefix' => [
         'type' => 'textfield',
         'value' => 'tv.',
-    ),
-    'tvFilters' => array(
+    ],
+    'tvFilters' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tvFiltersAndDelimiter' => array(
+    ],
+    'tvFiltersAndDelimiter' => [
         'type' => 'textfield',
         'value' => ',',
-    ),
-    'tvFiltersOrDelimiter' => array(
+    ],
+    'tvFiltersOrDelimiter' => [
         'type' => 'textfield',
         'value' => '||',
-    ),
+    ],
 
-    'where' => array(
+    'where' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'showUnpublished' => array(
+    ],
+    'showUnpublished' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showDeleted' => array(
+    ],
+    'showDeleted' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showHidden' => array(
+    ],
+    'showHidden' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'hideContainers' => array(
+    ],
+    'hideContainers' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'context' => array(
+    ],
+    'context' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'idx' => array(
+    ],
+    'idx' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
+    ],
 
-    'first' => array(
+    'first' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'last' => array(
+    ],
+    'last' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'tplFirst' => array(
+    ],
+    'tplFirst' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplLast' => array(
+    ],
+    'tplLast' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplOdd' => array(
+    ],
+    'tplOdd' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplWrapper' => array(
+    ],
+    'tplWrapper' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'wrapIfEmpty' => array(
+    ],
+    'wrapIfEmpty' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'totalVar' => array(
+    ],
+    'totalVar' => [
         'type' => 'textfield',
         'value' => 'total',
-    ),
-    'resources' => array(
+    ],
+    'resources' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplCondition' => array(
+    ],
+    'tplCondition' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplOperator' => array(
+    ],
+    'tplOperator' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'is equal to', 'value' => '=='),
-            array('text' => 'is not equal to', 'value' => '!='),
-            array('text' => 'less than', 'value' => '<'),
-            array('text' => 'less than or equal to', 'value' => '<='),
-            array('text' => 'greater than or equal to', 'value' => '>='),
-            array('text' => 'is empty', 'value' => 'empty'),
-            array('text' => 'is not empty', 'value' => '!empty'),
-            array('text' => 'is null', 'value' => 'null'),
-            array('text' => 'is in array', 'value' => 'inarray'),
-            array('text' => 'is between', 'value' => 'between'),
-        ),
+        'options' => [
+            ['text' => 'is equal to', 'value' => '=='],
+            ['text' => 'is not equal to', 'value' => '!='],
+            ['text' => 'less than', 'value' => '<'],
+            ['text' => 'less than or equal to', 'value' => '<='],
+            ['text' => 'greater than or equal to', 'value' => '>='],
+            ['text' => 'is empty', 'value' => 'empty'],
+            ['text' => 'is not empty', 'value' => '!empty'],
+            ['text' => 'is null', 'value' => 'null'],
+            ['text' => 'is in array', 'value' => 'inarray'],
+            ['text' => 'is between', 'value' => 'between'],
+        ],
         'value' => '==',
-    ),
-    'conditionalTpls' => array(
+    ],
+    'conditionalTpls' => [
         'type' => 'textarea',
         'value' => '',
-    ),
-    'select' => array(
+    ],
+    'select' => [
         'type' => 'textarea',
         'value' => '',
-    ),
-    'toSeparatePlaceholders' => array(
+    ],
+    'toSeparatePlaceholders' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'loadModels' => array(
+    ],
+    'loadModels' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'scheme' => array(
+    ],
+    'scheme' => [
         'type' => 'list',
-        'options' => array(
-            array('name' => 'System default', 'value' => ''),
-            array('name' => '-1 (relative to site_url)', 'value' => -1),
-            array('name' => 'full (absolute, prepended with site_url)', 'value' => 'full'),
-            array('name' => 'abs (absolute, prepended with base_url)', 'value' => 'abs'),
-            array('name' => 'http (absolute, forced to http scheme)', 'value' => 'http'),
-            array('name' => 'https (absolute, forced to https scheme)', 'value' => 'https'),
-        ),
+        'options' => [
+            ['name' => 'System default', 'value' => ''],
+            ['name' => '-1 (relative to site_url)', 'value' => -1],
+            ['name' => 'full (absolute, prepended with site_url)', 'value' => 'full'],
+            ['name' => 'abs (absolute, prepended with base_url)', 'value' => 'abs'],
+            ['name' => 'http (absolute, forced to http scheme)', 'value' => 'http'],
+            ['name' => 'https (absolute, forced to https scheme)', 'value' => 'https'],
+        ],
         'value' => '',
-    ),
-    'useWeblinkUrl' => array(
+    ],
+    'useWeblinkUrl' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;
