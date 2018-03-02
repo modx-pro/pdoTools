@@ -1,10 +1,5 @@
 <?php
 
-if (!class_exists('Fenom')) {
-    require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
-    Fenom::registerAutoload();
-}
-
 class FenomX extends Fenom
 {
     /** @var pdoTools $pdoTools */
@@ -21,9 +16,10 @@ class FenomX extends Fenom
     public function __construct(pdoTools $pdoTools)
     {
         if (!class_exists('modChunkProvider')) {
-            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModChunk.php';
-            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModTemplate.php';
-            require dirname(dirname(__FILE__)) . '/fenom/Providers/ModFile.php';
+            $path = dirname(dirname(__FILE__));
+            require $path . '/fenom/Providers/ModChunk.php';
+            require $path . '/fenom/Providers/ModTemplate.php';
+            require $path . '/fenom/Providers/ModFile.php';
         }
         $provider = new modChunkProvider($pdoTools);
 
