@@ -297,7 +297,11 @@ class pdoMenu
             return $this->pdoTools->defineChunk($row);
         }
 
-        return $this->pdoTools->config[$tpl];
+        if (isset($this->pdoTools->config[$tpl.$row['level']])) {
+            return $this->pdoTools->config[$tpl.$row['level']];
+        } else {
+            return $this->pdoTools->config[$tpl];
+        }
     }
 
 
