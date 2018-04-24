@@ -25,7 +25,22 @@ class pdoParser extends modParser
         }
     }
 
-
+    /**
+     * Process a string with Fenom template engine.
+     * @param string $content
+     * @param array $data
+     * @return mixed|string
+     */
+    public function fenom($content, $data = array())
+    {
+        $scope = $this->modx->toPlaceholders($data, '', '.', true);
+        $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
+        if (isset($scope['keys'])) $this->modx->unsetPlaceholders($scope['keys']);
+        if (isset($scope['restore'])) $this->modx->toPlaceholders($scope['restore']);
+        
+        return $content;
+    }
+    
     /**
      * Trying to process MODX pages with Fenom template engine
      *
@@ -58,7 +73,7 @@ class pdoParser extends modParser
                     $content = str_replace($ignore, $key, $content);
                 }
             }
-            $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
+            $content = $this->fenom($content);
         }
 
         return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,
