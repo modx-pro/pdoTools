@@ -149,12 +149,10 @@ class pdoTools
 
 
     /**
-     * Add new record to timings log
-     *
-     * @var string $message
-     * @var integer $delta
+     * Add new record to time log
      *
      * @param $message
+     * @param null $delta
      */
     public function addTime($message, $delta = null)
     {
@@ -870,12 +868,11 @@ class pdoTools
                 } elseif ($content = file_get_contents($path)) {
                     $element = $this->modx->newObject($type, array('name' => $cache_name));
                     $element->setContent($content);
+                    $element->setProperties($properties);
                     if ($element instanceof modScript) {
                         /** @var modScript $element */
                         $element->_scriptName = $element->getScriptName() . $cache_name;
                     }
-                    $element->set('static', true);
-                    $element->set('static_file', $path);
                     $this->addTime('Created "' . $type . '" from file "' . $rel_path . '"');
                 }
                 $cacheable = false;

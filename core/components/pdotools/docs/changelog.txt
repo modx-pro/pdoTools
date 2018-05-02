@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.11.1 pl
+==============
+- Faster processing of static files.
+
 2.11.0 pl
 ==============
 - [pdoFetch] Added "setTotal" option to enable calculating all rows ("SQL_CALC_FOUND_ROWS"), which will also result in the "totalVar" placeholder is being set.
