@@ -54,6 +54,7 @@ class FenomX extends Fenom
         $this->modx = $pdoTools->modx;
 
         $this->_addDefaultModifiers();
+        $this->_addDefaultActions();
 
         $this->modx->invokeEvent(
             'pdoToolsOnFenomInit',
@@ -657,6 +658,14 @@ class FenomX extends Fenom
                 ? $input
                 : $result;
         };
+    }
+
+    protected function _addDefaultActions()
+    {
+        $fenom = $this;
+        $fenom->addCompiler('exit', function () {
+            return 'return;';
+        });
     }
 
 }
