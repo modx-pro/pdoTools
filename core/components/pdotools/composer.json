@@ -2,6 +2,6 @@
     "name": "bezumkin/pdotools",
     "type": "library",
     "require": {
-        "fenom/fenom": "^2.11"
+        "fenom/fenom": "2.*"
     }
 }

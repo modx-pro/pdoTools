@@ -45,9 +45,13 @@ $rows = $pdoFetch->run();
 // Process rows
 $tree = array();
 foreach ($rows as $row) {
-    $year = date('Y', $row[$dateField]);
-    $month = date('m', $row[$dateField]);
-    $day = date('d', $row[$dateField]);
+    $tmp = $row[$dateField];
+    if (!is_numeric($tmp)) {
+        $tmp = strtotime($tmp);
+    }
+    $year = date('Y', $tmp);
+    $month = date('m', $tmp);
+    $day = date('d', $tmp);
     $tree[$year][$month][$day][] = $row;
 }
 

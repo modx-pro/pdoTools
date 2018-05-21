@@ -1,5 +1,107 @@
 Changelog for pdoTools.
 
+2.11.0 pl
+==============
+- [pdoFetch] Added "setTotal" option to enable calculating all rows ("SQL_CALC_FOUND_ROWS"), which will also result in the "totalVar" placeholder is being set.
+- [pdoFetch] Option "setTotal" disabled by default.
+- [pdoPage] Forces "setTotal" to provide pagination.
+
+2.10.6 pl
+==============
+- Improved German lexicons.
+
+2.10.5 pl
+==============
+- [pdoTools] Ability to return array from "prepareSnippet" for more performance.
+- [FenomX] Fixed method "getStore".
+
+2.10.4 pl
+==============
+- [Fenom] Do not output raw tags if there was a compile errors.
+- [#266] [pdoMenu] Fixed the setting of "here" and "self" classes.
+- [#261] [Fenom] Fixed unexpected behavior of the fenom tag "ignore".
+
+2.10.3 pl
+==============
+- Improved compatibility with PHP 7.2
+- [pdoFetch] Ability to use arrays in "&sortby".
+
+2.10.2 pl
+==============
+- [Fenom] Improved processing of caching snippets inside uncached.
+
+2.10.1 pl
+==============
+- [#256] [Fenom] Fixed bug with caching of scripts and styles.
+- [pdoPage] "&setMeta" now works when "&cache=`1`".
+- [Fenom] Improved regular expression to detect Fenom syntax.
+
+2.10.0 pl
+==============
+- [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
+- [#258] [pdoPage] Canonical urls always must be "full".
+- [#245] [pdoMenu] Ability to use conditional tpls instead of regular "tpl".
+- [#121] [pdoMenu] Improved work of specified chunks with weblinks.
+
+2.9.3 pl
+==============
+- [#255] [Fenom] New system setting "pdotools_fenom_save_on_errors" to save code on compilation errors in the cache directory for later debugging.
+
+2.9.2 pl
+==============
+- [pdoParser] Proper traversal trough arrays fields of resources in fast tags.
+
+2.9.1 pl
+==============
+- [Fenom] Updated to version 2.11.8.
+
+2.9.0 pl
+==============
+- [pdoPage] Improved "&pageLinkScheme" logic.
+- [#249] A little improvement for resource modifier.
+- [#251] [pdoFetch] More compatibility with PHP 7.1.
+- [#253] [pdoPage] Fixing a missing pagination in Ajax mode.
+- [#254] [Fenom] Options of json modifiers must check version of PHP to proper work.
+
+2.8.6 pl
+==============
+- [pdoArchive] Ability to specify fields with regular dates in the "&dateField" parameter.
+- [Fenom] Added all options to json modifiers.
+
+2.8.5 pl
+==============
+- [#248] [pdoPage] Fixed E_WARNING with array values in GET parameters.
+
+2.8.4 pl
+==============
+- Ability to use file elements in core path outside base path.
+- Fixed bug with the caching of elements.
+
+2.8.3 pl
+==============
+- [Fenom] Fixed rare bug with the caching of scripts and styles that was registered via Fenom.
+- [pdoPage] Fixed the "?page=1" in the url when ajaxMode is enabled.
+- [pdoPage] Snippet will register "canonical" link if "&setMeta" is enabled.
+- [pdoPage] Fix processing of request with rawurldecode on some servers.
+- [pdoTools] Added passing of "scriptProperties" values into a "&prepareSnippet".
+
+2.8.2 pl
+==============
+- [pdoMenu] Fixed the checking of permissions for containers.
+- [pdoPage] Added the ability to run files as &element.
+- [pdoTools] The method runSnippet will return boolean false if snippet was not found.
+- [Fenom] Fixed the possible bugs of caching of scripts and styles.
+
+2.8.1 pl
+==============
+- [#244] Fixed possible duplicate of a container in the jquery.pdopage.js.
+- Added fallback class for the enable modParser.
+
+2.8.0 pl
+==============
+- Ability to use an arrays in the parameters of the snippets.
+- Replaced modX::toJSON and modX::fromJSON to native php functions.
+
 2.7.5 pl
 ==============
 - Fenom is now managed via composer.

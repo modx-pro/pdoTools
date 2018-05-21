@@ -54,9 +54,9 @@ $tmp = array(
         'xtype' => 'combo-boolean',
         'value' => false,
     ),
-    'fenom_modifiers' => array(
-        'xtype' => 'textfield',
-        'value' => '',
+    'fenom_save_on_errors' => array(
+        'xtype' => 'combo-boolean',
+        'value' => false,
     ),
 
     'elements_path' => array(

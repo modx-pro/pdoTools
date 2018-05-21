@@ -41,3 +41,5 @@ $_lang['setting_pdotools_fenom_options'] = 'Fenom options';
 $_lang['setting_pdotools_fenom_options_desc'] = 'JSON string with array of settings described on <a href="https://github.com/fenom-template/fenom/blob/master/docs/en/configuration.md" target="_blank">official documentation</a>. For example: {"auto_escape":true,"force_include":true}';
 $_lang['setting_pdotools_fenom_cache'] = 'Caching compiled chunks';
 $_lang['setting_pdotools_fenom_cache_desc'] = 'If you use large and complex Fenom chunks, you can enable caching of its compiled versions. They will be updated only when you clear the system cache. Not recommended for the development of the site.';
+$_lang['setting_pdotools_fenom_save_on_errors'] = 'Save errors';
+$_lang['setting_pdotools_fenom_save_on_errors_desc'] = 'Enable this option to save Fenom compilation errors to the "core/cache/default/pdotools/error" directory for later debugging.';

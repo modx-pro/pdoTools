@@ -105,7 +105,10 @@ $select = array(
 // Add custom parameters
 foreach (array('where', 'innerJoin', 'select') as $v) {
     if (!empty($scriptProperties[$v])) {
-        $tmp = $modx->fromJSON($scriptProperties[$v]);
+        $tmp = $scriptProperties[$v];
+        if (!is_array($tmp)) {
+            $tmp = json_decode($tmp, true);
+        }
         if (is_array($tmp)) {
             $$v = array_merge($$v, $tmp);
         }
@@ -116,9 +119,9 @@ $pdoFetch->addTime('Conditions prepared');
 
 $default = array(
     'class' => $class,
-    'innerJoin' => $modx->toJSON($innerJoin),
-    'where' => $modx->toJSON($where),
-    'select' => $modx->toJSON($select),
+    'innerJoin' => json_encode($innerJoin),
+    'where' => json_encode($where),
+    'select' => json_encode($select),
     'groupby' => $class . '.id',
     'sortby' => $class . '.id',
     'sortdir' => 'ASC',

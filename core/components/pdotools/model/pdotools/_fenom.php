@@ -39,7 +39,7 @@ class FenomX extends Fenom
             'force_include' => !$pdoTools->config['useFenomCache'],
             'auto_reload' => $pdoTools->config['useFenomCache'],
         );
-        if ($options = $pdoTools->modx->fromJSON($pdoTools->modx->getOption('pdotools_fenom_options'))) {
+        if ($options = json_decode($pdoTools->modx->getOption('pdotools_fenom_options'), true)) {
             $options = array_merge($default_options, $options);
         } else {
             $options = $default_options;
@@ -292,7 +292,7 @@ class FenomX extends Fenom
         $this->_modifiers['memberof'] =
         $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
             $pdo->debugParserModifier($id, 'ismember', $groups);
-            if (!is_array($groups)) {
+            if (is_string($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
 
@@ -403,6 +403,9 @@ class FenomX extends Fenom
             /** @var modResource $resource */
             if (empty($id)) {
                 $resource = $modx->resource;
+            } elseif (!is_numeric($id)) {
+                $field = $id;
+                $resource = $modx->resource;
             } elseif (!$resource = $pdo->getStore($id, 'resource')) {
                 $resource = $modx->getObject('modResource', $id);
                 $pdo->setStore($id, $resource, 'resource');
@@ -466,8 +469,8 @@ class FenomX extends Fenom
             return $modx->getPlaceholder($key);
         };
 
-        $this->_modifiers['cssToHead'] = function ($string) use ($micro) {
-            $micro->regClientCSS($string);
+        $this->_modifiers['cssToHead'] = function ($string, $media = null) use ($micro) {
+            $micro->regClientCSS($string, $media);
         };
 
         $this->_modifiers['htmlToHead'] = function ($string) use ($micro) {
@@ -487,13 +490,17 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['json_encode'] =
-        $this->_modifiers['toJSON'] = function ($array) use ($modx) {
-            return $modx->toJSON($array);
+        $this->_modifiers['toJSON'] = function ($array, $options = 0, $depth = 512) use ($modx) {
+            return PHP_VERSION_ID < 50500
+                ? json_encode($array, $options)
+                : json_encode($array, $options, $depth);
         };
 
         $this->_modifiers['json_decode'] =
-        $this->_modifiers['fromJSON'] = function ($string) use ($modx) {
-            return $modx->fromJSON($string);
+        $this->_modifiers['fromJSON'] = function ($string, $assoc = true, $depth = 512, $options = 0) use ($modx) {
+            return PHP_VERSION_ID < 50400
+                ? json_decode($string, $assoc, $depth)
+                : json_decode($string, $assoc, $depth, $options);
         };
 
         $this->_modifiers['setOption'] = function ($var, $key) use ($modx) {
@@ -651,7 +658,7 @@ class FenomX extends Fenom
             ));
             $pdo->debugParserModifier($input, $name, $options);
 
-            return $result === ''
+            return $result === false
                 ? $input
                 : $result;
         };
