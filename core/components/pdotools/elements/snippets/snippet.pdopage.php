@@ -193,6 +193,9 @@ if (empty($data)) {
         );
     }
 
+    $pagination['firstItem'] = $scriptProperties['offset'] + 1;
+    $pagination['lastItem'] = $scriptProperties['offset'] + $scriptProperties['limit'];
+
     $data = array(
         'output' => $output,
         $pageVarKey => $page,
@@ -201,6 +204,8 @@ if (empty($data)) {
             ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
             : $pdoPage->pdoTools->parseChunk('', $pagination),
         $totalVar => $total,
+        'firstItem' => $pagination['firstItem'],
+        'lastItem' => $pagination['lastItem']
     );
     if ($cache) {
         $pdoPage->pdoTools->setCache($data, $scriptProperties);
