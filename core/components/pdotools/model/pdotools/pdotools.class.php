@@ -896,18 +896,11 @@ class pdoTools
                 }
                 break;
             default:
-                if ($type == 'modTemplate') {
-                    if(filter_var($cache_name, FILTER_VALIDATE_INT) === false) {
-                        $c = array('templatename:=' => $cache_name);
-                    } else {
-                        $c = array('id:=' => $cache_name);
-                    }
+                $column = ($type == 'modTemplate') ? 'templatename' : 'name';
+                if (filter_var($cache_name, FILTER_VALIDATE_INT) === false) {
+                    $c = array($column . ':=' => $cache_name);
                 } else {
-                    if(filter_var($cache_name, FILTER_VALIDATE_INT) === false) {
-                        $c = array('name:=' => $cache_name);
-                    } else {
-                        $c = array('id:=' => $cache_name);
-                    }
+                    $c = array('id:=' => $cache_name, 'OR:' . $column . ':=' => $cache_name);
                 }
                 if ($element = $this->modx->getObject($type, $c)) {
                     $content = $element->getContent();
