@@ -893,9 +893,12 @@ class pdoTools
                 }
                 break;
             default:
-                $c = ($type == 'modTemplate')
-                    ? array('id' => $cache_name, 'OR:templatename:=' => $cache_name)
-                    : array('id' => $cache_name, 'OR:name:=' => $cache_name);
+                $column = $type == 'modTemplate'
+                    ? 'templatename'
+                    : 'name';
+                $c = filter_var($cache_name, FILTER_VALIDATE_INT) === false
+                    ? array($column . ':=' => $cache_name)
+                    : array('id:=' => $cache_name, 'OR:' . $column . ':=' => $cache_name);
                 if ($element = $this->modx->getObject($type, $c)) {
                     $content = $element->getContent();
                     if (!empty($propertySet)) {
