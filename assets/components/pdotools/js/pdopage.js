@@ -23,7 +23,11 @@ pdoPage.initialize = function (config) {
                 var page = !match ? 1 : match[1];
                 if (pdoPage.keys[key] != page) {
                     if (config.history) {
-                        pdoPage.Hash.add(key, page);
+                        if (page == 1) {
+                            pdoPage.Hash.remove(key);
+                        } else {
+                            pdoPage.Hash.add(key, page);
+                        }
                     }
                     $this.loadPage(href, config);
                 }
@@ -103,7 +107,11 @@ pdoPage.addPage = function (config) {
         var page = !match ? 1 : Number(match[1]);
         if (page > current) {
             if (config.history) {
-                pdoPage.Hash.add(key, page);
+                if (page == 1) {
+                    pdoPage.Hash.remove(key);
+                } else {
+                    pdoPage.Hash.add(key, page);
+                }
             }
             pdoPage.loadPage(href, config, 'append');
             return false;

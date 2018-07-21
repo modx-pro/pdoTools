@@ -20,7 +20,7 @@ $topLevel = isset($topLevel) ? intval($topLevel) : 0;
 if (!empty($options)) {
     $options = trim($options);
     if ($options[0] == '{') {
-        $tmp = $modx->fromJSON($options);
+        $tmp = json_decode($options, true);
         if (is_array($tmp)) {
             extract($tmp);
             $scriptProperties = array_merge($scriptProperties, $tmp);
@@ -113,7 +113,10 @@ $where = array($class . '.id' => $id);
 // Add custom parameters
 foreach (array('where') as $v) {
     if (!empty($scriptProperties[$v])) {
-        $tmp = $modx->fromJSON($scriptProperties[$v]);
+        $tmp = $scriptProperties[$v];
+        if (!is_array($tmp)) {
+            $tmp = json_decode($tmp, true);
+        }
         if (is_array($tmp)) {
             $$v = array_merge($$v, $tmp);
         }

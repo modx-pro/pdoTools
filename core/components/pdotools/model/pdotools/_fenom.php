@@ -1,8 +1,7 @@
 <?php
 
 if (!class_exists('Fenom')) {
-    require dirname(dirname(__FILE__)) . '/fenom/Fenom.php';
-    require dirname(dirname(__FILE__)) . '/fenom/Fenom/ProviderInterface.php';
+    require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
     Fenom::registerAutoload();
 }
 
@@ -40,7 +39,7 @@ class FenomX extends Fenom
             'force_include' => !$pdoTools->config['useFenomCache'],
             'auto_reload' => $pdoTools->config['useFenomCache'],
         );
-        if ($options = $pdoTools->modx->fromJSON($pdoTools->modx->getOption('pdotools_fenom_options'))) {
+        if ($options = json_decode($pdoTools->modx->getOption('pdotools_fenom_options'), true)) {
             $options = array_merge($default_options, $options);
         } else {
             $options = $default_options;
@@ -237,10 +236,15 @@ class FenomX extends Fenom
 
         $this->_modifiers['reverse'] =
         $this->_modifiers['strrev'] = function ($string) {
-            $ar = array();
-            preg_match_all('/(\d+)?./us', $string, $ar);
+            if (is_array($string)) {
+                $string = array_reverse($string);
+            } else {
+                $ar = array();
+                preg_match_all('/(\d+)?./us', $string, $ar);
+                $string = join('', array_reverse($ar[0]));
+            }
 
-            return join('', array_reverse($ar[0]));
+            return $string;
         };
 
         $this->_modifiers['wordwrap'] = function ($string, $width = null, $break = "<br />\n ") {
@@ -286,20 +290,20 @@ class FenomX extends Fenom
 
         $this->_modifiers['ismember'] =
         $this->_modifiers['memberof'] =
-        $this->_modifiers['mo'] = function ($id, $groups = array()) use ($modx, $pdo) {
+        $this->_modifiers['mo'] = function ($id, $groups = array(), $matchAll = false) use ($modx, $pdo) {
             $pdo->debugParserModifier($id, 'ismember', $groups);
-            if (empty($id)) {
-                $id = $modx->user->get('id');
-            }
-            if (!is_array($groups)) {
+            if (is_string($groups)) {
                 $groups = array_map('trim', explode(',', $groups));
             }
 
             /** @var $user modUser */
-            $member = false;
-            if ($user = $modx->getObject('modUser', $id)) {
-                $member = $user->isMember($groups);
+            if (empty($id)) {
+                $id = $modx->user->get('id');
+                $user = $modx->user;
+            } else {
+                $user = $modx->getObject('modUser', $id);
             }
+            $member = $user->isMember($groups, $matchAll);
             $pdo->debugParserModifier($id, 'ismember', $groups);
 
             return $member;
@@ -399,6 +403,9 @@ class FenomX extends Fenom
             /** @var modResource $resource */
             if (empty($id)) {
                 $resource = $modx->resource;
+            } elseif (!is_numeric($id)) {
+                $field = $id;
+                $resource = $modx->resource;
             } elseif (!$resource = $pdo->getStore($id, 'resource')) {
                 $resource = $modx->getObject('modResource', $id);
                 $pdo->setStore($id, $resource, 'resource');
@@ -409,11 +416,11 @@ class FenomX extends Fenom
                 if (!empty($field)) {
                     if (strtolower($field) == 'content') {
                         $output = $resource->getContent();
-                    } elseif (array_key_exists($field, $modx->getFields($resource->get('class_key')))) {
-                        $output = $resource->get($field);
                     } else {
-                        $field = preg_replace('#^tv\.#i', '', $field);
-                        $output = $resource->getTVValue($field);
+                        $output = $resource->get($field);
+                        if (is_null($output)) {
+                            $output = $resource->getTVValue(preg_replace('#^tv\.#i', '', $field));
+                        }
                     }
                 } else {
                     $output = $resource->toArray();
@@ -462,8 +469,8 @@ class FenomX extends Fenom
             return $modx->getPlaceholder($key);
         };
 
-        $this->_modifiers['cssToHead'] = function ($string) use ($micro) {
-            $micro->regClientCSS($string);
+        $this->_modifiers['cssToHead'] = function ($string, $media = null) use ($micro) {
+            $micro->regClientCSS($string, $media);
         };
 
         $this->_modifiers['htmlToHead'] = function ($string) use ($micro) {
@@ -483,13 +490,17 @@ class FenomX extends Fenom
         };
 
         $this->_modifiers['json_encode'] =
-        $this->_modifiers['toJSON'] = function ($array) use ($modx) {
-            return $modx->toJSON($array);
+        $this->_modifiers['toJSON'] = function ($array, $options = 0, $depth = 512) use ($modx) {
+            return PHP_VERSION_ID < 50500
+                ? json_encode($array, $options)
+                : json_encode($array, $options, $depth);
         };
 
         $this->_modifiers['json_decode'] =
-        $this->_modifiers['fromJSON'] = function ($string) use ($modx) {
-            return $modx->fromJSON($string);
+        $this->_modifiers['fromJSON'] = function ($string, $assoc = true, $depth = 512, $options = 0) use ($modx) {
+            return PHP_VERSION_ID < 50400
+                ? json_decode($string, $assoc, $depth)
+                : json_decode($string, $assoc, $depth, $options);
         };
 
         $this->_modifiers['setOption'] = function ($var, $key) use ($modx) {
@@ -647,7 +658,7 @@ class FenomX extends Fenom
             ));
             $pdo->debugParserModifier($input, $name, $options);
 
-            return $result === ''
+            return $result === false
                 ? $input
                 : $result;
         };

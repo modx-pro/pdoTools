@@ -30,6 +30,7 @@ class pdoTools
     /** @var Fenom $fenom */
     public $fenom;
     private $tags = array();
+    public $ignores = array();
 
 
     /**
@@ -67,7 +68,7 @@ class pdoTools
             'outputSeparator' => "\n",
             'decodeJSON' => true,
             'scheme' => '',
-            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+\s|\'|\()#', true),
+            'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+(\s|\(|\|)|\(|\')#', true),
             'elementsPath' => $this->modx->getOption('pdotools_elements_path', null, '{core_path}elements/', true),
             'cachePath' => '{core_path}cache/default/pdotools',
         ), $config);
@@ -148,12 +149,10 @@ class pdoTools
 
 
     /**
-     * Add new record to timings log
-     *
-     * @var string $message
-     * @var integer $delta
+     * Add new record to time log
      *
      * @param $message
+     * @param null $delta
      */
     public function addTime($message, $delta = null)
     {
@@ -242,7 +241,7 @@ class pdoTools
         $time = microtime(true);
         $models = array();
         if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
-            $tmp = $this->modx->fromJSON($this->config['loadModels']);
+            $tmp = json_decode($this->config['loadModels'], true);
             foreach ($tmp as $k => $v) {
                 if (!is_array($v)) {
                     $v = array(
@@ -271,7 +270,7 @@ class pdoTools
 
         if (!empty($models)) {
             foreach ($models as $k => $v) {
-                $t = '/' . str_replace(MODX_BASE_PATH, '', $v['path']);
+                $t = '/' . str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $v['path']);
                 if ($this->modx->addPackage(strtolower($k), $v['path'], $v['prefix'])) {
                     $this->addTime('Loaded model "' . $k . '" from "' . $t . '"', microtime(true) - $time);
                 } else {
@@ -343,7 +342,7 @@ class pdoTools
         if (empty($data) || !($data['object'] instanceof modSnippet)) {
             $this->modx->log(modX::LOG_LEVEL_ERROR, "[pdoTools] Could not load snippet \"{$name}\"");
 
-            return '';
+            return false;
         }
 
         /** @var modSnippet $snippet */
@@ -352,6 +351,39 @@ class pdoTools
         $snippet->_processed = false;
         $snippet->_propertyString = '';
         $snippet->_tag = '';
+        if ($data['cacheable'] && !$this->modx->getParser()->isProcessingUncacheable()) {
+            $scripts = array('jscripts', 'sjscripts', 'loadedjscripts');
+            $regScriptsBefore = $regScriptsAfter = array();
+            foreach ($scripts as $prop) {
+                $regScriptsBefore[$prop] = count($this->modx->$prop);
+            }
+            $output = $snippet->process(array_merge($data['properties'], $properties));
+            foreach ($scripts as $prop) {
+                $regScriptsAfter[$prop] = count($this->modx->$prop);
+            }
+            if (!empty($this->modx->resource)) {
+                if ($regScriptsBefore['loadedjscripts'] < $regScriptsAfter['loadedjscripts']) {
+                    foreach ($scripts as $prop) {
+                        if ($regScriptsBefore[$prop] != $regScriptsAfter[$prop]) {
+                            $resProp = '_' . $prop;
+                            foreach (array_slice($this->modx->{$prop}, $regScriptsBefore[$prop]) as $key => $value) {
+                                if (!is_array($this->modx->resource->{$resProp})) {
+                                    $this->modx->resource->{$resProp} = array();
+                                }
+                                
+                                if ($prop == 'loadedjscripts') {
+                                    $this->modx->resource->{$resProp}[$key] = $value;
+                                } else {
+                                    array_push($this->modx->resource->{$resProp}, $value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $output;
+        }
 
         return $snippet->process(array_merge($data['properties'], $properties));
     }
@@ -640,7 +672,7 @@ class pdoTools
             $resourceTpl = $this->config['tplOdd'];
         } else {
             if (empty($resourceTpl) && !empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
-                $conTpls = $this->modx->fromJSON($this->config['conditionalTpls']);
+                $conTpls = json_decode($this->config['conditionalTpls'], true);
                 if (isset($properties[$this->config['tplCondition']])) {
                     $subject = $properties[$this->config['tplCondition']];
                     $tplOperator = !empty($this->config['tplOperator']) ? strtolower($this->config['tplOperator']) : '=';
@@ -790,6 +822,8 @@ class pdoTools
             ? $cache_name . '@' . $propertySet
             : $cache_name;
         if ($element = $this->getStore($cache_key, $type)) {
+            $element['cacheable'] = $cacheable && empty($binding);
+
             return $element;
         }
 
@@ -820,11 +854,11 @@ class pdoTools
                 } else {
                     $path = $this->config['elementsPath'];
                 }
-                if (strpos($path, MODX_BASE_PATH) === false) {
+                if (strpos($path, MODX_BASE_PATH) === false && strpos($path, MODX_CORE_PATH) === false) {
                     $path = MODX_BASE_PATH . $path;
                 }
                 $path = preg_replace('#/+#', '/', $path . ltrim($content, './'));
-                $rel_path = str_replace(MODX_BASE_PATH, '', $path);
+                $rel_path = str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $path);
                 if (!preg_match('#\.(html|tpl|php)$#i', $path)) {
                     $this->addTime('Allowed extensions for @FILE elements is "html", "tpl" and "php"');
                 } elseif (!file_exists($path)) {
@@ -834,12 +868,11 @@ class pdoTools
                 } elseif ($content = file_get_contents($path)) {
                     $element = $this->modx->newObject($type, array('name' => $cache_name));
                     $element->setContent($content);
+                    $element->setProperties($properties);
                     if ($element instanceof modScript) {
                         /** @var modScript $element */
                         $element->_scriptName = $element->getScriptName() . $cache_name;
                     }
-                    $element->set('static', true);
-                    $element->set('static_file', $path);
                     $this->addTime('Created "' . $type . '" from file "' . $rel_path . '"');
                 }
                 $cacheable = false;
@@ -860,9 +893,12 @@ class pdoTools
                 }
                 break;
             default:
-                $c = ($type == 'modTemplate')
-                    ? array('id' => $cache_name, 'OR:templatename:=' => $cache_name)
-                    : array('id' => $cache_name, 'OR:name:=' => $cache_name);
+                $column = $type == 'modTemplate'
+                    ? 'templatename'
+                    : 'name';
+                $c = filter_var($cache_name, FILTER_VALIDATE_INT) === false
+                    ? array($column . ':=' => $cache_name)
+                    : array('id:=' => $cache_name, 'OR:' . $column . ':=' => $cache_name);
                 if ($element = $this->modx->getObject($type, $c)) {
                     $content = $element->getContent();
                     if (!empty($propertySet)) {
@@ -936,12 +972,17 @@ class pdoTools
             }
             try {
                 $tpl = $fenom->getRawTemplate()->source($name, $content, true);
+                $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
             } catch (Exception $e) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
                 $this->modx->log(modX::LOG_LEVEL_INFO, $content);
+                if ($this->modx->getOption('pdotools_fenom_save_on_errors')) {
+                    $this->setCache($content, array('cache_key' => 'pdotools/error/' . $name));
+                }
+                $tpl = $fenom->getRawTemplate()->source($name, '', false);
+                $this->addTime('Can`t compile Fenom chunk with name "' . $name . '": ' . $e->getMessage());
             }
         }
-        $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
 
         return $tpl;
     }
@@ -1120,15 +1161,17 @@ class pdoTools
                 );
             });
 
-            $tmp = $this->runSnippet($name, array(
+            $tmp = $this->runSnippet($name, array_merge($this->config, array(
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
                 'row' => $row,
-            ));
-
-            $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
-                ? $this->modx->fromJSON($tmp, 1)
-                : unserialize($tmp);
+            )));
+            
+            if (!is_array($tmp)){
+                $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
+                    ? json_decode($tmp, true)
+                    : unserialize($tmp);
+            }
 
             if (!is_array($tmp)) {
                 $this->addTime('Preparation snippet must return an array, instead of "' . gettype($tmp) . '"');
@@ -1168,7 +1211,9 @@ class pdoTools
         } else {
             return $rows;
         }
-        $total = $this->modx->getPlaceholder($this->config['totalVar']);
+        $total = !empty($this->config['totalVar'])
+            ? $this->modx->getPlaceholder($this->config['totalVar'])
+            : 0;
 
         foreach ($rows as $key => $row) {
             /** @var modAccessibleObject $object */
@@ -1182,7 +1227,9 @@ class pdoTools
         }
 
         $this->addTime('Checked for permissions "' . implode(',', array_keys($permissions)) . '"');
-        $this->modx->setPlaceholder($this->config['totalVar'], $total);
+        if (!empty($this->config['totalVar']) && !empty($this->config['setTotal'])) {
+            $this->modx->setPlaceholder($this->config['totalVar'], $total);
+        }
 
         return $rows;
     }

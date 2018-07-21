@@ -168,7 +168,7 @@
             params[this.key] = this.page;
             $.get(window.location.pathname, params, function (response) {
                 if (response) {
-                    _this.wrapper.find(pagination).html(response.pagination);
+                    _this.wrapper.find(pagination).replaceWith(response.pagination);
                     if (mode == 'append') {
                         _this.wrapper.find(rows).append(response.output);
                         if (_this.mode == 'button') {

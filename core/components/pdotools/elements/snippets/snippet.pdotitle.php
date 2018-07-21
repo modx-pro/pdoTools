@@ -74,7 +74,7 @@ $cacheKey = $resource->getCacheKey() . '/' . $cacheKey;
 $cacheOptions = array('cache_key' => $modx->getOption('cache_resource_key', null, 'resource'));
 $crumbs = '';
 if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOptions)) {
-    $crumbs = $modx->runSnippet('pdoCrumbs', array_merge(
+    $crumbs = $pdoTools->runSnippet('pdoCrumbs', array_merge(
         array(
             'to' => $resource->id,
             'outputSeparator' => $outputSeparator,
@@ -102,7 +102,8 @@ if (!empty($registerJs)) {
         'separator' => $outputSeparator,
         'tpl' => str_replace(array('[[+', ']]'), array('{', '}'), $pdoTools->getChunk($tplPages)),
     );
-    $modx->regClientStartupScript('<script type="text/javascript">pdoTitle = ' . $modx->toJSON($config) . ';</script>',
+    /** @noinspection Annotator */
+    $modx->regClientStartupScript('<script type="text/javascript">pdoTitle = ' . json_encode($config) . ';</script>',
         true);
 }
 

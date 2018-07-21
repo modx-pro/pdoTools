@@ -5,11 +5,9 @@
  * @package pdotools
  * @subpackage lexicon
  * @language de
- *
- * pdoTools translated to German by Jan-Christoph Ihrens (enigmatic_user, enigma@lunamail.de)
  */
 $_lang['pdotools_prop_context'] = 'Gibt an, in welchem Kontext gesucht werden soll.';
-$_lang['pdotools_prop_field_context'] = 'Kontext der Ressource zum Ermitteln ihrer Elternelemente. Wird bei Verwendung der Eigenschaften "top" und "topLevel" benötigt.';
+$_lang['pdotools_prop_field_context'] = 'Kontext der Ressource zum Ermitteln ihrer Elternelemente. Wird bei Verwendung der Eigenschaften "&top" und "&topLevel" benötigt.';
 $_lang['pdotools_prop_depth'] = 'Integer-Wert, der angibt, bis zu welcher Tiefe (im Ressourcenbaum) nach Ressourcen gesucht werden soll, ausgehend von jedem der angegebenen Elternelemente. Die erste Ebene von Ressourcen unterhalb des Elternelements hat die Tiefe 1.';
 $_lang['pdotools_prop_fastMode'] = 'Schnelle Chunk-Verarbeitung. Wenn diese Einstellung auf "Ja" gesetzt wird, wird der MODX-Parser nicht verwendet und unverarbeitete Tags werden aus dem Ergebnis entfernt.';
 $_lang['pdotools_prop_first'] = 'Geben Sie den idx-Wert an, der die erste Ressource repräsentiert (siehe Eigenschaften "idx" und "tplFirst").';
@@ -18,11 +16,11 @@ $_lang['pdotools_prop_idx'] = 'Sie können den Startwert für idx vorgeben; dies
 $_lang['pdotools_prop_includeContent'] = 'Gibt an, ob die Inhalte der Ressourcen mit zurückgegeben werden sollen.';
 
 $_lang['pdotools_prop_includeTVs'] = 'Eine optionale kommaseparierte Liste von Template-Variablen, die enthalten sein sollen.';
-$_lang['pdotools_prop_prepareTVs'] = 'Kommaseparierte Liste von Template-Variablen, die vorbereitet werden sollen (weil sie von Medienquellen abhängig sind). Standardmäßig ist diese Einstellung auf "1" gesetzt, was bedeutet, dass alle in "includeTVs" aufgeführten Template-Variablen vorbereitet werden.';
-$_lang['pdotools_prop_processTVs'] = 'Kommaseparierte Liste von Template-Variablen, die verarbeitet werden sollen. Wenn Sie diese Einstellung auf "1" setzen, werden alle Template-Vaiablen in "includeTVs" verarbeitet. Standardmäßig ist dieses Feld leer.';
+$_lang['pdotools_prop_prepareTVs'] = 'Kommaseparierte Liste von Template-Variablen, die vorbereitet werden sollen (weil sie von Medienquellen abhängig sind). Standardmäßig ist diese Einstellung auf "1" gesetzt, was bedeutet, dass alle in "&includeTVs" aufgeführten Template-Variablen vorbereitet werden.';
+$_lang['pdotools_prop_processTVs'] = 'Kommaseparierte Liste von Template-Variablen, die verarbeitet werden sollen. Wenn Sie diese Einstellung auf "1" setzen, werden alle Template-Vaiablen in "&includeTVs" verarbeitet. Standardmäßig ist dieses Feld leer.';
 $_lang['pdotools_prop_tvFilters'] = 'Liste von Template-Variablen-Werten, nach denen die Ressourcen gefiltert werden. Unterstützt zwei Trennsymbole und zwei Suchformate. Das erste Trennsymbol || repräsentiert ein logisches ODER und den primären Gruppierungs-Mechanismus. Innerhalb jeder Gruppe können Sie eine kommaseparierte Liste von Werten angeben (das Komma ist das zweite Trennsymbol und repräsentiert ein logisches UND). Diese Werte können entweder durch Angabe des Namens einer bestimmten Template-Variablen zugeordnet werden, z.B. myTV==Wert, oder es wird nur der Wert angegeben, was bedeutet, dass der Wert in allen der Ressource zugeordneten Template-Variablen gesucht wird. Ein Beispiel wäre &tvFilters=`filter2==one,filter1==bar%||filter1==foo`.<br />HINWEIS: Beim Filtern nach Werten wird eine Abfrage mit LIKE verwendet, und das Prozentzeichen (%) gilt als Platzhalter.<br />NOCH EIN HINWEIS: Hierbei wird nur auf die "rohen" Werte der jeweiligen Ressource geschaut, d.h. es muss ein Wert speziell für die Ressource gesetzt sein, und er wird nicht weiter ausgewertet.';
-$_lang['pdotools_prop_tvFiltersAndDelimiter'] = 'Die Zeichenkette, die in "tvFilters" verwendet wird, um zwei logische Ausdrücke, die durch ein logisches UND verbunden sind, zu trennen (oder anders ausgedrückt: Die hier eingegebene Zeichenkette ersetzt das UND). Der Standardwert ist ",".';
-$_lang['pdotools_prop_tvFiltersOrDelimiter'] = 'Die Zeichenkette, die in "tvFilters" verwendet wird, um zwei logische Ausdrücke, die durch ein logisches ODER verbunden sind, zu trennen (oder anders ausgedrückt: Die hier eingegebene Zeichenkette ersetzt das ODER). Der Standardwert ist "||".';
+$_lang['pdotools_prop_tvFiltersAndDelimiter'] = 'Die Zeichenkette, die in "&tvFilters" verwendet wird, um zwei logische Ausdrücke, die durch ein logisches UND verbunden sind, zu trennen (oder anders ausgedrückt: Die hier eingegebene Zeichenkette ersetzt das UND). Der Standardwert ist ",".';
+$_lang['pdotools_prop_tvFiltersOrDelimiter'] = 'Die Zeichenkette, die in "&tvFilters" verwendet wird, um zwei logische Ausdrücke, die durch ein logisches ODER verbunden sind, zu trennen (oder anders ausgedrückt: Die hier eingegebene Zeichenkette ersetzt das ODER). Der Standardwert ist "||".';
 
 $_lang['pdotools_prop_last'] = 'Geben Sie den idx-Wert an, der die letzte Ressource repräsentiert (siehe Eigenschaften "idx" und "tplLast"). Standardmäßig ist dies die Anzahl der verarbeiteten Ressourcen + der erste idx-Wert - 1.';
 $_lang['pdotools_prop_neighbors_limit'] = 'Die Anzahl der benachbarten Dokumente zur Linken und Rechten. Die Standardeinstellung ist 1.';
@@ -53,10 +51,10 @@ $_lang['pdotools_prop_hideSingle'] = 'Ergebnis nicht anzeigen, wenn es nur ein e
 $_lang['pdotools_prop_hideUnsearchable'] = 'Keine Ressourcen anzeigen, die nicht durchsuchbar sind.';
 
 $_lang['pdotools_prop_sortby'] = 'Ein beliebiges Ressourcen-Feld (einschließlich Template-Variablen, wenn diese über die Eigenschaft "includeTVs" einbezogen wurden), nach dem sortiert werden soll. Einige Felder, nach denen üblicherweise sortiert wird, sind publishedon, menuindex, pagetitle etc.; eine Liste aller Ressourcen-Felder finden Sie in der MODX-Dokumentation. Geben Sie nur die Namen der Felder ein, keine MODX-Tags. Bitte beachten Sie, dass bei Verwendung von Feldern wie template, publishedby und ähnlichen für die Sortierung nach den "rohen" Werten sortiert wird, also nach Template- oder Benutzer-IDs und NICHT den zugehörigen Namen. Sie können auch eine zufällige Sortierung wählen, indem Sie "RAND()" eingeben.';
-$_lang['pdotools_prop_sortbyTV'] = 'Sortieren nach dem TV. Wenn es nicht angegeben ist, in &includeTVs, es wird uncluded automatisch.';
-$_lang['pdotools_prop_sortbyTVType'] = 'Sortieren nach TV. Die Optionen sind: string, integer, decimal, und "datetime". Wenn leer, dann die TV werden sortiert, je nach type: text, Zahl oder Datum.';
-$_lang['pdotools_prop_sortdir'] = 'Um die Sortierung: absteigend oder aufsteigend';
-$_lang['pdotools_prop_sortdirTV'] = 'Sortieren Richtung TV: aufsteigend bzw. absteigend sortiert. Wenn nicht angegeben, es wird gleich dem parameter &sortdir.';
+$_lang['pdotools_prop_sortbyTV'] = 'Nach der hier angegebenen TV sortieren. Wenn sie im Parameter &includeTVs nicht angegeben ist, wird sie automatisch mit einbezogen.';
+$_lang['pdotools_prop_sortbyTVType'] = 'Gibt an, wie die Daten der TV beim Sortieren interpretiert werden sollen. Die Optionen sind "string", "integer", "decimal" und "datetime". Wenn diese Einstellung leer gelassen wird, wird die TV abhängig von ihrem Typ sortiert: Text, Zahl oder Datum.';
+$_lang['pdotools_prop_sortdir'] = 'Sortierrichtung: absteigend oder aufsteigend';
+$_lang['pdotools_prop_sortdirTV'] = 'Sortierrichtung der TV: aufsteigend bzw. absteigend. Wenn hier nichts angegeben wird, wird der Wert des Parameters &sortdir verwendet.';
 $_lang['pdotools_prop_toPlaceholder'] = 'Wenn hier etwas eingegeben wird, wird das Ergebnis an den hier angegebenen Platzhalter übergeben, anstatt direkt ausgegeben zu werden.';
 $_lang['pdotools_prop_toSeparatePlaceholders'] = 'Wenn hier etwas eingegeben wird, wird JEDES Ergebnis einem eigenen Platzhalter zugeordnet, der die hier eingegebene Bezeichnung hat, gefolgt von einer aufsteigenden Nummer (beginnend bei 0).';
 $_lang['pdotools_prop_totalVar'] = 'Der Schlüssel (bzw. Name) eines Platzhalters, der die Gesamtzahl der Ressourcen enthält, die ausgegeben würden, wenn der Wert der Eigenschaft "limit" nicht berücksichtigt würde.';  // getResources???
@@ -69,13 +67,13 @@ $_lang['pdotools_prop_tplWrapper'] = 'Name eines Chunks, der als äußeres Templ
 $_lang['pdotools_prop_neighbors_tplWrapper'] = 'Name eines Chunks, der als äußeres Template für die Ausgabe dient (und diese quasi umschließt). Dies funktioniert nicht zusammen mit "toSeparatePlaceholders".';
 $_lang['pdotools_prop_tvPrefix'] = 'Das Präfix für Template-Variablen-Eigenschaften.';
 $_lang['pdotools_prop_where'] = 'Ein Ausdruck im JSON-Stil mit Kriterien, aus denen zusätzliche WHERE-Bedingungen erstellt werden können.';
-$_lang['pdotools_prop_wrapIfEmpty'] = 'Wenn diese Einstellung auf "Ja" gesetzt wird, wird der Inhalt des in "tplWrapper" angegebenen Chunks auch dann ausgegeben, wenn die Ausgabe leer ist.';
-$_lang['pdotools_prop_tplOperator'] = 'Ein optionaler Operator der für den Vergleich der "tplCondition" mit den in "conditionalTpls" definierten Operanden verwendet wird. Standardwert ist == (ist gleich).';
+$_lang['pdotools_prop_wrapIfEmpty'] = 'Wenn diese Einstellung auf "Ja" gesetzt wird, wird der Inhalt des in "&tplWrapper" angegebenen Chunks auch dann ausgegeben, wenn die Ausgabe leer ist.';
+$_lang['pdotools_prop_tplOperator'] = 'Ein optionaler Operator, der für den Vergleich der "tplCondition" mit den in "conditionalTpls" definierten Operanden verwendet wird. Standardwert ist == (ist gleich).';
 $_lang['pdotools_prop_tplCondition'] = 'Eine Bedingung zum Vergleich mit der Eigenschaft conditionalTpls, um Ressourcen verschiedenen Templates zuzuordnen, basierend auf benutzerdefinierten Bedingungen.';
 $_lang['pdotools_prop_conditionalTpls'] = 'Eine JSON-Map von Bedingungs-Operanden und Templates zum Vergleich mit der tplCondition-Eigenschaft unter Verwendung des angegebenen tplOperator.';
 $_lang['pdotools_prop_tplCurrent'] = 'Сhunk für das aktuelle Dokument in der Navigation.';
 $_lang['pdotools_prop_tplHome'] = 'Сhunk für den Link zur Startseite der Site.';
-$_lang['pdotools_prop_tplMax'] = 'Сhunk, der am Anfang der Breadcrumb-Navigation eingefügt wird, wenn es mehr Elemente gibt, als durch "limit" zugelassen werden.';
+$_lang['pdotools_prop_tplMax'] = 'Сhunk, der am Anfang der Breadcrumb-Navigation eingefügt wird, wenn es mehr Elemente gibt, als durch "&limit" zugelassen werden.';
 $_lang['pdotools_prop_tplPrev'] = 'Сhunk mit einem Link zum vorhergehenden Dokument.';
 $_lang['pdotools_prop_tplUp'] = 'Сhunk mit einem Link zum übergeordneten Dokument (Elternelement).';
 $_lang['pdotools_prop_tplNext'] = 'Сhunk mit einem Link zum nächsten Dokument.';
@@ -85,20 +83,20 @@ $_lang['pdotools_prop_loadModels'] = 'Kommaseparierte Liste von zusätzlichen Ko
 $_lang['pdotools_prop_direction'] = 'Textrichtung oder Breadcrumbs-Sortierung: von links nach rechts (ltr) oder von rechts nach links (rtl), z.B. für arabischen Text.';
 $_lang['pdotools_prop_id'] = 'ID der Ressource.';
 $_lang['pdotools_prop_field'] = 'Feld der Ressource.';
-$_lang['pdotools_prop_top'] = 'Wählt das Elternelement der angegebenen "id" auf der Ebene "top".';  // von der Ressource aus gesehen nach oben?
-$_lang['pdotools_prop_topLevel'] = 'Wählt das Elternelement der angegebenen "id" auf der Ebene "topLevel" vom Ursprung des Kontexts aus gesehen (im Ressourcen-Baum).';
+$_lang['pdotools_prop_top'] = 'Wählt das Elternelement der angegebenen "&id" auf der Ebene "&top".';  // von der Ressource aus gesehen nach oben?
+$_lang['pdotools_prop_topLevel'] = 'Wählt das Elternelement der angegebenen "&id" auf der Ebene "&topLevel" vom Ursprung des Kontexts aus gesehen (im Ressourcen-Baum).';
 
 $_lang['pdotools_prop_forceXML'] = 'Erzwingt die Ausgabe der Seite im XML-Format.';
 $_lang['pdotools_prop_sitemapSchema'] = 'Schema der Sitemap.';
-$_lang['pdotools_prop_scheme'] = 'Schema der Generierung der links: "uri" für die Ersetzung der Dokument-uri (sehr schnell) oder ein parameter für modX::makeUrl().';
+$_lang['pdotools_prop_scheme'] = 'Schema der Generierung der Links: "uri" für die Ersetzung des Dokument-URI (sehr schnell) oder ein Parameter für modX::makeUrl().';
 
-$_lang['pdotools_prop_field_default'] = 'Geben Sie ein zusätzliches Ressourcen-Feld an, dessen Inhalt zurückgegeben wird, wenn das in "field" angegebene Feld der Ressource leer ist.';
-$_lang['pdotools_prop_field_output'] = 'Der hier eingegebene Text wird zurückgegeben, wenn die in "default" und "field" definierten Felder der Ressource leer sind.';
+$_lang['pdotools_prop_field_default'] = 'Geben Sie ein zusätzliches Ressourcen-Feld an, dessen Inhalt zurückgegeben wird, wenn das in "&field" angegebene Feld der Ressource leer ist.';
+$_lang['pdotools_prop_field_output'] = 'Der hier eingegebene Text wird zurückgegeben, wenn die in "&default" und "&field" definierten Felder der Ressource leer sind.';
 
 $_lang['pdotools_prop_cache'] = 'Ergebnisse der Snippet-Ausführung cachen.';
 $_lang['pdotools_prop_cachePageKey'] = 'Der Name des Schlüssel-Caches.';
 $_lang['pdotools_prop_cacheTime'] = 'Zeit, bis der Cache ungültig wird, in Sekunden.';
-$_lang['pdotools_prop_cacheKey'] = 'Cache-key. Gespeichert in "core/cache/default/yourkey"';
+$_lang['pdotools_prop_cacheKey'] = 'Cache-Schlüssel. Gespeichert in "core/cache/default/yourkey".';
 $_lang['pdotools_prop_cacheAnonymous'] = 'Aktivieren Sie das Caching nur für nicht autorisierte Besucher.';
 $_lang['pdotools_prop_element'] = 'Der Name des auszuführenden Snippets.';
 $_lang['pdotools_prop_maxLimit'] = 'Das maximale Limit der Abfrage. Hat Vorrang vor dem Limit, das der Benutzer in einer URL angibt.';
@@ -106,7 +104,7 @@ $_lang['pdotools_prop_page'] = 'Die Nummer der Seite für die Ausgabe. Hat Vorra
 $_lang['pdotools_prop_pageLimit'] = 'Anzahl der Links zu anderen Seiten. Ist dieser Wert größer oder gleich 7, wird der erweiterte Modus eingeschaltet.';
 $_lang['pdotools_prop_pageNavVar'] = 'Name des Platzhalters für die Ausgabe der Paginierung (Links zu anderen Seiten).';
 $_lang['pdotools_prop_pageCountVar'] = 'Name des Platzhalters für die Ausgabe der Anzahl der Seiten.';
-$_lang['pdotools_prop_pageLinkScheme'] = 'Schema der generation der link zur Seite. Sie können die Platzhalter [[+pageVarKey]] und [[+page]]';
+$_lang['pdotools_prop_pageLinkScheme'] = 'Schema der Generierung der Links zu den Seiten. Sie können die Platzhalter [[+pageVarKey]] und [[+page]] verwenden.';
 $_lang['pdotools_prop_pageVarKey'] = 'Der Name des Parameters, der in der URL die Seitennummer angibt.';
 $_lang['pdotools_prop_plPrefix'] = 'Präfix für Platzhalter; Standard ist "wf.".';
 
@@ -120,7 +118,7 @@ $_lang['pdotools_prop_tplPageFirstEmpty'] = 'Chunk, der ausgegeben wird, wenn es
 $_lang['pdotools_prop_tplPagePrevEmpty'] = 'Chunk, der ausgegeben wird, wenn es keinen Link zur vorhergehenden Seite gibt (z.B. weil die aktuelle Seite die erste Seite ist).';
 $_lang['pdotools_prop_tplPageLastEmpty'] = 'Chunk, der ausgegeben wird, wenn es keinen Link zur letzten Seite gibt (z.B. weil die aktuelle Seite die letzte Seite ist).';
 $_lang['pdotools_prop_tplPageNextEmpty'] = 'Chunk, der ausgegeben wird, wenn es keinen Link zur nächsten Seite gibt (z.B. weil die aktuelle Seite die letzte Seite ist).';
-$_lang['pdotools_prop_tplPageSkip'] = 'Chunk, der fehlende Paginierungs-Links repräsentiert (z.B. durch Auslassungspunkte). Wird im erweiterten Modus (wenn die Eigenschaft "pageLimit" auf einen Wert >= 7 gesetzt wurde) verwendet.';
+$_lang['pdotools_prop_tplPageSkip'] = 'Chunk, der fehlende Paginierungs-Links repräsentiert (z.B. durch Auslassungspunkte). Wird im erweiterten Modus (wenn die Eigenschaft "&pageLimit" auf einen Wert >= 7 gesetzt wurde) verwendet.';
 $_lang['pdotools_prop_tplPageWrapper'] = 'Chunk, der den gesamten Paginierungs-Block definiert. Es können die Platzhalter [[+first]], [[+prev]], [[+pages]], [[+next]] und [[+last]] verwendet werden.';
 
 $_lang['pdotools_prop_previewUnpublished'] = 'Optional. Wenn diese Einstellung auf "Ja" gesetzt wird, Sie in den Manager eingeloggt sind und die Berechtigung "view_unpublished" besitzen, so können Sie in der Vorschau Ihrer Site auch unveröffentlichte Ressourcen im Menü sehen.';
@@ -155,38 +153,38 @@ $_lang['pdotools_prop_tplParentRowHere'] = 'Name des Chunks, der das Template f�
 $_lang['pdotools_prop_tplStart'] = 'Name des Chunks, der das Template für das Startelement enthält, falls dies mittels des &displayStart-Parameters aktiviert wurde. Hinweis: Das Standard-Template zeigt das Startelement an, verlinkt es aber nicht. Wenn Sie keinen Link benötigen, kann dem Standard-Template eine Klasse zugeordnet werden, indem man den Parameter &firstClass=`className` verwendet.';
 
 $_lang['pdotools_prop_ultimate'] = 'Die Parameter &top und &topLevel funktionieren wie im Snippet UltimateParent.';
-$_lang['pdotools_prop_loop'] = 'Schleife links. Wenn es keinen link zu der nächsten Seite, den link auf der ersten Seite und Umgekehrt.';
+$_lang['pdotools_prop_loop'] = 'Links als Schleife: Wenn es keinen Link zur nächsten Seite gibt, den Link zur ersten Seite anzeigen und umgekehrt.';
 
-$_lang['pdotools_prop_countChildren'] = 'Bringen die genaue Anzahl der aktiven Nachkommen des Dokumentes in плейсхолдер [[+children]].';
+$_lang['pdotools_prop_countChildren'] = 'Die genaue Anzahl der aktiven Nachkommen des Dokumentes im Platzhalter [[+children]] zur Verfügung stellen.';
 
-$_lang['pdotools_prop_ajax'] = 'Aktivieren Sie die Unterstützung von ajax-Anfragen.';
-$_lang['pdotools_prop_ajaxMode'] = 'Ajax Paginierung aus der box. Erhältlich in 3 Modi: "Standard", "button" und "Blättern".';
-$_lang['pdotools_prop_ajaxElemWrapper'] = 'jQuery selector für die wrapper-element mit den Ergebnissen und Seitenzählung.';
-$_lang['pdotools_prop_ajaxElemRows'] = 'jQuery selector für das element mit den Ergebnissen.';
-$_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery selector für element mit Paginierung.';
-$_lang['pdotools_prop_ajaxElemLink'] = 'jQuery selector für die Paginierung links.';
-$_lang['pdotools_prop_ajaxElemMore'] = 'jQuery selector für "laden" - button in ajaxMode = button.';
-$_lang['pdotools_prop_ajaxTplMore'] = 'Stück für templating "mehr Schaltfläche" wenn ajaxMode = button. Muss eine Selektor angegeben in "ajaxElemMore".';
-$_lang['pdotools_prop_ajaxHistory'] = 'Speichern Sie die Seite Nummer in der url, wenn Sie arbeiten in ajax-Modus.';
+$_lang['pdotools_prop_ajax'] = 'Unterstützung für Ajax-Requests aktivieren.';
+$_lang['pdotools_prop_ajaxMode'] = 'Ajax-Paginierung "out of the box". Verfügbar in 3 Modi: "Default" (Standard), "Scroll" und "Button".';
+$_lang['pdotools_prop_ajaxElemWrapper'] = 'jQuery-Selektor für das Wrapper-Element, das die Ergebnisse und die Paginierung enthält.';
+$_lang['pdotools_prop_ajaxElemRows'] = 'jQuery-Selektor für das Element, das die Ergebnisse enthält.';
+$_lang['pdotools_prop_ajaxElemPagination'] = 'jQuery-Selektor für das Element, das die Paginierung enthält.';
+$_lang['pdotools_prop_ajaxElemLink'] = 'jQuery-Selector für die Paginierungs-Links.';
+$_lang['pdotools_prop_ajaxElemMore'] = 'jQuery-Selector für den "Mehr laden"-Button, wenn als ajaxMode "Button" gewählt wurde.';
+$_lang['pdotools_prop_ajaxTplMore'] = 'Template-Chunk für den "Mehr"-Button, wenn als ajaxMode "Button" gewählt wurde. Muss einen in "ajaxElemMore" angegebenen Selektor enthalten.';
+$_lang['pdotools_prop_ajaxHistory'] = 'Seitennummer in der URL speichern, wenn Sie den Ajax-Modus verwenden.';
 
-$_lang['pdotools_prop_frontend_js'] = 'Link auf javascript für die Belastung durch das snippet.';
-$_lang['pdotools_prop_frontend_css'] = 'Link auf css-Stile für das laden der snippet.';
+$_lang['pdotools_prop_frontend_js'] = 'URL des JavaScripts, das durch das Snippet geladen wird.';
+$_lang['pdotools_prop_frontend_css'] = 'URL der CSS-Datei, das durch das Snippet geladen wird.';
 
-$_lang['pdotools_prop_setMeta'] = 'Anmeldung von meta-tags mit links zu den vorherigen und nächsten Seite.';
+$_lang['pdotools_prop_setMeta'] = 'Registrierung von Metatags mit Links zur vorherigen und zur nächsten Seite.';
 
-$_lang['pdotools_prop_title_limit'] = 'Die Grenze von einer Abfrage für die Eltern der Ressource.';
-$_lang['pdotools_prop_title_cache'] = 'Aktivieren cache Ressource Eltern für den Titel der Seite.';
-$_lang['pdotools_prop_title_outputSeparator'] = 'String separate Elemente in den Titel der Seite.';
-$_lang['pdotools_prop_registerJs'] = 'Insert zur Seite, die javascript-Variablen für die Unterstützung &ajaxMode von snippet pdoPage.';
-$_lang['pdotools_prop_tplPages'] = 'Template der Paginierung in den Titel der Seite.';
-$_lang['pdotools_prop_tplSearch'] = 'Template für die Suche im Titel der Seite.';
-$_lang['pdotools_prop_minQuery'] = 'Die minimale Länge der Suchanfrage angezeigt in den Titel der Seite.';
-$_lang['pdotools_prop_queryVarKey'] = 'Der name der variable für den Suchbegriff in der url.';
-$_lang['pdotools_prop_titleField'] = 'Feld der aktuellen Ressource angezeigt in den Titel der Seite.';
-$_lang['pdotools_prop_strictMode'] = 'Strict-Modus. pdoPage tun leitet beim laden nicht existierenden Seiten.';
+$_lang['pdotools_prop_title_limit'] = 'Das Limit bei der Abfrage der Eltern-Ressourcen.';
+$_lang['pdotools_prop_title_cache'] = 'Cache für die Eltern-Ressourcen für den Seiten-Titel aktivieren.';
+$_lang['pdotools_prop_title_outputSeparator'] = 'Zeichenkette, mit der die Elemente des Seiten-Titels separiert werden.';
+$_lang['pdotools_prop_registerJs'] = 'JavaScript-Variablen in die Seite einfügen, um den &ajaxMode des Snippets pdoPage zu unterstützen.';
+$_lang['pdotools_prop_tplPages'] = 'Template für die Paginierung im Seiten-Titel.';
+$_lang['pdotools_prop_tplSearch'] = 'Template für die Suchanfrage im Seiten-Titel.';
+$_lang['pdotools_prop_minQuery'] = 'Die minimale Länge der Suchanfrage für die Anzeige im Seiten-Titel.';
+$_lang['pdotools_prop_queryVarKey'] = 'Der Name des GET-Parameters, der in der URL für den Suchbegriff verwendet werden soll.';
+$_lang['pdotools_prop_titleField'] = 'Das Feld der aktuellen Ressource, das im Seitentitel angezeigt werden soll.';
+$_lang['pdotools_prop_strictMode'] = 'Strikter Modus. pdoPage leitet beim Laden nicht existierender Seiten weiter.';  // In which case? When this is turned on or off?
 
 $_lang['pdotools_prop_tplYear'] = 'Template für das Jahr';
 $_lang['pdotools_prop_tplMonth'] = 'Template für den Monat';
-$_lang['pdotools_prop_tplDay'] = 'Vorlage für das Tag';
-$_lang['pdotools_prop_dateField'] = 'Das Feld der Ressource für den Erhalt von Dokument-Datum: createdon, publishedon, oder editedon.';
-$_lang['pdotools_prop_dateFormat'] = 'Datum-format für die Funktion strftime()';
+$_lang['pdotools_prop_tplDay'] = 'Template für den Tag';
+$_lang['pdotools_prop_dateField'] = 'Das Feld der Ressource, aus dem das Dokument-Datum ausgelesen werden soll: createdon, publishedon oder editedon.';
+$_lang['pdotools_prop_dateFormat'] = 'Datumsformat für die Funktion strftime()';

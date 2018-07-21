@@ -117,7 +117,10 @@ $select = array($class => implode(',', $resourceColumns));
 // Add custom parameters
 foreach (array('where', 'select') as $v) {
     if (!empty($scriptProperties[$v])) {
-        $tmp = $modx->fromJSON($scriptProperties[$v]);
+        $tmp = $scriptProperties[$v];
+        if (!is_array($tmp)) {
+            $tmp = json_decode($tmp, true);
+        }
         if (is_array($tmp)) {
             $$v = array_merge($$v, $tmp);
         }
@@ -129,8 +132,8 @@ $pdoFetch->addTime('Conditions prepared');
 // Default parameters
 $default = array(
     'class' => $class,
-    'where' => $modx->toJSON($where),
-    'select' => $modx->toJSON($select),
+    'where' => json_encode($where),
+    'select' => json_encode($select),
     'groupby' => $class . '.id',
     'sortby' => "find_in_set(`$class`.`id`,'" . implode(',', $ids) . "')",
     'sortdir' => '',
