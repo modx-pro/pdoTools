@@ -19,6 +19,10 @@ $tmp = array(
         'type' => 'numberfield',
         'value' => '',
     ),
+    'customParents' => array(
+        'type' => 'textfield',
+        'value' => '',
+    ),
     'limit' => array(
         'type' => 'numberfield',
         'value' => 10,
