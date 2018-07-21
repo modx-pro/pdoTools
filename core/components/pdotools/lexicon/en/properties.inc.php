@@ -32,6 +32,7 @@ $_lang['pdotools_prop_resources'] = 'Comma-delimited list of ids to include in t
 $_lang['pdotools_prop_templates'] = 'Comma-delimited list of templates to filter the results. Prefix an id of template with a dash to exclude the resource with it from the result.';
 $_lang['pdotools_prop_from'] = 'Resource id from which breadcrumb is created. Usually it is root of site, e.g. "0".';
 $_lang['pdotools_prop_to'] = 'Resource id whose breadcrumb is created. By default it is id of the current resource.';
+$_lang['pdotools_prop_customParents'] = 'A comma-separated list of id\'s for custom breadcrumbs construction.';
 $_lang['pdotools_prop_users'] = 'Comma-separated list of users for output. You can use the usernames and ids. If the value starts with a dash, this user is excluded from the query.';
 $_lang['pdotools_prop_groups'] = 'Comma-separated list of users groups. You can use the names and ids. If the value starts with a dash, so the user should not be in this group.';
 $_lang['pdotools_prop_roles'] = 'Comma-separated list of users roles. You can use the names and ids. If the value starts with a dash, then this role of user should not exist.';

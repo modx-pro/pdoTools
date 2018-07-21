@@ -1,12 +1,13 @@
 Changelog for pdoTools.
 
-2.11.4 pl
+2.12.0 pl
 ==============
 - [Fenom] More security fixes from Sergey Shlokov.
 - [#278] [pdoPage] Fixed caching.
 - [pdoPage] Show internal log on &showLog=`1`.
 - [#283] [pdoMenu] Fixed use of &tplCategoryFolder according to docs.
 - [#281] [pdoTools] Fixed load of models from case sensitive paths.
+- [#277] [pdoCrumbs] Ability to specify &customParents.
 - [#265] [pdoFetch] Fixed return of "Array" on SQL errors.
 
 2.11.3 pl
