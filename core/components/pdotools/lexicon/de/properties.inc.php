@@ -34,6 +34,7 @@ $_lang['pdotools_prop_resources'] = 'Kommaseparierte Liste von IDs von Ressource
 $_lang['pdotools_prop_templates'] = 'Kommaseparierte Liste von Templates, die zur Filterung der Ergebnisse verwendet wird. Stellen Sie einer Template-ID ein Minuszeichen voran, um die Ressourcen, die dieses Template verwenden, von der Suche auszuschließen.';
 $_lang['pdotools_prop_from'] = 'ID der Ressource, von der ausgehend die Breadcrumb-Navigation erstellt wird. Normalerweise ist dies der Ursprung der Site (im Ressourcen-Baum), z.B. "0".';
 $_lang['pdotools_prop_to'] = 'ID der Ressource, für die die Breadcrumb-Navigation erstellt wird. Standardmäßig ist dies die ID der aktuellen Ressource.';
+$_lang['pdotools_prop_customParents'] = 'Die id-Liste ist kommagetrennt, um Brotkrümel zu bauen.';
 $_lang['pdotools_prop_users'] = 'Kommaseparierte Liste von Benutzern, deren Daten ausgegeben werden sollen. Sie können sowohl Benutzernamen als auch IDs verwenden. Wenn ein Wert mit einem Minuszeichen beginnt, wird dieser Benutzer von der Abfrage ausgeschlossen.';
 $_lang['pdotools_prop_groups'] = 'Kommaseparierte Liste von Benutzergruppen. Sie können sowohl Namen als auch IDs verwenden. Wenn ein Wert mit einem Minuszeichen beginnt, so werden die dieser Benutzergruppe zugeordneten Benutzer von der Suche ausgeschlossen.';
 $_lang['pdotools_prop_roles'] = 'Kommaseparierte Liste von Benutzer-Rollen. Sie können sowohl Namen als auch IDs verwenden. Wenn ein Wert mit einem Minuszeichen beginnt, so werden die dieser Rolle zugeordneten Benutzer von der Suche ausgeschlossen.';
