@@ -84,7 +84,13 @@ if (!$resource) {
     return '';
 }
 
-$parents = $modx->getParentIds($resource->id, $limit, array('context' => $resource->get('context_key')));
+if (!empty($customParents)) {
+    $customParents = is_array($customParents) ? $customParents : array_map('trim', explode(',', $customParents));
+    $parents = is_array($customParents) ? array_reverse($customParents) : array();
+}
+if (empty($parents)) {
+    $parents = $modx->getParentIds($resource->id, $limit, array('context' => $resource->get('context_key')));
+}
 if (!empty($showHome)) {
     $parents[] = $siteStart;
 }
