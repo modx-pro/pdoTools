@@ -1381,7 +1381,10 @@ class pdoTools
                 ? (integer)$options['cacheTime']
                 : (integer)$this->modx->getOption('cache_resource_expires', null, 0),
         );
-
+        
+        unset($options['setTotal']);
+        unset($options['request']);
+        
         return $cacheOptions;
     }
 
