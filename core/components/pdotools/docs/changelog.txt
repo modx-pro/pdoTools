@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.11.3 pl
+==============
+- Added French lexicon entries.
+
 2.11.2 pl
 ==============
 - Fix detection of element names starting with a number.

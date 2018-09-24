@@ -370,7 +370,7 @@ class pdoTools
                                 if (!is_array($this->modx->resource->{$resProp})) {
                                     $this->modx->resource->{$resProp} = array();
                                 }
-                                
+
                                 if ($prop == 'loadedjscripts') {
                                     $this->modx->resource->{$resProp}[$key] = $value;
                                 } else {
@@ -635,7 +635,9 @@ class pdoTools
         $idx -= $this->config['offset'];
 
         $first = empty($this->config['first']) ? ($this->config['offset'] + 1) : (integer)$this->config['first'];
-        $last = empty($this->config['last']) ? ($this->count + $this->config['offset']) : (integer)$this->config['last'];
+        $last = empty($this->config['last'])
+            ? ($this->count + $this->config['offset'])
+            : (integer)$this->config['last'];
 
         $odd = !($idx & 1);
         $resourceTpl = '';
@@ -675,7 +677,9 @@ class pdoTools
                 $conTpls = json_decode($this->config['conditionalTpls'], true);
                 if (isset($properties[$this->config['tplCondition']])) {
                     $subject = $properties[$this->config['tplCondition']];
-                    $tplOperator = !empty($this->config['tplOperator']) ? strtolower($this->config['tplOperator']) : '=';
+                    $tplOperator = !empty($this->config['tplOperator'])
+                        ? strtolower($this->config['tplOperator'])
+                        : '=';
                     $tplCon = '';
                     foreach ($conTpls as $operand => $conditionalTpl) {
                         switch ($tplOperator) {
@@ -723,7 +727,9 @@ class pdoTools
                                 break;
                             case 'isnull':
                             case 'null':
-                                $tplCon = $subject == null || strtolower($subject) == 'null' ? $conditionalTpl : $tplCon;
+                                $tplCon = $subject == null || strtolower($subject) == 'null'
+                                    ? $conditionalTpl
+                                    : $tplCon;
                                 break;
                             case 'inarray':
                             case 'in_array':
@@ -736,11 +742,13 @@ class pdoTools
                             case '>=<':
                             case '><':
                                 $operand = explode(',', $operand);
-                                $tplCon = ($subject >= min($operand) && $subject <= max($operand)) ? $conditionalTpl : $tplCon;
+                                $tplCon = ($subject >= min($operand) && $subject <= max($operand))
+                                    ? $conditionalTpl
+                                    : $tplCon;
                                 break;
                             case 'contains':
-                                $tplCon = (is_string($subject) && (strpos($subject,
-                                        $operand) !== false) ? $conditionalTpl : $tplCon);
+                                $tplCon = is_string($subject) &&
+                                    (strpos($subject, $operand) !== false ? $conditionalTpl : $tplCon);
                                 break;
                             case '==':
                             case '=':
@@ -861,6 +869,8 @@ class pdoTools
                 $rel_path = str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $path);
                 if (!preg_match('#\.(html|tpl|php)$#i', $path)) {
                     $this->addTime('Allowed extensions for @FILE elements is "html", "tpl" and "php"');
+
+                    return false;
                 } elseif (!file_exists($path)) {
                     $this->addTime('Could not find element file at "' . $rel_path . '".');
 
@@ -873,6 +883,8 @@ class pdoTools
                         /** @var modScript $element */
                         $element->_scriptName = $element->getScriptName() . $cache_name;
                     }
+                    //$element->set('static', true);
+                    //$element->set('static_file', $path);
                     $this->addTime('Created "' . $type . '" from file "' . $rel_path . '"');
                 }
                 $cacheable = false;
@@ -1166,8 +1178,8 @@ class pdoTools
                 'pdoFetch' => $this,
                 'row' => $row,
             )));
-            
-            if (!is_array($tmp)){
+
+            if (!is_array($tmp)) {
                 $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
                     ? json_decode($tmp, true)
                     : unserialize($tmp);
