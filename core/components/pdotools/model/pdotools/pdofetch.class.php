@@ -16,6 +16,53 @@ class pdoFetch extends pdoTools
     public $aliases;
 
 
+    #@smg6511
+    /*
+    Create master list of tvs used in selects and filters;
+    mainly to take into account default values for tvFilters
+    
+    MODEL: 
+
+    $tvData = array (
+        'hasSelects' => 0 or 1,
+        'hasFilters' => 0 or 1,
+        'tvs' => array (
+            'tvName' => array (
+                'alias' => 'TVtvname',
+                'select' => 1 or 0,
+                'filter' => 1 or 0,
+                'querySubject' => IFNULL() 
+            ),
+            'tvName' => array (
+                'alias' => 'TVtvname',
+                'select' => 1 or 0,
+                'filter' => 1 or 0,
+                'querySubject' => IFNULL()
+            )
+        )
+    )
+
+    */
+    protected $tvData = array('hasSelects' => false, 'hasFilters' => false);
+    protected $operators = array(
+            '<=>' => '<=>',
+            '===' => '=',
+            '!==' => '!=',
+            '<>'  => '<>',
+            '=='  => 'LIKE',
+            '!='  => 'NOT LIKE',
+            '<<'  => '<',
+            '<='  => '<=',
+            '=<'  => '=<',
+            '>>'  => '>',
+            '>='  => '>=',
+            '=>'  => '=>',
+            '[=]' => 'IN',
+            '[!]' => 'NOT IN',
+            '!!!' => 'IS NULL',
+            '!!'  => 'IS NOT NULL'
+        );
+
     /**
      * {@inheritdoc}
      */
@@ -77,16 +124,18 @@ class pdoFetch extends pdoTools
      */
     public function run()
     {
+        $this->buildTVData();
         $this->makeQuery();
-        $this->addTVFilters();
-        $this->addTVs();
+        if($this->tvData['hasFilters']){
+            $this->addTVFilters();
+        }
         $this->addJoins();
         $this->addGrouping();
         $this->addSelects();
         $this->addWhere();
         $this->addSort();
         $this->prepareQuery();
-
+        
         $output = array();
         if (strtolower($this->config['return']) == 'sql') {
             $this->addTime('Returning raw sql query');
@@ -173,8 +222,122 @@ class pdoFetch extends pdoTools
                 $this->addTime('Could not process query, error #' . $errors[1] . ': ' . $errors[2]);
             }
         }
-
+        
         return $output;
+    }
+
+
+    #@smg6511 -- two new methods:
+
+    /**
+     * Helper function to find key in multidimensional arrays (may want to put in main pdotools class?)
+     *
+     * @return bool
+     */ 
+    public function pdotArrayKeyExists($key, $array)
+    {
+        if (array_key_exists($key, $array)) {
+            return true;
+        }
+        foreach($array as $k => $v) {
+            if (is_array($v) && $this->pdotArrayKeyExists($key, $v)) {
+                return true;
+            }
+        }
+        return false;            
+    }
+
+
+    /**
+     * Builds $this->tvData array to store various info on TVs included, used in filters, and used in sorting
+     * Replaces addTVs()
+     */ 
+    public function buildTVData()
+    {
+        $time = microtime(true);
+        $includeTVs = array();
+        $tvFilters = array();
+
+        if (!empty($this->config['includeTVs'])){
+            $includeTVs = array_merge($includeTVs, array_map('trim', explode(',', $this->config['includeTVs'])));
+        }
+        # Add tvs spec'd via legacy getResources parameter
+        if (!empty($this->config['includeTVList'])) {
+            $includeTVs = array_merge($includeTVs, array_map('trim', explode(',', $this->config['includeTVList'])));
+        }
+        # Add sort tv spec'd with via legacy getResources parameter
+        if (!empty($this->config['sortbyTV'])) {
+            $includeTVs[] = trim($this->config['sortbyTV']);
+        }
+
+        if(!empty($includeTVs)){
+            $includeTVs = array_unique($includeTVs);
+            $this->tvData['hasSelects'] = true;
+            foreach ($includeTVs as $tvName) {
+                $this->tvData['tvs'][$tvName] = array('select' => 1, 'alias' => 'TV'.strtolower($tvName));
+            }
+        }
+       
+        if (!empty($this->config['tvFilters'])){
+            $this->tvData['hasFilters'] = true;
+            
+            # Get tv names from filter string
+            $pattern = '/\w[^,|<>=]*(?='.implode('|', array_map('preg_quote',array_keys($this->operators))).')/';
+            preg_match_all($pattern, $this->config['tvFilters'], $matches);
+            $filterTVs = array_unique(array_map('trim', $matches[0]));
+
+            foreach ($filterTVs as $tvName) {
+                if($this->pdotArrayKeyExists($tvName, $this->tvData)){
+                    $this->tvData['tvs'][$tvName]['filter'] = 1;
+                } else {
+                    $this->tvData['tvs'][$tvName] = array('select' => 0,'filter' => 1, 'alias' => 'TV'.strtolower($tvName));
+                }
+            }
+        }
+        
+        $allTVs = array_unique(array_merge($includeTVs,$filterTVs));
+
+        if(!empty($allTVs)){
+            $tvPrefix = !empty($this->config['tvPrefix']) ? trim($this->config['tvPrefix']) : '' ;
+            $class = !empty($this->config['joinTVsTo'])
+                ? $this->config['joinTVsTo']
+                : $this->config['class'];
+            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap['modResource']);
+            if (!preg_match('#^modResource$#i', $class) && !count($subclass)) {
+                $this->modx->log(modX::LOG_LEVEL_ERROR,
+                    '[pdoTools] Could not join TVs to the class "' . $class . '" that is not a subclass of the "modResource". Try to specify correct class in the "joinTVsTo" parameter.');
+            } else {
+                $q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $allTVs));
+                $q->select('id,name,type,default_text');
+                $tstart = microtime(true);
+                if ($q->prepare() && $q->stmt->execute()) {
+                    $this->modx->queryTime += microtime(true) - $tstart;
+                    $this->modx->executedQueries++;
+                    $tvs = array();
+                    while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $alias = $this->tvData['tvs'][$tv['name']]['alias'];
+                        $defaultValue = $this->modx->quote($tv['default_text']);
+                        $this->config['tvsJoin'][strtolower($tv['name'])] = array(
+                            'class' => 'modTemplateVarResource',
+                            'alias' => $alias,
+                            'on' => '`' . $alias . '`.`contentid` = `' . $class . '`.`id` AND `' . $alias . '`.`tmplvarid` = ' . $tv['id'],
+                            'tv' => $tv,
+                        );
+                        $this->config['tvsSelect'][$alias] = array(
+                            '`' . $tvPrefix . $tv['name'] . '`' => 'IFNULL(`' . $alias . '`.`value`, ' . $defaultValue . ')'
+                        );
+                        # Save query subject for filters (later used to fix issue with filters not taking default values into account)
+                        if($this->tvData['tvs'][$tv['name']]['filter'] == 1){
+                            $this->tvData['tvs'][$tv['name']]['querySubject'] = 'IFNULL(`' . $alias . '`.`value`, ' . $defaultValue . ')';
+                        }
+                        
+                        $tvs[] = $tv['name'];
+                    }
+
+                    $this->addTime('Built tv data array: <b>' . implode(', ', $tvs) . '</b>', microtime(true) - $time);
+                }
+            }
+        }
     }
 
 
@@ -543,68 +706,6 @@ class pdoFetch extends pdoTools
 
 
     /**
-     * Add selection of template variables to query
-     */
-    public function addTVs()
-    {
-        $time = microtime(true);
-
-        $includeTVs = $this->config['includeTVs'];
-        $tvPrefix = !empty($this->config['tvPrefix']) ?
-            trim($this->config['tvPrefix'])
-            : '';
-
-        if (!empty($this->config['includeTVList']) && (empty($includeTVs) || is_numeric($includeTVs))) {
-            $this->config['includeTVs'] = $includeTVs = $this->config['includeTVList'];
-        }
-        if (!empty($this->config['sortbyTV'])) {
-            $includeTVs .= empty($includeTVs)
-                ? $this->config['sortbyTV']
-                : ',' . $this->config['sortbyTV'];
-        }
-
-        if (!empty($includeTVs)) {
-            $class = !empty($this->config['joinTVsTo'])
-                ? $this->config['joinTVsTo']
-                : $this->config['class'];
-            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap['modResource']);
-            if (!preg_match('#^modResource$#i', $class) && !count($subclass)) {
-                $this->modx->log(modX::LOG_LEVEL_ERROR,
-                    '[pdoTools] Could not join TVs to the class "' . $class . '" that is not a subclass of the "modResource". Try to specify correct class in the "joinTVsTo" parameter.');
-            } else {
-                $tvs = array_map('trim', explode(',', $includeTVs));
-                $tvs = array_unique($tvs);
-                if (!empty($tvs)) {
-                    $q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $tvs));
-                    $q->select('id,name,type,default_text');
-                    $tstart = microtime(true);
-                    if ($q->prepare() && $q->stmt->execute()) {
-                        $this->modx->queryTime += microtime(true) - $tstart;
-                        $this->modx->executedQueries++;
-                        $tvs = array();
-                        while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
-                            $name = strtolower($tv['name']);
-                            $alias = 'TV' . $name;
-                            $this->config['tvsJoin'][$name] = array(
-                                'class' => 'modTemplateVarResource',
-                                'alias' => $alias,
-                                'on' => '`TV' . $name . '`.`contentid` = `' . $class . '`.`id` AND `TV' . $name . '`.`tmplvarid` = ' . $tv['id'],
-                                'tv' => $tv,
-                            );
-                            $this->config['tvsSelect'][$alias] = array('`' . $tvPrefix . $tv['name'] . '`' => 'IFNULL(`' . $alias . '`.`value`, ' . $this->modx->quote($tv['default_text']) . ')');
-                            $tvs[] = $tv['name'];
-                        }
-
-                        $this->addTime('Included list of tvs: <b>' . implode(', ', $tvs) . '</b>',
-                            microtime(true) - $time);
-                    }
-                }
-            }
-        }
-    }
-
-
-    /**
      * This method handles popular parameters and adds conditions to query
      *
      * @param array $where Current conditions
@@ -867,28 +968,9 @@ class pdoFetch extends pdoTools
         if (empty($this->config['tvFilters'])) {
             return;
         }
-        $tvFiltersAndDelimiter = $this->config['tvFiltersAndDelimiter'];
-        $tvFiltersOrDelimiter = $this->config['tvFiltersOrDelimiter'];
 
-        $tvFilters = array_map('trim', explode($tvFiltersOrDelimiter, $this->config['tvFilters']));
-        $operators = array(
-            '<=>' => '<=>',
-            '===' => '=',
-            '!==' => '!=',
-            '<>' => '<>',
-            '==' => 'LIKE',
-            '!=' => 'NOT LIKE',
-            '<<' => '<',
-            '<=' => '<=',
-            '=<' => '=<',
-            '>>' => '>',
-            '>=' => '>=',
-            '=>' => '=>',
-        );
+        $tvFilters = array_map('trim', explode($this->config['tvFiltersOrDelimiter'], $this->config['tvFilters']));
 
-        $includeTVs = !empty($this->config['includeTVs'])
-            ? array_map('trim', explode(',', $this->config['includeTVs']))
-            : array();
         $where = array();
         if (!empty($this->config['where'])) {
             $tmp = $this->config['where'];
@@ -899,36 +981,30 @@ class pdoFetch extends pdoTools
                 $where = array($where);
             }
         }
-
+        
         $conditions = array();
         foreach ($tvFilters as $tvFilter) {
             $condition = array();
-            $filters = explode($tvFiltersAndDelimiter, $tvFilter);
+            $filters = explode($this->config['tvFiltersAndDelimiter'], $tvFilter);
             foreach ($filters as $filter) {
-                $operator = '==';
-                $sqlOperator = 'LIKE';
-                foreach ($operators as $op => $opSymbol) {
-                    if (strpos($filter, $op, 1) !== false) {
-                        $operator = $op;
-                        $sqlOperator = $opSymbol;
-                        break;
-                    }
+                $filter = preg_split('/([!<=>\[\]]{2,3})/', $filter, 0, PREG_SPLIT_DELIM_CAPTURE);
+                $sqlOperator = $this->operators[$filter[1]];
+
+                if(strpos($sqlOperator, 'IN') !== false){
+                    $options = array_map(function($option){
+                        return $this->modx->quote(trim($option));
+                    }, explode($this->config['tvFiltersInDelimiter'],$filter[2]));
+                    $condition[] = $this->tvData['tvs'][$filter[0]]['querySubject'] . ' ' . $sqlOperator . ' (' .implode(',',$options). ')';
+                } elseif (strpos($sqlOperator, 'NULL') !== false) {
+                    # In this case, we do not want to factor in the default value, so do not use ISNULL function
+                    $condition[] = $filter[0] . ' ' . $sqlOperator;
+                } else {
+                    $condition[] = $this->tvData['tvs'][$filter[0]]['querySubject'] . ' ' . $sqlOperator . ' ' . $this->modx->quote($filter[2]);
                 }
-                $filter = array_map('trim', explode($operator, $filter));
-                if (!in_array($filter[0], $includeTVs)) {
-                    $includeTVs[] = $filter[0];
-                }
-                $condition[] = $filter[0] . ' ' . $sqlOperator . ' ' . $this->modx->quote($filter[1]);
             }
             $conditions[] = implode(' AND ', $condition);
         }
-        if (count($conditions) > 1) {
-            $where[] = '((' . implode(') OR (', $conditions) . '))';
-        } else {
-            $where[] = $conditions[0];
-        }
-
-        $this->config['includeTVs'] = implode(',', $includeTVs);
+        $where[] = count($conditions) > 1 ? '((' . implode(') OR (', $conditions) . '))' : $conditions[0] ;
         $this->config['where'] = $where;
         $this->addTime('Added TVs filters', microtime(true) - $time);
     }
