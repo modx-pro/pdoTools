@@ -245,7 +245,7 @@ class pdoTools
             foreach ($tmp as $k => $v) {
                 if (!is_array($v)) {
                     $v = array(
-                        'path' => trim(strtolower($v)),
+                        'path' => trim($v),
                     );
                 }
                 $v = array_merge(array(
