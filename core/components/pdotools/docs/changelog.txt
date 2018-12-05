@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.11.4 pl
+==============
+- [Fenom] More security fixes from Sergey Shlokov.
+
 2.11.3 pl
 ==============
 - Added French lexicon entries.

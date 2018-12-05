@@ -301,9 +301,9 @@ class FenomX extends Fenom
                 $id = $modx->user->get('id');
                 $user = $modx->user;
             } else {
-                $user = $modx->getObject('modUser', $id);
+                $user = $modx->getObject('modUser', ['id' => intval($id)]);
             }
-            $member = $user->isMember($groups, $matchAll);
+            $member = is_object($user) ? $user->isMember($groups, $matchAll) : false;
             $pdo->debugParserModifier($id, 'ismember', $groups);
 
             return $member;
@@ -407,7 +407,7 @@ class FenomX extends Fenom
                 $field = $id;
                 $resource = $modx->resource;
             } elseif (!$resource = $pdo->getStore($id, 'resource')) {
-                $resource = $modx->getObject('modResource', $id);
+                $resource = $modx->getObject('modResource', ['id' => intval($id)]);
                 $pdo->setStore($id, $resource, 'resource');
             }
 
