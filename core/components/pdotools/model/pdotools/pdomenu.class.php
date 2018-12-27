@@ -283,10 +283,10 @@ class pdoMenu
             $tpl = 'tplHere';
         } elseif ($row['children'] && $this->isHere($row_id) && !empty($this->pdoTools->config['tplParentRowActive'])) {
             $tpl = 'tplParentRowActive';
-        } elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolder'])) {
+        } elseif ($row['children'] && (!empty($row['isfolder']) || empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolder'])) {
             $tpl = 'tplCategoryFolder';
         } // It's a typo, but it is left for backward compatibility
-        elseif ($row['children'] && (empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolders'])) {
+        elseif ($row['children'] && (!empty($row['isfolder']) || empty($row['template']) || strpos($row['link_attributes'], 'category') != false) && !empty($this->pdoTools->config['tplCategoryFolders'])) {
             $tpl = 'tplCategoryFolders';
         } // ---
         elseif ($row['children'] && !empty($this->pdoTools->config['tplParentRow'])) {

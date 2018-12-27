@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - [Fenom] More security fixes from Sergey Shlokov.
 - [#278] [pdoPage] Fixed caching.
 - [pdoPage] Show internal log on &showLog=`1`.
+- [#283] [pdoMenu] Fixed use of &tplCategoryFolder according to docs.
 
 2.11.3 pl
 ==============
