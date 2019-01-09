@@ -103,6 +103,7 @@ if (isset($_REQUEST[$pageVarKey]) && $strictMode && (!is_numeric($_REQUEST[$page
 }
 $scriptProperties['page'] = $page;
 $scriptProperties['request'] = $_REQUEST;
+$scriptProperties['setTotal'] = true;
 
 // Limit
 if (isset($_REQUEST['limit'])) {
@@ -138,7 +139,6 @@ $data = $cache
     : array();
 
 if (empty($data)) {
-    $scriptProperties['setTotal'] = true;
     $output = $pdoPage->pdoTools->runSnippet($scriptProperties['element'], $scriptProperties);
     if ($output === false) {
         return '';
@@ -205,6 +205,10 @@ if (empty($data)) {
     if ($cache) {
         $pdoPage->pdoTools->setCache($data, $scriptProperties);
     }
+}
+
+if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+    $data['output'] .= '<pre class="pdoPageLog">' . print_r($pdoPage->pdoTools->getTime(), 1) . '</pre>';
 }
 
 if ($isAjax) {

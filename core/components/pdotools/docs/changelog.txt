@@ -3,6 +3,8 @@ Changelog for pdoTools.
 2.11.4 pl
 ==============
 - [Fenom] More security fixes from Sergey Shlokov.
+- [#278] [pdoPage] Fixed caching.
+- [pdoPage] Show internal log on &showLog=`1`.
 
 2.11.3 pl
 ==============
