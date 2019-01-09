@@ -87,7 +87,7 @@ class pdoFetch extends pdoTools
         $this->addSort();
         $this->prepareQuery();
 
-        $output = array();
+        $output = '';
         if (strtolower($this->config['return']) == 'sql') {
             $this->addTime('Returning raw sql query');
             $output = $this->query->toSQL();
@@ -1058,7 +1058,7 @@ class pdoFetch extends pdoTools
         $instance->modx->exec('SET SQL_BIG_SELECTS = 1');
         $instance->addTime('SQL prepared <small>"' . $instance->query->toSQL() . '"</small>');
 
-        $rows = array();
+        $rows = '';
         $tstart = microtime(true);
         if ($instance->query->stmt->execute()) {
             $instance->addTime('SQL executed', microtime(true) - $tstart);

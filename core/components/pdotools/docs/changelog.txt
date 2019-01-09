@@ -7,6 +7,7 @@ Changelog for pdoTools.
 - [pdoPage] Show internal log on &showLog=`1`.
 - [#283] [pdoMenu] Fixed use of &tplCategoryFolder according to docs.
 - [#281] [pdoTools] Fixed load of models from case sensitive paths.
+- [#265] [pdoFetch] Fixed return of "Array" on SQL errors.
 
 2.11.3 pl
 ==============
