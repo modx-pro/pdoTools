@@ -30,7 +30,8 @@ class microMODX
         $this->config = $modx->config;
 
         if ($modx->context) {
-            $this->context = $modx->context->toArray();
+            $context = $this->modx->getObject('modContext', array('key' => $modx->context->get('key')));
+            $this->context = $context->toArray();
         }
         if ($modx->resource) {
             $this->resource = $modx->resource->toArray();
