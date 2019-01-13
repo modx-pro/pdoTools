@@ -138,6 +138,8 @@ class FenomX extends Fenom
                 'strlen' => 'Fenom\Modifier::length',
                 'number_format' => 'number_format',
                 'number' => 'number_format',
+                'reset' => 'reset',
+                'end' => 'end',
             )
         );
 
