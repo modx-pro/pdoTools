@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.12.1 pl
 ==============
 - [pdoMenu] Reverted back #283 and fixed docs for &tplCategoryFolder.
+- [#284] [Fenom] Fixed properties of $_modx->context variable.
 
 2.12.0 pl
 ==============

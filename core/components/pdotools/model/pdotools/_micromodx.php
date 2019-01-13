@@ -29,8 +29,8 @@ class microMODX
         $this->pdoTools = $pdoTools;
         $this->config = $modx->config;
 
-        if ($modx->context) {
-            $this->context = $modx->context->toArray();
+        if ($modx->context && $context = $this->modx->getObject('modContext', $modx->context->get('key'))) {
+            $this->context = $context->toArray();
         }
         if ($modx->resource) {
             $this->resource = $modx->resource->toArray();
