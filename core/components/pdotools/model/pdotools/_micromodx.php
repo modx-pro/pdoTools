@@ -535,6 +535,19 @@ class microMODX
     {
         return modResource::filterPathSegment($this->modx, $alias);
     }
+    
+    /**
+     * @param string $class
+     *
+     * @return integer
+     */
+    public function maxPK($class = 'modResource')
+    {
+        $stmt = $this->modx->query("SELECT MAX({$this->modx->getPK($class)}) FROM {$this->modx->getTableName($class)}");
+        $maxPK = (integer) $stmt->fetch(PDO::FETCH_COLUMN);
+        $stmt->closeCursor();
+        return $maxPK;
+    }
 
 }
 
