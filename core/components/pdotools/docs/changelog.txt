@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.12.2 pl
+==============
+- Updated chunks for Bootstrap 4.
+
 2.12.1 pl
 ==============
 - [pdoMenu] Reverted back #283 and fixed docs for &tplCategoryFolder.

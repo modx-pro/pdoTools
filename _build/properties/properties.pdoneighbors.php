@@ -27,19 +27,19 @@ $tmp = array(
 
     'tplPrev' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <span class="link-prev"><a href="[[+link]]">&larr; [[+menutitle]]</a></span>',
+        'value' => '@INLINE <span class="link-prev"><a href="[[+link]]" class="btn btn-light">&larr; [[+menutitle]]</a></span>',
     ),
     'tplUp' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <span class="link-up">&uarr; <a href="[[+link]]">[[+menutitle]]</a></span>',
+        'value' => '@INLINE <span class="link-up"><a href="[[+link]]" class="btn btn-light">&uarr; [[+menutitle]]</a></span>',
     ),
     'tplNext' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <span class="link-next"><a href="[[+link]]">[[+menutitle]] &rarr;</a></span>',
+        'value' => '@INLINE <span class="link-next"><a href="[[+link]]" class="btn btn-light">[[+menutitle]] &rarr;</a></span>',
     ),
     'tplWrapper' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <div class="neighbors">[[+prev]][[+up]][[+next]]</div>',
+        'value' => '@INLINE <div class="neighbors d-flex justify-content-between">[[+prev]][[+up]][[+next]]</div>',
         'desc' => 'pdotools_prop_neighbors_tplWrapper',
     ),
     'wrapIfEmpty' => array(

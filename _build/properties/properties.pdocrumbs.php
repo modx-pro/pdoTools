@@ -80,15 +80,15 @@ $tmp = array(
 
     'tpl' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li><a href="[[+link]]">[[+menutitle]]</a></li>',
+        'value' => '@INLINE <li class="breadcrumb-item"><a href="[[+link]]">[[+menutitle]]</a></li>',
     ),
     'tplCurrent' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="active">[[+menutitle]]</li>',
+        'value' => '@INLINE <li class="breadcrumb-item active">[[+menutitle]]</li>',
     ),
     'tplMax' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="disabled">&nbsp;...&nbsp;</li>',
+        'value' => '@INLINE <li class="breadcrumb-item disabled">&nbsp;...&nbsp;</li>',
     ),
     'tplHome' => array(
         'type' => 'textfield',
@@ -96,7 +96,7 @@ $tmp = array(
     ),
     'tplWrapper' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <ul class="breadcrumb">[[+output]]</ul>',
+        'value' => '@INLINE <ol class="breadcrumb">[[+output]]</ol>',
     ),
     'wrapIfEmpty' => array(
         'type' => 'combo-boolean',
