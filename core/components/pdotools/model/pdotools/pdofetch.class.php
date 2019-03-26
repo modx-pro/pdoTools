@@ -146,8 +146,8 @@ class pdoFetch extends pdoTools
                             } else {
                                 $row['link'] = $this->makeUrl($row['id'], $row);
                             }
-                        } else {
-                            $row['link'] = $row['link'] ?: '';
+                        } elseif (!isset($row['link'])) {
+                            $row['link'] = '';
                         }
 
                         $tpl = $this->defineChunk($row);
