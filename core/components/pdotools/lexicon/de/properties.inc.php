@@ -170,7 +170,7 @@ $_lang['pdotools_prop_ajaxHistory'] = 'Seitennummer in der URL speichern, wenn S
 $_lang['pdotools_prop_frontend_js'] = 'URL des JavaScripts, das durch das Snippet geladen wird.';
 $_lang['pdotools_prop_frontend_css'] = 'URL der CSS-Datei, das durch das Snippet geladen wird.';
 
-$_lang['pdotools_prop_setMeta'] = 'Registrierung von Metatags mit Links zur vorherigen und zur nächsten Seite.';
+$_lang['pdotools_prop_setMeta'] = 'Registrierung des kanonischen tag.';
 
 $_lang['pdotools_prop_title_limit'] = 'Das Limit bei der Abfrage der Eltern-Ressourcen.';
 $_lang['pdotools_prop_title_cache'] = 'Cache für die Eltern-Ressourcen für den Seiten-Titel aktivieren.';
