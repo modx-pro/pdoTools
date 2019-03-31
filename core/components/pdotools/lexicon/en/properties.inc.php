@@ -170,7 +170,7 @@ $_lang['pdotools_prop_ajaxHistory'] = 'Save the page number in the url when work
 $_lang['pdotools_prop_frontend_js'] = 'Link on javascript for loading by the snippet.';
 $_lang['pdotools_prop_frontend_css'] = 'Link on css styles for loading by the snippet.';
 
-$_lang['pdotools_prop_setMeta'] = 'Registration of meta tags with links to previous and next page.';
+$_lang['pdotools_prop_setMeta'] = 'Registration of canonical tag.';
 
 $_lang['pdotools_prop_title_limit'] = 'The limit of a query for parents of the resource.';
 $_lang['pdotools_prop_title_cache'] = 'Enable cache of resource parents for the page title.';
