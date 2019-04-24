@@ -24,6 +24,7 @@ if (!empty($properties)) {
     }
     $scriptProperties['additionalPlaceholders'] = $additionalPlaceholders;
 }
+$additionalPlaceholders = $scriptProperties['additionalPlaceholders']
 
 /** @var pdoFetch $pdoFetch */
 $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
