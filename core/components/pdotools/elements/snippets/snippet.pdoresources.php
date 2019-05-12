@@ -10,7 +10,7 @@ if (!empty($returnIds)) {
 // Adding extra parameters into special place so we can put them in a results
 /** @var modSnippet $snippet */
 $additionalPlaceholders = $properties = array();
-if (isset($this) && $this instanceof modSnippet) {
+if (isset($this) && $this instanceof modSnippet && !empty($this->get('properties')) {
     $properties = $this->get('properties');
 }
 elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
