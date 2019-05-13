@@ -139,7 +139,8 @@ $data = $cache
     : array();
 
 if (empty($data)) {
-    $output = $pdoPage->pdoTools->runSnippet($scriptProperties['element'], $scriptProperties);
+    $element = $scriptProperties['element'];
+    $output = $pdoPage->pdoTools->runSnippet(strpos($element, '!') === 0 ? $element : ('!' . $element), $scriptProperties);
     if ($output === false) {
         return '';
     } elseif (!empty($toPlaceholder)) {
