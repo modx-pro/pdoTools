@@ -1,6 +1,6 @@
 <?php
 /** @var array $scriptProperties */
-if (isset($parents) && $parents === '') {
+if (isset($parents) && $parents === '' && !(isset($resources) && $resources !== '')) {
     $scriptProperties['parents'] = $modx->resource->id;
 }
 if (!empty($returnIds)) {
