@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.13.0 pl
+==============
+- Add Fenom soft mode. This option, when compiling a Fenom tag error, enables the output of this tag as is. To inverse JS / JSON.
+
 2.12.3 pl
 ==============
 - Fixed E_NOTICE introduced in #285.

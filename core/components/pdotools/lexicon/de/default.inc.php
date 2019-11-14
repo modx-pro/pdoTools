@@ -43,3 +43,5 @@ $_lang['setting_pdotools_fenom_cache'] = 'Caching verarbeiteter Chunks';
 $_lang['setting_pdotools_fenom_cache_desc'] = 'Wenn Sie große und komplexe Fenom-Chunks verwenden, können Sie das Caching der verarbeiteten Versionen aktivieren. Diese werden nur aktualisiert, wenn Sie den System-Cache leeren. Nicht empfohlen während der Entwicklung der Website.';
 $_lang['setting_pdotools_fenom_save_on_errors'] = 'Fehlermeldungen speichern';
 $_lang['setting_pdotools_fenom_save_on_errors_desc'] = 'Aktivieren Sie diese Einstellung, um die Fenom-Compiler-Fehlermeldungen im Verzeichnis "core/cache/default/pdotools/error" zum späteren Debuggen zu speichern.';
+$_lang['setting_pdotools_fenom_soft_mode'] = 'Fenom soft mode';
+$_lang['setting_pdotools_fenom_soft_mode_desc'] = 'Diese Option aktiviert beim Kompilieren eines Fenom-Tag-Fehlers die Ausgabe dieses Tags wie sie ist. Um JS / JSON zu invertieren.';

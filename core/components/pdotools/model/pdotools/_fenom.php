@@ -48,6 +48,9 @@ class FenomX extends Fenom
             $this->removeAccessor('php');
             $options['disable_native_funcs'] = true;
         }
+		if ($pdoTools->config['useFenomSoftMode']) {
+            $options['modx_soft_mode'] = $pdoTools->config['useFenomSoftMode'];
+        }
         $this->setOptions($options);
 
         $this->pdoTools = $pdoTools;
