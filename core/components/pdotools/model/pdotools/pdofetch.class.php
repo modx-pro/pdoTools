@@ -918,7 +918,11 @@ class pdoFetch extends pdoTools
                 if (!in_array($filter[0], $includeTVs)) {
                     $includeTVs[] = $filter[0];
                 }
-                $condition[] = $filter[0] . ' ' . $sqlOperator . ' ' . $this->modx->quote($filter[1]);
+                if(!is_numeric($filter[1])) {
+					$condition[] = $filter[0] . ' ' . $sqlOperator . ' ' . $this->modx->quote($filter[1]);
+				} else {
+					$condition[] = $filter[0] . ' ' . $sqlOperator . ' ' . $filter[1];
+				}
             }
             $conditions[] = implode(' AND ', $condition);
         }
