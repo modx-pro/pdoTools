@@ -2,8 +2,9 @@ Changelog for pdoTools.
 
 2.12.3 pl
 ==============
-- Improved running snippet via @FILE binding.
-- Fix adding quotes to numeric values.
+- [#290] Improved running snippet via @FILE binding.
+- [#296] Fix adding quotes to numeric values.
+- [#297] Make cross context weblink url possible.
 
 2.12.3 pl
 ==============
