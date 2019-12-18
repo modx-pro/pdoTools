@@ -181,7 +181,7 @@ pdoPage.loadPage = function (href, config, mode) {
                 wrapper.removeClass('loading');
                 if (config['mode'] != 'scroll') {
                     wrapper.css({opacity: 1});
-                    if (config['mode'] == 'default') {
+                    if (config['mode'] == 'default' && config['scrollTop'] !== false) {
                         $('html, body').animate({scrollTop: wrapper.position().top - 50 || 0}, 0);
                     }
                 }
