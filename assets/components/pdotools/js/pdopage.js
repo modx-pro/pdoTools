@@ -87,7 +87,7 @@ pdoPage.initialize = function (config) {
                 // Scroll pagination
                 var wrapper = $(config['wrapper']);
                 var $window = $(window);
-                $window.on('scroll', function () {
+                $window.on('load scroll', function () {
                     if (!pdoPage.Reached && $window.scrollTop() > wrapper.height() - $window.height()) {
                         pdoPage.Reached = true;
                         pdoPage.addPage(config);
@@ -168,6 +168,11 @@ pdoPage.loadPage = function (href, config, mode) {
                 }
                 else if (config['mode'] == 'scroll') {
                     pdoPage.Reached = false;
+                    var $window = $(window);
+                    if ($window.scrollTop() > wrapper.height() - $window.height()) {
+                        pdoPage.Reached = true;
+                        pdoPage.addPage(config);
+                    }
                 }
             }
             else {
@@ -181,7 +186,7 @@ pdoPage.loadPage = function (href, config, mode) {
                 wrapper.removeClass('loading');
                 if (config['mode'] != 'scroll') {
                     wrapper.css({opacity: 1});
-                    if (config['mode'] == 'default') {
+                    if (config['mode'] == 'default' && config['scrollTop'] !== false) {
                         $('html, body').animate({scrollTop: wrapper.position().top - 50 || 0}, 0);
                     }
                 }

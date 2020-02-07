@@ -7,6 +7,7 @@ Changelog for pdoTools.
 - [#297] Make cross context weblink url possible.
 - [#274] [Fenom] User, resource and context properties are now dinamic.
 - [#287] [pdoPage] Remove prev & next meta tags
+- [#294] [#298] Improved pdopage.js and updated minified js files
 
 2.12.3 pl
 ==============
