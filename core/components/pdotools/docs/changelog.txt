@@ -2,6 +2,10 @@ Changelog for pdoTools.
 
 2.12.3 pl
 ==============
+- Improved running snippet via @FILE binding.
+
+2.12.3 pl
+==============
 - Fixed E_NOTICE introduced in #285.
 
 2.12.2 pl
