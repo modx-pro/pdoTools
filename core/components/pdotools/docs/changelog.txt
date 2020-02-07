@@ -5,6 +5,7 @@ Changelog for pdoTools.
 - [#290] Improved running snippet via @FILE binding.
 - [#296] Fix adding quotes to numeric values.
 - [#297] Make cross context weblink url possible.
+- [#274] [Fenom] User, resource and context properties are now dinamic.
 
 2.12.3 pl
 ==============

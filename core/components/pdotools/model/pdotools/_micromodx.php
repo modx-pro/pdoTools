@@ -14,10 +14,7 @@ class microMODX
     /** @var microMODXCacheManager */
     public $cacheManager;
 
-    public $config = array();
-    public $context = array();
-    public $resource = array();
-    public $user = array();
+    public $config = [];
 
 
     /**
@@ -29,31 +26,41 @@ class microMODX
         $this->pdoTools = $pdoTools;
         $this->config = $modx->config;
 
-        if ($modx->context && $context = $this->modx->getObject('modContext', $modx->context->get('key'))) {
-            $this->context = $context->toArray();
-        }
-        if ($modx->resource) {
-            $this->resource = $modx->resource->toArray();
-            $this->resource['content'] = $modx->resource->getContent();
-            // TV parameters
-            foreach ($this->resource as $k => $v) {
-                if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
-                    $this->resource[$k] = $modx->resource->getTVValue($k);
-                }
-            }
-        }
-        if ($modx->user) {
-            $this->user = $modx->user->toArray();
-            /** @var modUserProfile $profile */
-            if ($profile = $modx->user->getOne('Profile')) {
-                $tmp = $profile->toArray();
-                unset($tmp['id']);
-                $this->user = array_merge($this->user, $tmp);
-            }
-        }
-
         $this->lexicon = new microMODXLexicon($modx);
         $this->cacheManager = new microMODXCacheManager($modx);
+    }
+
+    /**
+     * @param $name
+     * @return array|null
+     */
+    public function __get($name)
+    {
+        $data = null;
+        if ($name == 'resource' && $this->modx->resource) {
+            $data = $this->modx->resource->toArray();
+            $data['content'] = $this->modx->resource->getContent();
+            // TV parameters
+            foreach ($data as $k => $v) {
+                if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
+                    $data[$k] = $this->modx->resource->getTVValue($k);
+                } elseif ($k[0] == '_') {
+                    unset($data[$k]);
+                }
+            }
+        } elseif ($name == 'user' && $this->modx->user) {
+            $data = $this->modx->user->toArray();
+            /** @var modUserProfile $profile */
+            if ($profile = $this->modx->user->Profile) {
+                $tmp = $profile->toArray();
+                unset($tmp['id']);
+                $data = array_merge($data, $tmp);
+            }
+        } elseif ($name == 'context' && $this->modx->context) {
+            $data = $this->modx->context->toArray();
+        }
+
+        return $data;
     }
 
 
@@ -64,7 +71,7 @@ class microMODX
      *
      * @return null|string
      */
-    public function lexicon($key, $params = array(), $language = '')
+    public function lexicon($key, $params = [], $language = '')
     {
         return $this->modx->lexicon($key, $params, $language);
     }
@@ -76,7 +83,7 @@ class microMODX
      *
      * @return string
      */
-    public function getChunk($name, array $placeholders = array())
+    public function getChunk($name, array $placeholders = [])
     {
         $this->pdoTools->debugParserMethod('getChunk', $name, $placeholders);
         $result = $this->pdoTools->getChunk($name, $placeholders);
@@ -110,7 +117,7 @@ class microMODX
      *
      * @return string
      */
-    public function runSnippet($name, array $params = array())
+    public function runSnippet($name, array $params = [])
     {
         $this->pdoTools->debugParserMethod('runSnippet', $name, $params);
         $output = $this->pdoTools->runSnippet($name, $params);
@@ -129,7 +136,7 @@ class microMODX
      *
      * @return string
      */
-    public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = array())
+    public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = [])
     {
         $this->pdoTools->debugParserMethod('makeUrl', $id, $args);
         $result = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
@@ -217,19 +224,19 @@ class microMODX
      *
      * @return array
      */
-    public function runProcessor($action = '', $scriptProperties = array(), $options = array())
+    public function runProcessor($action = '', $scriptProperties = [], $options = [])
     {
         $this->pdoTools->debugParserMethod('runProcessor', $action, $scriptProperties);
         /** @var modProcessorResponse $response */
         $response = $this->modx->runProcessor($action, $scriptProperties, $options);
         $this->pdoTools->debugParserMethod('runProcessor', $action, $scriptProperties);
 
-        return array(
+        return [
             'success' => !$response->isError(),
             'message' => $response->getMessage(),
             'response' => $response->getResponse(),
             'errors' => $response->getFieldErrors(),
-        );
+        ];
     }
 
 
@@ -295,7 +302,7 @@ class microMODX
      * @param string $type
      * @param array $options
      */
-    public function sendError($type = '', $options = array())
+    public function sendError($type = '', $options = [])
     {
         $this->modx->sendError($type, $options);
     }
@@ -417,7 +424,7 @@ class microMODX
      *
      * @return array
      */
-    public function getChildIds($id = null, $depth = 10, array $options = array())
+    public function getChildIds($id = null, $depth = 10, array $options = [])
     {
         return $this->modx->getChildIds($id, $depth, $options);
     }
@@ -430,7 +437,7 @@ class microMODX
      *
      * @return array
      */
-    public function getParentIds($id = null, $height = 10, array $options = array())
+    public function getParentIds($id = null, $height = 10, array $options = [])
     {
         return $this->modx->getParentIds($id, $height, $options);
     }
@@ -452,22 +459,22 @@ class microMODX
         $queries = isset($this->modx->executedQueries) ? $this->modx->executedQueries : 0;
         $source = $this->modx->resourceGenerated ? 'database' : 'cache';
 
-        $info = array(
+        $info = [
             'queries' => $queries,
             'totalTime' => $totalTime,
             'queryTime' => $queryTime,
             'phpTime' => $phpTime,
             'source' => $source,
             'log' => "\n" . $this->pdoTools->getTime(),
-        );
+        ];
 
         if (empty($key) && !empty($string)) {
-            $output = array();
+            $output = [];
             foreach ($info as $key => $value) {
-                $output[] = $this->pdoTools->parseChunk($tpl, array(
+                $output[] = $this->pdoTools->parseChunk($tpl, [
                     'key' => $key,
                     'value' => $value,
-                ));
+                ]);
             }
 
             return implode("\n", $output);
@@ -485,12 +492,12 @@ class microMODX
      *
      * @return array|bool
      */
-    public function getResource($id, array $options = array())
+    public function getResource($id, array $options = [])
     {
         if (!is_array($id) && is_numeric($id)) {
-            $where = array(
+            $where = [
                 'id' => (int)$id,
-            );
+            ];
         } else {
             $where = $id;
         }
@@ -512,7 +519,7 @@ class microMODX
      *
      * @return array|bool
      */
-    public function getResources($where, array $options = array())
+    public function getResources($where, array $options = [])
     {
         $output = false;
         $this->pdoTools->debugParserMethod('getResources', $where, $options);
@@ -602,7 +609,7 @@ class microMODXCacheManager
      *
      * @return mixed
      */
-    public function get($key, $options = array())
+    public function get($key, $options = [])
     {
         return $this->cacheManager->get($key, $options);
     }
@@ -615,7 +622,7 @@ class microMODXCacheManager
      *
      * @return bool
      */
-    public function set($key, & $var, $lifetime = 0)
+    public function set($key, &$var, $lifetime = 0)
     {
         // $options is not used due to security reasons
         return $this->cacheManager->set($key, $var, $lifetime);
