@@ -3,6 +3,7 @@ Changelog for pdoTools.
 2.12.3 pl
 ==============
 - Improved running snippet via @FILE binding.
+- Fix adding quotes to numeric values.
 
 2.12.3 pl
 ==============
