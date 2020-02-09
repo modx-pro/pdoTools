@@ -38,26 +38,35 @@ class microMODX
     {
         $data = null;
         if ($name == 'resource' && $this->modx->resource) {
-            $data = $this->modx->resource->toArray();
-            $data['content'] = $this->modx->resource->getContent();
-            // TV parameters
-            foreach ($data as $k => $v) {
-                if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
-                    $data[$k] = $this->modx->resource->getTVValue($k);
-                } elseif ($k[0] == '_') {
-                    unset($data[$k]);
+            if (!$data = $this->getStore('resource', 'fenom')) {
+                $data = $this->modx->resource->toArray();
+                $data['content'] = $this->modx->resource->getContent();
+                // TV parameters
+                foreach ($data as $k => $v) {
+                    if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
+                        $data[$k] = $this->modx->resource->getTVValue($k);
+                    } elseif ($k[0] == '_') {
+                        unset($data[$k]);
+                    }
                 }
+                $this->setStore('resource', $data, 'fenom');
             }
         } elseif ($name == 'user' && $this->modx->user) {
-            $data = $this->modx->user->toArray();
-            /** @var modUserProfile $profile */
-            if ($profile = $this->modx->user->Profile) {
-                $tmp = $profile->toArray();
-                unset($tmp['id']);
-                $data = array_merge($data, $tmp);
+            if (!$data = $this->getStore('user', 'fenom')) {
+                $data = $this->modx->user->toArray();
+                /** @var modUserProfile $profile */
+                if ($profile = $this->modx->user->Profile) {
+                    $tmp = $profile->toArray();
+                    unset($tmp['id']);
+                    $data = array_merge($data, $tmp);
+                }
+                $this->setStore('user', $data, 'fenom');
             }
         } elseif ($name == 'context' && $this->modx->context) {
-            $data = $this->modx->context->toArray();
+            if (!$data = $this->getStore('context', 'fenom')) {
+                $data = $this->modx->context->toArray();
+                $this->setStore('context', $data, 'fenom');
+            }
         }
 
         return $data;

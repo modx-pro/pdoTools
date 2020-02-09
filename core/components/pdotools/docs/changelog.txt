@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.12.5 pl
+==============
+- [Fenom] Added caching dinamic properties to prevent speed degradation.
+
 2.12.4 pl
 ==============
 - [#290] Improved running snippet via @FILE binding.
