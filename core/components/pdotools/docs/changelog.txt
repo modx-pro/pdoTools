@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.12.6 pl
+==============
+- [pdoPage] Reverted back #287
+
 2.12.5 pl
 ==============
 - [Fenom] Added caching dinamic properties to prevent speed degradation.
