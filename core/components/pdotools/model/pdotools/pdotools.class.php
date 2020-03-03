@@ -88,8 +88,8 @@ class pdoTools
         $this->config['useFenomCache'] = $this->modx->getOption('pdotools_fenom_cache', null, false);
         $this->config['useFenomMODX'] = $this->modx->getOption('pdotools_fenom_modx', null, false);
         $this->config['useFenomPHP'] = $this->modx->getOption('pdotools_fenom_php', null, false);
-		$this->config['useFenomSoftMode'] = $this->modx->getOption('pdotools_fenom_soft_mode', null, false);
-		
+        $this->config['useFenomSoftMode'] = $this->modx->getOption('pdotools_fenom_soft_mode', null, false);
+        
         // Prepare paths
         $pl = array(
             'core_path' => MODX_CORE_PATH,
@@ -985,13 +985,13 @@ class pdoTools
             }
             try {
                 $tpl = $fenom->getRawTemplate()->source($name, $content, true);
-				if($this->config['useFenomSoftMode']){
-					if($tpl->getError()){
-						if($this->modx->getOption('pdotools_fenom_save_on_errors'))
-							$this->modx->log(modX::LOG_LEVEL_ERROR, 'Error compile Fenom chunk with name "' . $name . '": ' . $tpl->getError());
-						$this->addTime('Error compile Fenom chunk with name "' . $name . '": ' . $tpl->getError());
-					} 
-				}
+                if($this->config['useFenomSoftMode']){
+                    if($tpl->getError()){
+                        if($this->modx->getOption('pdotools_fenom_save_on_errors'))
+                            $this->modx->log(modX::LOG_LEVEL_ERROR, 'Error compile Fenom chunk with name "' . $name . '": ' . $tpl->getError());
+                        $this->addTime('Error compile Fenom chunk with name "' . $name . '": ' . $tpl->getError());
+                    } 
+                }
                 $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
             } catch (Exception $e) {
                 $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
