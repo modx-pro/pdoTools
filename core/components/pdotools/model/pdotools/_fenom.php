@@ -143,6 +143,7 @@ class FenomX extends Fenom
                 'number' => 'number_format',
                 'reset' => 'reset',
                 'end' => 'end',
+				'abs' => 'abs',
             )
         );
 
