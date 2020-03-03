@@ -48,7 +48,7 @@ class FenomX extends Fenom
             $this->removeAccessor('php');
             $options['disable_native_funcs'] = true;
         }
-		if ($pdoTools->config['useFenomSoftMode']) {
+        if ($pdoTools->config['useFenomSoftMode']) {
             $options['modx_soft_mode'] = $pdoTools->config['useFenomSoftMode'];
         }
         $this->setOptions($options);
@@ -143,7 +143,7 @@ class FenomX extends Fenom
                 'number' => 'number_format',
                 'reset' => 'reset',
                 'end' => 'end',
-				'abs' => 'abs',
+                'abs' => 'abs',
             )
         );
 
