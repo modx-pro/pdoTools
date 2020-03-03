@@ -90,7 +90,7 @@ class pdoFetch extends pdoTools
         $this->prepareQuery();
 
         $output = '';
-		echo "<p>".$this->query->toSQL()."<p>";
+		//echo "<p>".$this->query->toSQL()."<p>";
         if (strtolower($this->config['return']) == 'sql') {
             $this->addTime('Returning raw sql query');
             $output = $this->query->toSQL();
@@ -190,6 +190,7 @@ class pdoFetch extends pdoTools
     {
         $time = microtime(true);
         $this->query = $this->modx->newQuery($this->config['class']);
+		//Add alias for FROM table.
 		if(!empty($this->config['alias'])) $this->query->setClassAlias($this->config['alias']);
         $this->addTime('xPDO query object created', microtime(true) - $time);
     }
@@ -473,7 +474,8 @@ class pdoFetch extends pdoTools
                 }
 
                 if ($i == 0 && $this->config['setTotal']) {
-                    if(is_array($fields)){
+                    //Fixed error with SQL_CALC_FOUND_ROWS.
+					if(is_array($fields)){
 						$fields = implode(",",$fields);
 						$fields = 'SQL_CALC_FOUND_ROWS ' . $fields;
 					}else{

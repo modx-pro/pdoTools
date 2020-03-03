@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+2.14.0 pl
+==============
+- Add subpdo query for join. https://modx.pro/topic/19864 and https://prisma-cms.com/topics/dzhoinyi-podzaprosov-sredstvami-xpdo-2159.html.
+- Add subpdo query for custom insert to pdo config array.
+- Add alias for FROM table.
+- Add abs fenom Modifier.
+- Fixed error with SQL_CALC_FOUND_ROWS.
 2.13.0 pl
 ==============
 - Add Fenom soft mode. This option, when compiling a Fenom tag error, enables the output of this tag as is. To inverse JS / JSON.
