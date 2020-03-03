@@ -58,7 +58,8 @@ $tmp = array(
         'xtype' => 'combo-boolean',
         'value' => false,
     ),
-    'fenom_soft_mode' => array(        'xtype' => 'combo-boolean',
+    'fenom_soft_mode' => array(        
+        'xtype' => 'combo-boolean',
         'value' => true,
     ),
 
