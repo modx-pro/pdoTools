@@ -214,7 +214,7 @@ class pdoFetch extends pdoTools
             foreach($pdoKeys as $pdoKey){
                 if(!empty($this->config[$pdoKey])) $pdoConfig[$pdoKey] = $this->config[$pdoKey];
             }
-			//echo "<pre>".print_r($pdoConfig,1)."</pre>";
+            //echo "<pre>".print_r($pdoConfig,1)."</pre>";
             array_walk_recursive($pdoConfig,array(&$this, 'walkFunc'),$sub_default);
             $this->config = array_merge($this->config, $pdoConfig);
         }
