@@ -209,17 +209,20 @@ class pdoFetch extends pdoTools
             foreach($tmp as $k => $subpdo){
                 $sub_default[$k] = $this->getSubSelectSQL($subpdo);
             }
-            unset($this->config['subpdo']);
-            $this->fenomSyntax = $this->config['fenomSyntax']; unset($this->config['fenomSyntax']);
-            array_walk_recursive($this->config,array(&$this, 'walkFunc'),$sub_default);
-            $this->config['fenomSyntax'] = $this->fenomSyntax;
-            $this->config['subpdo'] = $tmp;
+            $pdoKeys = array('innerJoin', 'leftJoin', 'rightJoin', 'select', 'where', 'sortby', 'limit');
+            $pdoConfig = array();
+            foreach($pdoKeys as $pdoKey){
+                if(!empty($this->config[$pdoKey])) $pdoConfig[$pdoKey] = $this->config[$pdoKey];
+            }
+			//echo "<pre>".print_r($pdoConfig,1)."</pre>";
+            array_walk_recursive($pdoConfig,array(&$this, 'walkFunc'),$sub_default);
+            $this->config = array_merge($this->config, $pdoConfig);
         }
     }
     public function walkFunc(&$item, $key, $sub_default){
-        $this->config['fenomSyntax'] = $this->fenomSyntax;
-        $item = $this->getChunk("@INLINE ".$item, ['subpdo'=>$sub_default]);
-        unset($this->config['fenomSyntax']);
+        if(is_string($item)){
+            if(preg_match($this->config['fenomSyntax'], $item)) $item = $this->getChunk("@INLINE ".$item, ['subpdo'=>$sub_default]);
+        }
     }
     
     /**
@@ -343,7 +346,9 @@ class pdoFetch extends pdoTools
                     
                     if (!is_numeric($alias) && !is_numeric($class)) {
                         if(!empty($v['subpdo'])){
-                            if($subSQL = $this->getSubSelectSQL($v['subpdo'])){
+                            if(is_string($v['subpdo'])) $subSQL = $v['subpdo'];
+                            if(is_array($v['subpdo'])) $subSQL = $this->getSubSelectSQL($v['subpdo']);
+                            if($subSQL){
                                 $this->addTime('subSQL prepared <small>"' . $subSQL . '"</small>');
                                 //https://prisma-cms.com/topics/dzhoinyi-podzaprosov-sredstvami-xpdo-2159.html
                                 $joinSubSequence = array('innerJoin'=>'inner join', 'leftJoin'=>'left join', 'rightJoin'=>'right join');
