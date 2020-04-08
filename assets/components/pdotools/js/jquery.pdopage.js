@@ -1,4 +1,4 @@
-;(function ($, window, document, undefined) {
+ ;(function ($, window, document, undefined) {
 
     'use strict';
 
@@ -172,7 +172,7 @@
                     if (!_this.history) {
                         $(_this.settings.pagination).hide();
                     }
-                    if (mode == 'append') {
+                    if (mode === 'append') {
                         _this.wrapper.find(rows).append(response.output);
                         if (_this.mode == 'button') {
                             if (response.pages == response.page) {
@@ -186,8 +186,18 @@
                         waitAnimation.remove();
                     } else {
                         _this.wrapper.find(rows).html(response.output);
-                        if (mode == 'force' && _this.history) {
-                            _this.hashSet(params);
+                        if (mode === 'force') {
+                            _this.page = 1;
+                            if (_this.settings.mode == 'button') {
+                                if (response.pages == response.page) {
+                                    $(_this.settings.more).hide();
+                                } else {
+                                    $(_this.settings.more).show();
+                                }
+                            }
+                            if (_this.history) {
+                                _this.hashSet(params);
+                            }
                         }
                     }
                     _this.wrapper.trigger('afterLoad', [_this, _this.settings, response]);
@@ -322,7 +332,7 @@
                 }
             }
             if (!this.oldBrowser) {
-                if (hash.length != 0) {
+                if (hash.length !== 0) {
                     hash = '?' + hash.substr(1);
                 }
                 window.history.pushState({pdoPage: window.location.pathname + hash}, '', window.location.pathname + hash);
