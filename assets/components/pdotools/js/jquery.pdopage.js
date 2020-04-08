@@ -126,7 +126,7 @@
         addPage: function () {
             var _this = this;
             var params = this.hashGet();
-            var current = params[this.key] || 1;
+            var current = params[this.key] || _this.page || 1;
             $(this.settings.link).each(function () {
                 var href = $(this).prop('href');
                 var match = href.match(new RegExp(_this.key + '=(\\d+)'));
@@ -169,6 +169,9 @@
             $.get(window.location.pathname, params, function (response) {
                 if (response) {
                     _this.wrapper.find(pagination).replaceWith(response.pagination);
+                    if (!_this.history) {
+                        $(_this.settings.pagination).hide();
+                    }
                     if (mode == 'append') {
                         _this.wrapper.find(rows).append(response.output);
                         if (_this.mode == 'button') {
