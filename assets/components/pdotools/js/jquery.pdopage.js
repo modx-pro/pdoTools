@@ -175,7 +175,7 @@
                     if (mode === 'append') {
                         _this.wrapper.find(rows).append(response.output);
                         if (_this.mode == 'button') {
-                            if (response.pages == response.page) {
+                            if (response.pages == response.page || response.pages == 0) {
                                 $(_this.settings.more).hide();
                             } else {
                                 $(_this.settings.more).show();
@@ -189,7 +189,7 @@
                         if (mode === 'force') {
                             _this.page = 1;
                             if (_this.settings.mode == 'button') {
-                                if (response.pages == response.page) {
+                                if (response.pages == response.page || response.pages == 0) {
                                     $(_this.settings.more).hide();
                                 } else {
                                     $(_this.settings.more).show();
