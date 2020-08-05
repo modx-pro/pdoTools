@@ -238,7 +238,7 @@ if ($isAjax) {
 } else {
     if (!empty($setMeta)) {
         $canurl = $pdoPage->pdoTools->config['scheme'] !== 'full'
-            ? $modx->getOption('url_scheme') . rtrim($modx->getOption('http_host'), '/') . '/' . ltrim($url, '/')
+            ? rtrim($modx->getOption('site_url'), '/') . '/' . ltrim($url, '/')
             : $url;
         $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
         if ($data[$pageVarKey] > 1) {

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.12.7 pl
+==============
+- Make pdoTools canonical url work with Babel #304
+
 2.12.6 pl
 ==============
 - [pdoPage] Reverted back #287
