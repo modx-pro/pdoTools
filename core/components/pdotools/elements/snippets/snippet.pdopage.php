@@ -237,18 +237,21 @@ if ($isAjax) {
     exit(json_encode($data));
 } else {
     if (!empty($setMeta)) {
+        $charset = $modx->getOption('modx_charset', null, 'UTF-8');
         $canurl = $pdoPage->pdoTools->config['scheme'] !== 'full'
             ? rtrim($modx->getOption('site_url'), '/') . '/' . ltrim($url, '/')
             : $url;
-        $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
+        $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . htmlentities($canurl, ENT_QUOTES, $charset) . '"/>');
         if ($data[$pageVarKey] > 1) {
+            $prevUrl = $pdoPage->makePageLink($canurl, $data[$pageVarKey] - 1);
             $modx->regClientStartupHTMLBlock(
-                '<link rel="prev" href="' . $pdoPage->makePageLink($canurl, $data[$pageVarKey] - 1) . '"/>'
+                '<link rel="prev" href="' . htmlentities($prevUrl, ENT_QUOTES, $charset) . '"/>'
             );
         }
         if ($data[$pageVarKey] < $data[$pageCountVar]) {
+            $nextUrl = $pdoPage->makePageLink($canurl, $data[$pageVarKey] + 1);
             $modx->regClientStartupHTMLBlock(
-                '<link rel="next" href="' . $pdoPage->makePageLink($canurl, $data[$pageVarKey] + 1) . '"/>'
+                '<link rel="next" href="' . htmlentities($nextUrl, ENT_QUOTES, $charset) . '"/>'
             );
         }
     }
