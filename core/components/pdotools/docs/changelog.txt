@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.12.8 pl
+==============
+- [pdoPage] Fix reflected XSS in generated meta links
+
 2.12.7 pl
 ==============
 - Make pdoTools canonical url work with Babel #304
