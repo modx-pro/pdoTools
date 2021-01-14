@@ -1,0 +1,73 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "5722bbf5b6cd9e745169bc308c88ecd3",
+    "packages": [
+        {
+            "name": "fenom/fenom",
+            "version": "2.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fenom-template/fenom.git",
+                "reference": "f0cb251843de469b453b15c158cf0d1589d4de6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fenom-template/fenom/zipball/f0cb251843de469b453b15c158cf0d1589d4de6d",
+                "reference": "f0cb251843de469b453b15c158cf0d1589d4de6d",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<6.0",
+                "satooshi/php-coveralls": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Fenom\\": "src/"
+                },
+                "classmap": [
+                    "src/Fenom.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Shalganov",
+                    "email": "a.cobest@gmail.com"
+                }
+            ],
+            "description": "Fenom - excellent template engine for PHP",
+            "keywords": [
+                "fenom",
+                "template",
+                "templater",
+                "templating"
+            ],
+            "support": {
+                "issues": "https://github.com/fenom-template/fenom/issues",
+                "source": "https://github.com/fenom-template/fenom/tree/2.12.0"
+            },
+            "time": "2020-07-06T17:02:31+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
+}

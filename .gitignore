@@ -1,5 +1,4 @@
 config.core.php
 .idea
 node_modules
-/core/components/pdotools/composer.lock
 /core/components/pdotools/vendor/

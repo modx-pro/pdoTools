@@ -4,7 +4,7 @@
 define('PKG_NAME', 'pdoTools');
 define('PKG_NAME_LOWER', strtolower(PKG_NAME));
 
-define('PKG_VERSION', '2.12.8');
+define('PKG_VERSION', '2.12.9');
 define('PKG_RELEASE', 'pl');
 define('PKG_AUTO_INSTALL', true);
 
