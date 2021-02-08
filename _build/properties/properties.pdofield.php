@@ -8,7 +8,7 @@ $tmp = array(
         'value' => '',
     ),
     'field' => array(
-        'type' => 'numberfield',
+        'type' => 'textfield',
         'value' => 'pagetitle',
     ),
     'prepareTVs' => array(

@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.12.10 pl
+==============
+- [#308] [pdoPage] Fixed the type of snippet property "field"
+
 2.12.9 pl
 ==============
 - [Fenom] Update to version 2.12.0
