@@ -301,7 +301,7 @@ class pdoFetch extends pdoTools
                     $tmp = json_decode($tmp, true);
                 }
                 if ($join == 'leftJoin' && !empty($this->config['tvsJoin'])) {
-                    $tmp = array_merge($tmp, $this->config['tvsJoin']);
+                    $tmp = array_merge($this->config['tvsJoin'], $tmp);
                 }
                 foreach ($tmp as $k => $v) {
                     $class = !empty($v['class']) ? $v['class'] : $k;
