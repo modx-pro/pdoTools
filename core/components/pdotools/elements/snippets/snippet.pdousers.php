@@ -98,8 +98,8 @@ if (!empty($groups_in) || !empty($groups_out) || !empty($roles_in) || !empty($ro
 
 // Fields to select
 $select = array(
-    $profile => implode(',', array_keys($modx->getFieldMeta($profile))),
-    $class => implode(',', array_keys($modx->getFieldMeta($class))),
+    $profile => implode(',', array_diff(array_keys($modx->getFieldMeta($profile)), ['sessionid'])),
+    $class => implode(',', array_diff(array_keys($modx->getFieldMeta($class)), ['password', 'cachepwd', 'salt', 'session_stale', 'remote_key', 'remote_data', 'hash_class'])),
 );
 
 // Add custom parameters

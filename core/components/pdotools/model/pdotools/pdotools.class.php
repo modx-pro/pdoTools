@@ -89,6 +89,8 @@ class pdoTools
         $this->config['useFenomMODX'] = $this->modx->getOption('pdotools_fenom_modx', null, false);
         $this->config['useFenomPHP'] = $this->modx->getOption('pdotools_fenom_php', null, false);
 
+        // Chunk file extensions
+        $this->config['chunkExtensions'] = explode(',', str_replace(' ', '', $this->modx->getOption('pdotools_file_chunk_extensions', null, 'html,tpl')));
         // Prepare paths
         $pl = array(
             'core_path' => MODX_CORE_PATH,
@@ -855,27 +857,35 @@ class pdoTools
                 $cacheable = false;
                 break;
             case 'FILE':
-                if (!empty($row['tplPath'])) {
-                    $path = $row['tplPath'];
-                } elseif (!empty($row['elementsPath'])) {
-                    $path = $row['elementsPath'];
+                if (!empty($row['tplPath']) || !empty($row['elementsPath'])) {
+                    // @Deprecated
+                    $this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] The "tplPath" and "elementsPath" parameters are deprecated and will be removed in the next version.');
+                    $path = !empty($row['tplPath']) ? $row['tplPath'] : $row['elementsPath'];
                 } else {
                     $path = $this->config['elementsPath'];
                 }
+
                 if (strpos($path, MODX_BASE_PATH) === false && strpos($path, MODX_CORE_PATH) === false) {
                     $path = MODX_BASE_PATH . $path;
                 }
-                $path = preg_replace('#/+#', '/', $path . ltrim($content, './'));
+                $path = preg_replace(["/\.*[\/|\\\]/i", "/[\/|\\\]+/i"], ['/', '/'], $path . $content);
                 $rel_path = str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $path);
-                if (!preg_match('#\.(html|tpl|php)$#i', $path)) {
-                    $this->addTime('Allowed extensions for @FILE elements is "html", "tpl" and "php"');
+                if (!file_exists($path)) {
+                    $message = 'Could not find the element file "' . $rel_path . '".';
+                    $this->modx->log(modX::LOG_LEVEL_ERROR, $message);
+                    $this->addTime($message);
 
                     return false;
-                } elseif (!file_exists($path)) {
-                    $this->addTime('Could not find element file at "' . $rel_path . '".');
+                }
+                $fileExtension = pathinfo($path, PATHINFO_EXTENSION);
+                if (!$this->isAllowedFileExtension($fileExtension, $type)) {
+                    $message = 'File extension "' . $fileExtension . '" is not allowed for element type ' . $type . '!';
+                    $this->modx->log(modX::LOG_LEVEL_ERROR, $message);
+                    $this->addTime($message);
 
                     return false;
-                } elseif ($content = file_get_contents($path)) {
+                }
+                if ($content = file_get_contents($path)) {
                     $element = $this->modx->newObject($type, array('name' => $cache_name));
                     $element->setContent($content);
                     $element->setProperties($properties);
@@ -1541,4 +1551,24 @@ class pdoTools
         }
     }
 
+    /**
+     * @param string $extension
+     * @param string $type
+     * @return bool
+     */
+    private function isAllowedFileExtension($extension, $type = '')
+    {
+        switch ($type) {
+        	case 'modChunk':
+                $result = in_array($extension, $this->config['chunkExtensions'], true);
+        		break;
+            case 'modSnippet':
+                $result = $extension === 'php';
+                break;
+            default:
+                $result = false;
+        }
+
+        return $result;
+    }
 }
