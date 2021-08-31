@@ -134,24 +134,36 @@ foreach ($rows as $row) {
     }
     if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
         $row['link'] = is_numeric(trim($row['content'], '[]~ '))
-            ? $pdoFetch->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
+            ? $pdoFetch->makeUrl((int)trim($row['content'], '[]~ '), $row)
             : $row['content'];
     } else {
         $row['link'] = $pdoFetch->makeUrl($row['id'], $row);
     }
 
     if (isset($prev[$row['id']])) {
-        $output['prev'][] = !empty($tplPrev)
-            ? $pdoFetch->getChunk($tplPrev, $row, $fastMode)
-            : $pdoFetch->getChunk('', $row);
+        if ($return === 'data') {
+            $output['prev'][] = $row;
+        } else {
+            $output['prev'][] = !empty($tplPrev)
+                ? $pdoFetch->getChunk($tplPrev, $row, $fastMode)
+                : $pdoFetch->getChunk('', $row);
+        }
     } elseif (isset($next[$row['id']])) {
-        $output['next'][] = !empty($tplNext)
-            ? $pdoFetch->getChunk($tplNext, $row, $fastMode)
-            : $pdoFetch->getChunk('', $row);
+        if ($return === 'data') {
+            $output['next'][] = $row;
+        } else {
+            $output['next'][] = !empty($tplNext)
+                ? $pdoFetch->getChunk($tplNext, $row, $fastMode)
+                : $pdoFetch->getChunk('', $row);
+        }
     } else {
-        $output['up'][] = !empty($tplUp)
-            ? $pdoFetch->getChunk($tplUp, $row, $fastMode)
-            : $pdoFetch->getChunk('', $row);
+        if ($return === 'data') {
+            $output['up'][] = $row;
+        } else {
+            $output['up'][] = !empty($tplUp)
+                ? $pdoFetch->getChunk($tplUp, $row, $fastMode)
+                : $pdoFetch->getChunk('', $row);
+        }
     }
 }
 $pdoFetch->addTime('Chunks processed');

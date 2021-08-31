@@ -156,7 +156,7 @@ if (!empty($rows) && is_array($rows)) {
     foreach ($rows as $row) {
         if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
             $row['link'] = is_numeric(trim($row['content'], '[]~ '))
-                ? $pdoFetch->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
+                ? $pdoFetch->makeUrl((int)trim($row['content'], '[]~ '), $row)
                 : $row['content'];
         } else {
             $row['link'] = $pdoFetch->makeUrl($row['id'], $row);
@@ -171,6 +171,10 @@ if (!empty($rows) && is_array($rows)) {
             $row['menutitle'] = $row['pagetitle'];
         }
 
+        if ($return === 'data') {
+            $output[] = $row;
+            continue;
+        }
         if ($row['id'] == $resource->id && empty($showCurrent)) {
             continue;
         } elseif ($row['id'] == $resource->id && !empty($tplCurrent)) {
@@ -185,6 +189,10 @@ if (!empty($rows) && is_array($rows)) {
             : $pdoFetch->getChunk($tpl, $row, $fastMode);
     }
 }
+if ($return === 'data') {
+    return $output;
+}
+
 $pdoFetch->addTime('Chunks processed');
 
 if (count($output) == 1 && !empty($hideSingle)) {

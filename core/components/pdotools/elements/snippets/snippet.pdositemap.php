@@ -154,12 +154,12 @@ if (empty($data)) {
     foreach ($rows as $row) {
         if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
             $row['url'] = is_numeric(trim($row['content'], '[]~ '))
-                ? $pdoFetch->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
+                ? $pdoFetch->makeUrl((int)trim($row['content'], '[]~ '), $row)
                 : $row['content'];
         } else {
             $row['url'] = $pdoFetch->makeUrl($row['id'], $row);
         }
-
+        unset($row['content']);
         $time = !empty($row['editedon'])
             ? $row['editedon']
             : $row['createdon'];
@@ -192,9 +192,13 @@ if (empty($data)) {
         $urls[$row['url']] = $row['date'];
 
         // Add item to output
-        $data[$row['url']] = $pdoFetch->parseChunk($tpl, $row);
-        if (strpos($data[$row['url']], '[[') !== false) {
-            $modx->parser->processElementTags('', $data[$row['url']], true, true, '[[', ']]', array(), 10);
+        if ($return === 'data') {
+            $data[$row['url']] = $row;
+        } else {
+            $data[$row['url']] = $pdoFetch->parseChunk($tpl, $row);
+            if (strpos($data[$row['url']], '[[') !== false) {
+                $modx->parser->processElementTags('', $data[$row['url']], true, true, '[[', ']]', array(), 10);
+            }
         }
     }
     $pdoFetch->addTime('Rows processed');
@@ -203,18 +207,21 @@ if (empty($data)) {
     }
 }
 
-$output = implode($outputSeparator, $data);
-$output = $pdoFetch->getChunk($tplWrapper, array(
-    'schema' => $sitemapSchema,
-    'output' => $output,
-    'items' => $output,
-));
-$pdoFetch->addTime('Rows wrapped');
+if ($return === 'data') {
+    $output = $data;
+} else {
+    $output = implode($outputSeparator, $data);
+    $output = $pdoFetch->getChunk($tplWrapper, array(
+        'schema' => $sitemapSchema,
+        'output' => $output,
+        'items' => $output,
+    ));
+    $pdoFetch->addTime('Rows wrapped');
 
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-    $output .= '<pre class="pdoSitemapLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+    if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
+        $output .= '<pre class="pdoSitemapLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+    }
 }
-
 if (!empty($forceXML)) {
     header("Content-Type:text/xml");
     @session_write_close();

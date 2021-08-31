@@ -153,6 +153,8 @@ if (!empty($returnIds)) {
     } else {
         return $output;
     }
+} elseif ($return === 'data') {
+    return $output;
 } elseif (!empty($toSeparatePlaceholders)) {
     $output['log'] = $log;
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
