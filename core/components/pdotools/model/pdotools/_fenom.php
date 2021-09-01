@@ -385,7 +385,7 @@ class FenomX extends Fenom
             /** @var modUser $user */
             if ($user = $modx->getObjectGraph('modUser', '{"Profile":{}}', $id)) {
                 $data = array_merge($user->toArray(), $user->Profile->toArray());
-                unset($data['cachepwd'], $data['salt'], $data['sessionid'], $data['password'], $data['session_stale'], $data['remote_key'], $data['remote_data'], $data['hash_class'], );
+                unset($data['cachepwd'], $data['salt'], $data['sessionid'], $data['password'], $data['session_stale'], $data['remote_key'], $data['remote_data'], $data['hash_class']);
 
                 if (strpos($field, 'extended.') === 0 && isset($data['extended'][substr($field, 9)])) {
                     $output = $data['extended'][substr($field, 9)];
