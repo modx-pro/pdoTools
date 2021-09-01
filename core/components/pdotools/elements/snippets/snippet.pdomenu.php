@@ -1,6 +1,10 @@
 <?php
 /** @var array $scriptProperties */
+/** @var modX $modx */
 
+if (!isset($return)) {
+    $scriptProperties['return'] = $return = 'chunks';
+}
 // Convert parameters from Wayfinder if exists
 if (isset($startId)) {
     $scriptProperties['parents'] = $startId;

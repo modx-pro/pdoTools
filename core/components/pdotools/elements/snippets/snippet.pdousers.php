@@ -1,6 +1,12 @@
 <?php
 /** @var array $scriptProperties */
 /** @var pdoFetch $pdoFetch */
+/** @var modX $modx */
+if (!empty($returnIds)) {
+    $scriptProperties['return'] = $return = 'ids';
+} elseif (!isset($return)) {
+    $scriptProperties['return'] = $return = 'chunks';
+}
 $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
 $path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
@@ -126,7 +132,7 @@ $default = array(
     'sortby' => $class . '.id',
     'sortdir' => 'ASC',
     'fastMode' => false,
-    'return' => !empty($returnIds) ? 'ids' : 'chunks',
+    'return' => $return,
     'disableConditions' => true,
 );
 

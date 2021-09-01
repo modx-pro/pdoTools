@@ -190,7 +190,7 @@ class pdoMenu
         if (!empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink') {
             unset($row['context_key']);
             $row['link'] = is_numeric(trim($row['content'], '[]~ '))
-                ? $this->pdoTools->makeUrl(intval(trim($row['content'], '[]~ ')), $row)
+                ? $this->pdoTools->makeUrl((int)trim($row['content'], '[]~ '), $row)
                 : $row['content'];
         } else {
             $row['link'] = $this->pdoTools->makeUrl($row['id'], $row);
@@ -246,7 +246,7 @@ class pdoMenu
             $classes[] = $this->pdoTools->config['parentClass'];
         }
         $row_id = !empty($this->pdoTools->config['useWeblinkUrl']) && is_numeric(trim($row['content'], '[]~ ')) && $row['class_key'] == 'modWebLink'
-            ? intval(trim($row['content'], '[]~ '))
+            ? (int)trim($row['content'], '[]~ ')
             : $row['id'];
         if ($this->isHere($row_id) && !empty($this->pdoTools->config['hereClass'])) {
             $classes[] = $this->pdoTools->config['hereClass'];
@@ -272,7 +272,7 @@ class pdoMenu
     public function getTpl($row = array())
     {
         $row_id = !empty($this->pdoTools->config['useWeblinkUrl']) && $row['class_key'] == 'modWebLink' && is_numeric(trim($row['content'], '[]~ '))
-            ? intval(trim($row['content'], '[]~ '))
+            ? (int)trim($row['content'], '[]~ ')
             : $row['id'];
         if ($row['level'] == 1 && !empty($this->pdoTools->config['tplStart']) && !empty($this->pdoTools->config['displayStart'])) {
             $tpl = 'tplStart';

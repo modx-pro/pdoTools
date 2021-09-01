@@ -11,6 +11,9 @@ if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
 $pdoFetch->addTime('pdoTools loaded');
 
 // Default variables
+if (!isset($return)) {
+    $scriptProperties['return'] = $return = 'chunks';
+}
 if (empty($tpl)) {
     $tpl = "@INLINE \n<url>\n\t<loc>[[+url]]</loc>\n\t<lastmod>[[+date]]</lastmod>\n\t<changefreq>[[+update]]</changefreq>\n\t<priority>[[+priority]]</priority>\n</url>";
 }

@@ -1,6 +1,7 @@
 <?php
 /** @var array $scriptProperties */
 /** @var pdoFetch $pdoFetch */
+/** @var modX $modx */
 $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
 $path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
@@ -20,6 +21,10 @@ if (!isset($outputSeparator)) {
     $outputSeparator = "\n";
 }
 $fastMode = !empty($fastMode);
+
+if (!isset($return)) {
+    $scriptProperties['return'] = $return = 'chunks';
+}
 
 $class = 'modResource';
 $resource = ($id == $modx->resource->id)

@@ -1,6 +1,7 @@
 <?php
 /** @var array $scriptProperties */
 /** @var pdoFetch $pdoFetch */
+/** @var modX $modx */
 $fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
 $path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
 if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
@@ -24,6 +25,9 @@ if ($outputSeparator == '&nbsp;&rarr;&nbsp;' && $direction == 'rtl') {
 }
 if ($limit == '') {
     $limit = 10;
+}
+if (!isset($return)) {
+    $scriptProperties['return'] = $return = 'chunks';
 }
 // For compatibility with BreadCrumb
 if (!empty($maxCrumbs)) {

@@ -4,18 +4,18 @@
 define('PKG_NAME', 'pdoTools');
 define('PKG_NAME_LOWER', strtolower(PKG_NAME));
 
-define('PKG_VERSION', '2.12.10');
+define('PKG_VERSION', '2.13.0');
 define('PKG_RELEASE', 'pl');
-define('PKG_AUTO_INSTALL', true);
+define('PKG_AUTO_INSTALL', false);
 
 
 /* define paths */
 if (isset($_SERVER['MODX_BASE_PATH'])) {
     define('MODX_BASE_PATH', $_SERVER['MODX_BASE_PATH']);
-} elseif (file_exists(dirname(dirname(dirname(__FILE__))) . '/core')) {
-    define('MODX_BASE_PATH', dirname(dirname(dirname(__FILE__))) . '/');
+} elseif (file_exists(dirname(dirname(__DIR__)) . '/core')) {
+    define('MODX_BASE_PATH', dirname(dirname(__DIR__)) . '/');
 } else {
-    define('MODX_BASE_PATH', dirname(dirname(dirname(dirname(__FILE__)))) . '/');
+    define('MODX_BASE_PATH', dirname(dirname(dirname(__DIR__))) . '/');
 }
 
 define('MODX_CORE_PATH', MODX_BASE_PATH . 'core/');

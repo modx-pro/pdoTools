@@ -1,5 +1,14 @@
 Changelog for pdoTools.
 
+2.13.0-pl (01.09.2021)
+==============
+- Some security fixes.
+- The "setOption" modifier is marked as deprecated.
+- The snippet parameters "tplPath" and "elementsPath" are marked as deprecated.
+- Added the ability for snippets to return an array of raw data (it is necessary when using the Fenom template engine).
+- The settings "parser_class" and "parser_class_path" will be registered in the core namespace.
+- Update the ajax connector.
+
 2.12.10 pl
 ==============
 - [#308] [pdoPage] Fixed the type of snippet property "field"

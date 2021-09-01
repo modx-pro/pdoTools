@@ -11,13 +11,13 @@ $mtime = $mtime[1] + $mtime[0];
 $tstart = $mtime;
 set_time_limit(0);
 
-require_once 'build.config.php';
-if (file_exists('build.prepare.php')) {
-    require_once 'build.prepare.php';
+require_once __DIR__ . '/build.config.php';
+if (file_exists(__DIR__ . '/build.prepare.php')) {
+    require_once __DIR__ . '/build.prepare.php';
 }
 
 /* define sources */
-$root = dirname(dirname(__FILE__)) . '/';
+$root = dirname(__DIR__) . '/';
 $sources = array(
     'root' => $root,
     'build' => $root . '_build/',

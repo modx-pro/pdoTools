@@ -1,10 +1,13 @@
 <?php
 /** @var array $scriptProperties */
+/** @var modX $modx */
 if (isset($parents) && $parents === '') {
     $scriptProperties['parents'] = $modx->resource->id;
 }
 if (!empty($returnIds)) {
-    $scriptProperties['return'] = 'ids';
+    $scriptProperties['return'] = $return = 'ids';
+} elseif (!isset($return)) {
+    $scriptProperties['return'] = $return = 'chunks';
 }
 
 // Adding extra parameters into special place so we can put them in a results
