@@ -1,4 +1,5 @@
 <?php
+/** @var modX $modx */
 $modx->lexicon->load('pdotools:pdoarchive');
 
 /** @var array $scriptProperties */
@@ -13,10 +14,10 @@ $outputSeparator = $modx->getOption('outputSeparator', $scriptProperties, "\n");
 
 // Adding extra parameters into special place so we can put them in a results
 /** @var modSnippet $snippet */
-$additionalPlaceholders = $properties = array();
+$additionalPlaceholders = $properties = [];
 if (isset($this) && $this instanceof modSnippet) {
     $properties = $this->get('properties');
-} elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
+} elseif ($snippet = $modx->getObject('modSnippet', ['name' => 'pdoResources'])) {
     $properties = $snippet->get('properties');
 }
 if (!empty($properties)) {
@@ -43,7 +44,7 @@ $pdoFetch->addTime('pdoTools loaded');
 $rows = $pdoFetch->run();
 
 // Process rows
-$tree = array();
+$tree = [];
 foreach ($rows as $row) {
     $tmp = $row[$dateField];
     if (!is_numeric($tmp)) {
@@ -65,7 +66,7 @@ foreach ($tree as $year => $months) {
         $count_month = 0;
 
         foreach ($days as $day => $resources) {
-            $rows_day = array();
+            $rows_day = [];
             $count_day = 0;
             $idx = 1;
 
@@ -101,33 +102,33 @@ foreach ($tree as $year => $months) {
             }
 
             $rows_month .= !empty($tplDay)
-                ? $pdoFetch->getChunk($tplDay, array(
+                ? $pdoFetch->getChunk($tplDay, [
                     'day' => $day,
                     'month' => $month,
                     'year' => $year,
                     'count' => $count_day,
                     'wrapper' => implode($outputSeparator, $rows_day),
-                ), $pdoFetch->config['fastMode'])
+                ], $pdoFetch->config['fastMode'])
                 : implode($outputSeparator, $rows_day);
         }
 
         $rows_year .= !empty($tplMonth)
-            ? $pdoFetch->getChunk($tplMonth, array(
+            ? $pdoFetch->getChunk($tplMonth, [
                 'month' => $month,
                 'month_name' => $modx->lexicon('pdoarchive_month_' . $month),
                 'year' => $year,
                 'count' => $count_month,
                 'wrapper' => $rows_month,
-            ), $pdoFetch->config['fastMode'])
+            ], $pdoFetch->config['fastMode'])
             : $rows_month;
     }
 
     $output .= !empty($tplYear)
-        ? $pdoFetch->getChunk($tplYear, array(
+        ? $pdoFetch->getChunk($tplYear, [
             'year' => $year,
             'count' => $count_year,
             'wrapper' => $rows_year,
-        ), $pdoFetch->config['fastMode'])
+        ], $pdoFetch->config['fastMode'])
         : $rows_year;
 }
 $pdoFetch->addTime('Rows processed');
@@ -136,7 +137,7 @@ $pdoFetch->addTime('Rows processed');
 if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
     $output = $pdoFetch->getChunk(
         $tplWrapper,
-        array_merge($additionalPlaceholders, array('output' => $output)),
+        array_merge($additionalPlaceholders, ['output' => $output]),
         $pdoFetch->config['fastMode']
     );
     $pdoFetch->addTime('Rows wrapped');

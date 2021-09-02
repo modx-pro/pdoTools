@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.13.2-pl (02.09.2021)
+==============
+- Fixed some snippets.
+
 2.13.1-pl (01.09.2021)
 ==============
 - Installed composer packages.

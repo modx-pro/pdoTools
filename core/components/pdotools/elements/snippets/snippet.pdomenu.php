@@ -2,9 +2,6 @@
 /** @var array $scriptProperties */
 /** @var modX $modx */
 
-if (!isset($return)) {
-    $scriptProperties['return'] = $return = 'chunks';
-}
 // Convert parameters from Wayfinder if exists
 if (isset($startId)) {
     $scriptProperties['parents'] = $startId;
@@ -168,7 +165,7 @@ if (empty($tree)) {
         $pdoMenu->pdoTools->setCache($tree, $scriptProperties);
     }
 }
-if ($return === 'data') {
+if (isset($return) && $return === 'data') {
     return $tree;
 }
 if (!empty($tree)) {

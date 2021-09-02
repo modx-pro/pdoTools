@@ -1,5 +1,6 @@
 <?php
 /** @var array $scriptProperties */
+/** @var modX $modx */
 if (empty($outputSeparator)) {
     $outputSeparator = ' / ';
 }
@@ -48,7 +49,7 @@ if (!$resource) {
     return '';
 }
 
-$title = array();
+$title = [];
 $pagetitle = trim($resource->get($titleField));
 if (empty($pagetitle)) {
     $pagetitle = $resource->get('pagetitle');
@@ -56,26 +57,26 @@ if (empty($pagetitle)) {
 
 // Add search request if exists
 if (!empty($_GET[$queryVarKey]) && strlen($_GET[$queryVarKey]) >= $minQuery && !empty($tplSearch)) {
-    $pagetitle .= ' ' . $pdoTools->getChunk($tplSearch, array(
+    $pagetitle .= ' ' . $pdoTools->getChunk($tplSearch, [
             $queryVarKey => $modx->stripTags($_GET[$queryVarKey]),
-        ));
+        ]);
 }
 $title[] = $pagetitle;
 
 // Add pagination if exists
 if (!empty($_GET[$pageVarKey]) && !empty($tplPages)) {
-    $title[] = $pdoTools->getChunk($tplPages, array(
-        'page' => intval($_GET[$pageVarKey]),
-    ));
+    $title[] = $pdoTools->getChunk($tplPages, [
+        'page' => (int)$_GET[$pageVarKey],
+    ]);
 }
 
 // Add parents
 $cacheKey = $resource->getCacheKey() . '/' . $cacheKey;
-$cacheOptions = array('cache_key' => $modx->getOption('cache_resource_key', null, 'resource'));
+$cacheOptions = ['cache_key' => $modx->getOption('cache_resource_key', null, 'resource')];
 $crumbs = '';
 if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOptions)) {
     $crumbs = $pdoTools->runSnippet('pdoCrumbs', array_merge(
-        array(
+        [
             'to' => $resource->id,
             'outputSeparator' => $outputSeparator,
             'showHome' => 0,
@@ -87,7 +88,7 @@ if (empty($cache) || !$crumbs = $modx->cacheManager->get($cacheKey, $cacheOption
             'tplWrapper' => '@INLINE [[+output]]',
             'tplMax' => '',
             'tplHome' => '',
-        ), $scriptProperties
+        ], $scriptProperties
     ));
 }
 if (!empty($crumbs)) {
@@ -98,12 +99,12 @@ if (!empty($crumbs)) {
 }
 
 if (!empty($registerJs)) {
-    $config = array(
+    $config = [
         'separator' => $outputSeparator,
-        'tpl' => str_replace(array('[[+', ']]'), array('{', '}'), $pdoTools->getChunk($tplPages)),
-    );
+        'tpl' => str_replace(['[[+', ']]'], ['{', '}'], $pdoTools->getChunk($tplPages)),
+    ];
     /** @noinspection Annotator */
-    $modx->regClientStartupScript('<script type="text/javascript">pdoTitle = ' . json_encode($config) . ';</script>',
+    $modx->regClientStartupScript('<script>pdoTitle = ' . json_encode($config) . ';</script>',
         true);
 }
 

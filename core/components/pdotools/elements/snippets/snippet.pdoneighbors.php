@@ -22,10 +22,6 @@ if (!isset($outputSeparator)) {
 }
 $fastMode = !empty($fastMode);
 
-if (!isset($return)) {
-    $scriptProperties['return'] = $return = 'chunks';
-}
-
 $class = 'modResource';
 $resource = ($id == $modx->resource->id)
     ? $modx->resource
@@ -48,14 +44,14 @@ if (!empty($parents) && is_string($parents)) {
         unset($parents[$key]);
     }
     $params['parents'] = implode(',', $parents);
-    $ids = $pdoFetch->getCollection('modResource', array(), $params);
+    $ids = $pdoFetch->getCollection('modResource', [], $params);
     unset($scriptProperties['parents']);
 } else {
-    $ids = $pdoFetch->getCollection('modResource', array('parent' => $resource->parent), $params);
+    $ids = $pdoFetch->getCollection('modResource', ['parent' => $resource->parent], $params);
 }
 
 $found = false;
-$prev = $next = array();
+$prev = $next = [];
 foreach ($ids as $v) {
     if ($v['id'] == $id) {
         $found = true;
@@ -81,11 +77,11 @@ if (!empty($loop)) {
         }
     }
 }
-$ids = array_merge($prev, $next, array($resource->parent));
+$ids = array_merge($prev, $next, [$resource->parent]);
 $pdoFetch->addTime('Found ids of neighbors: ' . implode(',', $ids));
 
 // Query conditions
-$where = array($class . '.id:IN' => $ids);
+$where = [$class . '.id:IN' => $ids];
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
@@ -93,10 +89,10 @@ if (empty($includeContent) && empty($useWeblinkUrl)) {
     $key = array_search('content', $resourceColumns);
     unset($resourceColumns[$key]);
 }
-$select = array($class => implode(',', $resourceColumns));
+$select = [$class => implode(',', $resourceColumns)];
 
 // Add custom parameters
-foreach (array('where', 'select') as $v) {
+foreach (['where', 'select'] as $v) {
     if (!empty($scriptProperties[$v])) {
         $tmp = $scriptProperties[$v];
         if (!is_array($tmp)) {
@@ -111,7 +107,7 @@ foreach (array('where', 'select') as $v) {
 $pdoFetch->addTime('Conditions prepared');
 
 // Default parameters
-$default = array(
+$default = [
     'class' => $class,
     'where' => json_encode($where),
     'select' => json_encode($select),
@@ -121,7 +117,7 @@ $default = array(
     'return' => 'data',
     'limit' => 0,
     'totalVar' => 'pdoneighbors.total',
-);
+];
 
 // Merge all properties and run!
 unset($scriptProperties['limit']);
@@ -132,7 +128,10 @@ $rows = $pdoFetch->run();
 $prev = array_flip($prev);
 $next = array_flip($next);
 
-$output = array('prev' => array(), 'up' => array(), 'next' => array());
+if (!isset($return)) {
+    $return = 'chunks';
+}
+$output = ['prev' => [], 'up' => [], 'next' => []];
 foreach ($rows as $row) {
     if (empty($row['menutitle'])) {
         $row['menutitle'] = $row['pagetitle'];

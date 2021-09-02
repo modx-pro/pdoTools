@@ -12,11 +12,11 @@ if (!empty($returnIds)) {
 
 // Adding extra parameters into special place so we can put them in a results
 /** @var modSnippet $snippet */
-$additionalPlaceholders = $properties = array();
+$additionalPlaceholders = $properties = [];
 if (isset($this) && $this instanceof modSnippet && $this->get('properties')) {
     $properties = $this->get('properties');
 }
-elseif ($snippet = $modx->getObject('modSnippet', array('name' => 'pdoResources'))) {
+elseif ($snippet = $modx->getObject('modSnippet', ['name' => 'pdoResources'])) {
     $properties = $snippet->get('properties');
 }
 if (!empty($properties)) {
@@ -61,7 +61,7 @@ if (!empty($returnIds)) {
     $output .= $log;
 
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, array('output' => $output)),
+        $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, ['output' => $output]),
             $pdoFetch->config['fastMode']);
     }
 

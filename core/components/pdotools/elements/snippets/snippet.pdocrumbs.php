@@ -26,9 +26,7 @@ if ($outputSeparator == '&nbsp;&rarr;&nbsp;' && $direction == 'rtl') {
 if ($limit == '') {
     $limit = 10;
 }
-if (!isset($return)) {
-    $scriptProperties['return'] = $return = 'chunks';
-}
+
 // For compatibility with BreadCrumb
 if (!empty($maxCrumbs)) {
     $limit = $maxCrumbs;
@@ -151,7 +149,7 @@ $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $rows = $pdoFetch->run();
 
-$output = array();
+$output = [];
 if (!empty($rows) && is_array($rows)) {
     if (strtolower($direction) == 'ltr') {
         $rows = array_reverse($rows);
@@ -169,13 +167,13 @@ if (!empty($rows) && is_array($rows)) {
         $row = array_merge(
             $scriptProperties,
             $row,
-            array('idx' => $pdoFetch->idx++)
+            ['idx' => $pdoFetch->idx++]
         );
         if (empty($row['menutitle'])) {
             $row['menutitle'] = $row['pagetitle'];
         }
 
-        if ($return === 'data') {
+        if (isset($return) && $return === 'data') {
             $output[] = $row;
             continue;
         }
@@ -193,7 +191,7 @@ if (!empty($rows) && is_array($rows)) {
             : $pdoFetch->getChunk($tpl, $row, $fastMode);
     }
 }
-if ($return === 'data') {
+if (isset($return) && $return === 'data') {
     return $output;
 }
 

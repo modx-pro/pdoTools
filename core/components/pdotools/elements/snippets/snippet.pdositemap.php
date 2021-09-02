@@ -11,9 +11,6 @@ if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
 $pdoFetch->addTime('pdoTools loaded');
 
 // Default variables
-if (!isset($return)) {
-    $scriptProperties['return'] = $return = 'chunks';
-}
 if (empty($tpl)) {
     $tpl = "@INLINE \n<url>\n\t<loc>[[+url]]</loc>\n\t<lastmod>[[+date]]</lastmod>\n\t<changefreq>[[+update]]</changefreq>\n\t<priority>[[+priority]]</priority>\n</url>";
 }
@@ -102,23 +99,23 @@ if (!empty($itemSeparator)) {
 
 
 $class = 'modResource';
-$where = array();
+$where = [];
 if (empty($showHidden)) {
-    $where[] = array(
+    $where[] = [
         $class . '.hidemenu' => 0,
-        'OR:' . $class . '.class_key:IN' => array('Ticket', 'Article'),
-    );
+        'OR:' . $class . '.class_key:IN' => ['Ticket', 'Article'],
+    ];
 }
 if (empty($context)) {
     $scriptProperties['context'] = $modx->context->key;
 }
 
-$select = array($class => 'id,editedon,createdon,context_key,class_key,uri');
+$select = [$class => 'id,editedon,createdon,context_key,class_key,uri'];
 if (!empty($useWeblinkUrl)) {
     $select[$class] .= ',content';
 }
 // Add custom parameters
-foreach (array('where', 'select') as $v) {
+foreach (['where', 'select'] as $v) {
     if (!empty($scriptProperties[$v])) {
         $tmp = $scriptProperties[$v];
         if (!is_array($tmp)) {
@@ -133,7 +130,7 @@ foreach (array('where', 'select') as $v) {
 $pdoFetch->addTime('Conditions prepared');
 
 // Default parameters
-$default = array(
+$default = [
     'class' => $class,
     'where' => json_encode($where),
     'select' => json_encode($select),
@@ -142,7 +139,7 @@ $default = array(
     'return' => 'data',
     'scheme' => 'full',
     'limit' => 0,
-);
+];
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters ready');
 $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
@@ -150,9 +147,12 @@ $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 if (!empty($cache)) {
     $data = $pdoFetch->getCache($scriptProperties);
 }
+if (!isset($return)) {
+    $return = 'chunks';
+}
 if (empty($data)) {
     $now = time();
-    $data = $urls = array();
+    $data = $urls = [];
     $rows = $pdoFetch->run();
     foreach ($rows as $row) {
         if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
@@ -214,11 +214,11 @@ if ($return === 'data') {
     $output = $data;
 } else {
     $output = implode($outputSeparator, $data);
-    $output = $pdoFetch->getChunk($tplWrapper, array(
+    $output = $pdoFetch->getChunk($tplWrapper, [
         'schema' => $sitemapSchema,
         'output' => $output,
         'items' => $output,
-    ));
+    ]);
     $pdoFetch->addTime('Rows wrapped');
 
     if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
