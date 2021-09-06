@@ -85,24 +85,24 @@ $tmp = array(
     ),
     'tplPageSkip' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">...</a></li>',
+        'value' => '@INLINE <li class="page-item disabled"><span class="page-link">...</span></li>',
     ),
 
     'tplPageFirstEmpty' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">[[%pdopage_first]]</a></li>',
+        'value' => '@INLINE <li class="page-item disabled"><span class="page-link">[[%pdopage_first]]</span></li>',
     ),
     'tplPageLastEmpty' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">[[%pdopage_last]]</a></li>',
+        'value' => '@INLINE <li class="page-item disabled"><span class="page-link">[[%pdopage_last]]</span></li>',
     ),
     'tplPagePrevEmpty' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>',
+        'value' => '@INLINE <li class="page-item disabled"><span class="page-link">&laquo;</span></li>',
     ),
     'tplPageNextEmpty' => array(
         'type' => 'textfield',
-        'value' => '@INLINE <li class="page-item disabled"><a class="page-link" href="#">&raquo;</a></li>',
+        'value' => '@INLINE <li class="page-item disabled"><span class="page-link" >&raquo;</span></li>',
     ),
 
     'cache' => array(
