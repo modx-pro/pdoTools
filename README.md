@@ -1,6 +1,6 @@
 ## pdoTools
 
-Small library for creating fast snippets for MODX Revolution that works through PDO.
+Library for creating fast snippets for MODX Revolution.
 
 Required by Tickets and miniShop2.
 

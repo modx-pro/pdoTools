@@ -1,184 +1,184 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'tpl' => array(
+$tmp = [
+    'tpl' => [
         'type' => 'textfield',
         'value' => '@INLINE <li>[[+date]] <a href="[[+link]]">[[+menutitle]]</a></li>',
-    ),
-    'tplYear' => array(
+    ],
+    'tplYear' => [
         'type' => 'textfield',
         'value' => '@INLINE <h3>[[+year]] <sup>([[+count]])</sup></h3><ul>[[+wrapper]]</ul>',
-    ),
-    'tplMonth' => array(
+    ],
+    'tplMonth' => [
         'type' => 'textfield',
         'value' => '@INLINE <li><h4>[[+month_name]] <sup>([[+count]])</sup></h4><ul>[[+wrapper]]</ul></li>',
-    ),
-    'tplDay' => array(
+    ],
+    'tplDay' => [
         'type' => 'textfield',
         'value' => '@INLINE <li><h5>[[+day]] <sup>([[+count]])</sup></h5><ul>[[+wrapper]]</ul></li>',
-    ),
-    'tplWrapper' => array(
+    ],
+    'tplWrapper' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'wrapIfEmpty' => array(
+    ],
+    'wrapIfEmpty' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'dateField' => array(
+    'dateField' => [
         'type' => 'textfield',
         'value' => 'createdon',
-    ),
-    'dateFormat' => array(
+    ],
+    'dateFormat' => [
         'type' => 'textfield',
         'value' => '%H:%M',
-    ),
+    ],
 
-    'showLog' => array(
+    'showLog' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'sortby' => array(
+    ],
+    'sortby' => [
         'type' => 'textfield',
         'value' => 'createdon',
-    ),
-    'sortbyTV' => array(
+    ],
+    'sortbyTV' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'sortbyTVType' => array(
+    ],
+    'sortbyTVType' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'sortdir' => array(
+    ],
+    'sortdir' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'ASC', 'value' => 'ASC'),
-            array('text' => 'DESC', 'value' => 'DESC'),
-        ),
+        'options' => [
+            ['text' => 'ASC', 'value' => 'ASC'],
+            ['text' => 'DESC', 'value' => 'DESC'],
+        ],
         'value' => 'DESC',
-    ),
-    'sortdirTV' => array(
+    ],
+    'sortdirTV' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'ASC', 'value' => 'ASC'),
-            array('text' => 'DESC', 'value' => 'DESC'),
-        ),
+        'options' => [
+            ['text' => 'ASC', 'value' => 'ASC'],
+            ['text' => 'DESC', 'value' => 'DESC'],
+        ],
         'value' => 'ASC',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'offset' => array(
+    ],
+    'offset' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'depth' => array(
+    ],
+    'depth' => [
         'type' => 'numberfield',
         'value' => 10,
-    ),
-    'outputSeparator' => array(
+    ],
+    'outputSeparator' => [
         'type' => 'textfield',
         'value' => "\n",
-    ),
-    'toPlaceholder' => array(
+    ],
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'parents' => array(
+    ],
+    'parents' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'includeContent' => array(
+    ],
+    'includeContent' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'includeTVs' => array(
+    'includeTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'prepareTVs' => array(
+    ],
+    'prepareTVs' => [
         'type' => 'textfield',
         'value' => '1',
-    ),
-    'processTVs' => array(
+    ],
+    'processTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tvPrefix' => array(
+    ],
+    'tvPrefix' => [
         'type' => 'textfield',
         'value' => 'tv.',
-    ),
+    ],
 
-    'where' => array(
+    'where' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'showUnpublished' => array(
+    ],
+    'showUnpublished' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showDeleted' => array(
+    ],
+    'showDeleted' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showHidden' => array(
+    ],
+    'showHidden' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'hideContainers' => array(
+    ],
+    'hideContainers' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'context' => array(
+    ],
+    'context' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'totalVar' => array(
+    'totalVar' => [
         'type' => 'textfield',
         'value' => 'total',
-    ),
-    'resources' => array(
+    ],
+    'resources' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'select' => array(
+    'select' => [
         'type' => 'textarea',
         'value' => '',
-    ),
+    ],
 
-    'scheme' => array(
+    'scheme' => [
         'type' => 'list',
-        'options' => array(
-            array('name' => 'System default', 'value' => ''),
-            array('name' => '-1 (relative to site_url)', 'value' => -1),
-            array('name' => 'full (absolute, prepended with site_url)', 'value' => 'full'),
-            array('name' => 'abs (absolute, prepended with base_url)', 'value' => 'abs'),
-            array('name' => 'http (absolute, forced to http scheme)', 'value' => 'http'),
-            array('name' => 'https (absolute, forced to https scheme)', 'value' => 'https'),
-        ),
+        'options' => [
+            ['name' => 'System default', 'value' => ''],
+            ['name' => '-1 (relative to site_url)', 'value' => -1],
+            ['name' => 'full (absolute, prepended with site_url)', 'value' => 'full'],
+            ['name' => 'abs (absolute, prepended with base_url)', 'value' => 'abs'],
+            ['name' => 'http (absolute, forced to http scheme)', 'value' => 'http'],
+            ['name' => 'https (absolute, forced to https scheme)', 'value' => 'https'],
+        ],
         'value' => '',
-    ),
-    'useWeblinkUrl' => array(
+    ],
+    'useWeblinkUrl' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

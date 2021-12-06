@@ -1,7 +1,28 @@
 {
-    "name": "bezumkin/pdotools",
+    "name": "modxpro/pdotools",
+    "description": "Library for creating fast snippets for MODX Revolution.",
+    "keywords": [
+        "MODX",
+        "xPDO",
+        "PDO",
+        "Fenom",
+        "file elements"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vasily Naumkin",
+            "email": "bezumkin@yandex.ru"
+        }
+    ],
     "type": "library",
+    "autoload": {
+        "psr-4": {
+            "ModxPro\\PdoTools\\": "src/"
+        }
+    },
     "require": {
-        "fenom/fenom": "2.*"
+        "php": ">=7.2",
+        "fenom/fenom": "^2.11"
     }
 }

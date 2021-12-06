@@ -1,13 +1,14 @@
 <?php
+
+use ModxPro\PdoTools\Fetch;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modWebLink;
+
 /** @var array $scriptProperties */
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+/** @var \MODX\Revolution\modX $modx */
+
+$modx->services['pdotools_config'] = [];
+$pdoFetch = $modx->services->get(Fetch::class);
 $pdoFetch->addTime('pdoTools loaded');
 
 // Default variables
@@ -98,21 +99,22 @@ if (!empty($itemSeparator)) {
 //---
 
 
-$class = 'modResource';
+$class = modResource::class;
+$alias = $modx->getAlias($class);
 $where = [];
 if (empty($showHidden)) {
     $where[] = [
-        $class . '.hidemenu' => 0,
-        'OR:' . $class . '.class_key:IN' => ['Ticket', 'Article'],
+        $alias . '.hidemenu' => 0,
+        'OR:' . $alias . '.class_key:IN' => ['Ticket', 'Article'],
     ];
 }
 if (empty($context)) {
     $scriptProperties['context'] = $modx->context->key;
 }
 
-$select = [$class => 'id,editedon,createdon,context_key,class_key,uri'];
+$select = [$alias => 'id,editedon,createdon,context_key,class_key,uri'];
 if (!empty($useWeblinkUrl)) {
-    $select[$class] .= ',content';
+    $select[$alias] .= ',content';
 }
 // Add custom parameters
 foreach (['where', 'select'] as $v) {
@@ -132,9 +134,9 @@ $pdoFetch->addTime('Conditions prepared');
 // Default parameters
 $default = [
     'class' => $class,
-    'where' => json_encode($where),
-    'select' => json_encode($select),
-    'sortby' => "{$class}.parent ASC, {$class}.menuindex",
+    'where' => $where,
+    'select' => $select,
+    'sortby' => "{$alias}.parent ASC, {$alias}.menuindex",
     'sortdir' => 'ASC',
     'return' => 'data',
     'scheme' => 'full',
@@ -155,7 +157,7 @@ if (empty($data)) {
     $data = $urls = [];
     $rows = $pdoFetch->run();
     foreach ($rows as $row) {
-        if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
+        if (!empty($useWeblinkUrl) && $row['class_key'] == modWebLink::class) {
             $row['url'] = is_numeric(trim($row['content'], '[]~ '))
                 ? $pdoFetch->makeUrl((int)trim($row['content'], '[]~ '), $row)
                 : $row['content'];
@@ -221,8 +223,8 @@ if ($return === 'data') {
     ]);
     $pdoFetch->addTime('Rows wrapped');
 
-    if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-        $output .= '<pre class="pdoSitemapLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+    if ($modx->user->isAuthenticated('mgr') && !empty($showLog)) {
+        $modx->setPlaceholder('pdoSitemapLog', print_r($pdoFetch->getTime(), true));
     }
 }
 if (!empty($forceXML)) {

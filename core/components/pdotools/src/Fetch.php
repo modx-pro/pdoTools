@@ -1,15 +1,24 @@
 <?php
 
-if (!class_exists('pdoTools')) {
-    require_once 'pdotools.class.php';
-}
+namespace ModxPro\PdoTools;
 
-class pdoFetch extends pdoTools
+
+use MODX\Revolution\modResource;
+use MODX\Revolution\modTemplateVar;
+use MODX\Revolution\modTemplateVarResource;
+use MODX\Revolution\modWebLink;
+use MODX\Revolution\modX;
+use PDO;
+use PDOStatement;
+use xPDO\Om\xPDOQuery;
+use xPDO\xPDO;
+
+class Fetch extends CoreTools
 {
     /** @var string $pk Primary key of class */
     protected $pk;
     /** @var array $ancestry Array with ancestors of class */
-    protected $ancestry = array();
+    protected $ancestry = [];
     /** @var xPDOQuery $query */
     protected $query;
     /** @var array $aliases Array with aliases of classes */
@@ -19,40 +28,39 @@ class pdoFetch extends pdoTools
     /**
      * {@inheritdoc}
      */
-    public function setConfig(array $config = array(), $clean_timings = true)
+    public function setConfig(array $config = [], $clean_timings = true)
     {
-        parent::setConfig(
-            array_merge(array(
-                'class' => 'modResource',
-                'limit' => 10,
-                'sortby' => '',
-                'sortdir' => '',
-                'groupby' => '',
-                'totalVar' => 'total',
-                'setTotal' => false,
-                'tpl' => '',
-                'return' => 'chunks',    // chunks, data, sql or ids
+        $config += [
+            'class' => modResource::class,
+            'limit' => 10,
+            'sortby' => '',
+            'sortdir' => '',
+            'groupby' => '',
+            'totalVar' => 'total',
+            'setTotal' => false,
+            'tpl' => '',
+            'return' => 'chunks',    // chunks, data, sql or ids
 
-                'select' => '',
-                'leftJoin' => '',
-                'rightJoin' => '',
-                'innerJoin' => '',
+            'select' => '',
+            'leftJoin' => '',
+            'rightJoin' => '',
+            'innerJoin' => '',
 
-                'includeTVs' => '',
-                'tvPrefix' => '',
-                'tvsJoin' => array(),
-                'tvsSelect' => array(),
+            'includeTVs' => '',
+            'tvPrefix' => '',
+            'tvsJoin' => [],
+            'tvsSelect' => [],
 
-                'tvFiltersAndDelimiter' => ',',
-                'tvFiltersOrDelimiter' => '||',
+            'tvFiltersAndDelimiter' => ',',
+            'tvFiltersOrDelimiter' => '||',
 
-                'additionalPlaceholders' => '',
-                'useWeblinkUrl' => false,
-            ), $config),
-            $clean_timings);
+            'additionalPlaceholders' => '',
+            'useWeblinkUrl' => false,
+        ];
+        parent::setConfig($config, $clean_timings);
 
         if (empty($this->config['class'])) {
-            $this->config['class'] = 'modResource';
+            $this->config['class'] = modResource::class;
         }
         $this->loadModels();
         $this->ancestry = $this->modx->getAncestry($this->config['class']);
@@ -105,29 +113,28 @@ class pdoFetch extends pdoTools
                 $this->addTime('Rows fetched');
                 $rows = $this->checkPermissions($rows);
                 $this->count = count($rows);
-
-                if (strtolower($this->config['return']) == 'ids') {
-                    $ids = array();
+                if (strtolower($this->config['return']) === 'ids') {
+                    $ids = [];
                     foreach ($rows as $row) {
                         $ids[] = $row[$this->pk];
                     }
                     $output = implode(',', $ids);
-                } elseif (strtolower($this->config['return']) == 'data') {
+                } elseif (strtolower($this->config['return']) === 'data') {
                     $rows = $this->prepareRows($rows);
                     $this->addTime('Returning raw data');
                     $output = &$rows;
-                } elseif (strtolower($this->config['return']) == 'json') {
+                } elseif (strtolower($this->config['return']) === 'json') {
                     $rows = $this->prepareRows($rows);
                     $this->addTime('Returning raw data as JSON string');
                     $output = json_encode($rows);
-                } elseif (strtolower($this->config['return']) == 'serialize') {
+                } elseif (strtolower($this->config['return']) === 'serialize') {
                     $rows = $this->prepareRows($rows);
                     $this->addTime('Returning raw data as serialized string');
                     $output = serialize($rows);
                 } else {
                     $rows = $this->prepareRows($rows);
                     $time = microtime(true);
-                    $output = array();
+                    $output = [];
                     foreach ($rows as $row) {
                         if (!empty($this->config['additionalPlaceholders'])) {
                             $row = array_merge($this->config['additionalPlaceholders'], $row);
@@ -139,7 +146,7 @@ class pdoFetch extends pdoTools
                             if (!isset($row['context_key'])) {
                                 $row['context_key'] = '';
                             }
-                            if (isset($row['class_key']) && ($row['class_key'] == 'modWebLink')) {
+                            if (isset($row['class_key']) && ($row['class_key'] === modWebLink::class)) {
                                 $row['link'] = isset($row['content']) && is_numeric(trim($row['content'], '[]~ '))
                                     ? $this->makeUrl((int)trim($row['content'], '[]~ '), $row)
                                     : (isset($row['content']) ? $row['content'] : '');
@@ -151,7 +158,7 @@ class pdoFetch extends pdoTools
                         }
 
                         $tpl = $this->defineChunk($row);
-                        if (isset($row['sessionid']) && $this->modx->getOption('pdotools_remove_user_sensitive_data', null, true)) {
+                        if ($this->modx->getOption('pdotools_remove_user_sensitive_data', null, true)) {
                             $row = array_diff_key(
                                 $row,
                                 ['sessionid' => 1, 'password' => 1, 'cachepwd' => 1, 'salt' => 1, 'session_stale' => 1, 'remote_key' => 1, 'remote_data' => 1, 'hash_class' => 1]
@@ -173,9 +180,9 @@ class pdoFetch extends pdoTools
                     }
                 }
             } else {
-                $this->modx->log(modX::LOG_LEVEL_INFO, '[pdoTools] ' . $this->query->toSQL());
+                $this->modx->log(xPDO::LOG_LEVEL_INFO, '[pdoTools] ' . $this->query->toSQL());
                 $errors = $this->query->stmt->errorInfo();
-                $this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] Error ' . $errors[0] . ': ' . $errors[2]);
+                $this->modx->log(xPDO::LOG_LEVEL_ERROR, '[pdoTools] Error ' . $errors[0] . ': ' . $errors[2]);
                 $this->addTime('Could not process query, error #' . $errors[1] . ': ' . $errors[2]);
             }
         }
@@ -201,21 +208,21 @@ class pdoFetch extends pdoTools
     public function addWhere()
     {
         $time = microtime(true);
-        $where = array();
+        $where = [];
         if (!empty($this->config['where'])) {
             $tmp = $this->config['where'];
-            if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+            if (is_string($tmp) && ($tmp[0] === '{' || $tmp[0] === '[')) {
                 $tmp = json_decode($tmp, true);
             }
             if (!is_array($tmp)) {
-                $tmp = array($tmp);
+                $tmp = [$tmp];
             }
             $where = $this->replaceTVCondition($tmp);
         }
         $where = $this->additionalConditions($where);
         if (!empty($where)) {
             $this->query->where($where);
-            $condition = array();
+            $condition = [];
             foreach ($where as $k => $v) {
                 if (is_array($v)) {
                     if (isset($v[0])) {
@@ -234,16 +241,16 @@ class pdoFetch extends pdoTools
         $time = microtime(true);
         if (!empty($this->config['having'])) {
             $tmp = $this->config['having'];
-            if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+            if (is_string($tmp) && ($tmp[0] === '{' || $tmp[0] === '[')) {
                 $tmp = json_decode($tmp, true);
             }
             if (!is_array($tmp)) {
-                $tmp = array($tmp);
+                $tmp = [$tmp];
             }
             $having = $this->replaceTVCondition($tmp);
             $this->query->having($having);
 
-            $condition = array();
+            $condition = [];
             foreach ($having as $k => $v) {
                 if (is_array($v)) {
                     $condition[] = $k . '(' . implode(',', $v) . ')';
@@ -261,7 +268,7 @@ class pdoFetch extends pdoTools
      */
     public function setTotal()
     {
-        if ($this->config['setTotal'] && !in_array($this->config['return'], array('sql', 'ids'))) {
+        if ($this->config['setTotal'] && !in_array($this->config['return'], ['sql', 'ids'])) {
             $time = microtime(true);
 
             $q = $this->modx->prepare("SELECT FOUND_ROWS();");
@@ -290,7 +297,7 @@ class pdoFetch extends pdoTools
             $this->config['leftJoin'] = '[]';
         }
 
-        $joinSequence = array('innerJoin', 'leftJoin', 'rightJoin');
+        $joinSequence = ['innerJoin', 'leftJoin', 'rightJoin'];
         if (!empty($this->config['joinSequence'])) {
             if (is_string($this->config['joinSequence'])) {
                 $this->config['joinSequence'] = array_map('trim', explode(',', $this->config['joinSequence']));
@@ -303,7 +310,7 @@ class pdoFetch extends pdoTools
         foreach ($joinSequence as $join) {
             if (!empty($this->config[$join])) {
                 $tmp = $this->config[$join];
-                if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
+                if (is_string($tmp) && ($tmp[0] === '{' || $tmp[0] === '[')) {
                     $tmp = json_decode($tmp, true);
                 }
                 if ($join == 'leftJoin' && !empty($this->config['tvsJoin'])) {
@@ -311,8 +318,8 @@ class pdoFetch extends pdoTools
                 }
                 foreach ($tmp as $k => $v) {
                     $class = !empty($v['class']) ? $v['class'] : $k;
-                    $alias = !empty($v['alias']) ? $v['alias'] : $k;
-                    $on = !empty($v['on']) ? $v['on'] : array();
+                    $alias = $this->modx->getAlias(!empty($v['alias']) ? $v['alias'] : $k);
+                    $on = !empty($v['on']) ? $v['on'] : [];
                     if (!is_numeric($alias) && !is_numeric($class)) {
                         $this->query->$join($class, $alias, $on);
                         $this->addTime($join . 'ed <i>' . $class . '</i> as <b>' . $alias . '</b>',
@@ -336,37 +343,40 @@ class pdoFetch extends pdoTools
     {
         $time = microtime(true);
 
+        $alias = $this->modx->getAlias($this->config['class']);
+
         if ($this->config['return'] == 'ids') {
-            $this->query->select('`' . $this->config['class'] . '`.`' . $this->pk . '`');
+            $this->query->select("`{$alias}`.`{$this->pk}`");
             $this->addTime('Parameter "return" set to "ids", so we select only primary key', microtime(true) - $time);
         } elseif ($tmp = $this->config['select']) {
             if (!is_array($tmp)) {
-                $tmp = (!empty($tmp) && ($tmp[0] == '{' || $tmp[0] == '['))
+                $tmp = (!empty($tmp) && ($tmp[0] === '{' || $tmp[0] === '['))
                     ? json_decode($tmp, true)
-                    : array($this->config['class'] => $tmp);
+                    : [$alias => $tmp];
             }
             if (!is_array($tmp)) {
-                $tmp = array();
+                $tmp = [];
             }
             $tmp = array_merge($tmp, $this->config['tvsSelect']);
             $i = 0;
-            foreach ($tmp as $class => $fields) {
-                if (is_numeric($class)) {
-                    $class = $alias = $this->config['class'];
-                } elseif (isset($this->aliases[$class])) {
-                    $alias = $class;
+            foreach ($tmp as $alias => $fields) {
+                if (is_numeric($alias)) {
+                    $class = $this->config['class'];
+                    $alias = $this->modx->getAlias($class);
+                } elseif (isset($this->aliases[$alias])) {
                     $class = $this->aliases[$alias];
                 } else {
-                    $alias = $class;
+                    $class = class_exists('MODX\Revolution\\' . $alias)
+                        ? 'MODX\Revolution\\' . $alias
+                        : $alias;
+                    $alias = $this->modx->getAlias($class);
                 }
-                if (is_string($fields) && !preg_match('/\b' . $alias . '\b|\bAS\b|\(|`/i',
-                        $fields) && isset($this->modx->map[$class])
-                ) {
+
+                if (is_string($fields) && !preg_match('/\b' . $alias . '\b|\bAS\b|\(|`/i', $fields)) {
                     if ($fields == 'all' || $fields == '*' || empty($fields)) {
                         $fields = $this->modx->getSelectColumns($class, $alias);
                     } else {
-                        $fields = $this->modx->getSelectColumns($class, $alias, '',
-                            array_map('trim', explode(',', $fields)));
+                        $fields = $this->modx->getSelectColumns($class, $alias, '', array_map('trim', explode(',', $fields)));
                     }
                 }
 
@@ -376,7 +386,7 @@ class pdoFetch extends pdoTools
 
                 if (is_string($fields) && strpos($fields, '(') !== false) {
                     // Commas in functions
-                    $fields = preg_replace_callback('/\(.*?\)/', function($matches) {
+                    $fields = preg_replace_callback('/\(.*?\)/', function ($matches) {
                         return str_replace(",", "|", $matches[0]);
                     }, $fields);
                     $fields = explode(',', $fields);
@@ -384,15 +394,13 @@ class pdoFetch extends pdoTools
                         $field = str_replace('|', ',', $field);
                     }
                     $this->query->select($fields);
-                    $this->addTime('Added selection of <b>' . $class . '</b>: <small>' . str_replace('`' . $alias . '`.',
-                            '', implode(',', $fields)) . '</small>', microtime(true) - $time);
+                    $this->addTime('Added selection of <b>' . $alias . '</b>: <small>' . str_replace('`' . $alias . '`.', '', implode(',', $fields)) . '</small>', microtime(true) - $time);
                 } else {
                     $this->query->select($fields);
                     if (is_array($fields)) {
                         $fields = current($fields) . ' AS ' . current(array_flip($fields));
                     }
-                    $this->addTime('Added selection of <b>' . $class . '</b>: <small>' . str_replace('`' . $alias . '`.',
-                            '', $fields) . '</small>', microtime(true) - $time);
+                    $this->addTime('Added selection of <b>' . $alias . '</b>: <small>' . str_replace('`' . $alias . '`.', '', $fields) . '</small>', microtime(true) - $time);
                 }
 
                 $i++;
@@ -406,7 +414,7 @@ class pdoFetch extends pdoTools
                     unset($columns[$key]);
                 }
             }
-            $this->config['select'] = array($this->config['class'] => implode(',', $columns));
+            $this->config['select'] = [$this->config['class'] => implode(',', $columns)];
             $this->addSelects();
         }
     }
@@ -432,25 +440,26 @@ class pdoFetch extends pdoTools
     public function addSort()
     {
         $time = microtime(true);
+        $alias = $this->modx->getAlias($this->config['class']);
         $tmp = $this->config['sortby'];
-        if (empty($tmp) || (is_string($tmp) && in_array(strtolower($tmp), array('resources', 'ids')))) {
-            $resources = $this->config['class'] . '.' . $this->pk . ':IN';
+        if (empty($tmp) || (is_string($tmp) && in_array(strtolower($tmp), ['resources', 'ids']))) {
+            $resources = $alias . '.' . $this->pk . ':IN';
             if (!empty($this->config['where'][$resources])) {
-                $tmp = array(
-                    'FIELD(`' . $this->config['class'] . '`.`' . $this->pk . '`,\'' . implode('\',\'',
+                $tmp = [
+                    'FIELD(`' . $alias . '`.`' . $this->pk . '`,\'' . implode('\',\'',
                         $this->config['where'][$resources]) . '\')' => '',
-                );
+                ];
             } else {
-                $tmp = array(
-                    $this->config['class'] . '.' . $this->pk => !empty($this->config['sortdir'])
+                $tmp = [
+                    $alias . '.' . $this->pk => !empty($this->config['sortdir'])
                         ? $this->config['sortdir']
                         : 'ASC',
-                );
+                ];
             }
         } elseif (is_string($tmp)) {
-            $tmp = $tmp[0] == '{' || $tmp[0] == '['
+            $tmp = $tmp[0] === '{' || $tmp[0] === '['
                 ? json_decode($tmp, true)
-                : array($tmp => $this->config['sortdir']);
+                : [$tmp => $this->config['sortdir']];
         }
         if (!empty($this->config['sortbyTV']) && !array_key_exists($this->config['sortbyTV'], $tmp)) {
             $tmp2[$this->config['sortbyTV']] = !empty($this->config['sortdirTV'])
@@ -497,7 +506,7 @@ class pdoFetch extends pdoTools
                     }
                 }
             } elseif (array_key_exists($sortby, $fields)) {
-                $sortby = $this->config['class'] . '.' . $sortby;
+                $sortby = $alias . '.' . $sortby;
             }
             // Escaping of columns names
             $tmp = explode(',', $sortby);
@@ -507,23 +516,19 @@ class pdoFetch extends pdoTools
                 }
             });
             $sortby = implode(',', $tmp);
-            if (!in_array(strtoupper($sortdir), array('ASC', 'DESC', ''), true)) {
+            if (!in_array(strtoupper($sortdir), ['ASC', 'DESC', ''], true)) {
                 $sortdir = 'ASC';
             }
 
-            // Use reflection to check clause by protected method of xPDOQuery
-            $isValidClause = new ReflectionMethod('xPDOQuery', 'isValidClause');
-            $isValidClause->setAccessible(true);
-            $isValidClause->invoke($this->query, $sortby);
-            if (!$isValidClause->invoke($this->query, $sortby)) {
+            if (!xPDOQuery::isValidClause($sortby)) {
                 $message = 'SQL injection attempt detected in sortby column; clause rejected';
                 $this->modx->log(xPDO::LOG_LEVEL_ERROR, $message);
                 $this->addTime($message . ': ' . $sortby);
             } elseif (!empty($sortby)) {
-                $this->query->query['sortby'][] = array(
+                $this->query->query['sortby'][] = [
                     'column' => $sortby,
-                    'direction' => $sortdir
-                );
+                    'direction' => $sortdir,
+                ];
                 $this->addTime('Sorted by <b>' . $sortby . '</b>, <b>' . $sortdir . '</b>', microtime(true) - $time);
             }
         }
@@ -573,37 +578,40 @@ class pdoFetch extends pdoTools
             $class = !empty($this->config['joinTVsTo'])
                 ? $this->config['joinTVsTo']
                 : $this->config['class'];
-            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap['modResource']);
-            if (!preg_match('#^modResource$#i', $class) && !count($subclass)) {
-                $this->modx->log(modX::LOG_LEVEL_ERROR,
+            $alias = $this->modx->getAlias($class);
+            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap[modResource::class]);
+            if ($alias !== 'modResource' && !count($subclass)) {
+                $this->modx->log(
+                    xPDO::LOG_LEVEL_ERROR,
                     '[pdoTools] Could not join TVs to the class "' . $class . '" that is not a subclass of the "modResource". Try to specify correct class in the "joinTVsTo" parameter.');
-            } else {
-                $tvs = array_map('trim', explode(',', $includeTVs));
-                $tvs = array_unique($tvs);
-                if (!empty($tvs)) {
-                    $q = $this->modx->newQuery('modTemplateVar', array('name:IN' => $tvs));
-                    $q->select('id,name,type,default_text');
-                    $tstart = microtime(true);
-                    if ($q->prepare() && $q->stmt->execute()) {
-                        $this->modx->queryTime += microtime(true) - $tstart;
-                        $this->modx->executedQueries++;
-                        $tvs = array();
-                        while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
-                            $name = strtolower($tv['name']);
-                            $alias = 'TV' . $name;
-                            $this->config['tvsJoin'][$name] = array(
-                                'class' => 'modTemplateVarResource',
-                                'alias' => $alias,
-                                'on' => '`TV' . $name . '`.`contentid` = `' . $class . '`.`id` AND `TV' . $name . '`.`tmplvarid` = ' . $tv['id'],
-                                'tv' => $tv,
-                            );
-                            $this->config['tvsSelect'][$alias] = array('`' . $tvPrefix . $tv['name'] . '`' => 'IFNULL(`' . $alias . '`.`value`, ' . $this->modx->quote($tv['default_text']) . ')');
-                            $tvs[] = $tv['name'];
-                        }
 
-                        $this->addTime('Included list of tvs: <b>' . implode(', ', $tvs) . '</b>',
-                            microtime(true) - $time);
+                    return;
+            }
+
+            $tvs = array_map('trim', explode(',', $includeTVs));
+            $tvs = array_unique($tvs);
+            if (!empty($tvs)) {
+                $q = $this->modx->newQuery(modTemplateVar::class, ['name:IN' => $tvs]);
+                $q->select('id,name,type,default_text');
+                $tstart = microtime(true);
+                if ($q->prepare() && $q->stmt->execute()) {
+                    $this->modx->queryTime += microtime(true) - $tstart;
+                    $this->modx->executedQueries++;
+                    $tvs = [];
+                    while ($tv = $q->stmt->fetch(PDO::FETCH_ASSOC)) {
+                        $name = strtolower($tv['name']);
+                        $alias_tv = 'TV' . $name;
+                        $this->config['tvsJoin'][$name] = [
+                            'class' => modTemplateVarResource::class,
+                            'alias' => $alias_tv,
+                            'on' => "`{$alias_tv}`.`contentid` = `{$alias}`.`id` AND `{$alias_tv}`.`tmplvarid` = {$tv['id']}",
+                            'tv' => $tv,
+                        ];
+                        $this->config['tvsSelect'][$alias_tv] = ["`{$tvPrefix}{$tv['name']}`" => "IFNULL(`{$alias_tv}`.`value`, {$this->modx->quote($tv['default_text'])})"];
+                        $tvs[] = $tv['name'];
                     }
+
+                    $this->addTime('Included list of tvs: <b>' . implode(', ', $tvs) . '</b>', microtime(true) - $time);
                 }
             }
         }
@@ -617,18 +625,19 @@ class pdoFetch extends pdoTools
      *
      * @return array
      */
-    public function additionalConditions($where = array())
+    public function additionalConditions($where = [])
     {
         $config = $this->config;
         $class = $this->config['class'];
+        $alias = $this->modx->getAlias($this->config['class']);
 
         // These rules works only for descendants of modResource
-        if (!in_array('modResource', $this->ancestry) || !empty($config['disableConditions'])) {
+        if (!in_array(modResource::class, $this->ancestry) || !empty($config['disableConditions'])) {
             return $where;
         }
         $time = microtime(true);
 
-        $params = array(
+        $params = [
             'resources' => 'id',
             'parents' => 'parent',
             'templates' => 'template',
@@ -638,7 +647,7 @@ class pdoFetch extends pdoTools
             'hideContainers' => 'isfolder',
             'hideUnsearchable' => 'searchable',
             'context' => 'context_key',
-        );
+        ];
 
         // Exclude parameters that may already have been processed
         foreach ($params as $param => $field) {
@@ -646,19 +655,19 @@ class pdoFetch extends pdoTools
             if (isset($config[$param])) {
                 foreach ($where as $k => $v) {
                     // Usual condition
-                    if (!is_numeric($k) && strpos($k, $field) === 0 || strpos($k, $class . '.' . $field) !== false) {
+                    if (!is_numeric($k) && strpos($k, $field) === 0 || strpos($k, $alias . '.' . $field) !== false) {
                         $found = true;
                         break;
                     } // Array of conditions
                     elseif (is_numeric($k) && is_array($v)) {
                         foreach ($v as $k2 => $v2) {
-                            if (strpos($k2, $field) === 0 || strpos($k2, $class . '.' . $field) !== false) {
+                            if (strpos($k2, $field) === 0 || strpos($k2, $alias . '.' . $field) !== false) {
                                 $found = true;
                                 break(2);
                             }
                         }
                     } // Raw SQL string
-                    elseif (is_numeric($k) && strpos($v, $class) !== false && preg_match('/\b' . $field . '\b/i', $v)) {
+                    elseif (is_numeric($k) && strpos($v, $alias) !== false && preg_match('/\b' . $field . '\b/i', $v)) {
                         $found = true;
                         break;
                     }
@@ -678,37 +687,37 @@ class pdoFetch extends pdoTools
             switch ($param) {
                 case 'showUnpublished':
                     if (empty($value)) {
-                        $where[$class . '.published'] = 1;
+                        $where[$alias . '.published'] = 1;
                     }
                     break;
                 case 'showHidden':
                     if (empty($value)) {
-                        $where[$class . '.hidemenu'] = 0;
+                        $where[$alias . '.hidemenu'] = 0;
                     }
                     break;
                 case 'showDeleted':
                     if (empty($value)) {
-                        $where[$class . '.deleted'] = 0;
+                        $where[$alias . '.deleted'] = 0;
                     }
                     break;
                 case 'hideContainers':
                     if (!empty($value)) {
-                        $where[$class . '.isfolder'] = 0;
+                        $where[$alias . '.isfolder'] = 0;
                     }
                     break;
                 case 'hideUnsearchable':
                     if (!empty($value)) {
-                        $where[$class . '.searchable'] = 1;
+                        $where[$alias . '.searchable'] = 1;
                     }
                     break;
                 case 'context':
                     if (!empty($value)) {
                         $context = array_map('trim', explode(',', $value));
                         if (!empty($context) && is_array($context)) {
-                            if (count($context) == 1) {
-                                $where[$class . '.context_key'] = $context[0];
+                            if (count($context) === 1) {
+                                $where[$alias . '.context_key'] = $context[0];
                             } else {
-                                $where[$class . '.context_key:IN'] = $context;
+                                $where[$alias . '.context_key:IN'] = $context;
                             }
                         }
                     }
@@ -716,7 +725,7 @@ class pdoFetch extends pdoTools
                 case 'resources':
                     if (!empty($value)) {
                         $resources = array_map('trim', explode(',', $value));
-                        $resources_in = $resources_out = array();
+                        $resources_in = $resources_out = [];
                         foreach ($resources as $v) {
                             if (!is_numeric($v)) {
                                 continue;
@@ -728,22 +737,22 @@ class pdoFetch extends pdoTools
                             }
                         }
                         if (!empty($resources_in)) {
-                            $where[$class . '.id:IN'] = $resources_in;
+                            $where[$alias . '.id:IN'] = $resources_in;
                         }
                         if (!empty($resources_out)) {
-                            $where[$class . '.id:NOT IN'] = $resources_out;
+                            $where[$alias . '.id:NOT IN'] = $resources_out;
                         }
                     }
                     break;
                 case 'parents':
                     if (!empty($value)) {
                         $parents = array_map('trim', explode(',', $value));
-                        $parents_in = $parents_out = array();
+                        $parents_in = $parents_out = [];
                         foreach ($parents as $v) {
                             if (!is_numeric($v)) {
                                 continue;
                             }
-                            if ($v[0] == '-') {
+                            if ($v[0] === '-') {
                                 $parents_out[] = abs($v);
                             } else {
                                 $parents_in[] = abs($v);
@@ -753,9 +762,8 @@ class pdoFetch extends pdoTools
                             ? (int)$config['depth']
                             : 10;
                         if (!empty($depth) && $depth > 0) {
-                            $pids = array();
-                            $q = $this->modx->newQuery($class,
-                                array('id:IN' => array_merge($parents_in, $parents_out)));
+                            $pids = [];
+                            $q = $this->modx->newQuery($class, ['id:IN' => array_merge($parents_in, $parents_out)]);
                             $q->select('id,context_key');
                             $tstart = microtime(true);
                             if ($q->prepare() && $q->stmt->execute()) {
@@ -770,29 +778,26 @@ class pdoFetch extends pdoTools
                                     continue;
                                 } elseif (in_array($k, $parents_in)) {
                                     $parents_in = array_merge($parents_in,
-                                        $this->modx->getChildIds($k, $depth, array('context' => $v)));
+                                        $this->modx->getChildIds($k, $depth, ['context' => $v]));
                                 } else {
                                     $parents_out = array_merge($parents_out,
-                                        $this->modx->getChildIds($k, $depth, array('context' => $v)));
+                                        $this->modx->getChildIds($k, $depth, ['context' => $v]));
                                 }
                             }
                             if (empty($parents_in)) {
-                                $parents_in = $this->modx->getChildIds(0, $depth,
-                                    array('context' => $this->config['context']));
+                                $parents_in = $this->modx->getChildIds(0, $depth, ['context' => $this->config['context']]);
                             }
                         }
                         // Support of miniShop2 categories
-                        $members = array();
-                        if (in_array('msCategory', $this->modx->classMap['modResource']) &&
-                            empty($this->config['disableMS2'])
-                        ) {
+                        $members = [];
+                        if (in_array('msCategory', $this->modx->classMap[modResource::class]) && empty($this->config['disableMS2'])) {
                             if (!empty($parents_in) || !empty($parents_out)) {
                                 $q = $this->modx->newQuery('msCategoryMember');
                                 if (!empty($parents_in)) {
-                                    $q->where(array('category_id:IN' => $parents_in));
+                                    $q->where(['category_id:IN' => $parents_in]);
                                 }
                                 if (!empty($parents_out)) {
-                                    $q->where(array('category_id:NOT IN' => $parents_out));
+                                    $q->where(['category_id:NOT IN' => $parents_out]);
                                 }
                                 $q->select('product_id');
                                 $tstart = microtime(true);
@@ -808,32 +813,32 @@ class pdoFetch extends pdoTools
                             if (!empty($this->config['includeParents'])) {
                                 $members = array_merge($members, $parents_in);
                             }
-                            $where[] = array(
-                                $class . '.parent:IN' => $parents_in,
-                                'OR:' . $class . '.id:IN' => $members,
-                            );
+                            $where[] = [
+                                $alias . '.parent:IN' => $parents_in,
+                                'OR:' . $alias . '.id:IN' => $members,
+                            ];
                         } elseif (!empty($parents_in) && !empty($this->config['includeParents'])) {
-                            $where[] = array(
-                                $class . '.parent:IN' => $parents_in,
-                                'OR:' . $class . '.id:IN' => $parents_in,
-                            );
+                            $where[] = [
+                                $alias . '.parent:IN' => $parents_in,
+                                'OR:' . $alias . '.id:IN' => $parents_in,
+                            ];
                         } elseif (!empty($parents_in)) {
-                            $where[$class . '.parent:IN'] = $parents_in;
+                            $where[$alias . '.parent:IN'] = $parents_in;
                         }
                         if (!empty($parents_out) && !empty($this->config['includeParents'])) {
-                            $where[] = array(
-                                $class . '.parent:NOT IN' => $parents_out,
-                                'AND:' . $class . '.id:NOT IN' => $parents_out,
-                            );
+                            $where[] = [
+                                $alias . '.parent:NOT IN' => $parents_out,
+                                'AND:' . $alias . '.id:NOT IN' => $parents_out,
+                            ];
                         } elseif (!empty($parents_out)) {
-                            $where[$class . '.parent:NOT IN'] = $parents_out;
+                            $where[$alias . '.parent:NOT IN'] = $parents_out;
                         }
                     }
                     break;
                 case 'templates':
                     if (!empty($value)) {
                         $templates = array_map('trim', explode(',', $value));
-                        $templates_in = $templates_out = array();
+                        $templates_in = $templates_out = [];
                         foreach ($templates as $v) {
                             if (!is_numeric($v)) {
                                 continue;
@@ -845,10 +850,10 @@ class pdoFetch extends pdoTools
                             }
                         }
                         if (!empty($templates_in)) {
-                            $where[$class . '.template:IN'] = $templates_in;
+                            $where[$alias . '.template:IN'] = $templates_in;
                         }
                         if (!empty($templates_out)) {
-                            $where[$class . '.template:NOT IN'] = $templates_out;
+                            $where[$alias . '.template:NOT IN'] = $templates_out;
                         }
                     }
                     break;
@@ -877,7 +882,7 @@ class pdoFetch extends pdoTools
         $tvFiltersOrDelimiter = $this->config['tvFiltersOrDelimiter'];
 
         $tvFilters = array_map('trim', explode($tvFiltersOrDelimiter, $this->config['tvFilters']));
-        $operators = array(
+        $operators = [
             '<=>' => '<=>',
             '===' => '=',
             '!==' => '!=',
@@ -890,25 +895,25 @@ class pdoFetch extends pdoTools
             '>>' => '>',
             '>=' => '>=',
             '=>' => '=>',
-        );
+        ];
 
         $includeTVs = !empty($this->config['includeTVs'])
             ? array_map('trim', explode(',', $this->config['includeTVs']))
-            : array();
-        $where = array();
+            : [];
+        $where = [];
         if (!empty($this->config['where'])) {
             $tmp = $this->config['where'];
             if (is_string($tmp) && ($tmp[0] == '{' || $tmp[0] == '[')) {
                 $where = json_decode($tmp, true);
             }
             if (!is_array($where)) {
-                $where = array($where);
+                $where = [$where];
             }
         }
 
-        $conditions = array();
+        $conditions = [];
         foreach ($tvFilters as $tvFilter) {
-            $condition = array();
+            $condition = [];
             $filters = explode($tvFiltersAndDelimiter, $tvFilter);
             foreach ($filters as $filter) {
                 $operator = '==';
@@ -961,10 +966,10 @@ class pdoFetch extends pdoTools
         $time = microtime(true);
         $tvs = implode('|', array_keys($this->config['tvsJoin']));
 
-        $sorts = array();
+        $sorts = [];
         foreach ($array as $k => $v) {
-            $callback = function($matches) {
-                return '`TV' . strtolower($matches[1]). '`.`value`';
+            $callback = function ($matches) {
+                return '`TV' . strtolower($matches[1]) . '`.`value`';
             };
             if (is_numeric($k) && is_string($v)) {
                 $tmp = preg_replace_callback('/\b(' . $tvs . ')\b/i', $callback, $v);
@@ -991,7 +996,7 @@ class pdoFetch extends pdoTools
      *
      * @return array
      */
-    public function getObject($class, $where = '', $config = array())
+    public function getObject($class, $where = '', $config = [])
     {
         return $this->getArray($class, $where, $config);
     }
@@ -1007,37 +1012,29 @@ class pdoFetch extends pdoTools
      *
      * @return array
      */
-    public function getArray($class, $where = '', $config = array())
+    public function getArray($class, $where = '', $config = [])
     {
         $config['limit'] = 1;
         $rows = $this->getCollection($class, $where, $config);
 
         return !empty($rows[0])
             ? $rows[0]
-            : array();
+            : [];
     }
 
 
     /**
      * PDO replacement for modX::getCollection()
      *
-     * @param $class
-     * @param string $where
+     * @param string $class
+     * @param string|int|array $where
      * @param array $config
      *
      * @return array|boolean
      */
-    public function getCollection($class, $where = '', $config = array())
+    public function getCollection($class, $where = '', array $config = [])
     {
-        /** @var pdoFetch $instance */
-        $fqn = $this->modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-        $path = $this->modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/',
-            true);
-        if ($pdoClass = $this->modx->loadClass($fqn, $path, false, true)) {
-            $instance = new $pdoClass($this->modx, $config);
-        } else {
-            return false;
-        }
+        $instance = new self($this->modx, $config, $this->fenom);
 
         $config['class'] = $class;
         $config['limit'] = !isset($config['limit'])
@@ -1046,8 +1043,8 @@ class pdoFetch extends pdoTools
         if (!empty($where)) {
             unset($config['where']);
             if (is_numeric($where)) {
-                $where = array($instance->modx->getPK($class) => (int)$where);
-            } elseif (is_string($where) && ($where[0] == '{' || $where[0] == '[')) {
+                $where = [$instance->modx->getPK($class) => (int)$where];
+            } elseif (is_string($where) && ($where[0] === '{' || $where[0] === '[')) {
                 $where = json_decode($where, true);
             }
             if (is_array($where)) {
@@ -1076,7 +1073,7 @@ class pdoFetch extends pdoTools
             $instance->modx->executedQueries++;
             $tstart = microtime(true);
             if (!$rows = $instance->query->stmt->fetchAll(PDO::FETCH_ASSOC)) {
-                $rows = array();
+                $rows = [];
             } else {
                 $rows = $instance->checkPermissions($rows);
                 $rows = $instance->prepareRows($rows);
@@ -1106,12 +1103,12 @@ class pdoFetch extends pdoTools
      *
      * @return array
      */
-    public function getChildIds($class, $id, $depth = 10, array $options = array())
+    public function getChildIds($class, $id, $depth = 10, array $options = [])
     {
-        $ids = array();
+        $ids = [];
         $where = isset($options['where']) && is_array($options['where'])
             ? $options['where']
-            : array();
+            : [];
         $id_field = !empty($options['id_field'])
             ? $options['id_field']
             : 'id';
@@ -1136,5 +1133,4 @@ class pdoFetch extends pdoTools
 
         return $ids;
     }
-
 }

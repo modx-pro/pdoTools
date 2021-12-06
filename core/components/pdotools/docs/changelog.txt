@@ -1,5 +1,12 @@
 Changelog for pdoTools.
 
+3.0.0 beta (06.12.2021)
+==============
+- Requires MODX 3.
+- Refactored to use PSR-4 autoload.
+- Removed "nestedChunkPrefix" parameter.
+- pdoTools snippet logs are stored in the corresponding placeholder.
+
 2.13.2-pl (02.09.2021)
 ==============
 - Fixed some snippets.

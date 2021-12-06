@@ -1,17 +1,19 @@
 <?php
-$plugins = array();
 
-$tmp = array(
-    'pdoTools' => array(
+/** @var \MODX\Revolution\modX $modx */
+
+$plugins = [];
+
+$tmp = [
+    'pdoTools' => [
         'file' => 'pdotools',
         'description' => '',
-        'events' => array(
-            'OnMODXInit' => -100,
+        'events' => [
             'OnSiteRefresh' => 0,
-            'OnWebPagePrerender' => -100,
-        ),
-    ),
-);
+            'OnWebPagePrerender' => -101,
+        ],
+    ],
+];
 
 foreach ($tmp as $k => $v) {
     /** @var modplugin $plugin */
@@ -29,13 +31,13 @@ foreach ($tmp as $k => $v) {
     $events = array();
     if (!empty($v['events']) && is_array($v['events'])) {
         foreach ($v['events'] as $name => $priority) {
-            /** @var $event modPluginEvent */
-            $event = $modx->newObject('modPluginEvent');
-            $event->fromArray(array(
+            /** @var $event MODX\Revolution\modPluginEvent */
+            $event = $modx->newObject(MODX\Revolution\modPluginEvent::class);
+            $event->fromArray([
                 'event' => $name,
                 'priority' => $priority,
                 'propertyset' => 0,
-            ), '', true, true);
+            ], '', true, true);
             $events[] = $event;
         }
         unset($v['events']);

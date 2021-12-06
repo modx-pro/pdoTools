@@ -1,6 +1,11 @@
 <?php
+
+use ModxPro\PdoTools\Fetch;
+use MODX\Revolution\modSnippet;
+
 /** @var array $scriptProperties */
-/** @var modX $modx */
+/** @var \MODX\Revolution\modX $modx */
+
 if (isset($parents) && $parents === '') {
     $scriptProperties['parents'] = $modx->resource->id;
 }
@@ -15,8 +20,7 @@ if (!empty($returnIds)) {
 $additionalPlaceholders = $properties = [];
 if (isset($this) && $this instanceof modSnippet && $this->get('properties')) {
     $properties = $this->get('properties');
-}
-elseif ($snippet = $modx->getObject('modSnippet', ['name' => 'pdoResources'])) {
+} elseif ($snippet = $modx->getObject(modSnippet::class, ['name' => 'pdoResources'])) {
     $properties = $snippet->get('properties');
 }
 if (!empty($properties)) {
@@ -28,25 +32,17 @@ if (!empty($properties)) {
 }
 $scriptProperties['additionalPlaceholders'] = $additionalPlaceholders;
 
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+$modx->services['pdotools_config'] = $scriptProperties;
+$pdoFetch = $modx->services->get(Fetch::class);
 $pdoFetch->addTime('pdoTools loaded');
 $output = $pdoFetch->run();
 
-$log = '';
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-    $log .= '<pre class="pdoResourcesLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+if ($modx->user->isAuthenticated('mgr') && !empty($showLog)) {
+    $modx->setPlaceholder('pdoResourcesLog', print_r($pdoFetch->getTime(), true));
 }
 
 // Return output
 if (!empty($returnIds)) {
-    $modx->setPlaceholder('pdoResources.log', $log);
     if (!empty($toPlaceholder)) {
         $modx->setPlaceholder($toPlaceholder, $output);
     } else {
@@ -55,11 +51,8 @@ if (!empty($returnIds)) {
 } elseif ($return === 'data') {
     return $output;
 } elseif (!empty($toSeparatePlaceholders)) {
-    $output['log'] = $log;
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
 } else {
-    $output .= $log;
-
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
         $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, ['output' => $output]),
             $pdoFetch->config['fastMode']);

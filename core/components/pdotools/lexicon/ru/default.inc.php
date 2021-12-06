@@ -10,23 +10,6 @@ $_lang['pdotools'] = 'pdoTools';
 
 $_lang['area_pdotools_main'] = 'Основные';
 
-$_lang['setting_pdoTools.class'] = 'FQN имя класса pdoTools';
-$_lang['setting_pdoTools.class_desc'] = 'FQN имя класса pdoTools для загрузки из настройки "pdotools_class_path".';
-$_lang['setting_pdotools_class_path'] = 'Путь к классу pdoTools';
-$_lang['setting_pdotools_class_path_desc'] = 'Директории с классом pdoTools, из которого он будет загружен, используя FQN имя.';
-
-$_lang['setting_pdoFetch.class'] = 'FQN имя класса pdoFetch';
-$_lang['setting_pdoFetch.class_desc'] = 'FQN имя класса pdoTools для загрузки из настройки "pdofetch_class_path".';
-$_lang['setting_pdofetch_class_path'] = 'Путь к классу pdoFetch';
-$_lang['setting_pdofetch_class_path_desc'] = 'Директории с классом pdoFetch, из которого он будет загружен, используя FQN имя.';
-
-$_lang['setting_pdoParser.class'] = 'FQN имя класса pdoParser';
-$_lang['setting_pdoParser.class_desc'] = 'FQN имя класса pdoParser для загрузки из настройки "parser_class_path".';
-$_lang['setting_parser_class'] = 'Используемый парсер';
-$_lang['setting_parser_class_desc'] = 'Класс парсера, который используется для разбора тегов MODX.';
-$_lang['setting_parser_class_path'] = 'Путь к классу парсера';
-$_lang['setting_parser_class_path_desc'] = 'Директории с классом парсера, из которого он будет загружен, используя FQN имя.';
-
 $_lang['setting_pdotools_elements_path'] = 'Путь к элементам';
 $_lang['setting_pdotools_elements_path_desc'] = 'Директория, в которой хранятся файлы элементов для загрузки через @FILE.';
 $_lang['setting_pdotools_fenom_default'] = 'Использовать Fenom в чанках';

@@ -1,46 +1,59 @@
 <?php
 
-class pdoTools
+namespace ModxPro\PdoTools;
+
+use xPDO\xPDO;
+use MODX\Revolution\modX;
+use MODX\Revolution\modAccessibleObject;
+use MODX\Revolution\modChunk;
+use MODX\Revolution\modElement;
+use MODX\Revolution\modScript;
+use MODX\Revolution\modSnippet;
+use MODX\Revolution\modTemplateVar;
+use MODX\Revolution\Sources\modFileMediaSource;
+use ModxPro\PdoTools\Parsing\Fenom\Fenom;
+
+
+class CoreTools
 {
     /** @var modX $modx */
-    public $modx;
-    /** @var array $timings Array with query log */
-    public $timings = array();
-    /** @var array $config Array with class config */
-    public $config = array();
-    /** @var array $store Array for cache elements and user data */
-    public $store = array(
-        'chunk' => array(),
-        'snippet' => array(),
-        'tv' => array(),
-        'data' => array(),
-        'resource' => array(),
-    );
-    /** @var integer $idx Index of iterator of rows processing */
-    public $idx = 1;
-    /** @var integer $time Time of script start */
-    protected $time;
-    /** @var integer $count Total number of results for chunks processing */
-    protected $count = 0;
-    /** @var boolean $preparing Specifies that now is the preparation */
-    protected $preparing = false;
-    protected $start = 0;
-    /** @var pdoParser $parser */
-    public $parser;
+    protected $modx;
     /** @var Fenom $fenom */
-    public $fenom;
-    private $tags = array();
-    public $ignores = array();
+    protected $fenom;
+    /** @var array $config Array with class config */
+    protected $config = [];
+    /** @var array $store Array for cache elements and user data */
+    protected $store = [
+        'chunk' => [],
+        'snippet' => [],
+        'tv' => [],
+        'data' => [],
+        'resource' => [],
+    ];
+    /** @var int $idx Index of iterator of rows processing */
+    public $idx = 1;
+    /** @var array $timings Array with query log */
+    protected $timings = [];
+    /** @var int $time Time of script start */
+    protected $time;
+    /** @var int $count Total number of results for chunks processing */
+    protected $count = 0;
+    /** @var bool $preparing Specifies that now is the preparation */
+    protected $preparing = false;
+    /** @var int  */
+    protected $start = 0;
+
+    private $tags = [];
 
 
     /**
      * @param modX $modx
      * @param array $config
      */
-    public function __construct(modX & $modx, $config = array())
+    public function __construct(modX $modx, array $config = [])
     {
-        $this->modx = $modx;
         $this->time = $this->start = microtime(true);
+        $this->modx = $modx;
 
         $this->setConfig($config);
     }
@@ -52,11 +65,10 @@ class pdoTools
      * @param array $config
      * @param bool $clean_timings Clean timings array
      */
-    public function setConfig(array $config = array(), $clean_timings = true)
+    public function setConfig(array $config = [], bool $clean_timings = true)
     {
-        $this->config = array_merge(array(
+        $this->config = array_merge([
             'fastMode' => false,
-            'nestedChunkPrefix' => 'pdotools_',
             'offset' => 0,
 
             'checkPermissions' => '',
@@ -69,12 +81,12 @@ class pdoTools
             'decodeJSON' => true,
             'scheme' => '',
             'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+(\s|\(|\|)|\(|\')#', true),
-            'elementsPath' => $this->modx->getOption('pdotools_elements_path', null, '{core_path}elements/', true),
-            'cachePath' => '{core_path}cache/default/pdotools',
-        ), $config);
+        ], $config);
+        $this->config['elementsPath'] = $this->modx->getOption('pdotools_elements_path', null, MODX_CORE_PATH . 'elements/', true);
+        $this->config['cachePath'] = MODX_CORE_PATH . 'cache/pdotools';
 
         if ($clean_timings) {
-            $this->timings = array();
+            $this->timings = [];
         }
 
         if (empty($this->config['scheme'])) {
@@ -88,67 +100,54 @@ class pdoTools
         $this->config['useFenomCache'] = $this->modx->getOption('pdotools_fenom_cache', null, false);
         $this->config['useFenomMODX'] = $this->modx->getOption('pdotools_fenom_modx', null, false);
         $this->config['useFenomPHP'] = $this->modx->getOption('pdotools_fenom_php', null, false);
+        $this->config['filterPath'] = $this->modx->getOption('pdotools_filter_path', null, true);
 
         // Chunk file extensions
         $this->config['chunkExtensions'] = explode(',', str_replace(' ', '', $this->modx->getOption('pdotools_file_chunk_extensions', null, 'html,tpl')));
         // Prepare paths
-        $pl = array(
+        $pl = [
             'core_path' => MODX_CORE_PATH,
             'assets_path' => MODX_ASSETS_PATH,
             'base_path' => MODX_BASE_PATH,
-        );
+        ];
         $pl1 = $this->makePlaceholders($pl, '', '{', '}', false);
         $pl2 = $this->makePlaceholders($pl, '', '[[+', ']]', false);
-        foreach (array('elementsPath', 'cachePath') as $k) {
+        foreach (['elementsPath', 'cachePath'] as $k) {
             $this->config[$k] = str_replace($pl1['pl'], $pl1['vl'],
                 str_replace($pl2['pl'], $pl2['vl'], $this->config[$k])
             );
         }
     }
 
-
     /**
-     * Loads pdoTools parser
-     *
-     * @return pdoParser
+     * @param string|array|null $key Key to get or array to set.
+     * @param mixed $default
+     * @return mixed
      */
-    protected function getParser()
+    public function config($key = null, $default = null)
     {
-        $this->parser = $this->modx->getParser();
-        if (!($this->parser instanceof pdoParser)) {
-            if (!class_exists('pdoParser')) {
-                require_once dirname(__FILE__) . '/pdoparser.class.php';
-            }
-            $this->parser = new pdoParser($this->modx);
+        if (null === $key) {
+            return $this->config;
         }
-
-        return $this->parser;
+        if (is_array($key)) {
+            $this->config = array_merge($this->config, $key);
+            return $this;
+        }
+        return $this->config[$key] ?? $default;
     }
 
-
     /**
-     * Loads template engine
-     *
-     * @return bool|Fenom
+     * @return Fenom
      */
     public function getFenom()
     {
-        if (!$this->fenom) {
-            try {
-                if (!class_exists('FenomX')) {
-                    require '_fenom.php';
-                }
-                $this->fenom = new FenomX($this);
-            } catch (Exception $e) {
-                $this->modx->log(xPDO::LOG_LEVEL_ERROR, $e->getMessage());
-
-                return false;
-            }
+        if (!$this->modx->services->has('fenom')) {
+            $class = $this->modx->getOption('pdotools_fenom_class', null, Fenom::class, true);
+            $this->modx->services->add('fenom', new $class($this->modx, $this));
         }
 
-        return $this->fenom;
+        return $this->modx->services->get('fenom');
     }
-
 
     /**
      * Add new record to time log
@@ -163,10 +162,10 @@ class pdoTools
             $delta = $time - $this->time;
         }
 
-        $this->timings[] = array(
+        $this->timings[] = [
             'time' => number_format(round(($delta), 7), 7),
             'message' => $message,
-        );
+        ];
         $this->time = $time;
     }
 
@@ -180,33 +179,33 @@ class pdoTools
      */
     public function getTime($string = true)
     {
-        $this->timings[] = array(
+        $this->timings[] = [
             'time' => number_format(round(microtime(true) - $this->start, 7), 7),
             'message' => '<b>Total time</b>',
-        );
-        $this->timings[] = array(
+        ];
+        $this->timings[] = [
             'time' => number_format(round((memory_get_usage(true)), 2), 0, ',', ' '),
             'message' => '<b>Memory usage</b>',
-        );
+        ];
 
         if (!$string) {
             return $this->timings;
-        } else {
-            $res = '';
-            foreach ($this->timings as $v) {
-                $res .= $v['time'] . ': ' . $v['message'] . "\n";
-            }
-
-            return $res;
         }
+
+        $res = '';
+        foreach ($this->timings as $v) {
+            $res .= $v['time'] . ': ' . $v['message'] . "\n";
+        }
+
+        return $res;
     }
 
 
     /**
      * Set data to cache
      *
-     * @param $name
-     * @param $object
+     * @param string $name
+     * @param mixed $object
      * @param string $type
      */
     public function setStore($name, $object, $type = 'data')
@@ -218,16 +217,14 @@ class pdoTools
     /**
      * Get data from cache
      *
-     * @param $name
+     * @param string $name
      * @param string $type
      *
      * @return mixed|null
      */
     public function getStore($name, $type = 'data')
     {
-        return isset($this->store[$type][$name])
-            ? $this->store[$type][$name]
-            : null;
+        return $this->store[$type][$name] ?? null;
     }
 
 
@@ -241,19 +238,19 @@ class pdoTools
         }
 
         $time = microtime(true);
-        $models = array();
+        $models = [];
         if (strpos(ltrim($this->config['loadModels']), '{') === 0) {
             $tmp = json_decode($this->config['loadModels'], true);
             foreach ($tmp as $k => $v) {
                 if (!is_array($v)) {
-                    $v = array(
+                    $v = [
                         'path' => trim($v),
-                    );
+                    ];
                 }
-                $v = array_merge(array(
+                $v = array_merge([
                     'path' => MODX_CORE_PATH . 'components/' . strtolower($k) . '/model/',
                     'prefix' => null,
-                ), $v);
+                ], $v);
                 if (strpos($v['path'], MODX_CORE_PATH) === false) {
                     $v['path'] = MODX_CORE_PATH . ltrim($v['path'], '/');
                 }
@@ -263,16 +260,16 @@ class pdoTools
             $tmp = array_map('trim', explode(',', $this->config['loadModels']));
             foreach ($tmp as $v) {
                 $parts = explode(':', $v, 2);
-                $models[$parts[0]] = array(
+                $models[$parts[0]] = [
                     'path' => MODX_CORE_PATH . 'components/' . strtolower($parts[0]) . '/model/',
                     'prefix' => count($parts) > 1 ? $parts[1] : null,
-                );
+                ];
             }
         }
 
         if (!empty($models)) {
             foreach ($models as $k => $v) {
-                $t = '/' . str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $v['path']);
+                $t = '/' . str_replace([MODX_BASE_PATH, MODX_CORE_PATH], '', $v['path']);
                 if ($this->modx->addPackage(strtolower($k), $v['path'], $v['prefix'])) {
                     $this->addTime('Loaded model "' . $k . '" from "' . $t . '"', microtime(true) - $time);
                 } else {
@@ -298,13 +295,13 @@ class pdoTools
      * @return array
      */
     public function makePlaceholders(
-        array $array = array(),
+        array $array = [],
         $plPrefix = '',
         $prefix = '[[+',
         $suffix = ']]',
         $uncacheable = true
     ) {
-        $result = array('pl' => array(), 'vl' => array());
+        $result = ['pl' => [], 'vl' => []];
 
         $uncached_prefix = str_replace('[[', '[[!', $prefix);
         foreach ($array as $k => $v) {
@@ -334,7 +331,7 @@ class pdoTools
      *
      * @return mixed The processed output of the Snippet.
      */
-    public function runSnippet($name, array $properties = array())
+    public function runSnippet($name, array $properties = [])
     {
         $name = trim($name);
         /** @var array $data */
@@ -347,15 +344,14 @@ class pdoTools
             return false;
         }
 
-        /** @var modSnippet $snippet */
         $snippet = $data['object'];
         $snippet->_cacheable = $data['cacheable'];
         $snippet->_processed = false;
         $snippet->_propertyString = '';
         $snippet->_tag = '';
         if ($data['cacheable'] && !$this->modx->getParser()->isProcessingUncacheable()) {
-            $scripts = array('jscripts', 'sjscripts', 'loadedjscripts');
-            $regScriptsBefore = $regScriptsAfter = array();
+            $scripts = ['jscripts', 'sjscripts', 'loadedjscripts'];
+            $regScriptsBefore = $regScriptsAfter = [];
             foreach ($scripts as $prop) {
                 $regScriptsBefore[$prop] = count($this->modx->$prop);
             }
@@ -370,7 +366,7 @@ class pdoTools
                             $resProp = '_' . $prop;
                             foreach (array_slice($this->modx->{$prop}, $regScriptsBefore[$prop]) as $key => $value) {
                                 if (!is_array($this->modx->resource->{$resProp})) {
-                                    $this->modx->resource->{$resProp} = array();
+                                    $this->modx->resource->{$resProp} = [];
                                 }
 
                                 if ($prop == 'loadedjscripts') {
@@ -395,12 +391,13 @@ class pdoTools
      * Process and return the output from a Chunk by name.
      *
      * @param string $name The name of the chunk.
-     * @param array $properties An associative array of properties to process the Chunk with, treated as placeholders within the scope of the Element.
-     * @param boolean $fastMode If false, all MODX tags in chunk will be processed.
+     * @param array $properties An associative array of properties to process the Chunk with,
+     * treated as placeholders within the scope of the Element.
+     * @param bool $fastMode If false, all MODX tags in chunk will be processed.
      *
      * @return mixed The processed output of the Chunk.
      */
-    public function getChunk($name = '', array $properties = array(), $fastMode = false)
+    public function getChunk($name = '', array $properties = [], $fastMode = false)
     {
         $properties = $this->prepareRow($properties);
         $name = trim($name);
@@ -411,42 +408,20 @@ class pdoTools
         }
         if (empty($name) || empty($data) || !($data['object'] instanceof modElement)) {
             return !empty($properties)
-                ? str_replace(array('[', ']', '`'), array('&#91;', '&#93;', '&#96;'),
+                ? str_replace(['[', ']', '`'], ['&#91;', '&#93;', '&#96;'],
                     htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'))
                 : '';
         }
 
         $properties = array_merge($data['properties'], $properties);
         $content = $this->config['useFenom']
-            ? $this->fenom($data, $properties)
+            ? $this->getFenom()->process($data, $properties)
             : $data['content'];
 
-        if (strpos($content, '[[') !== false) {
-            // Processing quick placeholders
-            if (!empty($data['placeholders'])) {
-                $properties = $this->flattenArray($properties);
-                $pl = $data['placeholders'];
-                foreach ($pl as $k => $v) {
-                    if ($k[0] == '!') {
-                        if (empty($properties[substr($k, 1)])) {
-                            $pl[substr($k, 1)] = $v;
-                        }
-                        unset($pl[$k]);
-                    } elseif (empty($properties[$k])) {
-                        $pl[$k] = '';
-                    }
-                }
-                if (!empty($pl)) {
-                    $pl = $this->makePlaceholders($pl);
-                    $content = str_replace($pl['pl'], $pl['vl'], $content);
-                }
-            }
-
-            // Processing given placeholders
-            if (!empty($properties)) {
-                $pl = $this->makePlaceholders($properties);
-                $content = str_replace($pl['pl'], $pl['vl'], $content);
-            }
+        // Processing given placeholders
+        if ((strpos($content, '[[') !== false) && !empty($properties)) {
+            $pl = $this->makePlaceholders($properties);
+            $content = str_replace($pl['pl'], $pl['vl'], $content);
         }
 
         // Processing other placeholders
@@ -478,7 +453,7 @@ class pdoTools
      *
      * @return string The processed chunk with the placeholders replaced.
      */
-    public function parseChunk($name = '', array $properties = array(), $prefix = '[[+', $suffix = ']]')
+    public function parseChunk($name = '', array $properties = [], $prefix = '[[+', $suffix = ']]')
     {
         $properties = $this->prepareRow($properties);
         $name = trim($name);
@@ -489,102 +464,19 @@ class pdoTools
         }
         if (empty($name) || empty($chunk['content'])) {
             return !empty($properties)
-                ? str_replace(array('[', ']', '`'), array('&#91;', '&#93;', '&#96;'),
+                ? str_replace(['[', ']', '`'], ['&#91;', '&#93;', '&#96;'],
                     htmlentities(print_r($properties, true), ENT_QUOTES, 'UTF-8'))
                 : '';
         }
 
         $properties = array_merge($chunk['properties'], $properties);
         $content = $this->config['useFenom']
-            ? $this->fenom($chunk, $properties)
+            ? $this->getFenom()->process($chunk, $properties)
             : $chunk['content'];
 
         if (strpos($content, '[[') !== false) {
             $pl = $this->makePlaceholders($properties, '', $prefix, $suffix);
             $content = str_replace($pl['pl'], $pl['vl'], $content);
-        }
-
-        return $content;
-    }
-
-
-    /**
-     * @param string|array $chunk
-     * @param array $properties
-     *
-     * @return mixed|string
-     */
-    public function fenom($chunk, array $properties = array())
-    {
-        $content = is_array($chunk)
-            ? trim($chunk['content'])
-            : trim($chunk);
-        if (empty($this->config['useFenom']) || !preg_match($this->config['fenomSyntax'], $content)) {
-            return $content;
-        }
-
-        if ($fenom = $this->getFenom()) {
-            $name = '';
-            if (is_array($chunk)) {
-                if (!empty($chunk['binding'])) {
-                    $name = $chunk['binding'] . '/';
-                }
-                if (!empty($chunk['id'])) {
-                    $name .= $chunk['id'];
-                } elseif (!empty($chunk['name'])) {
-                    $name .= $chunk['name'];
-                } else {
-                    $name .= md5($content);
-                }
-            } else {
-                $name = md5($content);
-            }
-            /** @var Fenom\Template $tpl */
-            if (!$tpl = $this->getStore($name, 'fenom')) {
-                if (!empty($this->config['useFenomCache'])) {
-                    $cache_options = array(
-                        'cache_key' => 'pdotools/' . $name,
-                    );
-                    if (!$cache = $this->getCache($cache_options)) {
-                        if ($tpl = $this->_compileChunk($content, $name)) {
-                            $this->setCache($tpl->getTemplateCode(), $cache_options);
-                        }
-                    } else {
-                        $cache = preg_replace('#^<\?php#', '', $cache);
-                        $tpl = eval($cache);
-                    }
-                } else {
-                    $tpl = $this->_compileChunk($content, $name);
-                }
-                if ($tpl) {
-                    $this->setStore($name, $tpl, 'fenom');
-                }
-            }
-
-            if ($tpl instanceof Fenom\Render) {
-                // Add system variables
-                if (!$microMODX = $this->getStore('microMODX')) {
-                    if (!class_exists('microMODX')) {
-                        require '_micromodx.php';
-                    }
-                    $microMODX = new microMODX($this);
-                    $this->setStore('microMODX', $microMODX);
-                }
-                $properties['_modx'] = $microMODX;
-                $properties['_pls'] = $properties;
-
-                // Add system objects
-                if (!empty($this->config['useFenomMODX'])) {
-                    $properties['modx'] = $this->modx;
-                    $properties['pdoTools'] = $this;
-                }
-                try {
-                    $content = $tpl->fetch($properties);
-                } catch (Exception $e) {
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
-                    $this->modx->log(modX::LOG_LEVEL_INFO, $tpl->getTemplateCode());
-                }
-            }
         }
 
         return $content;
@@ -601,12 +493,12 @@ class pdoTools
      */
     public function fastProcess($content, $processUncacheable = true)
     {
-        $matches = array();
-        $this->getParser()->collectElementTags($content, $matches);
+        $matches = [];
+        $this->modx->getParser()->collectElementTags($content, $matches);
 
-        $unprocessed = $pl = $vl = array();
+        $unprocessed = $pl = $vl = [];
         foreach ($matches as $tag) {
-            $tmp = $this->parser->processTag($tag, $processUncacheable);
+            $tmp = $this->modx->getParser()->processTag($tag, $processUncacheable);
 
             if ($tmp === $tag[0]) {
                 $unprocessed[] = $tmp;
@@ -631,42 +523,36 @@ class pdoTools
      *
      * @return mixed
      */
-    public function defineChunk($properties = array())
+    public function defineChunk(array $properties = [])
     {
-        $idx = isset($properties['idx']) ? (integer)$properties['idx'] : $this->idx++;
+        $idx = isset($properties['idx']) ? (int)$properties['idx'] : $this->idx++;
         $idx -= $this->config['offset'];
 
-        $first = empty($this->config['first']) ? ($this->config['offset'] + 1) : (integer)$this->config['first'];
+        $first = empty($this->config['first']) ? ($this->config['offset'] + 1) : (int)$this->config['first'];
         $last = empty($this->config['last'])
             ? ($this->count + $this->config['offset'])
-            : (integer)$this->config['last'];
+            : (int)$this->config['last'];
 
         $odd = !($idx & 1);
         $resourceTpl = '';
-        if ($idx == $first && !empty($this->config['tplFirst'])) {
+        if ($idx === $first && !empty($this->config['tplFirst'])) {
             $resourceTpl = $this->config['tplFirst'];
-        } else {
-            if ($idx == $last && !empty($this->config['tplLast'])) {
-                $resourceTpl = $this->config['tplLast'];
-            } else {
-                if (!empty($this->config['tpl_' . $idx])) {
-                    $resourceTpl = $this->config['tpl_' . $idx];
-                } else {
-                    if ($idx > 1) {
-                        $divisors = array();
-                        for ($i = $idx; $i > 1; $i--) {
-                            if (($idx % $i) === 0) {
-                                $divisors[] = $i;
-                            }
-                        }
-                        if (!empty($divisors)) {
-                            foreach ($divisors as $divisor) {
-                                if (!empty($this->config['tpl_n' . $divisor])) {
-                                    $resourceTpl = $this->config['tpl_n' . $divisor];
-                                    break;
-                                }
-                            }
-                        }
+        } elseif ($idx === $last && !empty($this->config['tplLast'])) {
+            $resourceTpl = $this->config['tplLast'];
+        } elseif (!empty($this->config['tpl_' . $idx])) {
+            $resourceTpl = $this->config['tpl_' . $idx];
+        } elseif ($idx > 1) {
+            $divisors = [];
+            for ($i = $idx; $i > 1; $i--) {
+                if (($idx % $i) === 0) {
+                    $divisors[] = $i;
+                }
+            }
+            if (!empty($divisors)) {
+                foreach ($divisors as $divisor) {
+                    if (!empty($this->config['tpl_n' . $divisor])) {
+                        $resourceTpl = $this->config['tpl_n' . $divisor];
+                        break;
                     }
                 }
             }
@@ -674,100 +560,98 @@ class pdoTools
 
         if (empty($resourceTpl) && $odd && !empty($this->config['tplOdd'])) {
             $resourceTpl = $this->config['tplOdd'];
-        } else {
-            if (empty($resourceTpl) && !empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
-                $conTpls = json_decode($this->config['conditionalTpls'], true);
-                if (isset($properties[$this->config['tplCondition']])) {
-                    $subject = $properties[$this->config['tplCondition']];
-                    $tplOperator = !empty($this->config['tplOperator'])
-                        ? strtolower($this->config['tplOperator'])
-                        : '=';
-                    $tplCon = '';
-                    foreach ($conTpls as $operand => $conditionalTpl) {
-                        switch ($tplOperator) {
-                            case '!=':
-                            case 'neq':
-                            case 'not':
-                            case 'isnot':
-                            case 'isnt':
-                            case 'unequal':
-                            case 'notequal':
-                                $tplCon = (($subject != $operand) ? $conditionalTpl : $tplCon);
-                                break;
-                            case '<':
-                            case 'lt':
-                            case 'less':
-                            case 'lessthan':
-                                $tplCon = (($subject < $operand) ? $conditionalTpl : $tplCon);
-                                break;
-                            case '>':
-                            case 'gt':
-                            case 'greater':
-                            case 'greaterthan':
-                                $tplCon = (($subject > $operand) ? $conditionalTpl : $tplCon);
-                                break;
-                            case '<=':
-                            case 'lte':
-                            case 'lessthanequals':
-                            case 'lessthanorequalto':
-                                $tplCon = (($subject <= $operand) ? $conditionalTpl : $tplCon);
-                                break;
-                            case '>=':
-                            case 'gte':
-                            case 'greaterthanequals':
-                            case 'greaterthanequalto':
-                                $tplCon = (($subject >= $operand) ? $conditionalTpl : $tplCon);
-                                break;
-                            case 'isempty':
-                            case 'empty':
-                                $tplCon = empty($subject) ? $conditionalTpl : $tplCon;
-                                break;
-                            case '!empty':
-                            case 'notempty':
-                            case 'isnotempty':
-                                $tplCon = !empty($subject) && $subject != '' ? $conditionalTpl : $tplCon;
-                                break;
-                            case 'isnull':
-                            case 'null':
-                                $tplCon = $subject == null || strtolower($subject) == 'null'
-                                    ? $conditionalTpl
-                                    : $tplCon;
-                                break;
-                            case 'inarray':
-                            case 'in_array':
-                            case 'ia':
-                                $operand = explode(',', $operand);
-                                $tplCon = in_array($subject, $operand) ? $conditionalTpl : $tplCon;
-                                break;
-                            case 'between':
-                            case 'range':
-                            case '>=<':
-                            case '><':
-                                $operand = explode(',', $operand);
-                                $tplCon = ($subject >= min($operand) && $subject <= max($operand))
-                                    ? $conditionalTpl
-                                    : $tplCon;
-                                break;
-                            case 'contains':
-                                $tplCon = is_string($subject) &&
-                                    (strpos($subject, $operand) !== false ? $conditionalTpl : $tplCon);
-                                break;
-                            case '==':
-                            case '=':
-                            case 'eq':
-                            case 'is':
-                            case 'equal':
-                            case 'equals':
-                            case 'equalto':
-                            default:
-                                $tplCon = (($subject == $operand) ? $conditionalTpl : $tplCon);
-                                break;
-                        }
+        } elseif (empty($resourceTpl) && !empty($this->config['tplCondition']) && !empty($this->config['conditionalTpls'])) {
+            $conTpls = json_decode($this->config['conditionalTpls'], true);
+            if (isset($properties[$this->config['tplCondition']])) {
+                $subject = $properties[$this->config['tplCondition']];
+                $tplOperator = !empty($this->config['tplOperator'])
+                    ? strtolower($this->config['tplOperator'])
+                    : '=';
+                $tplCon = '';
+                foreach ($conTpls as $operand => $conditionalTpl) {
+                    switch ($tplOperator) {
+                        case '!=':
+                        case 'neq':
+                        case 'not':
+                        case 'isnot':
+                        case 'isnt':
+                        case 'unequal':
+                        case 'notequal':
+                            $tplCon = (($subject != $operand) ? $conditionalTpl : $tplCon);
+                            break;
+                        case '<':
+                        case 'lt':
+                        case 'less':
+                        case 'lessthan':
+                            $tplCon = (($subject < $operand) ? $conditionalTpl : $tplCon);
+                            break;
+                        case '>':
+                        case 'gt':
+                        case 'greater':
+                        case 'greaterthan':
+                            $tplCon = (($subject > $operand) ? $conditionalTpl : $tplCon);
+                            break;
+                        case '<=':
+                        case 'lte':
+                        case 'lessthanequals':
+                        case 'lessthanorequalto':
+                            $tplCon = (($subject <= $operand) ? $conditionalTpl : $tplCon);
+                            break;
+                        case '>=':
+                        case 'gte':
+                        case 'greaterthanequals':
+                        case 'greaterthanequalto':
+                            $tplCon = (($subject >= $operand) ? $conditionalTpl : $tplCon);
+                            break;
+                        case 'isempty':
+                        case 'empty':
+                            $tplCon = empty($subject) ? $conditionalTpl : $tplCon;
+                            break;
+                        case '!empty':
+                        case 'notempty':
+                        case 'isnotempty':
+                            $tplCon = !empty($subject) && $subject != '' ? $conditionalTpl : $tplCon;
+                            break;
+                        case 'isnull':
+                        case 'null':
+                            $tplCon = $subject == null || strtolower($subject) == 'null'
+                                ? $conditionalTpl
+                                : $tplCon;
+                            break;
+                        case 'inarray':
+                        case 'in_array':
+                        case 'ia':
+                            $operand = explode(',', $operand);
+                            $tplCon = in_array($subject, $operand) ? $conditionalTpl : $tplCon;
+                            break;
+                        case 'between':
+                        case 'range':
+                        case '>=<':
+                        case '><':
+                            $operand = explode(',', $operand);
+                            $tplCon = ($subject >= min($operand) && $subject <= max($operand))
+                                ? $conditionalTpl
+                                : $tplCon;
+                            break;
+                        case 'contains':
+                            $tplCon = is_string($subject) &&
+                                (strpos($subject, $operand) !== false ? $conditionalTpl : $tplCon);
+                            break;
+                        case '==':
+                        case '=':
+                        case 'eq':
+                        case 'is':
+                        case 'equal':
+                        case 'equals':
+                        case 'equalto':
+                        default:
+                            $tplCon = (($subject == $operand) ? $conditionalTpl : $tplCon);
+                            break;
                     }
                 }
-                if (!empty($tplCon)) {
-                    $resourceTpl = $tplCon;
-                }
+            }
+            if (!empty($tplCon)) {
+                $resourceTpl = $tplCon;
             }
         }
 
@@ -788,7 +672,7 @@ class pdoTools
      *
      * @return array|bool
      */
-    protected function _loadElement($name, $type, $row = array())
+    protected function _loadElement($name, $type, $row = [])
     {
         $binding = $content = $propertySet = '';
 
@@ -802,26 +686,26 @@ class pdoTools
         if (!$binding && $pos = strpos($name, '@')) {
             $propertySet = substr($name, $pos + 1);
             $name = substr($name, 0, $pos);
-        } elseif (in_array($binding, array('CHUNK', 'TEMPLATE', 'SNIPPET')) && $pos = strpos($content, '@')) {
+        } elseif (in_array($binding, ['CHUNK', 'TEMPLATE', 'SNIPPET']) && $pos = strpos($content, '@')) {
             $propertySet = substr($content, $pos + 1);
             $content = substr($content, 0, $pos);
         }
 
-        if ($type == 'modChunk' || $type == 'modTemplate') {
+        if ($type === 'modChunk' || $type === 'modTemplate') {
             // Replace inline tags in chunks
-            $content = str_replace(array('{{', '}}'), array('[[', ']]'), $content);
+            $content = str_replace(['{{', '}}'], ['[[', ']]'], $content);
 
             // Change name for empty TEMPLATE binding so will be used template of given row
-            if ($binding == 'TEMPLATE' && empty($content) && isset($row['template'])) {
+            if ($binding === 'TEMPLATE' && empty($content) && isset($row['template'])) {
                 $name = '@TEMPLATE ' . $row['template'];
                 $content = $row['template'];
             }
         }
 
-        $cache_name = !empty($binding) && !in_array($binding, array('CHUNK', 'SNIPPET'))
+        $cache_name = !empty($binding) && !in_array($binding, ['CHUNK', 'SNIPPET'])
             ? md5($name)
             : $name;
-        if (strpos($cache_name, '!') === 0) {
+        if ($cache_name[0] === '!') {
             $cache_name = substr($cache_name, 1);
             $cacheable = false;
         } else {
@@ -837,12 +721,12 @@ class pdoTools
             return $element;
         }
 
-        $properties = array();
+        $properties = [];
         /** @var modElement $element */
         switch ($binding) {
             case 'CODE':
             case 'INLINE':
-                $element = $this->modx->newObject($type, array('name' => $cache_name));
+                $element = $this->modx->newObject($type, ['name' => $cache_name]);
                 if ($element instanceof modScript) {
                     if (empty($this->config['useFenomPHP']) || empty($this->config['useFenomMODX'])) {
                         $this->addTime('Could not create inline "' . $type . '" because of system settings.');
@@ -857,21 +741,18 @@ class pdoTools
                 $cacheable = false;
                 break;
             case 'FILE':
-                if (!empty($row['tplPath']) || !empty($row['elementsPath'])) {
-                    // @Deprecated
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] The "tplPath" and "elementsPath" parameters are deprecated and will be removed in the next version.');
-                    $path = !empty($row['tplPath']) ? $row['tplPath'] : $row['elementsPath'];
-                } else {
-                    $path = $this->config['elementsPath'];
-                }
-
-                if (strpos($path, MODX_BASE_PATH) === false && strpos($path, MODX_CORE_PATH) === false) {
+                // TODO: Сделать несколько путей.
+                $path = $this->config['elementsPath'];
+                $filename = $content;
+                if (strpos($path, MODX_BASE_PATH) === false && strpos($path, './') === 0) {
                     $path = MODX_BASE_PATH . $path;
                 }
-                $path = preg_replace(["/\.*[\/|\\\]/i", "/[\/|\\\]+/i"], ['/', '/'], $path . $content);
-                $rel_path = str_replace(array(MODX_BASE_PATH, MODX_CORE_PATH), '', $path);
+                // TODO: добавить системную настройку инсталятор
+                $path = $this->config['filterPath'] ? preg_replace(["/\.*[\/|\\\]/i", "/[\/|\\\]+/i"], ['/', '/'], $path) : $path;
+                $path .=  basename($filename);
+                //$rel_path = str_replace([MODX_BASE_PATH, MODX_CORE_PATH], '', $path);
                 if (!file_exists($path)) {
-                    $message = 'Could not find the element file "' . $rel_path . '".';
+                    $message = 'Could not find the element file "' . $content . '".';
                     $this->modx->log(modX::LOG_LEVEL_ERROR, $message);
                     $this->addTime($message);
 
@@ -886,7 +767,7 @@ class pdoTools
                     return false;
                 }
                 if ($content = file_get_contents($path)) {
-                    $element = $this->modx->newObject($type, array('name' => $cache_name));
+                    $element = $this->modx->newObject($type, ['name' => $cache_name]);
                     $element->setContent($content);
                     $element->setProperties($properties);
                     if ($element instanceof modScript) {
@@ -895,32 +776,32 @@ class pdoTools
                     }
                     //$element->set('static', true);
                     //$element->set('static_file', $path);
-                    $this->addTime('Created "' . $type . '" from file "' . $rel_path . '"');
+                    $this->addTime('Created "' . $type . '" from file "' . $filename . '"');
                 }
                 $cacheable = false;
                 break;
             case 'TEMPLATE':
-                if ($type != 'modSnippet') {
+                if ($type !== 'modSnippet') {
                     return $this->_loadElement($content, 'modTemplate', $row);
                 }
                 break;
             case 'CHUNK':
-                if ($type == 'modChunk') {
+                if ($type === 'modChunk') {
                     return $this->_loadElement($content, 'modChunk', $row);
                 }
                 break;
             case 'SNIPPET':
-                if ($type == 'modSnippet') {
+                if ($type === 'modSnippet') {
                     return $this->_loadElement($content, 'modSnippet', $row);
                 }
                 break;
             default:
-                $column = $type == 'modTemplate'
+                $column = $type === 'modTemplate'
                     ? 'templatename'
                     : 'name';
                 $c = filter_var($cache_name, FILTER_VALIDATE_INT) === false
-                    ? array($column . ':=' => $cache_name)
-                    : array('id:=' => $cache_name, 'OR:' . $column . ':=' => $cache_name);
+                    ? [$column . ':=' => $cache_name]
+                    : ['id:=' => $cache_name, 'OR:' . $column . ':=' => $cache_name];
                 if ($element = $this->modx->getObject($type, $c)) {
                     $content = $element->getContent();
                     if (!empty($propertySet)) {
@@ -940,75 +821,19 @@ class pdoTools
             return false;
         }
 
-        $placeholders = array();
-        if (!($element instanceof modScript)) {
-            // Preparing special tags
-            if (strpos($content, '<!--' . $this->config['nestedChunkPrefix']) !== false) {
-                preg_match_all(
-                    '#\<!--' . $this->config['nestedChunkPrefix'] . '(.*?)[\s|\n|\r\n](.*?)-->#s',
-                    $content,
-                    $matches
-                );
-                $src = $dst = $placeholders = array();
-                foreach ($matches[1] as $k => $v) {
-                    $src[] = $matches[0][$k];
-                    $dst[] = '';
-                    $placeholders[$v] = $matches[2][$k];
-                }
-                if (!empty($src) && !empty($dst)) {
-                    $content = str_replace($src, $dst, $content);
-                }
-            }
-        }
-
-        $data = array(
+        $data = [
             'object' => $element,
             'content' => $content,
-            'placeholders' => $placeholders,
             'properties' => $properties,
             'name' => $cache_name,
             'id' => (int)$element->get('id'),
             'binding' => strtolower($type),
             'cacheable' => $cacheable,
-        );
+        ];
         $this->setStore($cache_key, $data, $type);
 
         return $data;
     }
-
-
-    /**
-     * Compiles Fenom chunk
-     *
-     * @param $content
-     * @param string $name
-     *
-     * @return bool|\Fenom\Template
-     */
-    protected function _compileChunk($content, $name = '')
-    {
-        $tpl = false;
-        if ($fenom = $this->getFenom()) {
-            if (empty($name)) {
-                $name = md5($content);
-            }
-            try {
-                $tpl = $fenom->getRawTemplate()->source($name, $content, true);
-                $this->addTime('Compiled Fenom chunk with name "' . $name . '"');
-            } catch (Exception $e) {
-                $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
-                $this->modx->log(modX::LOG_LEVEL_INFO, $content);
-                if ($this->modx->getOption('pdotools_fenom_save_on_errors')) {
-                    $this->setCache($content, array('cache_key' => 'pdotools/error/' . $name));
-                }
-                $tpl = $fenom->getRawTemplate()->source($name, '', false);
-                $this->addTime('Can`t compile Fenom chunk with name "' . $name . '": ' . $e->getMessage());
-            }
-        }
-
-        return $tpl;
-    }
-
 
     /**
      * Builds a hierarchical tree from given array
@@ -1020,7 +845,7 @@ class pdoTools
      *
      * @return array
      */
-    public function buildTree($tmp = array(), $id = 'id', $parent = 'parent', array $roots = array())
+    public function buildTree($tmp = [], $id = 'id', $parent = 'parent', array $roots = [])
     {
         $time = microtime(true);
 
@@ -1031,17 +856,17 @@ class pdoTools
             $parent = 'parent';
         }
 
-        if (count($tmp) == 1) {
+        if (count($tmp) === 1) {
             $row = current($tmp);
-            $tree = array(
-                $row[$parent] => array(
-                    'children' => array(
+            $tree = [
+                $row[$parent] => [
+                    'children' => [
                         $row[$id] => $row,
-                    ),
-                ),
-            );
+                    ],
+                ],
+            ];
         } else {
-            $rows = $tree = array();
+            $rows = $tree = [];
             foreach ($tmp as $v) {
                 $rows[$v[$id]] = $v;
             }
@@ -1068,18 +893,18 @@ class pdoTools
      *
      * @return array
      */
-    public function prepareRows(array $rows = array())
+    public function prepareRows(array $rows = [])
     {
         $time = microtime(true);
-        $prepare = $process = $prepareTypes = array();
+        $prepare = $process = $prepareTypes = [];
         if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
             $tvs = array_map('trim', explode(',', $this->config['includeTVs']));
-            $prepare = ($this->config['prepareTVs'] == 1)
+            $prepare = ($this->config['prepareTVs'] === 1)
                 ? $tvs
                 : array_map('trim', explode(',', $this->config['prepareTVs']));
             $prepareTypes = array_map('trim',
                 explode(',', $this->modx->getOption('manipulatable_url_tv_output_types', null, 'image,file')));
-            $process = ($this->config['processTVs'] == 1)
+            $process = ($this->config['processTVs'] === 1)
                 ? $tvs
                 : array_map('trim', explode(',', $this->config['processTVs']));
 
@@ -1092,9 +917,9 @@ class pdoTools
             // Extract JSON fields
             if ($this->config['decodeJSON']) {
                 foreach ($row as $k => $v) {
-                    if (!empty($v) && is_string($v) && ($v[0] == '[' || $v[0] == '{')) {
+                    if (!empty($v) && is_string($v) && ($v[0] === '[' || $v[0] === '{')) {
                         $tmp = json_decode($v, true);
-                        if (json_last_error() == JSON_ERROR_NONE) {
+                        if (json_last_error() === JSON_ERROR_NONE) {
                             $row[$k] = $tmp;
                         }
                     }
@@ -1110,7 +935,7 @@ class pdoTools
 
                     /** @var modTemplateVar $templateVar */
                     if (!$templateVar = $this->getStore($tv, 'tv')) {
-                        if ($templateVar = $this->modx->getObject('modTemplateVar', array('name' => $tv))) {
+                        if ($templateVar = $this->modx->getObject('modTemplateVar', ['name' => $tv])) {
                             $sourceCache = isset($prepareTypes[$templateVar->type])
                                 ? $templateVar->getSourceCache($this->modx->context->get('key'))
                                 : null;
@@ -1122,9 +947,7 @@ class pdoTools
                         }
                     }
 
-                    $tvPrefix = !empty($this->config['tvPrefix']) ?
-                        trim($this->config['tvPrefix'])
-                        : '';
+                    $tvPrefix = !empty($this->config['tvPrefix']) ? trim($this->config['tvPrefix']) : '';
                     $key = $tvPrefix . $templateVar->name;
                     if (isset($process[$tv])) {
                         $row[$key] = $templateVar->renderOutput($row['id']);
@@ -1132,7 +955,7 @@ class pdoTools
                             '://') === false && method_exists($templateVar, 'prepareOutput')
                     ) {
                         if (isset($templateVar->sourceCache) && $source = $templateVar->sourceCache) {
-                            if ($source['class_key'] == 'modFileMediaSource') {
+                            if ($source['class_key'] === modFileMediaSource::class) {
                                 if (!empty($source['baseUrl']) && !empty($row[$key])) {
                                     $row[$key] = $source['baseUrl'] . $row[$key];
                                     if (isset($source['baseUrlRelative']) && !empty($source['baseUrlRelative'])) {
@@ -1165,7 +988,7 @@ class pdoTools
      *
      * @return array
      */
-    public function prepareRow($row = array())
+    public function prepareRow(array $row = [])
     {
         if ($this->preparing) {
             return $row;
@@ -1177,17 +1000,17 @@ class pdoTools
 
             array_walk_recursive($row, function (&$value) {
                 $value = str_replace(
-                    array('[', ']', '{', '}'),
-                    array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
+                    ['[', ']', '{', '}'],
+                    ['*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'],
                     $value
                 );
             });
 
-            $tmp = $this->runSnippet($name, array_merge($this->config, array(
+            $tmp = $this->runSnippet($name, array_merge($this->config, [
                 'pdoTools' => $this,
                 'pdoFetch' => $this,
                 'row' => $row,
-            )));
+            ]));
 
             if (!is_array($tmp)) {
                 $tmp = ($tmp[0] == '[' || $tmp[0] == '{')
@@ -1204,8 +1027,8 @@ class pdoTools
 
             array_walk_recursive($row, function (&$value) {
                 $value = str_replace(
-                    array('*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'),
-                    array('[', ']', '{', '}'),
+                    ['*(*(*(*(*(*', '*)*)*)*)*)*', '~(~(~(~(~(~', '~)~)~)~)~)~'],
+                    ['[', ']', '{', '}'],
                     $value
                 );
             });
@@ -1222,9 +1045,9 @@ class pdoTools
      *
      * @return array
      */
-    public function checkPermissions($rows = array())
+    public function checkPermissions(array $rows = [])
     {
-        $permissions = array();
+        $permissions = [];
         if (!empty($this->config['checkPermissions'])) {
             $tmp = array_map('trim', explode(',', $this->config['checkPermissions']));
             foreach ($tmp as $v) {
@@ -1264,7 +1087,7 @@ class pdoTools
      *
      * @return mixed
      */
-    public function getCache($options = array())
+    public function getCache($options = [])
     {
         $cacheKey = $this->getCacheKey($options);
         $cacheOptions = $this->getCacheOptions($options);
@@ -1292,7 +1115,7 @@ class pdoTools
      *
      * @return string $cacheKey
      */
-    public function setCache($data = array(), $options = array())
+    public function setCache($data = [], $options = [])
     {
         $cacheKey = $this->getCacheKey($options);
         $cacheOptions = $this->getCacheOptions($options);
@@ -1321,9 +1144,10 @@ class pdoTools
         if (is_dir($dir)) {
             $list = scandir($dir);
             foreach ($list as $file) {
-                if ($file[0] == '.') {
+                if ($file[0] === '.') {
                     continue;
-                } elseif (is_file($dir . '/' . $file)) {
+                }
+                if (is_file($dir . '/' . $file)) {
                     @unlink($dir . '/' . $file);
                     $count++;
                 }
@@ -1341,7 +1165,7 @@ class pdoTools
      *
      * @return mixed|string
      */
-    public function makeUrl($id, $options = array(), $args = array())
+    public function makeUrl($id, $options = [], $args = [])
     {
         $scheme = !empty($options['scheme'])
             ? $options['scheme']
@@ -1365,7 +1189,7 @@ class pdoTools
             } else {
                 $context = '';
             }
-            if (strtolower($scheme) == 'uri') {
+            if (strtolower($scheme) === 'uri') {
                 $scheme = -1;
             }
             $url = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
@@ -1382,13 +1206,13 @@ class pdoTools
      *
      * @return array
      */
-    protected function getCacheOptions($options = array())
+    protected function getCacheOptions($options = [])
     {
         if (empty($options)) {
             $options = $this->config;
         }
 
-        $cacheOptions = array(
+        $cacheOptions = [
             xPDO::OPT_CACHE_KEY => !empty($options['cache_key']) || !empty($options['cacheKey'])
                 ? 'default'
                 : (!empty($this->modx->resource)
@@ -1402,7 +1226,7 @@ class pdoTools
             xPDO::OPT_CACHE_EXPIRES => isset($options['cacheTime']) && $options['cacheTime'] !== ''
                 ? (integer)$options['cacheTime']
                 : (integer)$this->modx->getOption('cache_resource_expires', null, 0),
-        );
+        ];
 
         return $cacheOptions;
     }
@@ -1415,7 +1239,7 @@ class pdoTools
      *
      * @return bool|string
      */
-    protected function getCacheKey($options = array())
+    protected function getCacheKey($options = [])
     {
         if (empty($options)) {
             $options = $this->config;
@@ -1432,7 +1256,7 @@ class pdoTools
             : '';
         if (is_array($options)) {
             $options['cache_user'] = isset($options['cache_user'])
-                ? (integer)$options['cache_user']
+                ? (int)$options['cache_user']
                 : $this->modx->user->id;
         }
 
@@ -1443,14 +1267,14 @@ class pdoTools
     /**
      * Flatten array of placeholders with nested arrays
      *
-     * @param $array
+     * @param array $array
      * @param string $plPrefix
      *
      * @return array
      */
-    protected function flattenArray($array, $plPrefix = '')
+    protected function flattenArray(array $array, $plPrefix = '')
     {
-        $result = array();
+        $result = [];
 
         foreach ($array as $k => $v) {
             if (is_array($v)) {
@@ -1471,7 +1295,7 @@ class pdoTools
      * @param $filter
      * @param array $properties
      */
-    public function debugParserModifier($value, $filter, $properties = array())
+    public function debugParserModifier($value, $filter, $properties = [])
     {
         if (is_array($value)) {
             $value = trim(print_r($value, true));
@@ -1490,11 +1314,11 @@ class pdoTools
     /**
      * Log Fenom method call
      *
-     * @param $method
-     * @param $name
+     * @param string $method
+     * @param string $name
      * @param array $properties
      */
-    public function debugParserMethod($method, $name, $properties = array())
+    public function debugParserMethod($method, $name, array $properties = [])
     {
         if (is_array($name)) {
             $name = trim(print_r($name, true));
@@ -1523,23 +1347,23 @@ class pdoTools
             $hash = sha1($tag);
 
             if (!isset($this->tags[$hash])) {
-                $this->tags[$hash] = array(
+                $this->tags[$hash] = [
                     'queries' => $this->modx->executedQueries,
                     'queries_time' => $this->modx->queryTime,
                     'parse_time' => microtime(true),
-                );
+                ];
             } else {
                 $queries = $this->modx->executedQueries - $this->tags[$hash]['queries'];
                 $queries_time = number_format(round($this->modx->queryTime - $this->tags[$hash]['queries_time'], 7), 7);
                 $parse_time = number_format(round(microtime(true) - $this->tags[$hash]['parse_time'], 7), 7);
                 if (!isset($parser->tags[$hash])) {
-                    $parser->tags[$hash] = array(
+                    $parser->tags[$hash] = [
                         'tag' => $tag,
                         'attempts' => 1,
                         'queries' => $queries,
                         'queries_time' => $queries_time,
                         'parse_time' => $parse_time,
-                    );
+                    ];
                 } else {
                     $parser->tags[$hash]['attempts'] += 1;
                     $parser->tags[$hash]['queries'] += $queries;
@@ -1559,9 +1383,9 @@ class pdoTools
     private function isAllowedFileExtension($extension, $type = '')
     {
         switch ($type) {
-        	case 'modChunk':
+            case 'modChunk':
                 $result = in_array($extension, $this->config['chunkExtensions'], true);
-        		break;
+                break;
             case 'modSnippet':
                 $result = $extension === 'php';
                 break;
