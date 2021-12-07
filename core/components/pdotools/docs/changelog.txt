@@ -3,9 +3,15 @@ Changelog for pdoTools.
 3.0.0 beta (06.12.2021)
 ==============
 - Requires MODX 3.
+- Requires PHP 7.2+.
 - Refactored to use PSR-4 autoload.
+- pdoTools snippet logs are stored now in the corresponding placeholder (#316).
+- Added system setting "pdotools_filter_path".
+- Removed anchor links in skip/empty templates (#303).
 - Removed "nestedChunkPrefix" parameter.
-- pdoTools snippet logs are stored in the corresponding placeholder.
+- Removed the system settings "pdoTools.class", "pdotools_class_path", "pdoFetch.class" and "pdofetch_class_path".
+- Removed the "setOption" Fenom modifier.
+- Removed the snippet parameters "tplPath" and "elementsPath".
 
 2.13.2-pl (02.09.2021)
 ==============

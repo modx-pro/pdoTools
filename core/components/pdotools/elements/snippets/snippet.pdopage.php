@@ -177,9 +177,9 @@ if (empty($data)) {
 
         if (!empty($pageCount)) {
             foreach (['first', 'prev', 'next', 'last'] as $v) {
-                $tpl = 'tplPage' . ucfirst($v) . 'Empty';
-                if (!empty(${$tpl}) && empty($pagination[$v])) {
-                    $pagination[$v] = $paginator->pdoTools->getChunk(${$tpl});
+                $_tpl = 'tplPage' . ucfirst($v) . 'Empty';
+                if (!empty(${$_tpl}) && empty($pagination[$v])) {
+                    $pagination[$v] = $paginator->pdoTools->getChunk(${$_tpl});
                 }
             }
         }

@@ -189,7 +189,7 @@ class Fenom extends \Fenom
             $this->modx->log(modX::LOG_LEVEL_ERROR, $e->getMessage());
             $this->modx->log(modX::LOG_LEVEL_INFO, $content);
             if ($this->modx->getOption('pdotools_fenom_save_on_errors')) {
-                $this->pdoTools->setCache($content, array('cache_key' => 'pdotools/error/' . $name));
+                $this->pdoTools->setCache($content, ['cache_key' => 'error/' . $name]);
             }
             $tpl = $this->getRawTemplate()->source($name, '', false);
             $this->pdoTools->addTime('Can`t compile Fenom chunk with name "' . $name . '": ' . $e->getMessage());

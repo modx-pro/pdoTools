@@ -339,7 +339,7 @@ class CoreTools
             $data = $this->_loadElement($name, 'modSnippet', $properties);
         }
         if (empty($data) || !($data['object'] instanceof modSnippet)) {
-            $this->modx->log(modX::LOG_LEVEL_ERROR, "[pdoTools] Could not load snippet \"{$name}\"");
+            $this->modx->log(MODX_LOG_LEVEL_ERROR, "[pdoTools] Could not load snippet \"{$name}\"");
 
             return false;
         }
@@ -747,13 +747,11 @@ class CoreTools
                 if (strpos($path, MODX_BASE_PATH) === false && strpos($path, './') === 0) {
                     $path = MODX_BASE_PATH . $path;
                 }
-                // TODO: добавить системную настройку инсталятор
-                $path = $this->config['filterPath'] ? preg_replace(["/\.*[\/|\\\]/i", "/[\/|\\\]+/i"], ['/', '/'], $path) : $path;
-                $path .=  basename($filename);
+                $path = $this->config['filterPath'] ? preg_replace(["/\.*[\/|\\\]/i", "/[\/|\\\]+/i"], ['/', '/'], $path . $filename) : $path . $filename;
                 //$rel_path = str_replace([MODX_BASE_PATH, MODX_CORE_PATH], '', $path);
                 if (!file_exists($path)) {
                     $message = 'Could not find the element file "' . $content . '".';
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, $message);
+                    $this->modx->log(MODX_LOG_LEVEL_ERROR, $message);
                     $this->addTime($message);
 
                     return false;
@@ -761,7 +759,7 @@ class CoreTools
                 $fileExtension = pathinfo($path, PATHINFO_EXTENSION);
                 if (!$this->isAllowedFileExtension($fileExtension, $type)) {
                     $message = 'File extension "' . $fileExtension . '" is not allowed for element type ' . $type . '!';
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, $message);
+                    $this->modx->log(MODX_LOG_LEVEL_ERROR, $message);
                     $this->addTime($message);
 
                     return false;
@@ -871,11 +869,11 @@ class CoreTools
                 $rows[$v[$id]] = $v;
             }
 
-            foreach ($rows as $id => &$row) {
-                if (empty($row[$parent]) || (!isset($rows[$row[$parent]]) && in_array($id, $roots))) {
-                    $tree[$id] = &$row;
+            foreach ($rows as $rid => &$row) {
+                if (empty($row[$parent]) || (!isset($rows[$row[$parent]]) && in_array($rid, $roots))) {
+                    $tree[$rid] = &$row;
                 } else {
-                    $rows[$row[$parent]]['children'][$id] = &$row;
+                    $rows[$row[$parent]]['children'][$rid] = &$row;
                 }
             }
         }
@@ -1214,10 +1212,10 @@ class CoreTools
 
         $cacheOptions = [
             xPDO::OPT_CACHE_KEY => !empty($options['cache_key']) || !empty($options['cacheKey'])
-                ? 'default'
+                ? 'pdotools'
                 : (!empty($this->modx->resource)
                     ? $this->modx->getOption('cache_resource_key', null, 'resource')
-                    : 'default'),
+                    : 'pdotools'),
 
             xPDO::OPT_CACHE_HANDLER => !empty($options['cache_handler'])
                 ? $options['cache_handler']

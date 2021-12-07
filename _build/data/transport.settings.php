@@ -37,6 +37,10 @@ $tmp = [
         'xtype' => 'textfield',
         'value' => '{core_path}elements/',
     ],
+    'filter_path' => [
+        'xtype' => 'combo-boolean',
+        'value' => true,
+    ],
 ];
 
 foreach ($tmp as $k => $v) {
