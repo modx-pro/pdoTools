@@ -1,6 +1,6 @@
 <?php
 
-$root = dirname(dirname(__FILE__)) . '/';
+$root = dirname(__FILE__, 2) . '/';
 require_once $root . '_build/includes/functions.php';
 $base = $root . 'core/components/pdotools/vendor/fenom/fenom/';
 
