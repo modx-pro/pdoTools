@@ -16,6 +16,7 @@
         }
     ],
     "type": "library",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "ModxPro\\PdoTools\\": "src/"
@@ -24,5 +25,8 @@
     "require": {
         "php": ">=7.2",
         "fenom/fenom": "^2.11"
+    },
+    "require-dev": {
+        "modx/revolution": "3.x-dev"
     }
 }
