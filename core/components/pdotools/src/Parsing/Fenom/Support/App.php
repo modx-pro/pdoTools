@@ -143,9 +143,10 @@ class App
      */
     public function makeUrl($id, $context = '', $args = '', $scheme = -1, array $options = [])
     {
-        $this->pdoTools->debugParserMethod('makeUrl', $id, $args);
+        $properties = [$args, $scheme, $options];
+        $this->pdoTools->debugParserMethod('makeUrl', $id, $properties);
         $result = $this->modx->makeUrl($id, $context, $args, $scheme, $options);
-        $this->pdoTools->debugParserMethod('makeUrl', $id, $args);
+        $this->pdoTools->debugParserMethod('makeUrl', $id, $properties);
 
         return $result;
     }
