@@ -939,7 +939,11 @@ class pdoFetch extends pdoTools
         }
 
         $this->config['includeTVs'] = implode(',', $includeTVs);
-        $this->config['where'] = $where;
+        if (is_array($this->config['where'])) {
+            $this->config['where'][] = $where;
+        } else {
+            $this->config['where'] = $where;
+        }
         $this->addTime('Added TVs filters', microtime(true) - $time);
     }
 
