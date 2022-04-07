@@ -54,8 +54,11 @@ if (!empty($returnIds)) {
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
 } else {
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, ['output' => $output]),
-            $pdoFetch->config['fastMode']);
+        $output = $pdoFetch->getChunk(
+            $tplWrapper, 
+            array_merge( $additionalPlaceholders,['output' => $output] ),
+            $pdoFetch->getConfig['fastMode']
+        );
     }
 
     if (!empty($toPlaceholder)) {
