@@ -859,7 +859,9 @@ class pdoTools
             case 'FILE':
                 if (!empty($row['tplPath']) || !empty($row['elementsPath'])) {
                     // @Deprecated
-                    $this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] The "tplPath" and "elementsPath" parameters are deprecated and will be removed in the next version.');
+                    if (!empty($this->modx->getOption('log_deprecated'))) {
+                        $this->modx->log(modX::LOG_LEVEL_ERROR, '[pdoTools] The "tplPath" and "elementsPath" parameters are deprecated and will be removed in the next version.');
+                    }
                     $path = !empty($row['tplPath']) ? $row['tplPath'] : $row['elementsPath'];
                 } else {
                     $path = $this->config['elementsPath'];
