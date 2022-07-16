@@ -170,7 +170,7 @@ if (!empty($returnIds)) {
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
 } else {
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, ['output' => $output], $pdoFetch->config['fastMode']);
+        $output = $pdoFetch->getChunk($tplWrapper, ['output' => $output], $pdoFetch->config('fastMode'));
     }
 
     if (!empty($toPlaceholder)) {

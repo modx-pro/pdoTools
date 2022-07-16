@@ -55,7 +55,7 @@ if (!empty($returnIds)) {
 } else {
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
         $output = $pdoFetch->getChunk($tplWrapper, array_merge($additionalPlaceholders, ['output' => $output]),
-            $pdoFetch->config['fastMode']);
+            $pdoFetch->config('fastMode'));
     }
 
     if (!empty($toPlaceholder)) {
