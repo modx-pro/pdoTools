@@ -17,7 +17,7 @@ $tmp = [
 
 foreach ($tmp as $k => $v) {
     /** @var modplugin $plugin */
-    $plugin = $modx->newObject('modPlugin');
+    $plugin = $modx->newObject(MODX\Revolution\modPlugin::class);
     /** @noinspection PhpUndefinedVariableInspection */
     $plugin->fromArray(array(
         'name' => $k,
