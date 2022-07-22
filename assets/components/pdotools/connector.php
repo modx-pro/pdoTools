@@ -5,7 +5,7 @@ require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 $modx = new modX();
 $modx->initialize('web');
 $modx->services->add('error', new MODX\Revolution\Error\modError($modx));
-$modx->error = $this->services->get('error');
+$modx->error = $modx->services->get('error');
 
 // Switch context if needed
 if (!empty($_REQUEST['pageId'])) {
