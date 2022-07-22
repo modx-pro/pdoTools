@@ -22,10 +22,9 @@ class App
     public $cacheManager;
 
     public $config = [];
-    public $context = [];
-    public $resource = [];
-    public $user = [];
-
+    protected $context = [];
+    protected $resource = [];
+    protected $user = [];
 
     /**
      * @param modX $modx
@@ -36,33 +35,6 @@ class App
         $this->modx = $modx;
         $this->pdoTools = $pdoTools;
         $this->config = $modx->config;
-
-        if ($modx->context && $context = $this->modx->getObject(modContext::class, $modx->context->get('key'))) {
-            $this->context = $context->toArray();
-        }
-        if ($modx->resource) {
-            $this->resource = $modx->resource->toArray();
-            $this->resource['content'] = $modx->resource->getContent();
-            // TV parameters
-            foreach ($this->resource as $k => $v) {
-                if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
-                    $this->resource[$k] = $modx->resource->getTVValue($k);
-                }
-            }
-        }
-        if ($modx->user) {
-            $this->user = $modx->user->toArray();
-            /** @var modUserProfile $profile */
-            if ($profile = $modx->user->getOne('Profile')) {
-                $tmp = $profile->toArray();
-                unset($tmp['id']);
-                $this->user = array_merge($this->user, $tmp);
-            }
-            $this->user = array_diff_key(
-                $this->user,
-                ['sessionid' => 1, 'password' => 1, 'cachepwd' => 1, 'salt' => 1, 'session_stale' => 1, 'remote_key' => 1, 'remote_data' => 1, 'hash_class' => 1]
-            );
-        }
 
         $this->lexicon = new Lexicon($modx);
         $this->cacheManager = new CacheManager($modx);
@@ -549,4 +521,45 @@ class App
         return modResource::filterPathSegment($this->modx, $alias);
     }
 
+    /**
+     * @param $name
+     * @return array|null
+     */
+    public function __get($name)
+    {
+        $data = null;
+        if ($name === 'resource' && $this->modx->resource) {
+            if (empty($this->resource)) {
+                $this->resource = $this->modx->resource->toArray();
+                $this->resource['content'] = $this->modx->resource->getContent();
+                // TV parameters
+                foreach ($this->resource as $k => $v) {
+                    if (is_array($v) && !empty($v[0]) && $k == $v[0]) {
+                        $this->resource[$k] = $this->modx->resource->getTVValue($k);
+                    } elseif ($k[0] === '_') {
+                        unset($this->resource[$k]);
+                    }
+                }
+            }
+        } elseif ($name === 'user' && $this->modx->user) {
+            if (empty($this->user)) {
+                $this->user = $this->modx->user->toArray();
+                if ($profile = $this->modx->user->getOne('Profile')) {
+                    $tmp = $profile->toArray();
+                    unset($tmp['id']);
+                    $this->user = array_merge($this->user, $tmp);
+                }
+                $this->user = array_diff_key(
+                    $this->user,
+                    ['sessionid' => 1, 'password' => 1, 'cachepwd' => 1, 'salt' => 1, 'session_stale' => 1, 'remote_key' => 1, 'remote_data' => 1, 'hash_class' => 1]
+                );
+            }
+        } elseif ($name === 'context' && $this->modx->context) {
+            if (empty($this->context)) {
+                $this->context = $this->modx->context->toArray();
+            }
+        }
+
+        return $this->{$name};
+    }
 }
