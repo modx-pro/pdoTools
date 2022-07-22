@@ -897,12 +897,12 @@ class CoreTools
         $prepare = $process = $prepareTypes = [];
         if (!empty($this->config['includeTVs']) && (!empty($this->config['prepareTVs']) || !empty($this->config['processTVs']))) {
             $tvs = array_map('trim', explode(',', $this->config['includeTVs']));
-            $prepare = ($this->config['prepareTVs'] === 1)
+            $prepare = ($this->config['prepareTVs'] == 1)
                 ? $tvs
                 : array_map('trim', explode(',', $this->config['prepareTVs']));
             $prepareTypes = array_map('trim',
                 explode(',', $this->modx->getOption('manipulatable_url_tv_output_types', null, 'image,file')));
-            $process = ($this->config['processTVs'] === 1)
+            $process = ($this->config['processTVs'] == 1)
                 ? $tvs
                 : array_map('trim', explode(',', $this->config['processTVs']));
 
