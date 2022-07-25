@@ -1,6 +1,19 @@
 Changelog for pdoTools.
 
-3.0.0 beta (06.12.2021)
+3.0.0-pl (25.07.2022)
+==============
+- Fixed bug in the App::makeUrl function (#322).
+- Replaced the simple class name with FQN (#326).
+- Fixed incorrect functioning of the pdoNeighbors snippet (#327).
+- Changed $_SERVER['DOCUMENT_ROOT'] to dirname function in the connector.php (#332).
+- Fixed bug with inaccessible property Fetch::config (#334).
+- Fixed bug with prepareTVs and processTVs parameters of the pdoTools snippets (#335).
+- Fixed fatal error in connector.php (#336).
+- Fixed a typo in the connector ($this on $modx) (338).
+- Fixed fatal error caused by loop (#341).
+- Fixed checking TV before adding to the query (#343).
+
+3.0.0-beta (06.12.2021)
 ==============
 - Requires MODX 3.
 - Requires PHP 7.2+.
