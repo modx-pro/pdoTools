@@ -579,8 +579,7 @@ class Fetch extends CoreTools
                 ? $this->config['joinTVsTo']
                 : $this->config['class'];
             $alias = $this->modx->getAlias($class);
-            $subclass = preg_grep('#^' . $class . '#i', $this->modx->classMap[modResource::class]);
-            if ($alias !== 'modResource' && !count($subclass)) {
+            if ($alias !== 'modResource' && !in_array($class, $this->modx->classMap[modResource::class])) {
                 $this->modx->log(
                     xPDO::LOG_LEVEL_ERROR,
                     '[pdoTools] Could not join TVs to the class "' . $class . '" that is not a subclass of the "modResource". Try to specify correct class in the "joinTVsTo" parameter.');
