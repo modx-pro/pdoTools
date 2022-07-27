@@ -4,7 +4,7 @@
 switch ($modx->event->name) {
     case 'OnSiteRefresh':
         /** @var ModxPro\PdoTools\CoreTools $coreTools */
-        if ($coreTools = $modx->service->get('pdotools')) {
+        if ($coreTools = $modx->services->get('pdotools')) {
             if ($coreTools->clearFileCache()) {
                 $modx->log(modX::LOG_LEVEL_INFO, $modx->lexicon('refresh_default') . ': pdoTools');
             }
