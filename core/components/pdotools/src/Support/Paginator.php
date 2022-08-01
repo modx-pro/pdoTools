@@ -181,7 +181,6 @@ class Paginator
         return $url;
     }
 
-
     /**
      * Returns templates link for pagination
      *
@@ -251,6 +250,21 @@ class Paginator
             : $href;
     }
 
+    /**
+     * Creates the correct URL of the page, including folder subdomains.
+     * @see https://github.com/modx-pro/pdoTools/issues/318
+     *
+     * @param string $uri
+     * @return string
+     */
+    public function getCanonicalUrl($uri = '')
+    {
+        $siteUrl = $this->modx->getOption('site_url');
+        if ($this->modx->context->key !== 'web' && !empty(trim($this->modx->getOption('base_url'), ' /'))) {
+            $siteUrl = strstr($siteUrl, $this->modx->getOption('base_url'), true) . '/';
+        }
+        return $siteUrl . ltrim($uri, '/');
+    }
 
     /**
      * Classic pagination: 3,4,5,6,7,8,9,10,11,12,13,14

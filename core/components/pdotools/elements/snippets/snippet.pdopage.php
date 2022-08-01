@@ -240,7 +240,7 @@ if ($isAjax) {
 if (!empty($setMeta)) {
     $charset = $modx->getOption('modx_charset', null, 'UTF-8');
     $canurl = $paginator->pdoTools->config('scheme') !== 'full'
-        ? rtrim($modx->getOption('site_url'), '/') . '/' . ltrim($url, '/')
+        ? $paginator->getCanonicalUrl($url)
         : $url;
     $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . htmlentities($canurl, ENT_QUOTES, $charset) . '"/>');
     if ($data[$pageVarKey] > 1) {
