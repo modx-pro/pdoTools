@@ -43,4 +43,10 @@ $modx->services->add('pdotools', function ($c) {
 $modx->services->add('pdofetch', function ($c){
     return $c->get(ModxPro\PdoTools\Fetch::class);
 });
+$modx->services->add('pdoTools', function ($c) {
+    return $c->get('pdotools');
+});
+$modx->services->add('pdoFetch', function ($c){
+    return $c->get('pdofetch');
+});
 
