@@ -3,6 +3,7 @@ Changelog for pdoTools.
 3.0.1-pl (01.08.2022)
 ==============
 - Fixed incorrect next and prev canonical URLs (#318).
+- Fixed bug in the Fenom parser (#331).
 - Fixed bug when clearing cache (#347).
 - Added aliases "pdoTools" and "pdoFetch" for the service container.
 

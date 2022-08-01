@@ -64,7 +64,10 @@ class Parser extends modParser
                     $content = str_replace($ignore, $key, $content);
                 }
             }
+            $_processingUncacheable = $this->_processingUncacheable;
+            $this->_processingUncacheable = true;
             $content = $this->pdoTools->getFenom()->process($content, $this->modx->placeholders);
+            $this->_processingUncacheable = $_processingUncacheable;
         }
 
         return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,
