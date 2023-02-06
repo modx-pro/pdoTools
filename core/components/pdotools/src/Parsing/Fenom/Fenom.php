@@ -242,6 +242,13 @@ class Fenom extends \Fenom
                 'number' => 'number_format',
                 'reset' => 'reset',
                 'end' => 'end',
+                
+                // Casts
+                'boolval' => 'boolval',
+                'doubleval' => 'doubleval',
+                'floatval' => 'floatval',
+                'intval' => 'intval',
+                'strval' => 'strval',
             ]
         );
 
