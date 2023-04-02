@@ -2,7 +2,6 @@
 
 if (!class_exists('Fenom')) {
     require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
-    Fenom::registerAutoload();
 }
 
 class FenomX extends Fenom
@@ -73,7 +72,7 @@ class FenomX extends Fenom
      * @throws LogicException
      * @return Fenom
      */
-    public function setCompileDir($dir)
+    public function setCompileDir(string $dir): static
     {
         $dir = str_replace(MODX_CORE_PATH, '', $dir);
         $path = MODX_CORE_PATH;
@@ -647,7 +646,7 @@ class FenomX extends Fenom
      *
      * @return Closure
      */
-    protected function _loadModifier($name, $template)
+    protected function _loadModifier(string $name, Fenom\Template $template): ?string
     {
         $modx = $this->modx;
         $pdo = $this->pdoTools;

@@ -4,34 +4,33 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5722bbf5b6cd9e745169bc308c88ecd3",
+    "content-hash": "fd7de43fdf50f5f253a6b354302c5803",
     "packages": [
         {
             "name": "fenom/fenom",
-            "version": "2.12.0",
+            "version": "v3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fenom-template/fenom.git",
-                "reference": "f0cb251843de469b453b15c158cf0d1589d4de6d"
+                "reference": "fbf4f46f1fe1d7d3cc342996e8e71d42b6b1ecdb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fenom-template/fenom/zipball/f0cb251843de469b453b15c158cf0d1589d4de6d",
-                "reference": "f0cb251843de469b453b15c158cf0d1589d4de6d",
+                "url": "https://api.github.com/repos/fenom-template/fenom/zipball/fbf4f46f1fe1d7d3cc342996e8e71d42b6b1ecdb",
+                "reference": "fbf4f46f1fe1d7d3cc342996e8e71d42b6b1ecdb",
                 "shasum": ""
             },
             "require": {
                 "ext-tokenizer": "*",
-                "php": ">=5.3.0"
+                "php": ">=8.0.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "<6.0",
-                "satooshi/php-coveralls": "*"
+                "phpunit/phpunit": "9.*"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Fenom\\": "src/"
+                "psr-4": {
+                    "Fenom\\": "src/Fenom"
                 },
                 "classmap": [
                     "src/Fenom.php"
@@ -39,7 +38,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "BSD-3"
+                "BSD-3-Clause"
             ],
             "authors": [
                 {
@@ -56,9 +55,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fenom-template/fenom/issues",
-                "source": "https://github.com/fenom-template/fenom/tree/2.12.0"
+                "source": "https://github.com/fenom-template/fenom/tree/v3.0.0"
             },
-            "time": "2020-07-06T17:02:31+00:00"
+            "time": "2023-02-27T08:38:43+00:00"
         }
     ],
     "packages-dev": [],
@@ -69,5 +68,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.3.0"
 }
