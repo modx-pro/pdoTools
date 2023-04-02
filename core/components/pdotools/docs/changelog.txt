@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.14.0-pl (02.04.2023)
+==============
+- Fenom updated to 3.0 to be compatible with PHP 8.
+
 2.13.2-pl (02.09.2021)
 ==============
 - Fixed some snippets.
