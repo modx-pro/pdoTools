@@ -20,7 +20,7 @@ class modChunkProvider implements \Fenom\ProviderInterface
      *
      * @return bool
      */
-    public function templateExists($tpl)
+    public function templateExists(string $tpl): bool
     {
         $c = is_numeric($tpl) && $tpl > 0
             ? $tpl
@@ -36,7 +36,7 @@ class modChunkProvider implements \Fenom\ProviderInterface
      *
      * @return string
      */
-    public function getSource($tpl, &$time)
+    public function getSource(string $tpl, float &$time): string
     {
         $content = '';
         if ($pos = strpos($tpl, '@')) {
@@ -76,7 +76,7 @@ class modChunkProvider implements \Fenom\ProviderInterface
      *
      * @return int
      */
-    public function getLastModified($tpl)
+    public function getLastModified(string $tpl): float
     {
         $c = is_numeric($tpl) && $tpl > 0
             ? $tpl
@@ -99,7 +99,7 @@ class modChunkProvider implements \Fenom\ProviderInterface
      *
      * @return bool if true - all templates are valid else some templates are invalid
      */
-    public function verify(array $templates)
+    public function verify(array $templates): bool
     {
         return true;
     }
@@ -109,7 +109,7 @@ class modChunkProvider implements \Fenom\ProviderInterface
      * Get all names of template from provider
      * @return array|\Iterator
      */
-    public function getList()
+    public function getList(string $extension = "tpl"): iterable
     {
         $c = $this->modx->newQuery('modChunk');
         $c->select('name');

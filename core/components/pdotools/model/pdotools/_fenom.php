@@ -2,7 +2,6 @@
 
 if (!class_exists('Fenom')) {
     require dirname(dirname(dirname(__FILE__))) . '/vendor/autoload.php';
-    Fenom::registerAutoload();
 }
 
 class FenomX extends Fenom
