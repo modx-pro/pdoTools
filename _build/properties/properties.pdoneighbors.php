@@ -1,157 +1,157 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'id' => array(
+$tmp = [
+    'id' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 1,
         'desc' => 'pdotools_prop_neighbors_limit',
-    ),
-    'sortby' => array(
+    ],
+    'sortby' => [
         'type' => 'textfield',
         'value' => 'menuindex',
-    ),
-    'sortdir' => array(
+    ],
+    'sortdir' => [
         'type' => 'textfield',
         'value' => 'asc',
-    ),
-    'depth' => array(
+    ],
+    'depth' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
+    ],
 
-    'tplPrev' => array(
+    'tplPrev' => [
         'type' => 'textfield',
         'value' => '@INLINE <span class="link-prev"><a href="[[+link]]" class="btn btn-light">&larr; [[+menutitle]]</a></span>',
-    ),
-    'tplUp' => array(
+    ],
+    'tplUp' => [
         'type' => 'textfield',
         'value' => '@INLINE <span class="link-up"><a href="[[+link]]" class="btn btn-light">&uarr; [[+menutitle]]</a></span>',
-    ),
-    'tplNext' => array(
+    ],
+    'tplNext' => [
         'type' => 'textfield',
         'value' => '@INLINE <span class="link-next"><a href="[[+link]]" class="btn btn-light">[[+menutitle]] &rarr;</a></span>',
-    ),
-    'tplWrapper' => array(
+    ],
+    'tplWrapper' => [
         'type' => 'textfield',
         'value' => '@INLINE <div class="neighbors d-flex justify-content-between">[[+prev]][[+up]][[+next]]</div>',
         'desc' => 'pdotools_prop_neighbors_tplWrapper',
-    ),
-    'wrapIfEmpty' => array(
+    ],
+    'wrapIfEmpty' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'showUnpublished' => array(
+    'showUnpublished' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showDeleted' => array(
+    ],
+    'showDeleted' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showHidden' => array(
+    ],
+    'showHidden' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'hideContainers' => array(
+    ],
+    'hideContainers' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'toSeparatePlaceholders' => array(
+    'toSeparatePlaceholders' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'toPlaceholder' => array(
+    ],
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'parents' => array(
+    ],
+    'parents' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'outputSeparator' => array(
+    ],
+    'outputSeparator' => [
         'type' => 'textfield',
         'value' => "\n",
-    ),
-    'showLog' => array(
+    ],
+    'showLog' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'fastMode' => array(
+    ],
+    'fastMode' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'includeTVs' => array(
+    'includeTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'prepareTVs' => array(
+    ],
+    'prepareTVs' => [
         'type' => 'textfield',
         'value' => '1',
-    ),
-    'processTVs' => array(
+    ],
+    'processTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tvPrefix' => array(
+    ],
+    'tvPrefix' => [
         'type' => 'textfield',
         'value' => 'tv.',
-    ),
-    'scheme' => array(
+    ],
+    'scheme' => [
         'type' => 'list',
-        'options' => array(
-            array(
+        'options' => [
+            [
                 'name' => 'System default',
                 'value' => '',
-            ),
-            array(
+            ],
+            [
                 'name' => '-1 (relative to site_url)',
                 'value' => -1,
-            ),
-            array(
+            ],
+            [
                 'name' => 'full (absolute, prepended with site_url)',
                 'value' => 'full',
-            ),
-            array(
+            ],
+            [
                 'name' => 'abs (absolute, prepended with base_url)',
                 'value' => 'abs',
-            ),
-            array(
+            ],
+            [
                 'name' => 'http (absolute, forced to http scheme)',
                 'value' => 'http',
-            ),
-            array(
+            ],
+            [
                 'name' => 'https (absolute, forced to https scheme)',
                 'value' => 'https',
-            ),
-        ),
+            ],
+        ],
         'value' => '',
-    ),
-    'useWeblinkUrl' => array(
+    ],
+    'useWeblinkUrl' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'loop' => array(
+    ],
+    'loop' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

@@ -1,37 +1,43 @@
 <?php
+
+use ModxPro\PdoTools\Fetch;
+use MODX\Revolution\modUser;
+use MODX\Revolution\modUserGroup;
+use MODX\Revolution\modUserGroupMember;
+use MODX\Revolution\modUserGroupRole;
+use MODX\Revolution\modUserProfile;
+
 /** @var array $scriptProperties */
-/** @var pdoFetch $pdoFetch */
-/** @var modX $modx */
+/** @var \MODX\Revolution\modX $modx */
+
 if (!empty($returnIds)) {
     $scriptProperties['return'] = $return = 'ids';
 } elseif (!isset($return)) {
     $scriptProperties['return'] = $return = 'chunks';
 }
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+$modx->services['pdotools_config'] = $scriptProperties;
+$pdoFetch = $modx->services->get(Fetch::class);
 $pdoFetch->addTime('pdoTools loaded');
 
-$class = 'modUser';
-$profile = 'modUserProfile';
-$member = 'modUserGroupMember';
+$class = modUser::class;
+$alias_class = $modx->getAlias($class);
+$profile = modUserProfile::class;
+$alias_profile = $modx->getAlias($profile);
+$member = modUserGroupMember::class;
+$alias_member = $modx->getAlias($member);
 
 // Start building "Where" expression
 $where = [];
 if (empty($showInactive)) {
-    $where[$class . '.active'] = 1;
+    $where[$alias_class . '.active'] = 1;
 }
 if (empty($showBlocked)) {
-    $where[$profile . '.blocked'] = 0;
+    $where[$alias_profile . '.blocked'] = 0;
 }
 
 // Add users profiles and groups
 $innerJoin = [
-    $profile => ['alias' => $profile, 'on' => "$class.id = $profile.internalKey"],
+    $profile => ['class' => $profile, 'alias' => $alias_profile, 'on' => "$alias_class.id = $alias_profile.internalKey"],
 ];
 
 // Filter by users, groups and roles
@@ -39,17 +45,17 @@ $tmp = [
     'users' => [
         'class' => $class,
         'name' => 'username',
-        'join' => $class . '.id',
+        'join' => $alias_class . '.id',
     ],
     'groups' => [
-        'class' => 'modUserGroup',
+        'class' => modUserGroup::class,
         'name' => 'name',
-        'join' => $member . '.user_group',
+        'join' => $alias_member . '.user_group',
     ],
     'roles' => [
-        'class' => 'modUserGroupRole',
+        'class' => modUserGroupRole::class,
         'name' => 'name',
-        'join' => $member . '.role',
+        'join' => $alias_member . '.role',
     ],
 ];
 foreach ($tmp as $k => $p) {
@@ -99,7 +105,7 @@ foreach ($tmp as $k => $p) {
 }
 
 if (!empty($groups_in) || !empty($groups_out) || !empty($roles_in) || !empty($roles_out)) {
-    $innerJoin[$member] = ['alias' => $member, 'on' => "$class.id = $member.member"];
+    $innerJoin[$alias_member] = ['class' => $member, 'alias' => $alias_member, 'on' => "$alias_class.id = $alias_member.member"];
 }
 
 // Fields to select
@@ -125,19 +131,19 @@ $pdoFetch->addTime('Conditions prepared');
 
 $default = [
     'class' => $class,
-    'innerJoin' => json_encode($innerJoin),
-    'where' => json_encode($where),
-    'select' => json_encode($select),
-    'groupby' => $class . '.id',
-    'sortby' => $class . '.id',
+    'innerJoin' => $innerJoin,
+    'where' => $where,
+    'select' => $select,
+    'groupby' => $alias_class . '.id',
+    'sortby' => $alias_class . '.id',
     'sortdir' => 'ASC',
     'fastMode' => false,
     'return' => $return,
     'disableConditions' => true,
 ];
 
-if (!empty($users_in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == $class . '.id')) {
-    $scriptProperties['sortby'] = "find_in_set(`$class`.`id`,'" . implode(',', $users_in) . "')";
+if (!empty($users_in) && (empty($scriptProperties['sortby']) || $scriptProperties['sortby'] == $alias_class . '.id')) {
+    $scriptProperties['sortby'] = "find_in_set(`$alias_class`.`id`,'" . implode(',', $users_in) . "')";
     $scriptProperties['sortdir'] = '';
 }
 
@@ -147,13 +153,12 @@ $pdoFetch->setConfig(array_merge($default, $scriptProperties), false);
 $output = $pdoFetch->run();
 
 $log = '';
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-    $log .= '<pre class="pdoUsersLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+if ($modx->user->isAuthenticated('mgr') && !empty($showLog)) {
+    $modx->setPlaceholder('pdoUsersLog',  print_r($pdoFetch->getTime(), true));
 }
 
 // Return output
 if (!empty($returnIds)) {
-    $modx->setPlaceholder('pdoUsers.log', $log);
     if (!empty($toPlaceholder)) {
         $modx->setPlaceholder($toPlaceholder, $output);
     } else {
@@ -162,13 +167,10 @@ if (!empty($returnIds)) {
 } elseif ($return === 'data') {
     return $output;
 } elseif (!empty($toSeparatePlaceholders)) {
-    $output['log'] = $log;
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
 } else {
-    $output .= $log;
-
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, ['output' => $output], $pdoFetch->config['fastMode']);
+        $output = $pdoFetch->getChunk($tplWrapper, ['output' => $output], $pdoFetch->config('fastMode'));
     }
 
     if (!empty($toPlaceholder)) {

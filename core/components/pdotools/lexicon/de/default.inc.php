@@ -10,23 +10,6 @@ $_lang['pdotools'] = 'pdoTools';
 
 $_lang['area_pdotools_main'] = 'Grundeinstellungen';
 
-$_lang['setting_pdoTools.class'] = 'FQN von pdoTools';
-$_lang['setting_pdoTools.class_desc'] = 'FQN (Fully Qualified Name) der pdoTools-Klasse. Der Pfad für das Laden der Klasse wird in der Systemeinstellung "pdotools_class_path" festgelegt.';
-$_lang['setting_pdotools_class_path'] = 'Basispfad der pdoTools-Klasse';
-$_lang['setting_pdotools_class_path_desc'] = 'Basispfad der pdoTools-Klasse, aus dem sie bei Verwendung des FQN (Fully Qualified Name) geladen wird.';
-
-$_lang['setting_pdoFetch.class'] = 'FQN von pdoFetch';
-$_lang['setting_pdoFetch.class_desc'] = 'FQN (Fully Qualified Name) der pdoFetch-Klasse. Der Pfad für das Laden der Klasse wird in der Systemeinstellung "pdofetch_class_path" festgelegt.';
-$_lang['setting_pdofetch_class_path'] = 'Basispfad der pdoFetch-Klasse';
-$_lang['setting_pdofetch_class_path_desc'] = 'Basispfad der pdoFetch Klasse, aus dem sie bei Verwendung des FQN (Fully Qualified Name) geladen wird.';
-
-$_lang['setting_pdoParser.class'] = 'FQN von pdoParser';
-$_lang['setting_pdoParser.class_desc'] = 'FQN (Fully Qualified Name) der pdoParser-Klasse. Der Pfad für das Laden der Klasse wird in der Systemeinstellung "parser_class_path" festgelegt.';
-$_lang['setting_parser_class'] = 'Parser-Klasse';
-$_lang['setting_parser_class_desc'] = 'Parser-Klasse, die verwendet wird, um die MODX-Tags zu verarbeiten.';
-$_lang['setting_parser_class_path'] = 'Pfad zum Parser';
-$_lang['setting_parser_class_path_desc'] = 'Basispfad der Parser-Klasse, aus dem sie bei Verwendung des FQN (Fully Qualified Name) geladen wird.';
-
 $_lang['setting_pdotools_elements_path'] = 'Pfad zu den Elementen';
 $_lang['setting_pdotools_elements_path_desc'] = 'Verzeichnis mit Datei-Elementen, die mittels @FILE-Bindung geladen werden können.';
 $_lang['setting_pdotools_fenom_default'] = 'Fenom für Chunks verwenden';

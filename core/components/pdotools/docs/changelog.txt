@@ -1,5 +1,43 @@
 Changelog for pdoTools.
 
+3.0.2-pl (11.04.2023)
+==============
+- Support for file snippets in the pdoPage class.
+- Security fix for the pdoPage snippet.
+
+3.0.1-pl (01.08.2022)
+==============
+- Fixed incorrect next and prev canonical URLs (#318).
+- Fixed bug in the Fenom parser (#331).
+- Fixed bug when clearing cache (#347).
+- Added aliases "pdoTools" and "pdoFetch" for the service container.
+
+3.0.0-pl (25.07.2022)
+==============
+- Fixed bug in the App::makeUrl function (#322).
+- Replaced the simple class name with FQN (#326).
+- Fixed incorrect functioning of the pdoNeighbors snippet (#327).
+- Changed $_SERVER['DOCUMENT_ROOT'] to dirname function in the connector.php (#332).
+- Fixed bug with inaccessible property Fetch::config (#334).
+- Fixed bug with prepareTVs and processTVs parameters of the pdoTools snippets (#335).
+- Fixed fatal error in connector.php (#336).
+- Fixed a typo in the connector ($this on $modx) (338).
+- Fixed fatal error caused by loop (#341).
+- Fixed checking TV before adding to the query (#343).
+
+3.0.0-beta (06.12.2021)
+==============
+- Requires MODX 3.
+- Requires PHP 7.2+.
+- Refactored to use PSR-4 autoload.
+- pdoTools snippet logs are stored now in the corresponding placeholder (#316).
+- Added system setting "pdotools_filter_path".
+- Removed anchor links in skip/empty templates (#303).
+- Removed "nestedChunkPrefix" parameter.
+- Removed the system settings "pdoTools.class", "pdotools_class_path", "pdoFetch.class" and "pdofetch_class_path".
+- Removed the "setOption" Fenom modifier.
+- Removed the snippet parameters "tplPath" and "elementsPath".
+
 2.13.2-pl (02.09.2021)
 ==============
 - Fixed some snippets.

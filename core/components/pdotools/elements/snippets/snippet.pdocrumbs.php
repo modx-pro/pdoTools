@@ -1,14 +1,16 @@
 <?php
+
+use ModxPro\PdoTools\Fetch;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modWebLink;
+
 /** @var array $scriptProperties */
-/** @var pdoFetch $pdoFetch */
-/** @var modX $modx */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+/** @var \MODX\Revolution\modX $modx */
+
+
+$modx->services['pdotools_config'] = $scriptProperties;
+$pdoFetch = $modx->services->get(Fetch::class);
+
 $pdoFetch->addTime('pdoTools loaded');
 
 if (!isset($from) || $from == '') {
@@ -23,9 +25,7 @@ if (empty($direction)) {
 if ($outputSeparator == '&nbsp;&rarr;&nbsp;' && $direction == 'rtl') {
     $outputSeparator = '&nbsp;&larr;&nbsp;';
 }
-if ($limit == '') {
-    $limit = 10;
-}
+$limit = $limit ?: 10;
 
 // For compatibility with BreadCrumb
 if (!empty($maxCrumbs)) {
@@ -54,15 +54,16 @@ if (isset($showCurrentCrumb)) {
 }
 // --
 $fastMode = !empty($fastMode);
-$siteStart = $modx->getOption('siteStart', $scriptProperties, $modx->getOption('site_start'));
+$siteStart = (int)$modx->getOption('siteStart', $scriptProperties, $modx->getOption('site_start'));
 
-if (empty($showAtHome) && $modx->resource->id == $siteStart) {
+if (empty($showAtHome) && $modx->resource->id === $siteStart) {
     return '';
 }
 
-$class = $modx->getOption('class', $scriptProperties, 'modResource');
+$class = modResource::class;
+$alias = $modx->getAlias($class);
 // Start building "Where" expression
-$where = array();
+$where = [];
 if (empty($showUnpublished) && empty($showUnPub)) {
     $where['published'] = 1;
 }
@@ -88,16 +89,16 @@ if (!$resource) {
 
 if (!empty($customParents)) {
     $customParents = is_array($customParents) ? $customParents : array_map('trim', explode(',', $customParents));
-    $parents = is_array($customParents) ? array_reverse($customParents) : array();
+    $parents = is_array($customParents) ? array_reverse($customParents) : [];
 }
 if (empty($parents)) {
-    $parents = $modx->getParentIds($resource->id, $limit, array('context' => $resource->get('context_key')));
+    $parents = $modx->getParentIds($resource->id, $limit, ['context' => $resource->get('context_key')]);
 }
 if (!empty($showHome)) {
     $parents[] = $siteStart;
 }
 
-$ids = array($resource->id);
+$ids = [$resource->id];
 foreach ($parents as $parent) {
     if (!empty($parent)) {
         $ids[] = $parent;
@@ -114,10 +115,10 @@ if (!empty($exclude)) {
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
-$select = array($class => implode(',', $resourceColumns));
+$select = [$alias => implode(',', $resourceColumns)];
 
 // Add custom parameters
-foreach (array('where', 'select') as $v) {
+foreach (['where', 'select'] as $v) {
     if (!empty($scriptProperties[$v])) {
         $tmp = $scriptProperties[$v];
         if (!is_array($tmp)) {
@@ -132,17 +133,17 @@ foreach (array('where', 'select') as $v) {
 $pdoFetch->addTime('Conditions prepared');
 
 // Default parameters
-$default = array(
+$default = [
     'class' => $class,
-    'where' => json_encode($where),
-    'select' => json_encode($select),
-    'groupby' => $class . '.id',
-    'sortby' => "find_in_set(`$class`.`id`,'" . implode(',', $ids) . "')",
+    'where' => $where,
+    'select' => $select,
+    'groupby' => $alias . '.id',
+    'sortby' => "find_in_set(`$alias`.`id`,'" . implode(',', $ids) . "')",
     'sortdir' => '',
     'return' => 'data',
     'totalVar' => 'pdocrumbs.total',
     'disableConditions' => true,
-);
+];
 
 // Merge all properties and run!
 $pdoFetch->addTime('Query parameters ready');
@@ -156,7 +157,7 @@ if (!empty($rows) && is_array($rows)) {
     }
 
     foreach ($rows as $row) {
-        if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
+        if (!empty($useWeblinkUrl) && $row['class_key'] === modWebLink::class) {
             $row['link'] = is_numeric(trim($row['content'], '[]~ '))
                 ? $pdoFetch->makeUrl((int)trim($row['content'], '[]~ '), $row)
                 : $row['content'];
@@ -199,28 +200,27 @@ $pdoFetch->addTime('Chunks processed');
 
 if (count($output) == 1 && !empty($hideSingle)) {
     $pdoFetch->addTime('The only result was hidden, because the parameter "hideSingle" activated');
-    $output = array();
+    $output = [];
 }
 
 $log = '';
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-    $log .= '<pre class="pdoCrumbsLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+if ($modx->user->isAuthenticated('mgr') && (bool)$showLog) {
+    $modx->setPlaceholder('pdoCrumbsLog', print_r($pdoFetch->getTime(), true));
 }
 
 if (!empty($toSeparatePlaceholders)) {
-    $output['log'] = $log;
     $modx->setPlaceholders($output, $toSeparatePlaceholders);
 } else {
     $output = implode($outputSeparator, $output);
     if ($pdoFetch->idx >= $limit && !empty($tplMax) && !empty($output)) {
         $output = ($direction == 'ltr')
-            ? $pdoFetch->getChunk($tplMax, array(), $fastMode) . $output
-            : $output . $pdoFetch->getChunk($tplMax, array(), $fastMode);
+            ? $pdoFetch->getChunk($tplMax, [], $fastMode) . $output
+            : $output . $pdoFetch->getChunk($tplMax, [], $fastMode);
     }
     $output .= $log;
 
     if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
-        $output = $pdoFetch->getChunk($tplWrapper, array('output' => $output, 'crumbs' => $output), $fastMode);
+        $output = $pdoFetch->getChunk($tplWrapper, ['output' => $output, 'crumbs' => $output], $fastMode);
     }
 
     if (!empty($toPlaceholder)) {

@@ -1,154 +1,154 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'tpl' => array(
+$tmp = [
+    'tpl' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'returnIds' => array(
+    ],
+    'returnIds' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showLog' => array(
+    ],
+    'showLog' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'fastMode' => array(
+    ],
+    'fastMode' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'sortby' => array(
+    ],
+    'sortby' => [
         'type' => 'textfield',
         'value' => 'modUser.id',
-    ),
-    'sortdir' => array(
+    ],
+    'sortdir' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'ASC', 'value' => 'ASC'),
-            array('text' => 'DESC', 'value' => 'DESC'),
-        ),
+        'options' => [
+            ['text' => 'ASC', 'value' => 'ASC'],
+            ['text' => 'DESC', 'value' => 'DESC'],
+        ],
         'value' => 'ASC',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 10,
-    ),
-    'offset' => array(
+    ],
+    'offset' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'outputSeparator' => array(
+    ],
+    'outputSeparator' => [
         'type' => 'textfield',
         'value' => "\n",
-    ),
-    'toPlaceholder' => array(
+    ],
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'groups' => array(
+    ],
+    'groups' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'roles' => array(
+    ],
+    'roles' => [
         'type' => 'textfield',
         'value' => false,
-    ),
-    'users' => array(
+    ],
+    'users' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'where' => array(
+    ],
+    'where' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'showInactive' => array(
+    ],
+    'showInactive' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showBlocked' => array(
+    ],
+    'showBlocked' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'idx' => array(
+    ],
+    'idx' => [
         'type' => 'numberfield',
         'value' => '',
-    )
-,
-    'first' => array(
+    ]
+    ,
+    'first' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'last' => array(
+    ],
+    'last' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
-    'tplFirst' => array(
+    ],
+    'tplFirst' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplLast' => array(
+    ],
+    'tplLast' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplOdd' => array(
+    ],
+    'tplOdd' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplWrapper' => array(
+    ],
+    'tplWrapper' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'wrapIfEmpty' => array(
+    ],
+    'wrapIfEmpty' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'totalVar' => array(
+    ],
+    'totalVar' => [
         'type' => 'textfield',
         'value' => 'total',
-    ),
-    'tplCondition' => array(
+    ],
+    'tplCondition' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplOperator' => array(
+    ],
+    'tplOperator' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'is equal to', 'value' => '=='),
-            array('text' => 'is not equal to', 'value' => '!='),
-            array('text' => 'less than', 'value' => '<'),
-            array('text' => 'less than or equal to', 'value' => '<='),
-            array('text' => 'greater than or equal to', 'value' => '>='),
-            array('text' => 'is empty', 'value' => 'empty'),
-            array('text' => 'is not empty', 'value' => '!empty'),
-            array('text' => 'is null', 'value' => 'null'),
-            array('text' => 'is in array', 'value' => 'inarray'),
-            array('text' => 'is between', 'value' => 'between'),
-        ),
+        'options' => [
+            ['text' => 'is equal to', 'value' => '=='],
+            ['text' => 'is not equal to', 'value' => '!='],
+            ['text' => 'less than', 'value' => '<'],
+            ['text' => 'less than or equal to', 'value' => '<='],
+            ['text' => 'greater than or equal to', 'value' => '>='],
+            ['text' => 'is empty', 'value' => 'empty'],
+            ['text' => 'is not empty', 'value' => '!empty'],
+            ['text' => 'is null', 'value' => 'null'],
+            ['text' => 'is in array', 'value' => 'inarray'],
+            ['text' => 'is between', 'value' => 'between'],
+        ],
         'value' => '==',
-    ),
-    'conditionalTpls' => array(
+    ],
+    'conditionalTpls' => [
         'type' => 'textarea',
         'value' => '',
-    ),
-    'select' => array(
+    ],
+    'select' => [
         'type' => 'textarea',
         'value' => '',
-    ),
-    'toSeparatePlaceholders' => array(
+    ],
+    'toSeparatePlaceholders' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;
