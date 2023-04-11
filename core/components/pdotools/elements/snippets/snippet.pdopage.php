@@ -131,7 +131,8 @@ if (!empty($scriptProperties['offset']) && empty($scriptProperties['limit'])) {
 }
 
 $cache = !empty($cache) || (!$modx->user->id && !empty($cacheAnonymous));
-$url = $paginator->getBaseUrl();
+$charset = $modx->getOption('modx_charset', null, 'UTF-8');
+$url = htmlentities($paginator->getBaseUrl(), ENT_QUOTES, $charset);
 $output = $pagination = $total = $pageCount = '';
 
 $data = $cache
@@ -238,21 +239,20 @@ if ($isAjax) {
 }
 
 if (!empty($setMeta)) {
-    $charset = $modx->getOption('modx_charset', null, 'UTF-8');
     $canurl = $paginator->pdoTools->config('scheme') !== 'full'
         ? $paginator->getCanonicalUrl($url)
         : $url;
-    $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . htmlentities($canurl, ENT_QUOTES, $charset) . '"/>');
+    $modx->regClientStartupHTMLBlock('<link rel="canonical" href="' . $canurl . '"/>');
     if ($data[$pageVarKey] > 1) {
         $prevUrl = $paginator->makePageLink($canurl, $data[$pageVarKey] - 1);
         $modx->regClientStartupHTMLBlock(
-            '<link rel="prev" href="' . htmlentities($prevUrl, ENT_QUOTES, $charset) . '"/>'
+            '<link rel="prev" href="' . $prevUrl . '"/>'
         );
     }
     if ($data[$pageVarKey] < $data[$pageCountVar]) {
         $nextUrl = $paginator->makePageLink($canurl, $data[$pageVarKey] + 1);
         $modx->regClientStartupHTMLBlock(
-            '<link rel="next" href="' . htmlentities($nextUrl, ENT_QUOTES, $charset) . '"/>'
+            '<link rel="next" href="' . $nextUrl . '"/>'
         );
     }
 }
