@@ -677,9 +677,9 @@ class CoreTools
         $binding = $content = $propertySet = '';
 
         $name = trim($name);
-        if (preg_match('#^@([A-Z]+)#', $name, $matches)) {
+        if (preg_match('#^!?@([A-Z]+)#', $name, $matches)) {
             $binding = $matches[1];
-            $content = substr($name, strlen($binding) + 1);
+            $content = preg_replace('#^!?@' . $binding . '#', '', $name);
             $content = ltrim($content, ' :');
         }
         // Get property set
