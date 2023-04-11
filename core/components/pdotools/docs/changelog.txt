@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+2.13.3-pl (11.04.2023)
+==============
+- Security fix for the pdoPage snippet.
+
 2.13.2-pl (02.09.2021)
 ==============
 - Fixed some snippets.
