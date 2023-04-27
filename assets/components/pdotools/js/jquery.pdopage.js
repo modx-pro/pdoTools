@@ -126,7 +126,7 @@
         addPage: function () {
             var _this = this;
             var params = this.hashGet();
-            var current = params[this.key] || 1;
+            var current = params[this.key] || _this.page || 1;
             $(this.settings.link).each(function () {
                 var href = $(this).prop('href');
                 var match = href.match(new RegExp(_this.key + '=(\\d+)'));
@@ -169,10 +169,13 @@
             $.get(window.location.pathname, params, function (response) {
                 if (response) {
                     _this.wrapper.find(pagination).replaceWith(response.pagination);
-                    if (mode == 'append') {
+                    if (!_this.history) {
+                        $(_this.settings.pagination).hide();
+                    }
+                    if (mode === 'append') {
                         _this.wrapper.find(rows).append(response.output);
                         if (_this.mode == 'button') {
-                            if (response.pages == response.page) {
+                            if (response.pages == response.page || response.pages == 0) {
                                 $(_this.settings.more).hide();
                             } else {
                                 $(_this.settings.more).show();
@@ -183,8 +186,18 @@
                         waitAnimation.remove();
                     } else {
                         _this.wrapper.find(rows).html(response.output);
-                        if (mode == 'force' && _this.history) {
-                            _this.hashSet(params);
+                        if (mode === 'force') {
+                            _this.page = 1;
+                            if (_this.settings.mode == 'button') {
+                                if (response.pages == response.page || response.pages == 0) {
+                                    $(_this.settings.more).hide();
+                                } else {
+                                    $(_this.settings.more).show();
+                                }
+                            }
+                            if (_this.history) {
+                                _this.hashSet(params);
+                            }
                         }
                     }
                     _this.wrapper.trigger('afterLoad', [_this, _this.settings, response]);
@@ -319,7 +332,7 @@
                 }
             }
             if (!this.oldBrowser) {
-                if (hash.length != 0) {
+                if (hash.length !== 0) {
                     hash = '?' + hash.substr(1);
                 }
                 window.history.pushState({pdoPage: window.location.pathname + hash}, '', window.location.pathname + hash);
