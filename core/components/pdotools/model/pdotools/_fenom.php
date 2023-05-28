@@ -616,6 +616,42 @@ class FenomX extends Fenom
 
             return preg_split($pattern, $value);
         };
+        
+        $this->_actions['cache'] = [
+        	'type'  => self::BLOCK_COMPILER
+            ,'open'  => 
+	            function ($tokens, $scope) {	
+				    $name  = false;				    
+				    $cname = $scope->tpl->parsePlainArg($tokens, $name);	 				    
+				    $params = [
+				    	'lifetime'=>0,
+				    	'options'=>[],
+				    ];				    
+				    $params = $scope->tpl->parseParams($tokens, $params);		
+				    				    
+				    if (!$name) {
+			            throw new \RuntimeException("Invalid cache name");
+			        }	        
+			           	
+				    $scope['name'] = $cname;
+				    $scope['params'] = $params;	   				    
+				    $scope['var'] = $scope->tpl->tmpVar();
+				    				    
+				    return "{$scope['var']} = \$var[\"_modx\"]->cacheManager->get({$scope['name']},".Fenom\Compiler::toArray($scope['params']['options']).");\n
+				    			if(!{$scope['var']} ) { \n
+				    				ob_start(); \n
+				    ";
+	            }
+            ,'close' => 
+	            function($tokens, $scope){
+	            	return "	
+	            			{$scope['var']} = ob_get_clean(); \n
+				    		\$var[\"_modx\"]->cacheManager->set({$scope['name']},{$scope['var']},{$scope['params']['lifetime']},".Fenom\Compiler::toArray($scope['params']['options']).");\n
+					    }\n
+					    echo {$scope['var']};
+					";
+	            }
+        ];
 
     }
 
