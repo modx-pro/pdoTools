@@ -83,7 +83,7 @@ class CoreTools
             'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+(\s|\(|\|)|\(|\')#', true),
         ], $config);
         $this->config['elementsPath'] = $this->modx->getOption('pdotools_elements_path', null, MODX_CORE_PATH . 'elements/', true);
-        $this->config['cachePath'] = MODX_CORE_PATH . 'cache/pdotools';
+        $this->config['cachePath'] = $this->modx->getOption('pdotools_cache_path', null, MODX_CORE_PATH . 'cache/pdotools', true)
 
         if ($clean_timings) {
             $this->timings = [];
