@@ -113,6 +113,7 @@ class FenomX extends Fenom
             array(
                 'rand' => 1,
                 'number_format' => 1,
+                'array_merge' => 1,
             )
         );
 
