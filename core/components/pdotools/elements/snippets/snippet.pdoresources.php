@@ -55,8 +55,12 @@ if (!empty($returnIds)) {
 } elseif ($return === 'data') {
     return $output;
 } elseif (!empty($toSeparatePlaceholders)) {
-    $output['log'] = $log;
-    $modx->setPlaceholders($output, $toSeparatePlaceholders);
+    if(is_array($log)){
+        $output['log'] = $log;
+        $modx->setPlaceholders($output, $toSeparatePlaceholders);
+    }else {
+        $modx->setPlaceholders(['log' => $log], $toSeparatePlaceholders);
+    }
 } else {
     $output .= $log;
 
