@@ -7,6 +7,7 @@ $modx->initialize('web');
 $modx->getService('error','error.modError', '', '');
 $modx->setLogLevel(modX::LOG_LEVEL_ERROR);
 $modx->setLogTarget('FILE');
+define('MODX_CONNECTOR_INCLUDED', 1);
 
 // Switch context if needed
 if (!empty($_REQUEST['pageId'])) {
