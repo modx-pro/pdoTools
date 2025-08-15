@@ -222,21 +222,7 @@ class Fetch extends CoreTools
         $where = $this->additionalConditions($where);
         if (!empty($where)) {
             $this->query->where($where);
-            $condition = [];
-            foreach ($where as $k => $v) {
-                if (is_array($v)) {
-                    if (isset($v[0])) {
-                        $condition[] = is_array($v) ? $k . '(' . implode(',', $v) . ')' : $k . '=' . $v;
-                    } else {
-                        foreach ($v as $k2 => $v2) {
-                            $condition[] = is_array($v2) ? $k2 . '(' . implode(',', $v2) . ')' : $k2 . '=' . $v2;
-                        }
-                    }
-                } else {
-                    $condition[] = $k . '=' . $v;
-                }
-            }
-            $this->addTime('Added where condition: <b>' . implode(', ', $condition) . '</b>', microtime(true) - $time);
+            $this->addTime('Added where condition: <b>' . json_encode($where) . '</b>', microtime(true) - $time);
         }
         $time = microtime(true);
         if (!empty($this->config['having'])) {
@@ -249,16 +235,7 @@ class Fetch extends CoreTools
             }
             $having = $this->replaceTVCondition($tmp);
             $this->query->having($having);
-
-            $condition = [];
-            foreach ($having as $k => $v) {
-                if (is_array($v)) {
-                    $condition[] = $k . '(' . implode(',', $v) . ')';
-                } else {
-                    $condition[] = $k . '=' . $v;
-                }
-            }
-            $this->addTime('Added having condition: <b>' . implode(', ', $condition) . '</b>', microtime(true) - $time);
+            $this->addTime('Added having condition: <b>' . json_encode($having) . '</b>', microtime(true) - $time);
         }
     }
 
