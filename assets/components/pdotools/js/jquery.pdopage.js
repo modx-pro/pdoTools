@@ -187,7 +187,7 @@
                     } else {
                         _this.wrapper.find(rows).html(response.output);
                         if (mode === 'force') {
-                            _this.page = 1;
+                            _this.page = response.page || 1;
                             if (_this.settings.mode == 'button') {
                                 if (response.pages == response.page || response.pages == 0) {
                                     $(_this.settings.more).hide();
