@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+3.0.3-pl (01.04.2026)
+==============
+- Security fix for the Fenom parser.
+
 3.0.2-pl (11.04.2023)
 ==============
 - Support for file snippets in the pdoPage class.

@@ -69,6 +69,43 @@ class Fenom extends \Fenom
             ]
         );
     }
+    
+    /**
+     * Dangerous PHP functions that must never be callable from Fenom templates,
+     * even when useFenomPHP is enabled. Covers command execution, file system
+     * manipulation, code evaluation, and network operations.
+     */
+    protected const BLACKLISTED_FUNCTIONS = [
+        'system', 'exec', 'shell_exec', 'passthru', 'popen', 'proc_open',
+        'pcntl_exec', 'eval', 'assert', 'create_function',
+        'call_user_func', 'call_user_func_array',
+        'file_put_contents', 'file_get_contents', 'fopen', 'fwrite', 'fread',
+        'readfile', 'unlink', 'rmdir', 'mkdir', 'rename', 'copy', 'move_uploaded_file',
+        'curl_init', 'curl_exec', 'curl_multi_exec',
+        'mail', 'header', 'setcookie',
+        'putenv', 'ini_set', 'dl',
+        'chmod', 'chown', 'chgrp',
+        'preg_replace_callback', 'ob_start',
+    ];
+
+    /**
+     * Override parent to block dangerous functions regardless of useFenomPHP setting.
+     *
+     * @param string $function
+     * @return bool
+     */
+    public function isAllowedFunction($function)
+    {
+        if (in_array(strtolower($function), self::BLACKLISTED_FUNCTIONS, true)) {
+            $this->modx->log(
+                modX::LOG_LEVEL_ERROR,
+                '[pdoTools/Fenom] Blocked dangerous function call: ' . $function
+            );
+            return false;
+        }
+
+        return parent::isAllowedFunction($function);
+    }
 
     /**
      * Parse content with Fenom syntax
