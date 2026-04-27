@@ -222,7 +222,8 @@ class Fetch extends CoreTools
         $where = $this->additionalConditions($where);
         if (!empty($where)) {
             $this->query->where($where);
-            $this->addTime('Added where condition: <b>' . json_encode($where) . '</b>', microtime(true) - $time);
+            $whereLog = json_encode($where);
+            $this->addTime('Added where condition: ' . ($whereLog !== false ? $whereLog : print_r($where, true)) . ' ', microtime(true) - $time);
         }
         $time = microtime(true);
         if (!empty($this->config['having'])) {
@@ -235,7 +236,8 @@ class Fetch extends CoreTools
             }
             $having = $this->replaceTVCondition($tmp);
             $this->query->having($having);
-            $this->addTime('Added having condition: <b>' . json_encode($having) . '</b>', microtime(true) - $time);
+            $havingLog = json_encode($having);
+            $this->addTime('Added having condition: ' . ($havingLog !== false ? $havingLog : print_r($having, true)) . ' ', microtime(true) - $time);
         }
     }
 
