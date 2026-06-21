@@ -1,5 +1,9 @@
 Changelog for pdoTools.
 
+Unreleased
+==============
+- Fixed infinite recursion (memory exhaustion) when a plugin attached to the pdoToolsOnFenomInit event re-enters CoreTools::getFenom() while Fenom is being constructed (e.g. loading a static element with the pdoParser active). The event is now fired once from getFenom() after the Fenom instance is registered in the services container.
+
 3.0.2-pl (11.04.2023)
 ==============
 - Support for file snippets in the pdoPage class.
