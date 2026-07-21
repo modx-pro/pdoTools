@@ -316,7 +316,7 @@ class Paginator
                 break;
             }
 
-            if ($page === $i && !empty($this->pdoTools->config('tplPageActive'))) {
+            if ($page == $i && !empty($this->pdoTools->config('tplPageActive'))) {
                 $tpl = $this->pdoTools->config('tplPageActive');
             } elseif (!empty($this->pdoTools->config('tplPage'))) {
                 $tpl = $this->pdoTools->config('tplPage');
