@@ -200,8 +200,8 @@ if (empty($data)) {
         $pageVarKey => $page,
         $pageCountVar => $pageCount,
         $pageNavVar => !empty($tplPageWrapper)
-            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, $pagination)
-            : $pdoPage->pdoTools->parseChunk('', $pagination),
+            ? $pdoPage->pdoTools->getChunk($tplPageWrapper, array_merge($scriptProperties, $pagination))
+            : $pdoPage->pdoTools->parseChunk('', array_merge($scriptProperties, $pagination)),
         $totalVar => $total,
     ];
     if ($cache) {
