@@ -1,781 +1,1337 @@
-Changelog for pdoTools.
+# Changelog
 
-2.13.3-pl (11.04.2023)
-==============
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+
+## [2.13.3-pl] - 2023-04-11
+
+### Security
+
 - Security fix for the pdoPage snippet.
 
-2.13.2-pl (02.09.2021)
-==============
+## [2.13.2-pl] - 2021-09-02
+
+### Fixed
+
 - Fixed some snippets.
 
-2.13.1-pl (01.09.2021)
-==============
+## [2.13.1-pl] - 2021-09-01
+
+### Changed
+
 - Installed composer packages.
 
-2.13.0-pl (01.09.2021)
-==============
-- Some security fixes.
-- The "setOption" modifier is marked as deprecated.
-- The snippet parameters "tplPath" and "elementsPath" are marked as deprecated.
+## [2.13.0-pl] - 2021-09-01
+
+### Added
+
 - Added the ability for snippets to return an array of raw data (it is necessary when using the Fenom template engine).
+
+### Changed
+
 - The settings "parser_class" and "parser_class_path" will be registered in the core namespace.
 - Update the ajax connector.
 
-2.12.10 pl
-==============
+### Deprecated
+
+- The "setOption" modifier is marked as deprecated.
+- The snippet parameters "tplPath" and "elementsPath" are marked as deprecated.
+
+### Security
+
+- Some security fixes.
+
+## [2.12.10-pl]
+
+### Fixed
+
 - [#308] [pdoPage] Fixed the type of snippet property "field"
 
-2.12.9 pl
-==============
+## [2.12.9-pl]
+
+### Changed
+
 - [Fenom] Update to version 2.12.0
 
-2.12.8 pl
-==============
+## [2.12.8-pl]
+
+### Security
+
 - [pdoPage] Fix reflected XSS in generated meta links
 
-2.12.7 pl
-==============
+## [2.12.7-pl]
+
+### Changed
+
 - Make pdoTools canonical url work with Babel #304
 
-2.12.6 pl
-==============
+## [2.12.6-pl]
+
+### Changed
+
 - [pdoPage] Reverted back #287
 
-2.12.5 pl
-==============
-- [Fenom] Added caching dinamic properties to prevent speed degradation.
+## [2.12.5-pl]
 
-2.12.4 pl
-==============
+### Added
+
+- [Fenom] Added caching dynamic properties to prevent speed degradation.
+
+## [2.12.4-pl]
+
+### Changed
+
 - [#290] Improved running snippet via @FILE binding.
-- [#296] Fix adding quotes to numeric values.
 - [#297] Make cross context weblink url possible.
-- [#274] [Fenom] User, resource and context properties are now dinamic.
-- [#287] [pdoPage] Remove prev & next meta tags
+- [#274] [Fenom] User, resource and context properties are now dynamic.
 - [#294] [#298] Improved pdopage.js and updated minified js files
 
-2.12.3 pl
-==============
+### Removed
+
+- [#287] [pdoPage] Remove prev & next meta tags
+
+### Fixed
+
+- [#296] Fix adding quotes to numeric values.
+
+## [2.12.3-pl]
+
+### Fixed
+
 - Fixed E_NOTICE introduced in #285.
 
-2.12.2 pl
-==============
+## [2.12.2-pl]
+
+### Changed
+
 - Updated chunks for Bootstrap 4.
 
-2.12.1 pl
-==============
-- [pdoMenu] Reverted back #283 and fixed docs for &tplCategoryFolder.
-- [#284] [Fenom] Fixed properties of $_modx->context variable.
+## [2.12.1-pl]
+
+### Added
+
 - [#275] [Fenom] Added "reset" and "end" modifiers.
 
-2.12.0 pl
-==============
-- [Fenom] More security fixes from Sergey Shlokov.
-- [#278] [pdoPage] Fixed caching.
+### Fixed
+
+- [pdoMenu] Reverted back #283 and fixed docs for &tplCategoryFolder.
+- [#284] [Fenom] Fixed properties of $_modx->context variable.
+
+## [2.12.0-pl]
+
+### Added
+
+- [#277] [pdoCrumbs] Ability to specify &customParents.
+
+### Changed
+
 - [pdoPage] Show internal log on &showLog=`1`.
+
+### Fixed
+
+- [#278] [pdoPage] Fixed caching.
 - [#283] [pdoMenu] Fixed use of &tplCategoryFolder according to docs.
 - [#281] [pdoTools] Fixed load of models from case sensitive paths.
-- [#277] [pdoCrumbs] Ability to specify &customParents.
 - [#265] [pdoFetch] Fixed return of "Array" on SQL errors.
 
-2.11.3 pl
-==============
+### Security
+
+- [Fenom] More security fixes from Sergey Shlokov.
+
+## [2.11.3-pl]
+
+### Added
+
 - Added French lexicon entries.
 
-2.11.2 pl
-==============
+## [2.11.2-pl]
+
+### Fixed
+
 - Fix detection of element names starting with a number.
 
-2.11.1 pl
-==============
+## [2.11.1-pl]
+
+### Changed
+
 - Faster processing of static files.
 
-2.11.0 pl
-==============
+## [2.11.0-pl]
+
+### Added
+
 - [pdoFetch] Added "setTotal" option to enable calculating all rows ("SQL_CALC_FOUND_ROWS"), which will also result in the "totalVar" placeholder is being set.
+
+### Changed
+
 - [pdoFetch] Option "setTotal" disabled by default.
 - [pdoPage] Forces "setTotal" to provide pagination.
 
-2.10.6 pl
-==============
+## [2.10.6-pl]
+
+### Changed
+
 - Improved German lexicons.
 
-2.10.5 pl
-==============
+## [2.10.5-pl]
+
+### Added
+
 - [pdoTools] Ability to return array from "prepareSnippet" for more performance.
+
+### Fixed
+
 - [FenomX] Fixed method "getStore".
 
-2.10.4 pl
-==============
-- [Fenom] Do not output raw tags if there was a compile errors.
+## [2.10.4-pl]
+
+### Changed
+
+- [Fenom] Do not output raw tags if there was a compile error.
+
+### Fixed
+
 - [#266] [pdoMenu] Fixed the setting of "here" and "self" classes.
 - [#261] [Fenom] Fixed unexpected behavior of the fenom tag "ignore".
 
-2.10.3 pl
-==============
-- Improved compatibility with PHP 7.2
+## [2.10.3-pl]
+
+### Added
+
 - [pdoFetch] Ability to use arrays in "&sortby".
 
-2.10.2 pl
-==============
+### Changed
+
+- Improved compatibility with PHP 7.2
+
+## [2.10.2-pl]
+
+### Changed
+
 - [Fenom] Improved processing of caching snippets inside uncached.
 
-2.10.1 pl
-==============
-- [#256] [Fenom] Fixed bug with caching of scripts and styles.
+## [2.10.1-pl]
+
+### Changed
+
 - [pdoPage] "&setMeta" now works when "&cache=`1`".
 - [Fenom] Improved regular expression to detect Fenom syntax.
 
-2.10.0 pl
-==============
-- [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
-- [#258] [pdoPage] Canonical urls always must be "full".
+### Fixed
+
+- [#256] [Fenom] Fixed bug with caching of scripts and styles.
+
+## [2.10.0-pl]
+
+### Added
+
 - [#245] [pdoMenu] Ability to use conditional tpls instead of regular "tpl".
+
+### Changed
+
+- [#258] [pdoPage] Canonical urls always must be "full".
 - [#121] [pdoMenu] Improved work of specified chunks with weblinks.
 
-2.9.3 pl
-==============
+### Fixed
+
+- [#259] [pdoFetch] Fixed error when passed pure SQL into "having" parameter.
+
+## [2.9.3-pl]
+
+### Added
+
 - [#255] [Fenom] New system setting "pdotools_fenom_save_on_errors" to save code on compilation errors in the cache directory for later debugging.
 
-2.9.2 pl
-==============
-- [pdoParser] Proper traversal trough arrays fields of resources in fast tags.
+## [2.9.2-pl]
 
-2.9.1 pl
-==============
+### Changed
+
+- [pdoParser] Proper traversal through arrays fields of resources in fast tags.
+
+## [2.9.1-pl]
+
+### Changed
+
 - [Fenom] Updated to version 2.11.8.
 
-2.9.0 pl
-==============
+## [2.9.0-pl]
+
+### Changed
+
 - [pdoPage] Improved "&pageLinkScheme" logic.
 - [#249] A little improvement for resource modifier.
 - [#251] [pdoFetch] More compatibility with PHP 7.1.
-- [#253] [pdoPage] Fixing a missing pagination in Ajax mode.
 - [#254] [Fenom] Options of json modifiers must check version of PHP to proper work.
 
-2.8.6 pl
-==============
+### Fixed
+
+- [#253] [pdoPage] Fixing a missing pagination in Ajax mode.
+
+## [2.8.6-pl]
+
+### Added
+
 - [pdoArchive] Ability to specify fields with regular dates in the "&dateField" parameter.
 - [Fenom] Added all options to json modifiers.
 
-2.8.5 pl
-==============
+## [2.8.5-pl]
+
+### Fixed
+
 - [#248] [pdoPage] Fixed E_WARNING with array values in GET parameters.
 
-2.8.4 pl
-==============
+## [2.8.4-pl]
+
+### Added
+
 - Ability to use file elements in core path outside base path.
+
+### Fixed
+
 - Fixed bug with the caching of elements.
 
-2.8.3 pl
-==============
-- [Fenom] Fixed rare bug with the caching of scripts and styles that was registered via Fenom.
-- [pdoPage] Fixed the "?page=1" in the url when ajaxMode is enabled.
-- [pdoPage] Snippet will register "canonical" link if "&setMeta" is enabled.
-- [pdoPage] Fix processing of request with rawurldecode on some servers.
+## [2.8.3-pl]
+
+### Added
+
 - [pdoTools] Added passing of "scriptProperties" values into a "&prepareSnippet".
 
-2.8.2 pl
-==============
-- [pdoMenu] Fixed the checking of permissions for containers.
+### Changed
+
+- [pdoPage] Snippet will register "canonical" link if "&setMeta" is enabled.
+
+### Fixed
+
+- [Fenom] Fixed rare bug with the caching of scripts and styles that was registered via Fenom.
+- [pdoPage] Fixed the "?page=1" in the url when ajaxMode is enabled.
+- [pdoPage] Fix processing of request with rawurldecode on some servers.
+
+## [2.8.2-pl]
+
+### Added
+
 - [pdoPage] Added the ability to run files as &element.
+
+### Changed
+
 - [pdoTools] The method runSnippet will return boolean false if snippet was not found.
+
+### Fixed
+
+- [pdoMenu] Fixed the checking of permissions for containers.
 - [Fenom] Fixed the possible bugs of caching of scripts and styles.
 
-2.8.1 pl
-==============
-- [#244] Fixed possible duplicate of a container in the jquery.pdopage.js.
+## [2.8.1-pl]
+
+### Added
+
 - Added fallback class for the enable modParser.
 
-2.8.0 pl
-==============
+### Fixed
+
+- [#244] Fixed possible duplicate of a container in the jquery.pdopage.js.
+
+## [2.8.0-pl]
+
+### Added
+
 - Ability to use an arrays in the parameters of the snippets.
+
+### Changed
+
 - Replaced modX::toJSON and modX::fromJSON to native php functions.
 
-2.7.5 pl
-==============
+## [2.7.5-pl]
+
+### Changed
+
 - Fenom is now managed via composer.
 - [Fenom] Modifier "resource" no longer checks fields of resources in their schema.
 - [Fenom] Modifier "strrev" now can work with arrays.
 - [Fenom] Improved modifier "ismember".
 
-2.7.4 pl
-==============
+## [2.7.4-pl]
+
+### Added
+
 - [#242] Added jquery.pdopage.js plugin and minified versions.
+
+### Changed
+
 - [#241] [Fenom] Improved the retrieving of TVs for a current resource.
+
+### Security
+
 - [pdoFetch] Restored the checking of possible SQL injections in the &sortby with xPDO 2.5.1.
 
-2.7.3 pl
-==============
+## [2.7.3-pl]
+
+### Changed
+
 - Improved compatibility with MODX 2.5.2.
 
-2.7.2 pl
-==============
+## [2.7.2-pl]
+
+### Security
+
 - [pdoFetch] Some security improvements.
 
-2.7.1 pl
-==============
-- Some security improvements in the connector.php.
+## [2.7.1-pl]
+
+### Fixed
+
 - Fixed bug with registering scripts in styles via Fenom introduced in version 2.7.0.
 
-2.7.0 pl
-==============
-- [Fenom] Updated to the version 2.11.4.
-- [Fenom] Fixed resource cache for scripts and styles registered by Fenom.
+### Security
+
+- Some security improvements in the connector.php.
+
+## [2.7.0-pl]
+
+### Added
+
 - [Fenom] Added rand() and number_format() to an allowed PHP functions.
 - [Fenom] New output filter "number" (or "number_format").
 
-2.6.5 pl
-==============
+### Changed
+
+- [Fenom] Updated to the version 2.11.4.
+
+### Fixed
+
+- [Fenom] Fixed resource cache for scripts and styles registered by Fenom.
+
+## [2.6.5-pl]
+
+### Fixed
+
 - Fixed undeclared variable (PHP 7.1)
 
-2.6.4 pl
-==============
+## [2.6.4-pl]
+
+### Added
+
 - Added escaping of a MODX tags that being processed in the &prepareSnippet.
+
+### Changed
+
 - [#239] Improved work of the &decodeJSON option.
 
-2.6.3 pl
-==============
+## [2.6.3-pl]
+
+### Fixed
+
 - Fixed possible E_NOTICE on line 305 pdofetch.class.php.
 - Fixed possible E_NOTICE when "snippet" and "chunk" Fenom modifiers was called.
 
-2.6.2 pl
-==============
+## [2.6.2-pl]
+
+### Fixed
+
 - Fixed possible E_NOTICE on line 1317 pdotools.class.php.
 
-2.6.1 pl
-==============
+## [2.6.1-pl]
+
+### Changed
+
 - Improved compatibility with PHP 5.3.
 
-2.6.0 pl
-==============
+## [2.6.0-pl]
+
+### Added
+
 - [Fenom] The ability to extend Fenom via system event "pdoToolsOnFenomInit".
 
-2.5.6 pl
-==============
+## [2.5.6-pl]
+
+### Added
+
 - [pdoFetch] Ability to join TVs not only to the query main class.
 
-2.5.5 pl
-==============
+## [2.5.5-pl]
+
+### Fixed
+
 - Fixed parse of INLINE chunks with "@" symbols.
 
-2.5.4 pl
-==============
+## [2.5.4-pl]
+
+### Added
+
 - [#224] Added microMODX::cleanAlias().
 - [#226] [Fenom] Added "declension" modifier.
 
-2.5.3 pl
-==============
+## [2.5.3-pl]
+
+### Fixed
+
 - [#221] Fixed typo in month name.
 - [Fenom] Fixed path to compile dir.
 
-2.5.2 pl
-==============
+## [2.5.2-pl]
+
+### Changed
+
 - [#220] Cache code of snippet with respect to property set.
 
-2.5.1 pl
-==============
+## [2.5.1-pl]
+
+### Fixed
+
 - Fixed cache of snippets in pdoTools::runSnippet().
 
-2.5.0 pl
-==============
+## [2.5.0-pl]
+
+### Added
+
 - Improved support of debugParser.
-- [#209] Improved loading of the models.
 - [Fenom] New modifiers: "snippet" and "chunk".
-- [Fenom] New elements provider: "file".
 - New method pdoTools::runSnippet().
 
-2.4.0 pl
-==============
+### Changed
+
+- [#209] Improved loading of the models.
+- [Fenom] New elements provider: "file".
+
+## [2.4.0-pl]
+
+### Added
+
 - Added snippet pdoArchive.
-- [pdoResources] Faster processing of additional snippet parameters to placeholders.
-- [#123] [pdoMenu] Fixed bug with &displayStart and unpublished root nodes.
-- [#207] [pdoMenu] Fixed &webLinkClass option.
 - [#193] [pdoNeighbors] Added parameter &wrapIfEmpty.
 - [#203] [Fenom] Added more PCRE modifiers.
 
-2.3.5 pl
-==============
+### Changed
+
+- [pdoResources] Faster processing of additional snippet parameters to placeholders.
+
+### Fixed
+
+- [#123] [pdoMenu] Fixed bug with &displayStart and unpublished root nodes.
+- [#207] [pdoMenu] Fixed &webLinkClass option.
+
+## [2.3.5-pl]
+
+### Added
+
 - [pdoFetch] Added escaping of columns names in query.
 
-2.3.4 pl
-==============
+## [2.3.4-pl]
+
+### Fixed
+
 - [#200] [pdoFetch] Fixed &sortbyTV with dot in name.
 
-2.3.3 pl
-==============
+## [2.3.3-pl]
+
+### Added
+
 - Added system plugin for "autoload" of main classes with respect to their paths in system settings.
 
-2.3.2 pl
-==============
+## [2.3.2-pl]
+
+### Added
+
 - [#196] [pdoPage] Added workaround to support ClientConfig tags in ajax mode.
 - [Fenom] Added general MODX output filters as Fenom modifiers.
+
+### Changed
+
 - [Fenom] Implemented autoload of modifiers from snippets.
+
+### Removed
+
 - [Fenom] Removed system setting "pdotools_fenom_modifiers".
 
-2.3.1 pl
-==============
+## [2.3.1-pl]
+
+### Changed
+
 - [pdoSitemap] Lightning fast work chunks processing with &scheme=`uri`.
 - [Fenom] Improved check of syntax before processing.
 
-2.3.0 pl
-==============
-- Removed shortcuts from system core.
-- PSR-2.
+## [2.3.0-pl]
+
+### Added
+
 - [Fenom] Added default modifiers: "url" and "lexicon".
+
+### Changed
+
+- PSR-2.
 - [pdoCrumbs] Changed default chunks to ul -> li.
 - [#190] [pdoSitemap] Changed date format to ISO 8601.
 
-2.2.8 pl
-==============
+### Removed
+
+- Removed shortcuts from system core.
+
+## [2.2.8-pl]
+
+### Changed
+
 - [Fenom] Use modResource::getContent() method to get content of current resource in {$_modx->resource}.
 
-2.2.7 pl
-==============
+## [2.2.7-pl]
+
+### Added
+
 - [pdoPage] Ability to get access to a javascript configs from 3rd party scripts.
 
-2.2.6 pl
-==============
+## [2.2.6-pl]
+
+### Changed
+
 - [#184] [Fenom] Updated to version 2.8.2.
 
-2.2.5 pl
-==============
+## [2.2.5-pl]
+
+### Added
+
 - [#182] [pdoTitle] Added passing a parameters into nested pdoCrumbs.
 - [pdoSitemap] Added processing of MODX tags if needed.
 - Added method pdoTools::makeUrl().
 - [#181] New url schema type - "uri".
 
-2.2.4 pl
-==============
+## [2.2.4-pl]
+
+### Fixed
+
 - [Fenom] Fixed speed issues when MODX snippets are run as Fenom modifiers.
 - [pdoUsers] Fixed overwrite modUser.id by modUserProfile.id.
 
-2.2.3 pl
-==============
+## [2.2.3-pl]
+
+### Fixed
+
 - [pdoPage] Fixed processing of uncached conditions in chunks when ajax mode is enabled.
 
-2.2.2 pl
-==============
+## [2.2.2-pl]
+
+### Added
+
 - [pdoPage] Added new parameter &pageLinkScheme.
 
-2.2.1 pl
-==============
+## [2.2.1-pl]
+
+### Added
+
 - [#155] [pdoPage] Added new parameter &ajaxHistory.
 - [pdoPage] Added connector for requests in ajax mode.
 
-2.2.0 pl
-==============
+## [2.2.0-pl]
+
+### Added
+
 - [#175] [pdoFetch] Ability to specify sequence of table joins.
 - [#174] [Fenom] Ability to add Fenom modifiers into pdoParser.
 
-2.1.21 pl
-==============
+## [2.1.21-pl]
+
+### Added
+
 - [#175] [pdoFetch] Ability to specify sequence of table joins.
+
+### Fixed
+
 - [#176] [pdoUsers] Fixed &toPlaceholders with &returnIds.
 
-2.1.20 pl
-==============
+## [2.1.20-pl]
+
+### Fixed
+
 - [pdoSitemap] Fixed default &cacheKey.
 
-2.1.19 pl
-==============
+## [2.1.19-pl]
+
+### Security
+
 - [Fenom] Disabled $options in cacheManager::set() due to security reasons.
 
-2.1.18 pl
-==============
-- [Fenom] Fixed ability to access to the modX object from {$_modx} variable.
+## [2.1.18-pl]
+
+### Changed
+
 - [Fenom] Improved method {$_modx->runProcessor()}.
 
-2.1.17 pl
-==============
+### Fixed
+
+- [Fenom] Fixed ability to access to the modX object from {$_modx} variable.
+
+## [2.1.17-pl]
+
+### Added
+
 - [Fenom] Added {$_modx->getResource($id, $options)}.
 - [Fenom] Added {$_modx->getResources($where, $options)}.
 - [Fenom] Improved support of debugParser.
 
-2.1.16 pl
-==============
+## [2.1.16-pl]
+
+### Added
+
 - [Fenom] Added {$_modx->isMember($groups, $matchAll)}.
 - [Fenom] Added {$_modx->getPlaceholders()}.
 
-2.1.15 pl
-==============
+## [2.1.15-pl]
+
+### Added
+
 - [pdoPage] Added parameter &strictMode.
 
-2.1.14 pl
-==============
+## [2.1.14-pl]
+
+### Added
+
 - [pdoSitemap] Added options for cache snippets results.
+
+### Changed
+
 - [pdoSitemap] Cache enabled by default.
 
-2.1.13 pl
-==============
+## [2.1.13-pl]
+
+### Fixed
+
 - [#163] Fixed ignoring of &idx in pdoResources and pdoUsers.
 
-2.1.12 pl
-==============
+## [2.1.12-pl]
+
+### Fixed
+
 - [pdoPage] [#161] Fixed support of arrays in hash when &ajaxMode is enabled.
 
-2.1.11 pl
-==============
-- [#150] [Fenom] Fixed processing of TVs values in a {$_modx->resource}.
-- [#147] [pdoSitemap] Fixed possible duplicates in sitemap.
+## [2.1.11-pl]
+
+### Added
+
 - [pdoPage] Support of arrays in hash when &ajaxMode is enabled.
 
-2.1.10 pl
-==============
-- [#157] [Fenom] Fixed pre-processing of Fenom tags in extending templates and chunks.
+### Fixed
+
+- [#150] [Fenom] Fixed processing of TVs values in a {$_modx->resource}.
+- [#147] [pdoSitemap] Fixed possible duplicates in sitemap.
+
+## [2.1.10-pl]
+
+### Changed
+
 - [#145] [pdoPage] Rolled back #81 due to issues with complicate forms.
 
-2.1.9 pl
-==============
+### Fixed
+
+- [#157] [Fenom] Fixed pre-processing of Fenom tags in extending templates and chunks.
+
+## [2.1.9-pl]
+
+### Changed
+
 - [#144] [pdoParser] Leave unprocessed FastField tags so other components could parse them.
 - [pdoFetch] Updated syntax for "SET SQL_BIG_SELECTS = 1".
 
-2.1.8 pl
-==============
+## [2.1.8-pl]
+
+### Added
+
 - [Fenom] Ability to use id of chunks and templates in {include} and {extends}.
 - [Fenom] Added support of debugParser.
 - [Fenom] Added {$_modx->getChildIds()} and {$_modx->getParentIds()}.
 
-2.1.7 pl
-==============
+## [2.1.7-pl]
+
+### Fixed
+
 - Fixed work with integer values from system setting "link_tag_scheme".
 
-2.1.6 pl
-==============
+## [2.1.6-pl]
+
+### Changed
+
 - [Fenom] Updated to version 2.8.0.
 - [Fenom] Improved check of syntax to process content of chunks.
+
+### Fixed
+
 - [pdoParser] Fixed E_WARNING on line 50 introduced in previous version.
 
-2.1.5 pl
-==============
+## [2.1.5-pl]
+
+### Fixed
+
 - [Fenom] Fixed register of scripts and styles by cached snippets.
 
-2.1.4 pl
-==============
-- [Fenom] Fixed TVs in {$_modx->resource}
+## [2.1.4-pl]
+
+### Added
+
 - [Fenom] Added new method {$_modx->getInfo()}
 
-2.1.3 pl
-==============
+### Fixed
+
+- [Fenom] Fixed TVs in {$_modx->resource}
+
+## [2.1.3-pl]
+
+### Changed
+
 - Improved work of system setting "pdotools_fenom_php".
 
-2.1.2 pl
-==============
+## [2.1.2-pl]
+
+### Changed
+
 - [Fenom] Replaced {$_modx->placeholders} to functions.
 
-2.1.1 pl
-==============
-- pdoParser enabled by default.
-- [Fenom] Fixed return content in {$_modx->getChunk}.
+## [2.1.1-pl]
+
+### Added
+
 - [Fenom] Added cache for snippets called through {$_modx->runSnippet}.
 - [pdoTools] Added processing of property sets for chunks.
+
+### Changed
+
+- pdoParser enabled by default.
 - [pdoResources] Set additionalPlaceholders in &tplWrapper
 
-2.1.0 pl
-==============
-- [Fenom] Updated Fenom to version 2.7.1.
+### Fixed
+
+- [Fenom] Fixed return content in {$_modx->getChunk}.
+
+## [2.1.0-pl]
+
+### Added
+
 - [Fenom] Added safe system variable {$_modx}.
 - [Fenom] Added MODX template provider for chunks and templates.
 
-2.0.5 pl
-==============
-- [#132] Fixed possible E_WARNING on empty chunks.
+### Changed
+
+- [Fenom] Updated Fenom to version 2.7.1.
+
+## [2.0.5-pl]
+
+### Added
+
 - [#122] Ability to use 3rd party pdoPage and pdoMenu classes.
+
+### Fixed
+
+- [#132] Fixed possible E_WARNING on empty chunks.
 - [#118] [pdoPage] Fixed parameter &offset.
 - [pdoPage] Fixed default CSS classes in "empty" chunks.
 
-2.0.4 pl
-==============
+## [2.0.4-pl]
+
+### Fixed
+
 - Fixed processing of "pdotools_fenom_cache" system setting.
 
-2.0.3 pl
-==============
+## [2.0.3-pl]
+
+### Fixed
+
 - [#125] [pdoTitle] Fixed parameter &id.
 
-2.0.2 pl
-==============
+## [2.0.2-pl]
+
+### Changed
+
 - Improved processing of @FILE binding.
 
-2.0.1 pl
-==============
+## [2.0.1-pl]
+
+### Fixed
+
 - Fixed possible E_WARNING on line 319 and 349 of pdoTools class.
+
+### Security
+
 - Disabled system option "pdotools_fenom_modx" by default due to security issues.
 
-2.0.0 pl
-==============
+## [2.0.0-pl]
+
+### Added
+
 - New system settings to control the Fenom.
 - Ability to enable caching of Fenom compiled chunks.
+
+### Changed
+
 - Improved handling of parameter "cache_key".
 - [pdoMenu] Improved work when &cache is enabled.
 
-2.0.0 rc2
-==============
+## [2.0.0-rc2]
+
+### Changed
+
 - Compiled Fenom templates cached to RAM instead of HDD.
+
+### Removed
+
 - Removed plugin pdoTools.
 
-2.0.0 rc1
-==============
+## [2.0.0-rc1]
+
+### Added
+
 - Added Fenom template engine.
+
+### Changed
+
 - Fenom enabled by default.
 - pdoParser uses Fenom to process pages.
 
-1.11.2 pl
-==============
+## [1.11.2-pl]
+
+### Changed
+
 - [#116] [pdoTitle] Disabled &register_js by default.
 
-1.11.1 pl
-==============
+## [1.11.1-pl]
+
+### Fixed
+
 - [pdoSitemap] Fixed default url scheme after last update.
 
-1.11.0 pl1
-==============
+## [1.11.0-pl1]
+
+### Added
+
 - [pdoTitle] Added new snippet.
 - [pdoPage] Added support of snippet pdoTitle when &ajaxMode is enabled.
-- [pdoPage] Prevent overwriting of scripts and styles of nested &element by default parameters.
 - [pdoPage] Added triggering javascript event "pdopage_load".
 
-1.10.2 pl1
-==============
-- [#112] Parameter &scheme was set to system default in all snippets.
+### Changed
+
+- [pdoPage] Prevent overwriting of scripts and styles of nested &element by default parameters.
+
+## [1.10.2-pl1]
+
+### Added
+
 - [#111] [pdoPage] Added ability to set "prev" & "next" meta tags.
 - [#107] [pdoNeighbors] Added ability to specify &parents for work.
-- [#106] [pdoMenu] Fixed "hereClass" and "selfClass" enabled &useWeblinkUrl parameter.
+
+### Changed
+
+- [#112] Parameter &scheme was set to system default in all snippets.
 - [#104] [pdoMenu] Snippet now using "pagetitle" for link titles if "titleOfLinks" is empty.
 
-1.10.1 pl
-==============
-- [#108] [pdoFetch] Fixed E_ERROR when using &sortbyTV.
+### Fixed
+
+- [#106] [pdoMenu] Fixed "hereClass" and "selfClass" enabled &useWeblinkUrl parameter.
+
+## [1.10.1-pl]
+
+### Added
+
 - [pdoFetch] Added new parameter &sortbyTVType.
+
+### Changed
+
 - [pdoFetch] If &sortdirTV is not set it will be equal to &sortdir.
 
-1.10.0 pl
-==============
-- [pdoMenu] Returned and fixed parameter &showDeleted.
-- [pdoPage] Improved default javascript.
-- [pdoPage] Fixed overwriting &frontend_js and &frontend_css parameters when &ajax is disabled.
+### Fixed
+
+- [#108] [pdoFetch] Fixed E_ERROR when using &sortbyTV.
+
+## [1.10.0-pl]
+
+### Added
+
 - [pdoFetch] Ability to specify functions in select fields.
 - [pdoTools] Ability to use compound quick placeholders.
 
-1.10.0 beta4
-==============
-- [pdoPage] Ajax pagination out from the box.
-- [pdoFetch] Improved log of getCollection.
+### Changed
+
+- [pdoPage] Improved default javascript.
+
+### Fixed
+
+- [pdoMenu] Returned and fixed parameter &showDeleted.
+- [pdoPage] Fixed overwriting &frontend_js and &frontend_css parameters when &ajax is disabled.
+
+## [1.10.0-beta4]
+
+### Added
+
 - [pdoTools] Added tplOperator "contains".
 
-1.9.7 pl
-==============
-- [#99] [pdoFetch] Fixed returning of primary key in "ids" mode.
-- [#97] [pdoTools] Fixed default tplPath for @FILE chunks.
+### Changed
+
+- [pdoPage] Ajax pagination out from the box.
+- [pdoFetch] Improved log of getCollection.
+
+## [1.9.7-pl]
+
+### Added
+
 - [#85] [pdoFetch] Added function getChildIds().
+
+### Changed
+
 - [pdoFetch] Disabled "total" placeholder for &return=`ids`.
 
-1.9.6 pl2
-==============
-- [pdoFetch] Fixed exclusion of field "id" in custom classes.
+### Fixed
+
+- [#99] [pdoFetch] Fixed returning of primary key in "ids" mode.
+- [#97] [pdoTools] Fixed default tplPath for @FILE chunks.
+
+## [1.9.6-pl2]
+
+### Changed
+
 - [pdoMenu] Improved parameter &countChildren.
+
+### Removed
+
 - [#100] [pdoMenu] Removed parameter &showDeleted because it not working.
 
-1.9.6 rc
-==============
+### Fixed
+
+- [pdoFetch] Fixed exclusion of field "id" in custom classes.
+
+## [1.9.6-rc]
+
+### Added
+
 - Added execution of SQL_BIG_SELECTS = 1 before query.
 - [pdoPage] Added parameter &ajax for supporting of ajax requests.
 
-1.9.5 pl1
-==============
+## [1.9.5-pl1]
+
+### Changed
+
 - Rolled back #72 due to issues in pdoMenu.
 
-1.9.5 pl
-==============
+## [1.9.5-pl]
+
+### Added
+
 - Added ability to return JSON or serialized string from pdoFetch::run().
 - [#83] [pdoMenu] Added level placeholder to outer templates.
 - [#82] [pdoFetch] Added support for complex &where parameter.
+- [#57] [pdoMenu] Added parameter &countChildren.
+
+### Changed
+
 - [#81] [pdoPage] Improved handling of arrays in url.
+- [#57] [pdoMenu] Improved placeholder [[+children]].
+
+### Fixed
+
 - [#77] Fixed making of url for modWebLink to another context.
 - [#72] [pdoTools] Fixed order for children of excluded parents in buildTree.
 - [#60] [pdoMenu] Fixed parameter &tplCategoryFolder.
-- [#57] [pdoMenu] Improved placeholder [[+children]].
-- [#57] [pdoMenu] Added parameter &countChildren.
 
-1.9.4 pl1
-==============
+## [1.9.4-pl1]
+
+### Added
+
 - [#78] [pdoNeighbors] Added parameter &loop=`1` for looping links.
+
+### Fixed
+
 - [pdoSitemap] Fixed possible E_FATAL php-apc.
 
-1.9.3 pl1
-==============
+## [1.9.3-pl1]
+
+### Added
+
 - [pdoTools] Ability to specify value for empty quick placeholders.
 - [pdoTools] Ability to use INLINE snippets and filters.
+
+### Changed
+
 - [pdoFetch] Improved loading of 3rd party models.
+
+### Fixed
+
 - [pdoPage] Fixed E_WARNING when &limit=`0`.
 
-1.9.2 pl2
-==============
-- [#56] [pdoParser] Fixed wrong links processing.
-- [#53] Improved loading of classes.
-- [pdoField] Rolled back to original logic of "top" and "topLevel" parameters due to issues.
+## [1.9.2-pl2]
+
+### Added
+
 - [pdoField] Added parameter "ultimate" to emulate logic of UltimateParent.
 
-1.9.1 pl6
-==============
+### Changed
+
+- [#53] Improved loading of classes.
+- [pdoField] Rolled back to original logic of "top" and "topLevel" parameters due to issues.
+
+### Fixed
+
+- [#56] [pdoParser] Fixed wrong links processing.
+
+## [1.9.1-pl6]
+
+### Changed
+
 - [pdoFetch] Adding alias of main class of query to "sortby" if no alias exists.
 - [pdoFetch] Improved selecting of all fields of class with specified alias.
 - [pdoField] Parameter "topLevel" works exactly as in UltimateParent.
 - [pdoField] Parameter "top" without "topLevel" returns parent on "top" level.
 
-1.9.1 pl
-==============
-- [#47] [pdoMenu] Fixed processing &tplOuter when output is empty.
-- [#46] [pdoParser] Fixed processing of TVs with dots in name.
-- [#44] [pdoMenu] Improved handling of Wayfinder parameters "includeDocs" and "excludeDocs".
-- [#37] [pdoField] get the default, only if the field was empty.
-- [#34] Fixed processing of "modSymLink" documents.
-- [#32] Improved cache methods.
-- [#26] Replaced FIND_IN_SET() to FIELD().
+## [1.9.1-pl]
+
+### Added
+
 - [pdoFetch] Ability to work with objects, that has multiple primary keys.
 - [pdoPage] New parameter &cacheAnonymous.
 - [pdoMenu] New parameter &cacheAnonymous.
 - Added aliases for sort query in order of specified &resources: "ids" or "resources".
-- Removed unnecessary query in pdoFetch::getCollection().
+
+### Changed
+
+- [#44] [pdoMenu] Improved handling of Wayfinder parameters "includeDocs" and "excludeDocs".
+- [#37] [pdoField] get the default, only if the field was empty.
+- [#32] Improved cache methods.
+- [#26] Replaced FIND_IN_SET() to FIELD().
 - Improved pdoFetch::getCollection().
 - Renamed pdoFetch::getObject() to getArray(). Now it uses getCollection for retrieve results.
 - pdoTools::setCache() now returns cacheKey.
 - pdoFetch::getObject() is now alias of pdoFetch::getArray().
 
-1.9.0 pl2
-==============
+### Removed
+
+- Removed unnecessary query in pdoFetch::getCollection().
+
+### Fixed
+
+- [#47] [pdoMenu] Fixed processing &tplOuter when output is empty.
+- [#46] [pdoParser] Fixed processing of TVs with dots in name.
+- [#34] Fixed processing of "modSymLink" documents.
+
+## [1.9.0-pl2]
+
+### Added
+
+- [#27] Ability to specify custom pdoFetch and pdoTools classes through FQN system settings.
+
+### Changed
+
 - [pdoMenu] Chunks of parents and categories are now depends on the descendants and ignores parameter isfolder.
 - [pdoNeighbors] Speed improvements.
-- [#27] Ability to specify custom pdoFetch and pdoTools classes through FQN system settings.
 - [pdoParser] Handles TVs in resource tags.
 - [pdoParser] Handles output filters.
 - [pdoFetch] Improved method "addTVFilters", that used by "tvFilters" parameter in pdoResources.
 - [pdoSitemap] Pass the whole row so we can use more columns.
 
-1.9.0 rc
-==============
+## [1.9.0-rc]
+
+### Added
+
+- Added pdoParser with FastField tags.
+- [#23] [pdoResources] Ability to return ids to placeholder.
+
+### Changed
+
 - Improved method pdoTools::getChunk().
 - Improved method pdoTools::parseChunk().
 - Improved method pdoTools::fastProcess().
 - Improved method pdoTools::makePlaceholders().
 - Accelerated snippet pdoNeighbors.
-- Fixed bug in pdoUsers when usersgroups was specified by names.
-- getObject and getCollection() runs in separate instance.
-- Added pdoParser with FastField tags.
+- GetObject and getCollection() runs in separate instance.
 - [pdoPage] Changed default value of parameter "totalVar" due to issues.
+
+### Fixed
+
+- Fixed bug in pdoUsers when usersgroups was specified by names.
 - [#24] Fixed prepareTVs and empty tvPrefix.
-- [#23] [pdoResources] Ability to return ids to placeholder.
 - Fixed warning when getObject returns false.
 - Fixed placeholders prefix in recursive makePlaceholders.
 
-1.8.9 pl4
-==============
+## [1.8.9-pl4]
+
+### Added
+
 - Added german lexicon.
 - [#20] Ability to specify not JSON string in &where=``.
 - [pdoPage] Added parameter "pageCountVar" for specifying name of variable with number of pages.
-- [pdoPage] Support Bootstrap3.
 - [pdoField] Ability to specify class for fetching field.
-- Improved joining of tables in pdoFetch.
 - Added preparing and processing TVs in getObject and getCollection methods.
+
+### Changed
+
+- [pdoPage] Support Bootstrap3.
+- Improved joining of tables in pdoFetch.
 - Improved load of 3rd party models.
 
-1.8.8 pl2
-==============
-- Rewrited cache of snippets "pdoMenu" and "pdoPage".
+## [1.8.8-pl2]
+
+### Changed
+
+- Rewrote cache of snippets "pdoMenu" and "pdoPage".
 - New methods pdoTools::getCache() and pdoTools::setCache().
+
+### Fixed
+
 - [pdoMenu] Fixed parameter "tplParentRowActive".
 - [#18] Fixed "idx" in pdoTools::defineChunk().
 
-1.8.7 pl
-==============
+## [1.8.7-pl]
+
+### Added
+
 - Added boolean parameter "decodeJSON" to specify whether or not decode JSON in results rows.
+
+### Removed
+
 - Removed default "sortby" and "sortdir" from class pdoFetch for better work of getCollection() method.
 
-1.8.6 pl2
-==============
-- Fixed possibly E_NOTICE when site has no extension packages installed.
+## [1.8.6-pl2]
+
+### Added
+
 - [#17] [pdoMenu] Added placeholder [[+wf.menutitle]].
-- [#16] [pdoMenu] Disabled status verification of specified parents.
-- [#13] [pdoMenu] Improved work with root of multiple contexts.
-- [pdoMenu] Fixed bug when specified parent has only the one child.
 - [pdoResources] Added parameter "&useWeblink" and placeholder "[[+link]]". It is disabled by default.
 
-1.8.5 pl
-==============
-- [#15] [pdoPage] Improved generation of links to pages.
-- [pdoMenu] Improved processing of classes "modSymlink" and "modWeblink".
+### Changed
+
+- [#16] [pdoMenu] Disabled status verification of specified parents.
+- [#13] [pdoMenu] Improved work with root of multiple contexts.
+
+### Fixed
+
+- Fixed possibly E_NOTICE when site has no extension packages installed.
+- [pdoMenu] Fixed bug when specified parent has only the one child.
+
+## [1.8.5-pl]
+
+### Added
+
 - [pdoBreadcrumbs] Improved processing of classes "modSymlink" and "modWeblink". Added parameter "&useWeblink".
 - [pdoNeighbors] Added parameter "&useWeblink" and placeholder "[[+link]]".
 - [pdoSitemap] Added parameter "&useWeblink" and proper processing of classes "modSymlink" and "modWeblink".
 
-1.8.4 pl
-==============
+### Changed
+
+- [#15] [pdoPage] Improved generation of links to pages.
+- [pdoMenu] Improved processing of classes "modSymlink" and "modWeblink".
+
+## [1.8.4-pl]
+
+### Added
+
 - [pdoCrumbs] Added ability to specify the crumbs root (defaulting to site_start)
 - [pdoCrumbs] Added ability to specify class_key (ie. to generate crumbs only for derivative classes)
+
+### Changed
+
 - More accuracy when try to decode json in fetch results.
 
-1.8.3 pl3
-==============
+## [1.8.3-pl3]
+
+### Added
+
+- [pdoMenu] Added lexicon entries for parameters.
+- [#12] Added parameter "toPlaceholder".
+
+### Changed
+
 - Improved preparation of template variables.
 - Improved transfer of additional parameters from snippet to results.
-- [pdoMenu] Added lexicon entries for parameters.
 - [pdoMenu] Allow to specify "limit" and "offset".
-- [#12] Added parameter "toPlaceholder".
 - Increased accuracy of timings log.
 
-1.8.1 pl2
-==============
-- Accelerated method pdoTools::getChunk().
+## [1.8.1-pl2]
+
+### Added
+
 - Added snippet pdoMenu.
 - Added support for tags [^qt^] and [^q^].
 
-1.8.0 pl
-==============
+### Changed
+
+- Accelerated method pdoTools::getChunk().
+
+## [1.8.0-pl]
+
+### Added
+
 - [#10] [pdoPage] Added placeholder "page".
 - [#9] [pdoPage] Added placeholder "pageCount".
 - [#8] Improved support of big numbers when sorting by TVs.
+
+### Fixed
+
 - Fixed work of pdoPage when it called multiple times on page.
 - Fixed mistype in pdoFetch::getCollection().
 
-1.8.0 rc5
-==============
+## [1.8.0-rc5]
+
+### Added
+
 - Added processing of JSON fields. For example, you can use [[+extended.keyname]] in chunks of pdoUsers.
-- pdoTools was removed from system extension packages, but you can still use "$modx->getService('pdoFetch');".
-- Fixed getting chunk without any parameters.
 - Added snippet pdoPage.
 
-1.8.0 beta1
-==============
-- Improved handling of "default_text" parameter in TVs.
-- Fixed and improved method pdoTools::buildTree().
+### Removed
+
+- pdoTools was removed from system extension packages, but you can still use "$modx->getService('pdoFetch');".
+
+### Fixed
+
+- Fixed getting chunk without any parameters.
+
+## [1.8.0-beta1]
+
+### Added
+
 - The logic of build the conditions of the query moved into new method pdoFetch::additionalConditions().
+
+### Changed
+
+- Improved handling of "default_text" parameter in TVs.
 - Improved method pdoFetch::addSelects().
 - Improved method pdoFetch::addSort().
 - Improved some snippets in accordance to new abilities of pdoFetch: pdoResources, pdoNeighbors and pdoSitemap.
 
-1.7.4 pl
-==============
+### Fixed
+
+- Fixed and improved method pdoTools::buildTree().
+
+## [1.7.4-pl]
+
+### Fixed
+
 - [#7] [pdoSitemap] Fixed hidden parameters "&sortBy" and "&sortDir" that used for compatibility with GoogleSiteMap.
 
-1.7.3 pl1
-==============
-- [pdoCrumbs] Fixed possible E_NOTICE on line 157.
-- [pdoCrumbs] Fixed generation of link to site start in relative mode.
+## [1.7.3-pl1]
+
+### Changed
+
 - [#6] pdoCrumbs and pdoNeighbors are now uses "menutitle" by default. If it is empty, will be used "pagetitle".
 
-1.7.2 pl1
-==============
+### Fixed
+
+- [pdoCrumbs] Fixed possible E_NOTICE on line 157.
+- [pdoCrumbs] Fixed generation of link to site start in relative mode.
+
+## [1.7.2-pl1]
+
+### Added
+
 - [pdoField] Added new parameters: "default=``" and "&field=``".
-- [pdoField] Improved logic of "&top=``" and "&topLevel=``".
 - Added 2 new methods: pdoFetch::getObject() and pdoFetch::getCollection().
 - Ability to send arrays into common config parameters. JSON is still supported.
+
+### Changed
+
+- [pdoField] Improved logic of "&top=``" and "&topLevel=``".
 - Improved select of default values in TVs.
 
-1.7.1 pl
-==============
+## [1.7.1-pl]
+
+### Fixed
+
 - [pdoCrumbs] Fixed work with "modSymLink" and "modWebLink" resources.
 
-1.7.0 pl1
-==============
+## [1.7.0-pl1]
+
+### Added
+
 - New snippet pdoCrumbs.
 - New snippet pdoField.
 - New snippet pdoSitemap.
@@ -783,87 +1339,148 @@ Changelog for pdoTools.
 - Ability to specify snippet for preparation of fetched rows by parameter "&prepareSnippet=``".
 - Added method pdoTools::checkPermissions() for checking user privileges to view the results.
 - Added @TEMPLATE binding. You can use name or id of any template. If empty - will use template of each row.
+
+### Changed
+
 - [pdoResources] Improved parameter "&context".
 - [pdoResources] Script properties are now passed to chunks. You can send any placeholders to it.
 
-1.6.0 pl1
-==============
+## [1.6.0-pl1]
+
+### Fixed
+
 - Fixed compatibility issues in PHP < 5.3.
 
-1.6.0 pl
-==============
+## [1.6.0-pl]
+
+### Added
+
 - Added parameter "&loadModels" for comma-separated list of 3rd party components that needed for query.
 - Added parameters "&prepareTVs" and "&processTVs".
 - Added parameters "&tvFilters", "&tvFiltersAndDelimiter" and "&tvFiltersAndDelimiter".
 - Added support of parameters "&sortbyTV" and "&sortdirTV" for compatibility with getResources.
 - Added ability to use @INLINE and @FILE bindings in all template parameters.
+
+### Removed
+
 - Removed method pdoTools::getPlaceholders.
 
-1.5.0 pl2
-==============
+## [1.5.0-pl2]
+
+### Fixed
+
 - Fixed sort of decimals in TVs.
 
-1.5.0 pl1
-==============
+## [1.5.0-pl1]
+
+### Added
+
 - Added processing of simple [[~id]] placeholders in fastMode.
 - Added support of default value for TVs.
+
+### Changed
+
 - Improved sort by TVs of types "number" and "date".
 
-1.5.0 rc
-==============
+## [1.5.0-rc]
+
+### Added
+
 - [pdoUsers] Added new snippet "pdoUsers".
-- [pdoResources] Fixed "toSeparatePlaceholders".
+
+### Changed
+
 - [pdoResources] Parameter "parents" now supports dash prefix for excluding resources from query by parent.
+
+### Fixed
+
+- [pdoResources] Fixed "toSeparatePlaceholders".
 - [pdoResources] Fixed issue when snippet runs multiple times at one page.
 
-1.4.1 pl1
-==============
+## [1.4.1-pl1]
+
+### Changed
+
 - Improved "context" processing.
+
+### Fixed
+
 - Fixed "idx" when multiple snippets called at one page.
 - Fixed default sortby when joined tables exists.
 
-1.4.1 beta3
-==============
+## [1.4.1-beta3]
+
+### Added
+
 - Added parameters "tplCondition", "tplOperator" and "conditionalTpls".
 - Added parameter "select" for specifying needed columns of selected tables. Can be a JSON string with array.
 - Added parameter "toSeparatePlaceholders".
+
+### Changed
+
 - Improved "pdoResources" snippet.
 
-1.4.0 beta1
-==============
+## [1.4.0-beta1]
+
+### Added
+
 - Ability to specify JSON string in "sortby", for example "&sortby=`{"pagetitle":"asc","createdon":"desc"}`"
 - Added automatic replacement of tvs in "where" and "having" parameters.
 - Added automatic replacement of tvs in "sortby" parameter.
-- Removed example snippet
 - Added snippet "pdoResources", that could replace "getResources".
 - Added method pdoTools::defineChunk() for chunk of given idx.
 - Added "memory usage" in log.
 
-1.3.0
-==============
-- Improved placeholders processing when fastMode is enabled.
+### Removed
+
+- Removed example snippet
+
+## [1.3.0]
+
+### Added
+
 - Added support of "having" conditions.
 
-1.2.1
-==============
+### Changed
+
+- Improved placeholders processing when fastMode is enabled.
+
+## [1.2.1]
+
+### Fixed
+
 - Fixed not working "includeTVs" when "leftJoin" is empty.
 
-1.2.0
-==============
-- Native render of quick placeholders, such as "<!--pdotools_introtext <blockquote>[[+introtext]]</blockquote>-->".
+## [1.2.0]
+
+### Added
+
 - Added joining of TVs in pdoFetch. Use parameter "includeTVs" with comma-separated list of template variables.
 - Added method pdoFetch::setConfig() for proper setting options when you run multiple pdoTools snippets at the one page.
+
+### Changed
+
+- Native render of quick placeholders, such as "<!--pdotools_introtext <blockquote>[[+introtext]]</blockquote>-->".
 - Method pdoTools::makeArray is now recursive, for processing a multidimensional arrays of values.
 
-1.1.0
-==============
+## [1.1.0]
+
+### Changed
+
 - Improved getChunk function.
 
-1.0.1
-==============
-- Fixed setting total in "chunks" mode.
+## [1.0.1]
+
+### Changed
+
 - Improved displaying "where" condition in log.
 
-1.0.0
-==============
+### Fixed
+
+- Fixed setting total in "chunks" mode.
+
+## [1.0.0]
+
+### Added
+
 - Initial release.

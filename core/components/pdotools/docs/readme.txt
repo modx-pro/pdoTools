@@ -4,17 +4,29 @@ pdoTools
 Author: Vasiliy Naumkin <bezumkin@yandex.ru>
 --------------------
 
-Small library for creating fast snippets for MODX Revolution that works through PDO.
-
-Required by Tickets and miniShop2.
+Library for MODX Revolution for creating fast snippets and using file elements instead of DB elements. Used by Tickets and miniShop2.
 
 Main features
-- Builds queries with xPDO.
-- Retrieve results with PDO.
-- Improved pdoTools::getChunk() function, that processing placeholders faster, than original modX::getChunk().
+- Building queries with xPDO.
+- Retrieving results with PDO.
+- Includes the Fenom template engine.
+- pdoTools::getChunk() processes placeholders faster than modX::getChunk().
+- pdoTools::runSnippet() is faster and more flexible than modX::runSnippet().
+- File elements (@FILE, @INLINE, @TEMPLATE).
+- Snippets for common tasks:
+  - pdoResources
+  - pdoMenu
+  - pdoCrumbs
+  - pdoPage
+  - pdoSitemap
+  - pdoUsers
+  - pdoTitle
+  - pdoField
+  - pdoArchive
+  - pdoNeighbors
 
-pdoTools snippets will work so faster, than more fields you will retrieve from database at one query.
+pdoTools snippets run faster when you select more fields in a single query.
 
 --------------------
 Feel free to suggest ideas/improvements/bugs on GitHub:
-http://github.com/bezumkin/pdoTools/issues
+https://github.com/modx-pro/pdoTools/issues
