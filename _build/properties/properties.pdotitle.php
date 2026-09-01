@@ -1,77 +1,77 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
+$tmp = [
 
-    'id' => array(
+    'id' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'exclude' => array(
+    ],
+    'exclude' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 3,
         'desc' => 'pdotools_prop_title_limit',
-    ),
-    'titleField' => array(
+    ],
+    'titleField' => [
         'type' => 'textfield',
         'value' => 'longtitle',
-    ),
+    ],
 
-    'cache' => array(
+    'cache' => [
         'type' => 'numberfield',
         'value' => false,
         'desc' => 'pdotools_prop_title_cache',
-    ),
-    'cacheTime' => array(
+    ],
+    'cacheTime' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
+    ],
 
-    'tplPages' => array(
+    'tplPages' => [
         'type' => 'textfield',
         'value' => '@INLINE [[%pdopage_page]] [[+page]] [[%pdopage_from]] [[+pageCount]]',
-    ),
-    'pageVarKey' => array(
+    ],
+    'pageVarKey' => [
         'type' => 'textfield',
         'value' => 'page',
-    ),
+    ],
 
-    'tplSearch' => array(
+    'tplSearch' => [
         'type' => 'textfield',
         'value' => '@INLINE «[[+mse2_query]]»',
-    ),
-    'queryVarKey' => array(
+    ],
+    'queryVarKey' => [
         'type' => 'textfield',
         'value' => 'query',
-    ),
-    'minQuery' => array(
+    ],
+    'minQuery' => [
         'type' => 'numberfield',
         'value' => 3,
-    ),
+    ],
 
-    'outputSeparator' => array(
+    'outputSeparator' => [
         'type' => 'textfield',
         'value' => ' / ',
         'desc' => 'pdotools_prop_title_outputSeparator',
-    ),
+    ],
 
-    'registerJs' => array(
+    'registerJs' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-);
+    ],
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

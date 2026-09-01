@@ -1,14 +1,14 @@
 <?php
+
+use ModxPro\PdoTools\Fetch;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modWebLink;
+
+/** @var \MODX\Revolution\modX $modx */
 /** @var array $scriptProperties */
-/** @var pdoFetch $pdoFetch */
-/** @var modX $modx */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+
+$modx->services['pdotools_config'] = $scriptProperties;
+$pdoFetch = $modx->services->get(Fetch::class);
 $pdoFetch->addTime('pdoTools loaded');
 
 if (empty($id)) {
@@ -22,7 +22,8 @@ if (!isset($outputSeparator)) {
 }
 $fastMode = !empty($fastMode);
 
-$class = 'modResource';
+$class = modResource::class;
+$alias = $modx->getAlias($class);
 $resource = ($id == $modx->resource->id)
     ? $modx->resource
     : $modx->getObject($class, $id);
@@ -44,10 +45,10 @@ if (!empty($parents) && is_string($parents)) {
         unset($parents[$key]);
     }
     $params['parents'] = implode(',', $parents);
-    $ids = $pdoFetch->getCollection('modResource', [], $params);
+    $ids = $pdoFetch->getCollection(modResource::class, [], $params);
     unset($scriptProperties['parents']);
 } else {
-    $ids = $pdoFetch->getCollection('modResource', ['parent' => $resource->parent], $params);
+    $ids = $pdoFetch->getCollection(modResource::class, ['parent' => $resource->parent], $params);
 }
 
 $found = false;
@@ -81,7 +82,7 @@ $ids = array_merge($prev, $next, [$resource->parent]);
 $pdoFetch->addTime('Found ids of neighbors: ' . implode(',', $ids));
 
 // Query conditions
-$where = [$class . '.id:IN' => $ids];
+$where = [$alias . '.id:IN' => $ids];
 
 // Fields to select
 $resourceColumns = array_keys($modx->getFieldMeta($class));
@@ -89,7 +90,7 @@ if (empty($includeContent) && empty($useWeblinkUrl)) {
     $key = array_search('content', $resourceColumns);
     unset($resourceColumns[$key]);
 }
-$select = [$class => implode(',', $resourceColumns)];
+$select = [$alias => implode(',', $resourceColumns)];
 
 // Add custom parameters
 foreach (['where', 'select'] as $v) {
@@ -109,8 +110,8 @@ $pdoFetch->addTime('Conditions prepared');
 // Default parameters
 $default = [
     'class' => $class,
-    'where' => json_encode($where),
-    'select' => json_encode($select),
+    'where' => $where,
+    'select' => $select,
     //'groupby' => $class.'.id',
     'sortby' => $class . '.menuindex',
     'sortdir' => 'ASC',
@@ -136,7 +137,7 @@ foreach ($rows as $row) {
     if (empty($row['menutitle'])) {
         $row['menutitle'] = $row['pagetitle'];
     }
-    if (!empty($useWeblinkUrl) && $row['class_key'] == 'modWebLink') {
+    if (!empty($useWeblinkUrl) && $row['class_key'] === modWebLink::class) {
         $row['link'] = is_numeric(trim($row['content'], '[]~ '))
             ? $pdoFetch->makeUrl((int)trim($row['content'], '[]~ '), $row)
             : $row['content'];

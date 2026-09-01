@@ -1,28 +1,34 @@
 <?php
 
-if (!class_exists('modParser')) {
-    /** @noinspection PhpIncludeInspection */
-    require_once MODX_CORE_PATH . 'model/modx/modparser.class.php';
-}
+namespace ModxPro\PdoTools\Parsing;
 
-class pdoParser extends modParser
+use xPDO\xPDO;
+use MODX\Revolution\modX;
+use ModxPro\PdoTools\CoreTools;
+use MODX\Revolution\modResource;
+use MODX\Revolution\modParser;
+use ModxPro\PdoTools\Parsing\Fenom\Fenom;
+
+
+class Parser extends modParser
 {
-    /** @var pdoTools $pdoTools */
-    public $pdoTools;
-
+    /** @var modX $modx */
+    public $modx;
+    /** @var CoreTools $pdoTools */
+    protected $pdoTools;
+    /**  @var array */
+    public $ignores = [];
 
     /**
-     * @param xPDO $modx
+     * @param modX $modx
+     * @param CoreTools $pdoTools
      */
-    function __construct(xPDO &$modx)
+    public function __construct(modX $modx, CoreTools $pdoTools)
     {
         parent::__construct($modx);
 
-        $fqn = $modx->getOption('pdoTools.class', null, 'pdotools.pdotools', true);
-        $path = $modx->getOption('pdotools_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-        if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-            $this->pdoTools = new $pdoClass($modx);
-        }
+        $this->modx = $modx;
+        $this->pdoTools = $pdoTools;
     }
 
 
@@ -50,22 +56,24 @@ class pdoParser extends modParser
         $tokens = array(),
         $depth = 0
     ) {
-        if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config['useFenomParser'])) {
-            if (preg_match_all('#\{ignore\}(.*?)\{\/ignore\}#is', $content, $ignores)) {
+        if (is_string($content) && $processUncacheable && !empty($this->pdoTools->config('useFenomParser'))) {
+            if (preg_match_all('#{ignore}(.*?){/ignore}#is', $content, $ignores)) {
                 foreach ($ignores[1] as $ignore) {
                     $key = 'ignore_' . md5($ignore);
-                    $this->pdoTools->ignores[$key] = $ignore;
+                    $this->ignores[$key] = $ignore;
                     $content = str_replace($ignore, $key, $content);
                 }
             }
-            $content = $this->pdoTools->fenom($content, $this->modx->placeholders);
+            $_processingUncacheable = $this->_processingUncacheable;
+            $this->_processingUncacheable = true;
+            $content = $this->pdoTools->getFenom()->process($content, $this->modx->placeholders);
+            $this->_processingUncacheable = $_processingUncacheable;
         }
 
         return parent::processElementTags($parentTag, $content, $processUncacheable, $removeUnprocessed, $prefix,
             $suffix, $tokens, $depth
         );
     }
-
 
     /**
      * Quickly processes a simple tag and returns the result.
@@ -153,15 +161,15 @@ class pdoParser extends modParser
                     if (is_numeric($tmp[0])) {
                         /** @var modResource $resource */
                         if (!$resource = $this->pdoTools->getStore($tmp[0], 'resource')) {
-                            $resource = $this->modx->getObject('modResource', $tmp[0]);
+                            $resource = $this->modx->getObject('modResource', ['id' => $tmp[0]]);
                             $this->pdoTools->setStore($tmp[0], $resource, 'resource');
                         }
                         $output = '';
-                        if (!empty($resource)) {
+                        if ($resource !== null) {
                             // Field specified
                             if (!empty($tmp[1])) {
                                 $tmp[1] = strtolower($tmp[1]);
-                                if ($tmp[1] == 'content') {
+                                if ($tmp[1] === 'content') {
                                     $output = $resource->getContent();
                                 } // Resource field
                                 elseif ($field = $resource->get($tmp[1])) {
@@ -170,7 +178,7 @@ class pdoParser extends modParser
                                         $count = count($tmp2);
                                         foreach ($tmp2 as $k => $v) {
                                             if (isset($field[$v])) {
-                                                if ($k == ($count - 1)) {
+                                                if ($k === ($count - 1)) {
                                                     $output = $field[$v];
                                                 } else {
                                                     $field = $field[$v];
@@ -221,19 +229,15 @@ class pdoParser extends modParser
                         }
                         // Field specified
                         if (!empty($tmp[1])) {
-                            $field = isset($array[$tmp[1]])
-                                ? $array[$tmp[1]]
-                                : '';
+                            $field = $array[$tmp[1]] ?? '';
                             $output = $field;
-                            if (is_array($field)) {
-                                if ($length > 2) {
-                                    foreach ($tmp as $k => $v) {
-                                        if ($k === 0) {
-                                            continue;
-                                        }
-                                        if (isset($field[$v])) {
-                                            $output = $field[$v];
-                                        }
+                            if (is_array($field) && $length > 2) {
+                                foreach ($tmp as $k => $v) {
+                                    if ($k === 0) {
+                                        continue;
+                                    }
+                                    if (isset($field[$v])) {
+                                        $output = $field[$v];
                                     }
                                 }
                             }
@@ -251,15 +255,14 @@ class pdoParser extends modParser
         // Processing output filters
         if ($processed) {
             if (strpos($outerTag, ':') !== false) {
-                /** @var pdoTag $object */
-                $tag = new pdoTag($this->modx);
-                $tag->_content = $output;
-                $tag->setTag($outerTag);
-                $tag->setToken($token);
-                $tag->setContent(ltrim(rtrim($outerTag, ']'), '[!' . $token));
-                $tag->setCacheable(!$processUncacheable);
-                $tag->process();
-                $output = $tag->_output;
+                $tagObj = new Tag($this->modx);
+                $tagObj->_content = $output;
+                $tagObj->setTag($outerTag);
+                $tagObj->setToken($token);
+                $tagObj->setContent(ltrim(rtrim($outerTag, ']'), '[!' . $token));
+                $tagObj->setCacheable(!$processUncacheable);
+                $tagObj->process();
+                $output = $tagObj->_output;
             }
             if ($this->modx->getDebug() === true) {
                 $this->modx->log(xPDO::LOG_LEVEL_DEBUG,
@@ -274,48 +277,6 @@ class pdoParser extends modParser
         }
 
         return $output;
-    }
-
-}
-
-
-class pdoTag extends modTag
-{
-    /**
-     * @param null $properties
-     * @param null $content
-     *
-     * @return bool
-     */
-    public function process($properties = null, $content = null)
-    {
-        $this->filterInput();
-
-        if ($this->modx->getDebug() === true) {
-            $this->modx->log(
-                xPDO::LOG_LEVEL_DEBUG, "Processing Element: " . $this->get('name') .
-                ($this->_tag ? "\nTag: {$this->_tag}" : "\n") .
-                "\nProperties: " . print_r($this->_properties, true)
-            );
-        }
-        if ($this->isCacheable() && isset($this->modx->elementCache[$this->_tag])) {
-            $this->_output = $this->modx->elementCache[$this->_tag];
-        } else {
-            $this->_output = $this->_content;
-            $this->filterOutput();
-        }
-        $this->_processed = true;
-
-        return $this->_result;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getTag()
-    {
-        return $this->_tag;
     }
 
 }

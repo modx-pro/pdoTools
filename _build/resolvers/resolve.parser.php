@@ -1,6 +1,9 @@
 <?php
 
+use MODX\Revolution\modSystemSetting;
+
 if ($object->xpdo) {
+
     /** @var $modx modX */
     $modx = $object->xpdo;
 
@@ -8,45 +11,22 @@ if ($object->xpdo) {
         case xPDOTransport::ACTION_INSTALL:
         case xPDOTransport::ACTION_UPGRADE:
             /** @var modSystemSetting $tmp */
-            if (!$tmp = $modx->getObject('modSystemSetting', ['key' => 'parser_class'])) {
-                $tmp = $modx->newObject('modSystemSetting');
+            if (!$tmp = $modx->getObject(modSystemSetting::class, ['key' => 'modParser.class'])) {
+                $tmp = $modx->newObject(modSystemSetting::class);
             }
             $tmp->fromArray([
                 'namespace' => 'core',
                 'area' => 'site',
                 'xtype' => 'textfield',
-                'value' => 'pdoParser',
-                'key' => 'parser_class',
+                'value' => '\ModxPro\PdoTools\Parsing\Parser',
+                'key' => 'modParser.class',
             ], '', true, true);
             $tmp->save();
-
-            /** @var modSystemSetting $tmp */
-            if (!$tmp = $modx->getObject('modSystemSetting', ['key' => 'parser_class_path'])) {
-                $tmp = $modx->newObject('modSystemSetting');
-            }
-            $tmp->fromArray([
-                'namespace' => 'core',
-                'area' => 'site',
-                'xtype' => 'textfield',
-                'value' => '{core_path}components/pdotools/model/pdotools/',
-                'key' => 'parser_class_path',
-            ], '', true, true);
-            $tmp->save();
-
-            // Remove old settings
-            if ($tmp = $modx->getObject('modSystemSetting', ['key' => 'pdotools_useFenom'])) {
-                $tmp->remove();
-            }
-            break;
 
         case xPDOTransport::ACTION_UNINSTALL:
-            if ($tmp = $modx->getObject('modSystemSetting', ['key' => 'parser_class', 'value' => 'pdoParser'])) {
+            if ($tmp = $modx->getObject(modSystemSetting::class, ['key' => 'modParser.class', 'value' => '\MODX\Revolution\Parser'])) {
                 $tmp->remove();
             }
-            if ($tmp = $modx->getObject('modSystemSetting', ['key' => 'parser_class_path', 'value' => '{core_path}components/pdotools/model/pdotools/'])) {
-                $tmp->remove();
-            }
-            break;
     }
 }
 return true;

@@ -1,105 +1,105 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
+$tmp = [
     // debug
-    'showLog' => array(
+    'showLog' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'fastMode' => array(
+    ],
+    'fastMode' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'level' => array(
+    ],
+    'level' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'parents' => array(
+    ],
+    'parents' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'displayStart' => array(
+    ],
+    'displayStart' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'resources' => array(
+    ],
+    'resources' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'templates' => array(
+    ],
+    'templates' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'context' => array(
+    ],
+    'context' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'cache' => array(
+    'cache' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'cacheTime' => array(
+    ],
+    'cacheTime' => [
         'type' => 'numberfield',
         'value' => 3600,
-    ),
-    'cacheAnonymous' => array(
+    ],
+    'cacheAnonymous' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'plPrefix' => array(
+    'plPrefix' => [
         'type' => 'textfield',
         'value' => 'wf.',
-    ),
-    'showHidden' => array(
+    ],
+    'showHidden' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showUnpublished' => array(
+    ],
+    'showUnpublished' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showDeleted' => array(
+    ],
+    'showDeleted' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'previewUnpublished' => array(
+    ],
+    'previewUnpublished' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'hideSubMenus' => array(
+    ],
+    'hideSubMenus' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-    'useWeblinkUrl' => array(
+    'useWeblinkUrl' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
+    ],
 
-    'sortdir' => array(
+    'sortdir' => [
         'type' => 'list',
-        'options' => array(
-            array('text' => 'ASC', 'value' => 'ASC'),
-            array('text' => 'DESC', 'value' => 'DESC'),
-        ),
+        'options' => [
+            ['text' => 'ASC', 'value' => 'ASC'],
+            ['text' => 'DESC', 'value' => 'DESC'],
+        ],
         'value' => 'ASC',
-    ),
-    'sortby' => array(
+    ],
+    'sortby' => [
         'type' => 'textfield',
         'value' => 'menuindex',
-    ),
-    'limit' => array(
+    ],
+    'limit' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
-    'offset' => array(
+    ],
+    'offset' => [
         'type' => 'numberfield',
         'value' => 0,
-    ),
+    ],
 
     // cssTpl
     // jsTpl
@@ -107,165 +107,165 @@ $tmp = array(
     // textOfLinks
     // titleOfLinks
 
-    'rowIdPrefix' => array(
+    'rowIdPrefix' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'firstClass' => array(
+    'firstClass' => [
         'type' => 'textfield',
         'value' => 'first',
-    ),
-    'lastClass' => array(
+    ],
+    'lastClass' => [
         'type' => 'textfield',
         'value' => 'last',
-    ),
-    'hereClass' => array(
+    ],
+    'hereClass' => [
         'type' => 'textfield',
         'value' => 'active',
-    ),
-    'parentClass' => array(
+    ],
+    'parentClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'rowClass' => array(
+    ],
+    'rowClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'outerClass' => array(
+    ],
+    'outerClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'innerClass' => array(
+    ],
+    'innerClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'levelClass' => array(
+    ],
+    'levelClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'selfClass' => array(
+    ],
+    'selfClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'webLinkClass' => array(
+    ],
+    'webLinkClass' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'tplOuter' => array(
+    'tplOuter' => [
         'type' => 'textfield',
         'value' => '@INLINE <ul[[+classes]]>[[+wrapper]]</ul>',
-    ),
-    'tpl' => array(
+    ],
+    'tpl' => [
         'type' => 'textfield',
         'value' => '@INLINE <li[[+classes]]><a href="[[+link]]" [[+attributes]]>[[+menutitle]]</a>[[+wrapper]]</li>',
-    ),
-    'tplParentRow' => array(
+    ],
+    'tplParentRow' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplParentRowHere' => array(
+    ],
+    'tplParentRowHere' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplHere' => array(
+    ],
+    'tplHere' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplInner' => array(
+    ],
+    'tplInner' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplInnerRow' => array(
+    ],
+    'tplInnerRow' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplInnerHere' => array(
+    ],
+    'tplInnerHere' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplParentRowActive' => array(
+    ],
+    'tplParentRowActive' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplCategoryFolder' => array(
+    ],
+    'tplCategoryFolder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'tplStart' => array(
+    ],
+    'tplStart' => [
         'type' => 'textfield',
         'value' => '@INLINE <h2[[+classes]]>[[+menutitle]]</h2>[[+wrapper]]',
-    ),
+    ],
 
-    'checkPermissions' => array(
+    'checkPermissions' => [
         'type' => 'textfield',
         //'value' => 'load',
         'value' => '',
-    ),
-    'hereId' => array(
+    ],
+    'hereId' => [
         'type' => 'numberfield',
         'value' => '',
-    ),
+    ],
 
-    'where' => array(
+    'where' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'select' => array(
+    ],
+    'select' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'scheme' => array(
+    'scheme' => [
         'type' => 'list',
-        'options' => array(
-            array(
+        'options' => [
+            [
                 'name' => 'System default',
                 'value' => '',
-            ),
-            array(
+            ],
+            [
                 'name' => '-1 (relative to site_url)',
                 'value' => -1,
-            ),
-            array(
+            ],
+            [
                 'name' => 'full (absolute, prepended with site_url)',
                 'value' => 'full',
-            ),
-            array(
+            ],
+            [
                 'name' => 'abs (absolute, prepended with base_url)',
                 'value' => 'abs',
-            ),
-            array(
+            ],
+            [
                 'name' => 'http (absolute, forced to http scheme)',
                 'value' => 'http',
-            ),
-            array(
+            ],
+            [
                 'name' => 'https (absolute, forced to https scheme)',
                 'value' => 'https',
-            ),
-        ),
+            ],
+        ],
         'value' => '',
-    ),
+    ],
 
-    'toPlaceholder' => array(
+    'toPlaceholder' => [
         'type' => 'textfield',
         'value' => '',
-    ),
+    ],
 
-    'countChildren' => array(
+    'countChildren' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
+    ],
 
-);
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

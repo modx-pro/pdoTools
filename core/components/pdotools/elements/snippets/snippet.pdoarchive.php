@@ -1,8 +1,14 @@
 <?php
-/** @var modX $modx */
+
+use ModxPro\PdoTools\Fetch;
+use MODX\Revolution\modSnippet;
+use MODX\Revolution\modWebLink;
+
+/** @var MODX\Revolution\modX $modx */
+/** @var array $scriptProperties */
+
 $modx->lexicon->load('pdotools:pdoarchive');
 
-/** @var array $scriptProperties */
 $tplWrapper = $modx->getOption('tplWrapper', $scriptProperties);
 $tplYear = $modx->getOption('tplYear', $scriptProperties);
 $tplMonth = $modx->getOption('tplMonth', $scriptProperties);
@@ -17,7 +23,7 @@ $outputSeparator = $modx->getOption('outputSeparator', $scriptProperties, "\n");
 $additionalPlaceholders = $properties = [];
 if (isset($this) && $this instanceof modSnippet) {
     $properties = $this->get('properties');
-} elseif ($snippet = $modx->getObject('modSnippet', ['name' => 'pdoResources'])) {
+} elseif ($snippet = $modx->getObject(modSnippet::class, ['name' => 'pdoResources'])) {
     $properties = $snippet->get('properties');
 }
 if (!empty($properties)) {
@@ -32,14 +38,8 @@ if (isset($parents) && $parents === '') {
     $scriptProperties['parents'] = $modx->resource->id;
 }
 $scriptProperties['return'] = 'data';
-/** @var pdoFetch $pdoFetch */
-$fqn = $modx->getOption('pdoFetch.class', null, 'pdotools.pdofetch', true);
-$path = $modx->getOption('pdofetch_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoFetch = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
+$modx->services['pdotools_config'] = $scriptProperties;
+$pdoFetch = $modx->services->get(Fetch::class);
 $pdoFetch->addTime('pdoTools loaded');
 $rows = $pdoFetch->run();
 
@@ -84,7 +84,7 @@ foreach ($tree as $year => $months) {
                     if (!isset($resource['context_key'])) {
                         $resource['context_key'] = '';
                     }
-                    if (isset($resource['class_key']) && ($resource['class_key'] == 'modWebLink')) {
+                    if (isset($resource['class_key']) && ($resource['class_key'] == modWebLink::class)) {
                         $resource['link'] = isset($resource['content']) && is_numeric(trim($resource['content'], '[]~ '))
                             ? $pdoFetch->makeUrl(intval(trim($resource['content'], '[]~ ')), $resource)
                             : (isset($resource['content']) ? $resource['content'] : '');
@@ -108,7 +108,7 @@ foreach ($tree as $year => $months) {
                     'year' => $year,
                     'count' => $count_day,
                     'wrapper' => implode($outputSeparator, $rows_day),
-                ], $pdoFetch->config['fastMode'])
+                ], $pdoFetch->config('fastMode'))
                 : implode($outputSeparator, $rows_day);
         }
 
@@ -119,7 +119,7 @@ foreach ($tree as $year => $months) {
                 'year' => $year,
                 'count' => $count_month,
                 'wrapper' => $rows_month,
-            ], $pdoFetch->config['fastMode'])
+            ], $pdoFetch->config('fastMode'))
             : $rows_month;
     }
 
@@ -128,7 +128,7 @@ foreach ($tree as $year => $months) {
             'year' => $year,
             'count' => $count_year,
             'wrapper' => $rows_year,
-        ], $pdoFetch->config['fastMode'])
+        ], $pdoFetch->config('fastMode'))
         : $rows_year;
 }
 $pdoFetch->addTime('Rows processed');
@@ -138,13 +138,13 @@ if (!empty($tplWrapper) && (!empty($wrapIfEmpty) || !empty($output))) {
     $output = $pdoFetch->getChunk(
         $tplWrapper,
         array_merge($additionalPlaceholders, ['output' => $output]),
-        $pdoFetch->config['fastMode']
+        $pdoFetch->config('fastMode')
     );
     $pdoFetch->addTime('Rows wrapped');
 }
 
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-    $output .= '<pre class="pdoArchiveLog">' . print_r($pdoFetch->getTime(), 1) . '</pre>';
+if ($modx->user->isAuthenticated('mgr') && (bool)$showLog) {
+    $modx->setPlaceholder('pdoArchiveLog', print_r($pdoFetch->getTime(), true));
 }
 
 if (!empty($toPlaceholder)) {

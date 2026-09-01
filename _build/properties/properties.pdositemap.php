@@ -1,113 +1,113 @@
 <?php
 
-$properties = array();
+$properties = [];
 
-$tmp = array(
-    'tpl' => array(
+$tmp = [
+    'tpl' => [
         'type' => 'textfield',
         'value' => "@INLINE <url>\n\t<loc>[[+url]]</loc>\n\t<lastmod>[[+date]]</lastmod>\n\t<changefreq>[[+update]]</changefreq>\n\t<priority>[[+priority]]</priority>\n</url>",
-    ),
-    'tplWrapper' => array(
+    ],
+    'tplWrapper' => [
         'type' => 'textfield',
         'value' => "@INLINE <?xml version=\"1.0\" encoding=\"[[++modx_charset]]\"?>\n<urlset xmlns=\"[[+schema]]\">\n[[+output]]\n</urlset>",
-    ),
-    'templates' => array(
+    ],
+    'templates' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'context' => array(
+    ],
+    'context' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'depth' => array(
+    ],
+    'depth' => [
         'type' => 'numberfield',
         'value' => 10,
-    ),
-    'showDeleted' => array(
+    ],
+    'showDeleted' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'showHidden' => array(
+    ],
+    'showHidden' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'sitemapSchema' => array(
+    ],
+    'sitemapSchema' => [
         'type' => 'textfield',
         'value' => 'http://www.sitemaps.org/schemas/sitemap/0.9',
-    ),
-    'showUnpublished' => array(
+    ],
+    'showUnpublished' => [
         'type' => 'combo-boolean',
         'value' => false,
-    ),
-    'hideUnsearchable' => array(
+    ],
+    'hideUnsearchable' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'resources' => array(
+    ],
+    'resources' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'parents' => array(
+    ],
+    'parents' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'sortby' => array(
+    ],
+    'sortby' => [
         'type' => 'textfield',
         'value' => 'menuindex',
-    ),
-    'sortdir' => array(
+    ],
+    'sortdir' => [
         'type' => 'textfield',
         'value' => 'asc',
-    ),
-    'where' => array(
+    ],
+    'where' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'includeTVs' => array(
+    ],
+    'includeTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'prepareTVs' => array(
+    ],
+    'prepareTVs' => [
         'type' => 'textfield',
         'value' => '1',
-    ),
-    'processTVs' => array(
+    ],
+    'processTVs' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'outputSeparator' => array(
+    ],
+    'outputSeparator' => [
         'type' => 'textfield',
         'value' => "\n",
-    ),
-    'forceXML' => array(
+    ],
+    'forceXML' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'useWeblinkUrl' => array(
+    ],
+    'useWeblinkUrl' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
+    ],
 
-    'cache' => array(
+    'cache' => [
         'type' => 'combo-boolean',
         'value' => true,
-    ),
-    'cacheKey' => array(
+    ],
+    'cacheKey' => [
         'type' => 'textfield',
         'value' => '',
-    ),
-    'cacheTime' => array(
+    ],
+    'cacheTime' => [
         'type' => 'numberfield',
         'value' => 600,
-    ),
-);
+    ],
+];
 
 foreach ($tmp as $k => $v) {
-    $properties[] = array_merge(array(
+    $properties[] = array_merge([
         'name' => $k,
         'desc' => 'pdotools_prop_' . $k,
         'lexicon' => 'pdotools:properties',
-    ), $v);
+    ], $v);
 }
 
 return $properties;

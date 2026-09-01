@@ -1,16 +1,18 @@
 <?php
 
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config.core.php';
+require_once dirname(__FILE__, 4) . '/config.core.php';
 require_once MODX_CORE_PATH . 'model/modx/modx.class.php';
 $modx = new modX();
 $modx->initialize('web');
-$modx->getService('error','error.modError', '', '');
-$modx->setLogLevel(modX::LOG_LEVEL_ERROR);
-$modx->setLogTarget('FILE');
+$modx->services->add('error', new MODX\Revolution\Error\modError($modx));
+$modx->error = $modx->services->get('error');
+if (!defined('MODX_CONNECTOR_INCLUDED')) {
+    define('MODX_CONNECTOR_INCLUDED', 1);
+}
 
 // Switch context if needed
 if (!empty($_REQUEST['pageId'])) {
-    if ($resource = $modx->getObject('modResource', ['id' => (int)$_REQUEST['pageId']])) {
+    if ($resource = $modx->getObject(MODX\Revolution\modResource::class, ['id' => (int)$_REQUEST['pageId']])) {
         if ($resource->get('context_key') !== 'web') {
             $modx->switchContext($resource->get('context_key'));
         }

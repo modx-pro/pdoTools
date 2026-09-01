@@ -17,4 +17,4 @@ pdoTools snippets will work so faster, than more fields you will retrieve from d
 
 --------------------
 Feel free to suggest ideas/improvements/bugs on GitHub:
-http://github.com/bezumkin/pdoTools/issues
+http://github.com/modx-pro/pdoTools/issues

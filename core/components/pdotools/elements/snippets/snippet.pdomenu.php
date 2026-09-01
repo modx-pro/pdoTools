@@ -1,6 +1,11 @@
 <?php
+
+use ModxPro\PdoTools\Fetch;
+use ModxPro\PdoTools\Support\MenuBuilder;
+use MODX\Revolution\modResource;
+
+/** @var \MODX\Revolution\modX $modx */
 /** @var array $scriptProperties */
-/** @var modX $modx */
 
 // Convert parameters from Wayfinder if exists
 if (isset($startId)) {
@@ -47,16 +52,16 @@ if ($scriptProperties['parents'] === '') {
 } elseif ($scriptProperties['parents'] === 0 || $scriptProperties['parents'] === '0') {
     if ($scriptProperties['depth'] !== '' && $scriptProperties['depth'] !== 100) {
         $contexts = array_map('trim', explode(',', $scriptProperties['context']));
-        $parents = array();
+        $parents = [];
         if (!empty($scriptProperties['showDeleted'])) {
-            /** @var pdoFetch $pdoFetch */
-            $pdoFetch = $modx->getService('pdoFetch');
+            /** @var Fetch $pdoFetch */
+            $pdoFetch = $modx->services->get('pdofetch');
             foreach ($contexts as $ctx) {
-                $parents = array_merge($parents, $pdoFetch->getChildIds('modResource', 0, $scriptProperties['depth'], array('context' => $ctx)));
+                $parents = array_merge($parents, $pdoFetch->getChildIds(modResource::class, 0, $scriptProperties['depth'], ['context' => $ctx]));
             }
         } else {
             foreach ($contexts as $ctx) {
-                $parents = array_merge($parents, $modx->getChildIds(0, $scriptProperties['depth'], array('context' => $ctx)));
+                $parents = array_merge($parents, $modx->getChildIds(0, $scriptProperties['depth'], ['context' => $ctx]));
             }
         }
         $scriptProperties['parents'] = !empty($parents) ? implode(',', $parents) : '+0';
@@ -66,7 +71,7 @@ if ($scriptProperties['parents'] === '') {
     $scriptProperties['displayStart'] = 0;
 } else {
     $parents = array_map('trim', explode(',', $scriptProperties['parents']));
-    $parents_in = $parents_out = array();
+    $parents_in = $parents_out = [];
     foreach ($parents as $v) {
         if (!is_numeric($v)) {
             continue;
@@ -106,7 +111,7 @@ if (!empty($ignoreHidden)) {
     $scriptProperties['showHidden'] = $ignoreHidden;
 }
 
-$wfTemplates = array(
+$wfTemplates = [
     'outerTpl' => 'tplOuter',
     'rowTpl' => 'tpl',
     'parentRowTpl' => 'tplParentRow',
@@ -118,7 +123,7 @@ $wfTemplates = array(
     'activeParentRowTpl' => 'tplParentRowActive',
     'categoryFoldersTpl' => 'tplCategoryFolder',
     'startItemTpl' => 'tplStart',
-);
+];
 foreach ($wfTemplates as $k => $v) {
     if (isset(${$k})) {
         $scriptProperties[$v] = ${$k};
@@ -126,15 +131,10 @@ foreach ($wfTemplates as $k => $v) {
 }
 //---
 
-/** @var pdoMenu $pdoMenu */
-$fqn = $modx->getOption('pdoMenu.class', null, 'pdotools.pdomenu', true);
-$path = $modx->getOption('pdomenu_class_path', null, MODX_CORE_PATH . 'components/pdotools/model/', true);
-if ($pdoClass = $modx->loadClass($fqn, $path, false, true)) {
-    $pdoMenu = new $pdoClass($modx, $scriptProperties);
-} else {
-    return false;
-}
-$pdoMenu->pdoTools->addTime('pdoTools loaded');
+/** @var MenuBuilder $menuBuilder */
+$modx->services['pdotools_config'] = $scriptProperties;
+$menuBuilder = $modx->services->get(MenuBuilder::class);
+$menuBuilder->pdoTools->addTime('MenuBuilder loaded');
 
 $cache = !empty($cache) || (!$modx->user->id && !empty($cacheAnonymous));
 if (empty($scriptProperties['cache_key'])) {
@@ -142,17 +142,17 @@ if (empty($scriptProperties['cache_key'])) {
 }
 
 $output = '';
-$tree = array();
+$tree = [];
 if ($cache) {
-    $tree = $pdoMenu->pdoTools->getCache($scriptProperties);
+    $tree = $menuBuilder->pdoTools->getCache($scriptProperties);
 }
 if (empty($tree)) {
-    $data = $pdoMenu->pdoTools->run();
-    $data = $pdoMenu->pdoTools->buildTree($data, 'id', 'parent', $specified_parents);
-    $tree = array();
+    $data = $menuBuilder->pdoTools->run();
+    $data = $menuBuilder->pdoTools->buildTree($data, 'id', 'parent', $specified_parents);
+    $tree = [];
     foreach ($data as $k => $v) {
         if (empty($v['id'])) {
-            if (!in_array($k, $specified_parents) && !$pdoMenu->checkResource($k)) {
+            if (!in_array($k, $specified_parents) && !$menuBuilder->checkResource($k)) {
                 continue;
             } else {
                 $tree = array_merge($tree, $v['children']);
@@ -162,18 +162,18 @@ if (empty($tree)) {
         }
     }
     if ($cache) {
-        $pdoMenu->pdoTools->setCache($tree, $scriptProperties);
+        $menuBuilder->pdoTools->setCache($tree, $scriptProperties);
     }
 }
 if (isset($return) && $return === 'data') {
     return $tree;
 }
 if (!empty($tree)) {
-    $output = $pdoMenu->templateTree($tree);
+    $output = $menuBuilder->templateTree($tree);
 }
 
-if ($modx->user->hasSessionContext('mgr') && !empty($showLog)) {
-    $output .= '<pre class="pdoMenuLog">' . print_r($pdoMenu->pdoTools->getTime(), 1) . '</pre>';
+if ($modx->user->isAuthenticated('mgr') && !empty($showLog)) {
+    $modx->setPlaceholder('pdoMenuLog', print_r($menuBuilder->pdoTools->getTime(), true));
 }
 
 if (!empty($toPlaceholder)) {
