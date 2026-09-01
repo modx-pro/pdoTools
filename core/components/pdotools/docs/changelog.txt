@@ -3,6 +3,26 @@
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## [2.14.0-pl] - 2026-09-01
+
+### Added
+
+- [#306] [pdoMenu] Added the "children" placeholder to tplInner.
+- [#356] [Fenom] Enabled the array_merge modifier by default.
+- [#358] [pdoTools] cachePath can be set via the "pdotools_cache_path" option.
+- [#392] [pdoPage] Snippet properties are available as placeholders in pagination templates.
+
+### Fixed
+
+- [#302] [pdoPage] Fixed button ajaxMode, hiding the more button when there are no results, and restoring it in force mode.
+- [#305] [pdoMenu] Fixed notices on missing class_key and content for weblinks.
+- [#349] [pdoTools] Cast config offset to integer for PHP 8.
+- [#373] [pdoResources] Fixed toSeparatePlaceholders when the snippet returns a string.
+
+### Changed
+
+- [#377] [pdoPage] Mark AJAX requests as connector mode via MODX_CONNECTOR_INCLUDED.
+
 ## [2.13.3-pl] - 2023-04-11
 
 ### Security
