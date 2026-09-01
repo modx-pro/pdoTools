@@ -169,6 +169,7 @@ class MenuBuilder
                 'classNames' => $this->pdoTools->config('innerClass'),
                 'classnames' => $this->pdoTools->config('innerClass'),
                 'level' => $this->level,
+                'children' => $row['children'] ?? 0,
             ]);
             $row['wrapper'] = $this->pdoTools->parseChunk($this->pdoTools->config('tplInner'), $pls);
         } else {
