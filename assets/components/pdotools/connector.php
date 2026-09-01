@@ -6,6 +6,9 @@ $modx = new modX();
 $modx->initialize('web');
 $modx->services->add('error', new MODX\Revolution\Error\modError($modx));
 $modx->error = $modx->services->get('error');
+if (!defined('MODX_CONNECTOR_INCLUDED')) {
+    define('MODX_CONNECTOR_INCLUDED', 1);
+}
 
 // Switch context if needed
 if (!empty($_REQUEST['pageId'])) {

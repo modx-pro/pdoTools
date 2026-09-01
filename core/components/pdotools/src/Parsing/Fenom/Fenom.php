@@ -215,6 +215,7 @@ class Fenom extends \Fenom
             [
                 'rand' => 1,
                 'number_format' => 1,
+                'array_merge' => 1,
             ]
         );
 
