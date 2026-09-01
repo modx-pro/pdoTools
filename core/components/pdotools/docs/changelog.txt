@@ -3,6 +3,12 @@
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## [2.14.1-pl] - 2026-09-01
+
+### Fixed
+
+- [#318] [pdoPage] Fixed duplicate base_url in canonical, prev, and next link URLs when link_tag_scheme is abs.
+
 ## [2.14.0-pl] - 2026-09-01
 
 ### Added
