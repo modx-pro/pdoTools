@@ -188,7 +188,7 @@ class MenuBuilder
             $row['classNames'] = $row['classnames'] = $row['classes'] = '';
         }
 
-        if (!empty($this->pdoTools->config('useWeblinkUrl')) && $row['class_key'] === modWebLink::class) {
+        if (!empty($this->pdoTools->config('useWeblinkUrl')) && !empty($row['class_key']) && !empty($row['content']) && $row['class_key'] === modWebLink::class) {
             unset($row['context_key']);
             $row['link'] = is_numeric(trim($row['content'], '[]~ '))
                 ? $this->pdoTools->makeUrl((int)trim($row['content'], '[]~ '), $row)
@@ -246,7 +246,7 @@ class MenuBuilder
         if ($row['children'] && !empty($this->pdoTools->config('parentClass')) && ($row['level'] < $this->pdoTools->config('level') || empty($this->pdoTools->config('level')))) {
             $classes[] = $this->pdoTools->config('parentClass');
         }
-        $row_id = !empty($this->pdoTools->config('useWeblinkUrl')) && is_numeric(trim($row['content'], '[]~ ')) && $row['class_key'] == modWebLink::class
+        $row_id = !empty($this->pdoTools->config('useWeblinkUrl')) && !empty($row['content']) && !empty($row['class_key']) && is_numeric(trim($row['content'], '[]~ ')) && $row['class_key'] == modWebLink::class
             ? (int)trim($row['content'], '[]~ ')
             : $row['id'];
         if ($this->isHere($row_id) && !empty($this->pdoTools->config('hereClass'))) {
@@ -272,7 +272,7 @@ class MenuBuilder
      */
     public function getTpl($row = [])
     {
-        $row_id = !empty($this->pdoTools->config('useWeblinkUrl')) && $row['class_key'] === modWebLink::class && is_numeric(trim($row['content'], '[]~ '))
+        $row_id = !empty($this->pdoTools->config('useWeblinkUrl')) && !empty($row['class_key']) && !empty($row['content']) && $row['class_key'] === modWebLink::class && is_numeric(trim($row['content'], '[]~ '))
             ? (int)trim($row['content'], '[]~ ')
             : $row['id'];
         if ($row['level'] === 1 && !empty($this->pdoTools->config('tplStart')) && !empty($this->pdoTools->config('displayStart'))) {

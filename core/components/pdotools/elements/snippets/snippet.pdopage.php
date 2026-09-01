@@ -199,8 +199,8 @@ if (empty($data)) {
         $pageVarKey => $page,
         $pageCountVar => $pageCount,
         $pageNavVar => !empty($tplPageWrapper)
-            ? $paginator->pdoTools->getChunk($tplPageWrapper, $pagination)
-            : $paginator->pdoTools->parseChunk('', $pagination),
+            ? $paginator->pdoTools->getChunk($tplPageWrapper, array_merge($scriptProperties, $pagination))
+            : $paginator->pdoTools->parseChunk('', array_merge($scriptProperties, $pagination)),
         $totalVar => $total,
     ];
     if ($cache) {

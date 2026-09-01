@@ -1,5 +1,16 @@
 Changelog for pdoTools.
 
+3.0.3-pl (01.09.2026)
+==============
+- [#302] [pdoPage] Fixed button ajaxMode, hiding the more button when there are no results, and restoring it in force mode.
+- [#305] [pdoMenu] Fixed notices on missing class_key and content for weblinks.
+- [#349] [pdoTools] Cast config offset to integer for PHP 8.
+- [#356] [Fenom] Enabled the array_merge modifier by default.
+- [#358] [pdoTools] Fixed missing semicolon after pdotools_cache_path option assignment.
+- [#377] [pdoPage] Mark AJAX requests as connector mode via MODX_CONNECTOR_INCLUDED.
+- [#392] [pdoPage] Snippet properties are available as placeholders in pagination templates.
+- Added GitHub Actions release workflow for 3.x transport packages.
+
 3.0.2-pl (11.04.2023)
 ==============
 - Support for file snippets in the pdoPage class.

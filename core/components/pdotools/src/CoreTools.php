@@ -83,7 +83,7 @@ class CoreTools
             'fenomSyntax' => $this->modx->getOption('pdotools_fenom_syntax', null, '#\{(\$|\/|\w+(\s|\(|\|)|\(|\')#', true),
         ], $config);
         $this->config['elementsPath'] = $this->modx->getOption('pdotools_elements_path', null, MODX_CORE_PATH . 'elements/', true);
-        $this->config['cachePath'] = $this->modx->getOption('pdotools_cache_path', null, MODX_CORE_PATH . 'cache/pdotools', true)
+        $this->config['cachePath'] = $this->modx->getOption('pdotools_cache_path', null, MODX_CORE_PATH . 'cache/pdotools', true);
 
         if ($clean_timings) {
             $this->timings = [];
@@ -526,11 +526,11 @@ class CoreTools
     public function defineChunk(array $properties = [])
     {
         $idx = isset($properties['idx']) ? (int)$properties['idx'] : $this->idx++;
-        $idx -= $this->config['offset'];
+        $idx -= (int)$this->config['offset'];
 
-        $first = empty($this->config['first']) ? ($this->config['offset'] + 1) : (int)$this->config['first'];
+        $first = empty($this->config['first']) ? ((int)$this->config['offset'] + 1) : (int)$this->config['first'];
         $last = empty($this->config['last'])
-            ? ($this->count + $this->config['offset'])
+            ? ($this->count + (int)$this->config['offset'])
             : (int)$this->config['last'];
 
         $odd = !($idx & 1);

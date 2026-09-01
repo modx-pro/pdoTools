@@ -1,0 +1,169 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: modx
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: pdo_mysql, mysqli, gd, zip, json, xml, mbstring, curl, tokenizer
+          coverage: none
+          tools: composer
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Verify tag matches PKG_VERSION
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_VERSION="${TAG_VERSION%-pl}"
+          PKG_VERSION="$(sed -nE "s/^[[:space:]]*const PKG_VERSION = ['\"]([^'\"]+)['\"].*/\1/p" _build/build.config.php | head -1)"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "PKG_VERSION=${PKG_VERSION} does not match tag ${GITHUB_REF_NAME} (${TAG_VERSION})"
+            exit 1
+          fi
+
+      - name: Build frontend assets
+        run: |
+          npm install
+          npx grunt
+
+      - name: Install Fenom
+        working-directory: core/components/pdotools
+        run: composer install --no-dev --no-interaction --prefer-dist
+
+      - name: Download MODX 3.0.5-pl
+        run: |
+          curl -fsSL -o modx.zip https://modx.s3.amazonaws.com/releases/3.0.5/modx-3.0.5-pl.zip
+          unzip -q modx.zip
+          mv modx-3.0.5-pl modx
+          rm modx.zip
+
+      - name: Install MODX (CLI)
+        working-directory: modx
+        run: |
+          MODX_ROOT="${GITHUB_WORKSPACE}/modx"
+          cat > setup/config.xml <<XML
+          <modx>
+            <database_type>mysql</database_type>
+            <database_server>127.0.0.1</database_server>
+            <database>modx</database>
+            <database_user>root</database_user>
+            <database_password>root</database_password>
+            <database_connection_charset>utf8mb4</database_connection_charset>
+            <database_charset>utf8mb4</database_charset>
+            <database_collation>utf8mb4_unicode_ci</database_collation>
+            <table_prefix>modx_</table_prefix>
+            <https_port>443</https_port>
+            <http_host>localhost</http_host>
+            <inplace>0</inplace>
+            <unpacked>0</unpacked>
+            <language>en</language>
+            <cmsadmin>admin</cmsadmin>
+            <cmspassword>AdminAdmin1</cmspassword>
+            <cmsadminemail>admin@example.com</cmsadminemail>
+            <core_path>${MODX_ROOT}/core/</core_path>
+            <context_mgr_path>${MODX_ROOT}/manager/</context_mgr_path>
+            <context_mgr_url>/manager/</context_mgr_url>
+            <context_connectors_path>${MODX_ROOT}/connectors/</context_connectors_path>
+            <context_connectors_url>/connectors/</context_connectors_url>
+            <context_web_path>${MODX_ROOT}/</context_web_path>
+            <context_web_url>/</context_web_url>
+            <remove_setup_directory>0</remove_setup_directory>
+          </modx>
+          XML
+          sed -i 's/^[[:space:]]*//' setup/config.xml
+          php setup/index.php --installmode=new --config="${MODX_ROOT}/setup/config.xml"
+          test -f core/config/config.inc.php
+
+      - name: Disable auto-install for release build
+        run: |
+          sed -i "s/const PKG_AUTO_INSTALL = true;/const PKG_AUTO_INSTALL = false;/" _build/build.config.php
+          sed -i "s/define('PKG_AUTO_INSTALL', true)/define('PKG_AUTO_INSTALL', false)/" _build/build.config.php
+
+      - name: Build transport package
+        run: |
+          php -r '
+          $_SERVER["MODX_BASE_PATH"] = getenv("GITHUB_WORKSPACE") . "/modx/";
+          require getenv("GITHUB_WORKSPACE") . "/_build/build.transport.php";
+          '
+
+      - name: Collect transport package
+        run: |
+          mkdir -p _packages
+          find modx/core/packages -name 'pdotools-*.transport.zip' -exec cp -t _packages {} +
+          ls -la _packages/
+          test -n "$(ls _packages/pdotools-*.transport.zip 2>/dev/null)"
+          python3 - <<'PY'
+          import glob, sys, zipfile
+          zpath = glob.glob('_packages/pdotools-*.transport.zip')[0]
+          needle = b'xPDO\\Transport\\xPDOObjectVehicle'
+          with zipfile.ZipFile(zpath) as zf:
+              manifests = [
+                  n for n in zf.namelist()
+                  if n.endswith('manifest.php') or n.endswith('/manifest') or n == 'manifest'
+              ]
+              if not manifests:
+                  print('ERROR: no manifest in transport zip', file=sys.stderr)
+                  sys.exit(1)
+              for name in manifests:
+                  data = zf.read(name)
+                  if needle in data:
+                      print(f'ERROR: namespaced vehicle class in {name}', file=sys.stderr)
+                      sys.exit(1)
+                  print(f'OK: {name} has no namespaced xPDOObjectVehicle')
+          print('package ready:', zpath)
+          PY
+
+      - name: Prepare release notes
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          VERSION="${TAG_NAME#v}"
+          awk -v ver="$VERSION" '
+            $0 ~ "^## \\[" ver "(-pl)?\\]" {print; show=1; next}
+            $0 ~ "^" ver "(-pl)?[[:space:]]*\\(" {print; show=1; next}
+            show && (/^## \[/ || /^[0-9]+\.[0-9]+\.[0-9]+/) {exit}
+            show {print}
+          ' core/components/pdotools/docs/changelog.txt > release-notes.md
+          if ! grep -q . release-notes.md; then
+            echo "WARN: no changelog section for ${VERSION}; using compare link fallback" >&2
+            echo "**Full Changelog**: https://github.com/${REPOSITORY}/compare/v${VERSION}" > release-notes.md
+          fi
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: _packages/*.transport.zip
+          body_path: release-notes.md
+          fail_on_unmatched_files: true
