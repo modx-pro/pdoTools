@@ -20,6 +20,8 @@ class CoreTools
     protected $modx;
     /** @var Fenom $fenom */
     protected $fenom;
+    /** @var bool $fenomInitialized Whether the pdoToolsOnFenomInit event has been fired */
+    protected $fenomInitialized = false;
     /** @var array $config Array with class config */
     protected $config = [];
     /** @var array $store Array for cache elements and user data */
@@ -146,7 +148,22 @@ class CoreTools
             $this->modx->services->add('fenom', new $class($this->modx, $this));
         }
 
-        return $this->modx->services->get('fenom');
+        /** @var Fenom $fenom */
+        $fenom = $this->modx->services->get('fenom');
+
+        // Fire pdoToolsOnFenomInit only once, and only AFTER the instance has been
+        // stored in the services container. If the event were fired from the Fenom
+        // constructor (i.e. before the container memoizes the instance), a plugin
+        // attached to pdoToolsOnFenomInit that re-enters getFenom() - for example the
+        // pdoParser parsing media source properties while a static element is being
+        // loaded - would build another Fenom and recurse until the memory limit is
+        // exhausted.
+        if (!$this->fenomInitialized) {
+            $this->fenomInitialized = true;
+            $fenom->invokeInitEvent();
+        }
+
+        return $fenom;
     }
 
     /**

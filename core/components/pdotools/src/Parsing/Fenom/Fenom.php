@@ -60,12 +60,24 @@ class Fenom extends \Fenom
         $this->setOptions($options);
 
         $this->_addDefaultModifiers();
+    }
 
+    /**
+     * Fire the pdoToolsOnFenomInit event so plugins can extend Fenom
+     * (register custom modifiers, functions, etc).
+     *
+     * This is intentionally NOT called from the constructor. It must be invoked
+     * by CoreTools::getFenom() AFTER the instance has been registered in the
+     * services container - otherwise a plugin attached to pdoToolsOnFenomInit
+     * that re-enters getFenom() would build another Fenom and recurse endlessly.
+     */
+    public function invokeInitEvent()
+    {
         $this->modx->invokeEvent(
             'pdoToolsOnFenomInit',
             [
                 'fenom' => $this,
-                'config' => $pdoTools->config(),
+                'config' => $this->pdoTools->config(),
             ]
         );
     }
