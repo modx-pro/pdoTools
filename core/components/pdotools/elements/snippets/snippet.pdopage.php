@@ -208,7 +208,7 @@ if (empty($data)) {
     }
 }
 /** @var bool $showLog */
-if ($modx->user->isAuthenticated('mgr') && (bool)$showLog) {
+if (isset($showLog) && $modx->user->isAuthenticated('mgr') && (bool)$showLog) {
     $modx->setPlaceholder('pdoPageLog', print_r($paginator->pdoTools->getTime(), true));
 }
 
