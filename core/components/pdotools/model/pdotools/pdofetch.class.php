@@ -781,52 +781,51 @@ class pdoFetch extends pdoTools
                                     array('context' => $this->config['context']));
                             }
                         }
-                        // Support of miniShop2 categories
-                        $members = array();
-                        if (in_array('msCategory', $this->modx->classMap['modResource']) &&
+                        // Support of miniShop2 categories via SQL EXISTS
+                        $isProduct = (
+                            (is_a($class, 'msProduct', true) || is_a($class, 'MiniShop3\\Model\\msProduct', true)) &&
+                            in_array('msCategory', $this->modx->classMap['modResource']) &&
                             empty($this->config['disableMS2'])
-                        ) {
-                            if (!empty($parents_in) || !empty($parents_out)) {
-                                $q = $this->modx->newQuery('msCategoryMember');
-                                if (!empty($parents_in)) {
-                                    $q->where(array('category_id:IN' => $parents_in));
-                                }
-                                if (!empty($parents_out)) {
-                                    $q->where(array('category_id:NOT IN' => $parents_out));
-                                }
-                                $q->select('product_id');
-                                $tstart = microtime(true);
-                                if ($q->prepare() && $q->stmt->execute()) {
-                                    $this->modx->queryTime += microtime(true) - $tstart;
-                                    $this->modx->executedQueries++;
-                                    $members = $q->stmt->fetchAll(PDO::FETCH_COLUMN);
-                                }
-                            }
-                        }
+                        );
+                        $memberTable = $isProduct ? $this->modx->getTableName('msCategoryMember') : '';
+                        $targetAlias = !empty($alias) ? $alias : $class;
+
                         // Add parent to conditions
-                        if (!empty($parents_in) && !empty($members)) {
-                            if (!empty($this->config['includeParents'])) {
-                                $members = array_merge($members, $parents_in);
+                        if (!empty($parents_in)) {
+                            $inList = implode(',', array_map('intval', $parents_in));
+                            if ($isProduct && !empty($memberTable)) {
+                                $parentCond = "`{$targetAlias}`.`parent` IN ({$inList})";
+                                if (!empty($this->config['includeParents'])) {
+                                    $parentCond .= " OR `{$targetAlias}`.`id` IN ({$inList})";
+                                }
+                                $existsCond = "EXISTS (SELECT 1 FROM {$memberTable} `cm` WHERE `cm`.`product_id` = `{$targetAlias}`.`id` AND `cm`.`category_id` IN ({$inList}))";
+                                $where[] = "({$parentCond} OR {$existsCond})";
+                            } elseif (!empty($this->config['includeParents'])) {
+                                $where[] = array(
+                                    $class . '.parent:IN' => $parents_in,
+                                    'OR:' . $class . '.id:IN' => $parents_in,
+                                );
+                            } else {
+                                $where[$class . '.parent:IN'] = $parents_in;
                             }
-                            $where[] = array(
-                                $class . '.parent:IN' => $parents_in,
-                                'OR:' . $class . '.id:IN' => $members,
-                            );
-                        } elseif (!empty($parents_in) && !empty($this->config['includeParents'])) {
-                            $where[] = array(
-                                $class . '.parent:IN' => $parents_in,
-                                'OR:' . $class . '.id:IN' => $parents_in,
-                            );
-                        } elseif (!empty($parents_in)) {
-                            $where[$class . '.parent:IN'] = $parents_in;
                         }
-                        if (!empty($parents_out) && !empty($this->config['includeParents'])) {
-                            $where[] = array(
-                                $class . '.parent:NOT IN' => $parents_out,
-                                'AND:' . $class . '.id:NOT IN' => $parents_out,
-                            );
-                        } elseif (!empty($parents_out)) {
-                            $where[$class . '.parent:NOT IN'] = $parents_out;
+
+                        if (!empty($parents_out)) {
+                            $outList = implode(',', array_map('intval', $parents_out));
+                            if ($isProduct && !empty($memberTable)) {
+                                $where[] = "`{$targetAlias}`.`parent` NOT IN ({$outList})";
+                                $where[] = "NOT EXISTS (SELECT 1 FROM {$memberTable} `cmo` WHERE `cmo`.`product_id` = `{$targetAlias}`.`id` AND `cmo`.`category_id` IN ({$outList}))";
+                                if (!empty($this->config['includeParents'])) {
+                                    $where[] = "`{$targetAlias}`.`id` NOT IN ({$outList})";
+                                }
+                            } elseif (!empty($this->config['includeParents'])) {
+                                $where[] = array(
+                                    $class . '.parent:NOT IN' => $parents_out,
+                                    'AND:' . $class . '.id:NOT IN' => $parents_out,
+                                );
+                            } else {
+                                $where[$class . '.parent:NOT IN'] = $parents_out;
+                            }
                         }
                     }
                     break;
