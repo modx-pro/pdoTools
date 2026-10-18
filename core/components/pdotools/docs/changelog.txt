@@ -3,6 +3,16 @@
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 Versioning: [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
+## [Unreleased]
+
+### Changed
+
+- [pdoFetch] `&setTotal`: total считается запросом `SELECT COUNT(*) FROM (<SELECT>)` вместо удалённого в MySQL 8.4 `SQL_CALC_FOUND_ROWS` + `FOUND_ROWS()`. Семантика (`GROUP BY` / `HAVING` / `DISTINCT`, без `LIMIT`) сохранена.
+
+### Fixed
+
+- [pdoFetch] `&setTotal=`1`` больше не добавляет `SQL_CALC_FOUND_ROWS` в `SELECT` — на MySQL 8.4 такой запрос завершался ошибкой синтаксиса.
+
 ## [2.14.1-pl] - 2026-09-01
 
 ### Fixed
